@@ -3,11 +3,15 @@
 
 /**
  * @file ble.h
- * @brief 心电数据 BLE 蓝牙传输模块
+ * @brief 心电数据 BLE 蓝牙传输模块（NUS UART 透传）
  *
- * 基于 ESP32 内置 BLE 协议栈实现。
- * 提供 ECG_MONITOR 服务和特征值，用于实时传输滤波后的心电数据。
- * 数据格式：IEEE 754 单精度浮点数（Little Endian）
+ * 实现 Nordic UART Service (NUS) 标准，兼容
+ * Serial Bluetooth Terminal 等手机 App。
+ *
+ * 发送格式：CSV 文本行（与串口格式一致）
+ *   "<clean>,<noisy>,<filtered>\r\n"
+ *
+ * 接收：手机端可发送命令（如 'r' 重置滤波器）
  */
 
 #include <stdint.h>
@@ -17,19 +21,19 @@ extern "C" {
 #endif
 
 /**
- * @brief 初始化 BLE 设备和服务
+ * @brief 初始化 BLE 设备和 NUS 服务
  *
- * 设备将以 \"ESP32-ECG-MONITOR\" 名称广播。
- * 特征值支持通知(Notify)和读取(Read)属性。
+ * 设备以 "ESP32-ECG" 名称广播。
+ * 使用标准 Nordic UART Service UUID。
  */
 void initBLE(void);
 
 /**
- * @brief 通过 BLE 发送一帧心电数据
+ * @brief 通过 BLE 发送 CSV 文本行
  *
- * @param value 滤波后的心电信号值（单位：mV）
+ * @param message 以 null 结尾的字符串，最大长度 20 字节
  */
-void sendECGData(float value);
+void sendBLEMessage(const char* message);
 
 #ifdef __cplusplus
 }

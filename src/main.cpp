@@ -65,10 +65,16 @@ void loop()
         /* 步骤3：对带噪声信号进行数字滤波 */
         float filteredSample = applyFilter(noisySample);
 
-        /* 步骤4：通过 BLE 发送滤波后的数据 */
-        sendECGData(filteredSample);
+        /* 步骤4：格式化 CSV 文本行（与串口相同格式） */
+        char csvLine[22];
+        int len = snprintf(csvLine, sizeof(csvLine),
+                          "%.3f,%.3f,%.3f\r\n",
+                          cleanSample, noisySample, filteredSample);
 
-        /* 步骤5：串口输出三路数据（格式：无干扰,带干扰,滤波后） */
+        /* 步骤5：通过 BLE 发送（兼容 Serial Bluetooth Terminal 等App） */
+        sendBLEMessage(csvLine);
+
+        /* 步骤6：串口输出三路数据（PC 绘图仪使用） */
         Serial.print(cleanSample, 4);
         Serial.print(",");
         Serial.print(noisySample, 4);

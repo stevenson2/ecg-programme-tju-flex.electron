@@ -7,102 +7,106 @@
 
 /**
  * @file ble.cpp
- * @brief 心电数据 BLE 蓝牙传输模块实现
+ * @brief 心电数据 BLE NUS UART 透传模块实现
+ *
+ * Nordic UART Service (NUS) 标准定义：
+ * - Service UUID: 6E400001-B5A3-F393-E0A9-E50E24DCCA9E
+ * - TX Char (Notify): 6E400002-B5A3-F393-E0A9-E50E24DCCA9E
+ * - RX Char (Write):  6E400003-B5A3-F393-E0A9-E50E24DCCA9E
  */
 
-/* ======================== BLE 服务与特征值定义 ======================== */
+/* ======================== NUS UUID 定义 ======================== */
+#define NUS_SERVICE_UUID    "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"
+#define NUS_TX_UUID         "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"
+#define NUS_RX_UUID         "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"
 
-/** @brief 心电监测服务UUID */
-#define SERVICE_UUID        "0000FFF0-0000-1000-8000-00805F9B34FB"
-
-/** @brief 心电数据特征UUID */
-#define CHARACTERISTIC_UUID "0000FFF1-0000-1000-8000-00805F9B34FB"
-
-/** @brief 设备广播名称，包含 ECG_MONITOR 字样 */
-#define DEVICE_NAME         "ESP32-ECG-MONITOR"
+#define DEVICE_NAME         "ESP32-ECG"
 
 /* ======================== 全局对象 ======================== */
 
-static BLEServer            *pServer          = NULL;
-static BLEService           *pService         = NULL;
-static BLECharacteristic    *pCharacteristic  = NULL;
-static bool                  deviceConnected  = false;
+static BLEServer            *pServer     = NULL;
+static BLECharacteristic    *pTxChar     = NULL;
+static bool                  connected   = false;
 
-/* ======================== 连接回调类 ======================== */
+/* ======================== 连接回调 ======================== */
 
-/**
- * @brief BLE 服务器回调类，监听客户端连接/断开事件
- */
-class MyServerCallbacks : public BLEServerCallbacks
+class ServerCallbacks : public BLEServerCallbacks
 {
-    void onConnect(BLEServer* pServer) override
+    void onConnect(BLEServer* srv) override
     {
-        deviceConnected = true;
-        Serial.println("[BLE] 客户端已连接");
+        connected = true;
+        Serial.println("[BLE] 手机已连接");
     }
 
-    void onDisconnect(BLEServer* pServer) override
+    void onDisconnect(BLEServer* srv) override
     {
-        deviceConnected = false;
-        Serial.println("[BLE] 客户端已断开，重新开始广播");
-
-        /* 断开后重新广播，允许其他设备连接 */
-        pServer->getAdvertising()->start();
+        connected = false;
+        Serial.println("[BLE] 手机已断开，重启广播");
+        srv->getAdvertising()->start();
     }
 };
 
-/* ======================== 公共接口实现 ======================== */
+/* ======================== RX 回调（接收手机指令） ======================== */
+
+class RxCallbacks : public BLECharacteristicCallbacks
+{
+    void onWrite(BLECharacteristic* pChar) override
+    {
+        std::string rx = pChar->getValue();
+        if (rx.length() > 0)
+        {
+            Serial.print("[BLE] 收到指令: ");
+            Serial.println(rx.c_str());
+        }
+    }
+};
+
+/* ======================== 公共接口 ======================== */
 
 void initBLE(void)
 {
-    /* 初始化 BLE 设备，设置广播名称 */
     BLEDevice::init(DEVICE_NAME);
 
-    /* 创建 BLE 服务器 */
     pServer = BLEDevice::createServer();
-    pServer->setCallbacks(new MyServerCallbacks());
+    pServer->setCallbacks(new ServerCallbacks());
 
-    /* 创建 BLE 服务 */
-    pService = pServer->createService(SERVICE_UUID);
+    /* 创建 NUS 服务 */
+    BLEService *pSvc = pServer->createService(NUS_SERVICE_UUID);
 
-    /* 创建心电数据特征值：支持通知(Notify)和读取(Read) */
-    pCharacteristic = pService->createCharacteristic(
-        CHARACTERISTIC_UUID,
-        BLECharacteristic::PROPERTY_NOTIFY |
-        BLECharacteristic::PROPERTY_READ
+    /* TX 特征值：发送数据给手机（Notify） */
+    pTxChar = pSvc->createCharacteristic(
+        NUS_TX_UUID,
+        BLECharacteristic::PROPERTY_NOTIFY
     );
+    pTxChar->addDescriptor(new BLE2902());
 
-    /* 添加 BLE 2902 描述符（通知功能必需） */
-    pCharacteristic->addDescriptor(new BLE2902());
-
-    /* 设置初始值为 0 */
-    float initVal = 0.0f;
-    pCharacteristic->setValue((uint8_t*)&initVal, sizeof(float));
+    /* RX 特征值：接收手机指令（Write） */
+    BLECharacteristic *pRxChar = pSvc->createCharacteristic(
+        NUS_RX_UUID,
+        BLECharacteristic::PROPERTY_WRITE_NR
+    );
+    pRxChar->setCallbacks(new RxCallbacks());
 
     /* 启动服务 */
-    pService->start();
+    pSvc->start();
 
-    /* 配置并开始广播 */
-    BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
-    pAdvertising->addServiceUUID(SERVICE_UUID);
-    pAdvertising->setScanResponse(true);
-    pAdvertising->setMinPreferred(0x06);   /* 与 iOS 连接兼容性设置 */
-    pAdvertising->setMinPreferred(0x12);
+    /* 配置广播 */
+    BLEAdvertising *pAdv = BLEDevice::getAdvertising();
+    pAdv->addServiceUUID(NUS_SERVICE_UUID);
+    pAdv->setScanResponse(true);
+    pAdv->setMinPreferred(0x06);
+    pAdv->setMinPreferred(0x12);
     BLEDevice::startAdvertising();
 
-    Serial.println("[BLE] 初始化完成，设备名称: " DEVICE_NAME);
+    Serial.println("[BLE] 设备名称: " DEVICE_NAME);
+    Serial.println("[BLE] 用手机连接后即可接收心电数据");
 }
 
-void sendECGData(float value)
+void sendBLEMessage(const char* message)
 {
-    /* 只有在有客户端连接时才发送数据 */
-    if (!deviceConnected) {
-        return;
-    }
+    if (!connected) return;
+    if (!message || strlen(message) == 0) return;
 
-    /* 将 float 值按 Little Endian 字节序写入特征值 */
-    pCharacteristic->setValue((uint8_t*)&value, sizeof(float));
-
-    /* 触发通知，推送数据到客户端 */
-    pCharacteristic->notify();
+    pTxChar->setValue((uint8_t*)message, strlen(message));
+    pTxChar->notify();
 }
