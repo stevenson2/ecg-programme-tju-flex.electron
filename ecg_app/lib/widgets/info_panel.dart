@@ -1,11 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../providers/ecg_provider.dart';
-
-/**
- * @file info_panel.dart
- * @brief 信息面板：心率、数据统计、连接状态
- */
 
 class InfoPanel extends StatelessWidget {
   final ECGProvider provider;
@@ -15,7 +10,6 @@ class InfoPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final last = provider.lastSample;
-    final fmt = NumberFormat('0.000');
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -25,30 +19,31 @@ class InfoPanel extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // 第一行：心率 + 连接状态
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _heartRateWidget(),
+              const Spacer(),
               _connectionWidget(),
             ],
           ),
-          const SizedBox(height: 8),
-          // 第二行：实时数值
-          if (last != null)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _valueChip('Clean', last.clean, Colors.green),
-                _valueChip('Noisy', last.noisy, Colors.red),
-                _valueChip('Filter', last.filtered, Colors.blue),
-              ],
-            ),
-          const SizedBox(height: 4),
-          // 第三行：数据量
-          Text(
-            '缓冲: ${provider.bufferSize}/500 点  |  丢弃: ${provider.droppedCount}',
-            style: const TextStyle(color: Colors.grey, fontSize: 11),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              if (last != null)
+                _valueChip('Filter', provider.displayChannel == 'clean'
+                    ? last.clean : provider.displayChannel == 'noisy'
+                    ? last.noisy : last.filtered, Colors.cyan),
+              const SizedBox(width: 8),
+              Text(
+                '${provider.timeWindow}s  |  ${(provider.amplitudeScale * 100).toStringAsFixed(0)}%',
+                style: const TextStyle(color: Colors.grey, fontSize: 12),
+              ),
+              const Spacer(),
+              Text(
+                '${provider.bufferSize} pts',
+                style: const TextStyle(color: Colors.grey, fontSize: 11),
+              ),
+            ],
           ),
         ],
       ),
@@ -62,7 +57,7 @@ class InfoPanel extends StatelessWidget {
         Icon(
           Icons.favorite,
           color: hr > 0 ? Colors.red : Colors.grey,
-          size: 24,
+          size: 28,
         ),
         const SizedBox(width: 8),
         Text(
@@ -106,7 +101,7 @@ class InfoPanel extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(

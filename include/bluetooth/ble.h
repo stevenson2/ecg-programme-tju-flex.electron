@@ -35,6 +35,12 @@ void initBLE(void);
  */
 void sendBLEMessage(const char* message);
 
+/**
+ * @brief 检查 BLE 是否已连接
+ * @return true 手机已连接, false 未连接
+ */
+bool isBLEConnected(void);
+
 #ifdef __cplusplus
 }
 #endif

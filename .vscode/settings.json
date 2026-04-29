@@ -1,5 +1,6 @@
 {
     "C_Cpp.default.compilerPath": "cl.exe",
     "idf.currentSetup": "C:\\esp\\v6.0\\esp-idf",
-    "python-envs.defaultEnvManager": "ms-python.python:system"
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "cmake.ignoreCMakeListsMissing": true
 }

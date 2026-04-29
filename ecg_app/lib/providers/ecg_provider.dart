@@ -8,10 +8,10 @@ import '../services/ble_service.dart';
  * @brief 心电数据状态管理（ChangeNotifier + Provider）
  *
  * 管理：
- * - 历史数据环形缓冲区（最新 500 点 = 2 秒）
+ * - 历史数据环形缓冲区（最新 1500 点 = 6 秒 @250Hz）
  * - 连接状态
  * - 心率计算
- * - 信号质量评估
+ * - 显示速度/幅度控制
  */
 
 class ECGProvider extends ChangeNotifier {
@@ -19,7 +19,7 @@ class ECGProvider extends ChangeNotifier {
   final BLEService _bleService = BLEService();
 
   // ── 环形缓冲区 ──
-  static const int kBufferSize = 500; // 2 秒 @ 250Hz
+  static const int kBufferSize = 1500; // 6 秒 @ 250Hz
   final List<ECGSample> _samples = [];
   int _droppedCount = 0;
 
@@ -35,6 +35,11 @@ class ECGProvider extends ChangeNotifier {
   bool _isScanning = false;
   String _statusMessage = '未连接';
 
+  // ── 显示控制 ──
+  int _timeWindow = 2;   // 时间窗口：1~6 秒
+  double _amplitudeScale = 1.0;  // 幅度缩放：0.5x ~ 3.0x
+  String _displayChannel = 'filtered';  // 'clean' | 'noisy' | 'filtered'
+
   // ── 数据流订阅 ──
   StreamSubscription<ECGSample>? _subscription;
 
@@ -49,6 +54,34 @@ class ECGProvider extends ChangeNotifier {
   int get bufferSize => _samples.length;
   BLEService get bleService => _bleService;
   ECGSample? get lastSample => _samples.isEmpty ? null : _samples.last;
+
+  // ── 显示控制 Getter/Setter ──
+
+  /// 时间窗口（秒），决定屏幕显示多长时间的波形
+  int get timeWindow => _timeWindow;
+  set timeWindow(int val) {
+    _timeWindow = val.clamp(1, 6);
+    notifyListeners();
+  }
+
+  /// 当前时间窗口对应的样本数
+  int get visibleSamples => _timeWindow * 250;
+
+  /// 幅度缩放系数
+  double get amplitudeScale => _amplitudeScale;
+  set amplitudeScale(double val) {
+    _amplitudeScale = val.clamp(0.5, 3.0);
+    notifyListeners();
+  }
+
+  /// 显示的通道
+  String get displayChannel => _displayChannel;
+  set displayChannel(String val) {
+    if (['clean', 'noisy', 'filtered'].contains(val)) {
+      _displayChannel = val;
+      notifyListeners();
+    }
+  }
 
   // ── 连接管理 ──
 
@@ -104,40 +137,86 @@ class ECGProvider extends ChangeNotifier {
     // 检测 R 波并计算心率
     _detectRPeak(sample);
 
-    // 每 20 个样本通知一次 UI 刷新（性能优化）
-    if (_samples.length % 20 == 0 || _samples.length < 20) {
+    // 每 15 个样本通知一次 UI 刷新
+    if (_samples.length % 15 == 0 || _samples.length < 15) {
       notifyListeners();
     }
   }
 
-  /// 心电信号最大值最小值（用于绘图缩放）
-  double get maxValue {
-    if (_samples.isEmpty) return 1.2;
-    return _samples.map((s) => [s.clean, s.noisy, s.filtered]
-        .reduce((a, b) => a > b ? a : b))
-        .reduce((a, b) => a > b ? a : b);
+  /// 获取当前显示通道的数值
+  double _getChannelValue(ECGSample sample) {
+    switch (_displayChannel) {
+      case 'clean':
+        return sample.clean;
+      case 'noisy':
+        return sample.noisy;
+      case 'filtered':
+      default:
+        return sample.filtered;
+    }
   }
 
+  /// ★★★ 幅度缩放原理 ★★★
+  /// 数据本身不变，通过缩小/扩大 Y 轴电压窗口实现视觉缩放
+  /// ampScale=2.0 → 窗口缩小一半 → 波形视觉上放大 2 倍
+  /// ampScale=0.5 → 窗口扩大一倍 → 波形视觉上缩小一半
+
+  /// 可见范围内原始数据的极值（辅助计算）
+  (double, double) _getVisibleRange() {
+    if (_samples.isEmpty) return (1.0, -0.2);
+    final start = _samples.length > visibleSamples
+        ? _samples.length - visibleSamples
+        : 0;
+    double max = -999, min = 999;
+    for (int i = start; i < _samples.length; i++) {
+      final val = _getChannelValue(_samples[i]);
+      if (val > max) max = val;
+      if (val < min) min = val;
+    }
+    return (max == -999 ? 1.0 : max, min == 999 ? -0.2 : min);
+  }
+
+  /// 当前显示范围内的最大值（受 ampScale 控制窗口大小）
+  double get maxValue {
+    final (rawMax, rawMin) = _getVisibleRange();
+    final center = (rawMax + rawMin) / 2;
+    final halfRange = ((rawMax - rawMin) / 2).clamp(0.1, 10.0);
+    final zoomedHalf = halfRange / _amplitudeScale;  // ÷系数 = 缩小窗口
+    return center + zoomedHalf;
+  }
+
+  /// 当前显示范围内的最小值
   double get minValue {
-    if (_samples.isEmpty) return -0.2;
-    return _samples.map((s) => [s.clean, s.noisy, s.filtered]
-        .reduce((a, b) => a < b ? a : b))
-        .reduce((a, b) => a < b ? a : b);
+    final (rawMax, rawMin) = _getVisibleRange();
+    final center = (rawMax + rawMin) / 2;
+    final halfRange = ((rawMax - rawMin) / 2).clamp(0.1, 10.0);
+    final zoomedHalf = halfRange / _amplitudeScale;
+    return center - zoomedHalf;
+  }
+
+  /// 获取绘图用的数据点列表（不缩放，原始数值）
+  List<double> get displayData {
+    if (_samples.isEmpty) return [];
+    final start = _samples.length > visibleSamples
+        ? _samples.length - visibleSamples
+        : 0;
+    return _samples
+        .sublist(start)
+        .map((s) => _getChannelValue(s))
+        .toList();
   }
 
   // ── R 波检测与心率计算 ──
 
   void _detectRPeak(ECGSample sample) {
-    // 用滤波后的信号检测
     final val = sample.filtered;
 
-    // 阈值检测
     if (val > kRPeakThreshold) {
       final currentIndex = _samples.length - 1;
       final interval =
           (currentIndex - _lastRPeakIndex).abs();
 
-      // 最小间隔防止误检（> 200ms = 50 点 @250Hz）
+      // 最小间隔 > 200ms (= 50 点 @250Hz)
       if (interval > 50 && interval < 500) {
         final hr = 60.0 / (interval / 250.0);
         if (hr >= kMinHR && hr <= kMaxHR) {

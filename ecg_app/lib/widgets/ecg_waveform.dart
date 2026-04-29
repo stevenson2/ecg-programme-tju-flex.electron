@@ -1,16 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../providers/ecg_provider.dart';
-
-/**
- * @file ecg_waveform.dart
- * @brief 实时三通道心电波形绘制组件
- *
- * 使用 CustomPainter 直接绘制，支持：
- * - 三通道叠加显示（绿/红/蓝）
- * - 自动缩放 + 用户缩放
- * - 网格背景
- * - 200ms 延迟线
- */
 
 class ECGWaveform extends StatelessWidget {
   final ECGProvider provider;
@@ -24,9 +13,10 @@ class ECGWaveform extends StatelessWidget {
         return CustomPaint(
           size: Size(constraints.maxWidth, constraints.maxHeight),
           painter: _ECGWaveformPainter(
-            samples: provider.samples,
+            data: provider.displayData,
             maxVal: provider.maxValue,
             minVal: provider.minValue,
+            timeWindow: provider.timeWindow,
           ),
         );
       },
@@ -35,122 +25,120 @@ class ECGWaveform extends StatelessWidget {
 }
 
 class _ECGWaveformPainter extends CustomPainter {
-  final List samples;
+  final List<double> data;
   final double maxVal;
   final double minVal;
+  final int timeWindow;
 
   _ECGWaveformPainter({
-    required this.samples,
+    required this.data,
     required this.maxVal,
     required this.minVal,
+    required this.timeWindow,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final rect = Offset.zero & size;
-
-    _drawBackground(canvas, size, rect);
-    if (samples.isEmpty) return;
-
-    final range = (maxVal - minVal).clamp(0.1, 10.0);
+    final range = (maxVal - minVal).clamp(0.05, 10.0);
     final scaleY = size.height / range;
-    final dx = size.width / 500; // 每个样本占的像素宽度
+    final visibleCount = timeWindow * 250;
+    final dx = visibleCount > 0 ? size.width / visibleCount : 1.0;
 
-    // 绘制三通道波形
-    _drawChannel(canvas, size, samples, dx, scaleY, 'clean', Colors.green);
-    _drawChannel(canvas, size, samples, dx, scaleY, 'noisy', Colors.red);
-    _drawChannel(canvas, size, samples, dx, scaleY, 'filtered', Colors.blue);
+    _drawBackground(canvas, size, range);
 
-    // 绘制200ms延迟标记线
-    _drawDelayLine(canvas, size, dx);
+    if (data.isNotEmpty) {
+      _drawWaveform(canvas, size, data, dx, scaleY);
+      _drawBaseline(canvas, size, range);
+    }
   }
 
-  void _drawBackground(Canvas canvas, Size size, Rect rect) {
-    // 背景
-    final bgPaint = Paint()..color = const Color(0xFF0A0A0A);
-    canvas.drawRect(rect, bgPaint);
+  void _drawBackground(Canvas canvas, Size size, double range) {
+    final bgPaint = Paint()..color = const Color(0xFF0A0A0E);
+    canvas.drawRect(Offset.zero & size, bgPaint);
 
-    // 网格
     final gridPaint = Paint()
-      ..color = const Color(0xFF1A1A2E)
+      ..color = const Color(0xFF1A1A30)
       ..strokeWidth = 0.5;
 
-    // 竖线（每 50ms = 12.5 点 @250Hz）
-    for (double x = 0; x < size.width; x += size.width / 10) {
+    // 竖网格线（每 200ms）
+    final visibleCount = timeWindow * 250;
+    final vLines = visibleCount > 0 ? (timeWindow * 5) : 10;
+    for (int i = 1; i < vLines; i++) {
+      final x = size.width * i / vLines;
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
     }
-    // 水平线
-    for (double y = 0; y < size.height; y += size.height / 6) {
+
+    // 水平网格线（6 格）
+    for (int i = 1; i < 6; i++) {
+      final y = size.height * i / 6;
       canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
     }
 
-    // 基线（y=0）
-    final zeroY = size.height * maxVal / (maxVal - minVal);
-    final baselinePaint = Paint()
-      ..color = const Color(0xFF334455)
-      ..strokeWidth = 1.0;
-    canvas.drawLine(
-      Offset(0, zeroY),
-      Offset(size.width, zeroY),
-      baselinePaint,
-    );
+    // 时间刻度标签
+    final tp = TextPainter(textDirection: TextDirection.ltr);
+    final smallFont = TextStyle(color: Color(0xFF445566), fontSize: 9);
+
+    for (int i = 0; i <= vLines; i++) {
+      if (i % (timeWindow > 3 ? 2 : 1) == 0) {
+        final x = size.width * i / vLines;
+        final sec = (timeWindow * i / vLines).toStringAsFixed(0);
+        tp.text = TextSpan(text: '${sec}s', style: smallFont);
+        tp.layout();
+        tp.paint(canvas, Offset(x - tp.width / 2, size.height - 14));
+      }
+    }
+
+    // 电压刻度标签
+    for (int i = 0; i <= 6; i++) {
+      final y = size.height * i / 6;
+      final volt = (maxVal - range * i / 6).toStringAsFixed(2);
+      tp.text = TextSpan(text: '${volt}V', style: smallFont);
+      tp.layout();
+      tp.paint(canvas, Offset(2, y - tp.height / 2));
+    }
   }
 
-  void _drawChannel(Canvas canvas, Size size, List data,
-      double dx, double scaleY, String field, Color color) {
+  void _drawWaveform(Canvas canvas, Size size, List<double> data,
+      double dx, double scaleY) {
 
     if (data.length < 2) return;
 
+    // 主波形
     final paint = Paint()
-      ..color = color.withOpacity(0.85)
-      ..strokeWidth = 1.5
+      ..color = const Color(0xFF00E5FF)
+      ..strokeWidth = 2.0
+      ..style = PaintingStyle.stroke;
+
+    // 光晕
+    final glowPaint = Paint()
+      ..color = const Color(0xFF00E5FF).withValues(alpha: 0.15)
+      ..strokeWidth = 4.0
       ..style = PaintingStyle.stroke;
 
     final path = Path();
-    final startIdx = data.length > 500 ? data.length - 500 : 0;
-
-    for (int i = startIdx; i < data.length; i++) {
-      final sample = data[i];
-      final val = _getField(sample, field);
-      final x = (i - startIdx) * dx;
-      final y = size.height - (val - minVal) * scaleY;
-
-      if (i == startIdx) {
+    for (int i = 0; i < data.length; i++) {
+      final val = data[i];
+      final x = i * dx;
+      final y = (size.height - (val - minVal) * scaleY).clamp(0.0, size.height);
+      if (i == 0) {
         path.moveTo(x, y);
       } else {
         path.lineTo(x, y);
       }
     }
 
+    canvas.drawPath(path, glowPaint);
     canvas.drawPath(path, paint);
   }
 
-  void _drawDelayLine(Canvas canvas, Size size, double dx) {
-    // 200ms = 50 点 @250Hz
-    final delayX = 50 * dx;
-    if (delayX <= 0 || delayX > size.width) return;
-
-    final paint = Paint()
-      ..color = Colors.yellow.withOpacity(0.3)
-      ..strokeWidth = 1.0;
-
-    canvas.drawLine(
-      Offset(delayX, 0),
-      Offset(delayX, size.height),
-      paint,
-    );
-  }
-
-  double _getField(dynamic sample, String field) {
-    switch (field) {
-      case 'clean':
-        return (sample as dynamic).clean as double;
-      case 'noisy':
-        return (sample as dynamic).noisy as double;
-      case 'filtered':
-        return (sample as dynamic).filtered as double;
-      default:
-        return 0;
+  void _drawBaseline(Canvas canvas, Size size, double range) {
+    final zeroRatio = range > 0 ? maxVal / range : 0.5;
+    final zeroY = size.height * (1.0 - zeroRatio);
+    if (zeroY > 0 && zeroY < size.height) {
+      final paint = Paint()
+        ..color = const Color(0xFF334466)
+        ..strokeWidth = 0.8;
+      canvas.drawLine(Offset(0, zeroY), Offset(size.width, zeroY), paint);
     }
   }
 

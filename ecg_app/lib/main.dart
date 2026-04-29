@@ -1,20 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'providers/ecg_provider.dart';
 import 'widgets/ecg_waveform.dart';
 import 'widgets/info_panel.dart';
-
-/**
- * @file main.dart
- * @brief ESP32-ECG 心电监测 App 入口
- *
- * 功能：
- * - 通过 BLE NUS 连接 ESP32-ECG 设备
- * - 实时绘制三通道心电波形（绿/红/蓝）
- * - 显示心率和信号质量
- * - 支持界面缩放操作
- */
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,9 +37,6 @@ class ECGApp extends StatelessWidget {
   }
 }
 
-/**
- * @brief 主监测界面
- */
 class ECGMonitorScreen extends StatelessWidget {
   const ECGMonitorScreen({super.key});
 
@@ -61,7 +47,7 @@ class ECGMonitorScreen extends StatelessWidget {
         appBar: _buildAppBar(context),
         body: const Column(
           children: [
-            // 波形显示区（占大部分空间）
+            // 波形显示区
             Expanded(
               flex: 4,
               child: Padding(
@@ -74,8 +60,8 @@ class ECGMonitorScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 8.0),
               child: _InfoArea(),
             ),
-            // 底部按钮栏
-            _ButtonBar(),
+            // 底部控制区
+            _ControlPanel(),
             SizedBox(height: 8),
           ],
         ),
@@ -108,20 +94,18 @@ class ECGMonitorScreen extends StatelessWidget {
       applicationVersion: 'v1.0.0',
       children: [
         const Text(
-          '连接 ESP32-ECG 设备后实时显示三通道心电波形。\n\n'
-          '🟢 绿色 = 纯净心电信号\n'
-          '🔴 红色 = 原始采集信号（含噪声）\n'
-          '🔵 蓝色 = 滤波后信号\n\n'
-          '黄色竖线 = 200ms 延迟参考线',
+          '实时心电波形监测 App\n\n'
+          '连接 ESP32-ECG 设备后，实时显示滤波后的心电波形。\n\n'
+          '功能：\n'
+          '  速度调节：1s / 2s / 4s / 6s 时间窗口\n'
+          '  幅度调节：0.5x / 1x / 2x / 3x 垂直缩放\n\n'
+          '波形颜色：青蓝色（滤波后信号）',
         ),
       ],
     );
   }
 }
 
-/**
- * @brief 波形显示区域
- */
 class _WaveformArea extends StatelessWidget {
   const _WaveformArea();
 
@@ -144,9 +128,6 @@ class _WaveformArea extends StatelessWidget {
   }
 }
 
-/**
- * @brief 信息面板区域
- */
 class _InfoArea extends StatelessWidget {
   const _InfoArea();
 
@@ -160,66 +141,132 @@ class _InfoArea extends StatelessWidget {
   }
 }
 
-/**
- * @brief 底部控制按钮栏
- */
-class _ButtonBar extends StatelessWidget {
-  const _ButtonBar();
+class _ControlPanel extends StatelessWidget {
+  const _ControlPanel();
 
   @override
   Widget build(BuildContext context) {
     return Consumer<ECGProvider>(
       builder: (context, provider, _) {
+        final btnStyle = (bool isActive) => ElevatedButton.styleFrom(
+          backgroundColor: isActive ? const Color(0xFF00BFFF) : const Color(0xFF2A2A3E),
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          minimumSize: Size.zero,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        );
+
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-          child: Row(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          child: Column(
             children: [
-              // 连接/断开按钮
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: provider.isScanning
-                      ? null
-                      : () => _toggleConnection(context, provider),
-                  icon: Icon(
-                    provider.isConnected
-                        ? Icons.bluetooth_disabled
-                        : Icons.bluetooth_searching,
-                    size: 20,
+              // 第一行：连接/断开 + 清空
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: provider.isScanning
+                          ? null
+                          : () => _toggleConnection(context, provider),
+                      icon: Icon(
+                        provider.isConnected
+                            ? Icons.bluetooth_disabled
+                            : Icons.bluetooth_searching,
+                        size: 18,
+                      ),
+                      label: Text(
+                        provider.isScanning
+                            ? '扫描中...'
+                            : provider.isConnected
+                                ? '断开'
+                                : '连接',
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: provider.isConnected
+                            ? Colors.red.withValues(alpha: 0.8)
+                            : const Color(0xFF00BFFF),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                      ),
+                    ),
                   ),
-                  label: Text(
-                    provider.isScanning
-                        ? '扫描中...'
-                        : provider.isConnected
-                            ? '断开'
-                            : '连接 ESP32',
+                  const SizedBox(width: 8),
+                  // 状态文字
+                  if (provider.statusMessage != '未连接' &&
+                      provider.statusMessage != '已连接')
+                    Flexible(
+                      child: Text(
+                        provider.statusMessage,
+                        style: const TextStyle(color: Colors.orange, fontSize: 11),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  const SizedBox(width: 4),
+                  IconButton(
+                    onPressed: provider.samples.isNotEmpty ? () => provider.clear() : null,
+                    icon: const Icon(Icons.clear_all, size: 20),
+                    tooltip: '清空',
+                    color: Colors.grey,
+                    constraints: const BoxConstraints(minWidth: 36),
+                    padding: EdgeInsets.zero,
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: provider.isConnected
-                        ? Colors.red.withOpacity(0.8)
-                        : const Color(0xFF00BFFF),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                ),
+                ],
               ),
-              const SizedBox(width: 12),
-              // 清空按钮
-              IconButton(
-                onPressed: provider.samples.isNotEmpty ? () => provider.clear() : null,
-                icon: const Icon(Icons.clear_all),
-                tooltip: '清空波形',
-                color: Colors.grey,
-              ),
-              // 状态信息
-              if (provider.statusMessage != '未连接' &&
-                  provider.statusMessage != '已连接')
-                Expanded(
-                  child: Text(
-                    provider.statusMessage,
-                    style: const TextStyle(color: Colors.orange, fontSize: 12),
-                    textAlign: TextAlign.center,
+              const SizedBox(height: 6),
+              // 第二行：速度控制
+              Row(
+                children: [
+                  const SizedBox(
+                    width: 42,
+                    child: Text('速度', style: TextStyle(color: Colors.grey, fontSize: 12)),
                   ),
-                ),
+                  Expanded(
+                    child: Row(
+                      children: [1, 2, 4, 6].map((sec) {
+                        final isActive = provider.timeWindow == sec;
+                        return Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 2),
+                            child: ElevatedButton(
+                              onPressed: () => provider.timeWindow = sec,
+                              style: btnStyle(isActive),
+                              child: Text('${sec}s', style: const TextStyle(fontSize: 12)),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              // 第三行：幅度控制
+              Row(
+                children: [
+                  const SizedBox(
+                    width: 42,
+                    child: Text('幅度', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                  ),
+                  Expanded(
+                    child: Row(
+                      children: [0.5, 1.0, 2.0, 3.0].map((scale) {
+                        final isActive = (provider.amplitudeScale - scale).abs() < 0.01;
+                        return Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 2),
+                            child: ElevatedButton(
+                              onPressed: () => provider.amplitudeScale = scale,
+                              style: btnStyle(isActive),
+                              child: Text('${scale}x', style: const TextStyle(fontSize: 12)),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         );

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../models/ecg_data.dart';
 
@@ -38,26 +39,54 @@ class BLEService {
 
   /// 断开回调
   VoidCallback? onDisconnected;
+  StreamSubscription<BluetoothConnectionState>? _connectionSub;
 
-  /// 扫描并连接 ESP32-ECG 设备
+  /// 扫描并连接 ESP32-ECG 设备（含重试机制）
   Future<bool> connect() async {
-    // 请求蓝牙权限
+    // 确保蓝牙已开启（内含权限请求处理）
     try {
       await FlutterBluePlus.turnOn();
-    } catch (_) {}
+    } catch (_) {
+      return false;
+    }
 
-    // 开始扫描
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    // 尝试 3 次扫描
+    for (int attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) {
+        await Future.delayed(const Duration(milliseconds: 500));
+      }
+
+      BluetoothDevice? targetDevice = await _scanForDevice();
+
+      if (targetDevice != null) {
+        return _connectToDevice(targetDevice);
+      }
+    }
+
+    return false;
+  }
+
+  /// ★★★ 关键修复：移除 withServices 过滤，按设备名称匹配 ★★★
+  /// 原因：Realme/小米等手机对自定义 128-bit UUID 过滤支持不完整
+  Future<BluetoothDevice?> _scanForDevice() async {
+    // 开始扫描所有 BLE 设备
     await FlutterBluePlus.startScan(
-      withServices: [Guid(_nusServiceUuid)],
       timeout: _scanTimeout,
     );
 
-    // 等待找到目标设备
     BluetoothDevice? targetDevice;
+    final stopWatch = Stopwatch()..start();
 
     await for (final scanResult in FlutterBluePlus.scanResults) {
+      // 超时保护
+      if (stopWatch.elapsedMilliseconds > _scanTimeout.inMilliseconds + 2000) {
+        break;
+      }
+
       for (final result in scanResult) {
-        final name = result.device.remoteName;
+        final name = result.device.platformName;
         if (name == _deviceName) {
           targetDevice = result.device;
           break;
@@ -67,12 +96,7 @@ class BLEService {
     }
 
     await FlutterBluePlus.stopScan();
-
-    if (targetDevice == null) {
-      return false;
-    }
-
-    return _connectToDevice(targetDevice);
+    return targetDevice;
   }
 
   /// 连接到指定设备
@@ -83,7 +107,7 @@ class BLEService {
 
       // 发现服务
       await device.discoverServices();
-      for (final svc in device.services) {
+      for (final svc in device.servicesList) {
         if (svc.uuid.toString().toLowerCase() == _nusServiceUuid) {
           for (final chr in svc.characteristics) {
             if (chr.uuid.toString().toLowerCase() == _nusTxUuid) {
@@ -98,10 +122,12 @@ class BLEService {
       }
 
       // 监听断开事件
-      device.onDisconnected.listen((_) {
-        _device = null;
-        _txChar = null;
-        onDisconnected?.call();
+      _connectionSub = device.connectionState.listen((state) {
+        if (state == BluetoothConnectionState.disconnected) {
+          _device = null;
+          _txChar = null;
+          onDisconnected?.call();
+        }
       });
 
       return _txChar != null;
@@ -138,6 +164,7 @@ class BLEService {
 
   /// 释放资源
   void dispose() {
+    _connectionSub?.cancel();
     _dataController.close();
   }
 }
