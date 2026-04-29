@@ -23,11 +23,7 @@ class ECGProvider extends ChangeNotifier {
   final List<ECGSample> _samples = [];
   int _droppedCount = 0;
 
-  // ── 心率计算 ──
-  static const int kMinHR = 30; // bpm
-  static const int kMaxHR = 220;
-  static const double kRPeakThreshold = 0.3; // V
-  int _lastRPeakIndex = -kBufferSize;
+  // ── 心率 (来自 ESP32 板上算法) ──
   double _heartRate = 0;
 
   // ── 状态 ──
@@ -134,8 +130,10 @@ class ECGProvider extends ChangeNotifier {
     }
     _samples.add(sample);
 
-    // 检测 R 波并计算心率
-    _detectRPeak(sample);
+    // 使用 ESP32 板上算法计算的 BPM (来自 CSV 第4列)
+    if (sample.bpm > 0) {
+      _heartRate = sample.bpm.toDouble();
+    }
 
     // 每 15 个样本通知一次 UI 刷新
     if (_samples.length % 15 == 0 || _samples.length < 15) {
@@ -206,35 +204,10 @@ class ECGProvider extends ChangeNotifier {
         .toList();
   }
 
-  // ── R 波检测与心率计算 ──
-
-  void _detectRPeak(ECGSample sample) {
-    final val = sample.filtered;
-
-    if (val > kRPeakThreshold) {
-      final currentIndex = _samples.length - 1;
-      final interval =
-          (currentIndex - _lastRPeakIndex).abs();
-
-      // 最小间隔 > 200ms (= 50 点 @250Hz)
-      if (interval > 50 && interval < 500) {
-        final hr = 60.0 / (interval / 250.0);
-        if (hr >= kMinHR && hr <= kMaxHR) {
-          // 滑动平均
-          _heartRate = _heartRate == 0
-              ? hr
-              : _heartRate * 0.7 + hr * 0.3;
-        }
-        _lastRPeakIndex = currentIndex;
-      }
-    }
-  }
-
   /// 清除数据
   void clear() {
     _samples.clear();
     _heartRate = 0;
-    _lastRPeakIndex = -kBufferSize;
     notifyListeners();
   }
 

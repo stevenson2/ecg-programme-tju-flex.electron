@@ -7,12 +7,13 @@ class ECGSample {
   final double clean;
   final double noisy;
   final double filtered;
+  final int bpm;           /**< ESP32 板上心率检测值 */
 
-  const ECGSample(this.clean, this.noisy, this.filtered);
+  const ECGSample(this.clean, this.noisy, this.filtered, {this.bpm = 0});
 
   @override
   String toString() =>
-      'ECGSample(clean=$clean, noisy=$noisy, filtered=$filtered)';
+      'ECGSample(clean=$clean, noisy=$noisy, filtered=$filtered, bpm=$bpm)';
 }
 
 /**

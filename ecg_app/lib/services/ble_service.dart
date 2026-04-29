@@ -137,6 +137,7 @@ class BLEService {
   }
 
   /// 收到 CSV 数据：解析为 ECGSample
+  /// CSV 格式: clean,noisy,filtered,bpm
   void _onDataReceived(List<int> value) {
     final str = utf8.decode(value).trim();
     if (str.isEmpty) return;
@@ -148,8 +149,14 @@ class BLEService {
       final clean = double.parse(parts[0].trim());
       final noisy = double.parse(parts[1].trim());
       final filtered = double.parse(parts[2].trim());
+      
+      // 第 4 列：ESP32 板上心率 (可选)
+      int bpm = 0;
+      if (parts.length >= 4) {
+        bpm = int.tryParse(parts[3].trim()) ?? 0;
+      }
 
-      _dataController.add(ECGSample(clean, noisy, filtered));
+      _dataController.add(ECGSample(clean, noisy, filtered, bpm: bpm));
     } catch (_) {
       // 解析失败，跳过
     }
