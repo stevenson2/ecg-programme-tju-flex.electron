@@ -26,8 +26,7 @@ function Start-Plotter {
     Clear-Host
     Write-Host "[Plotter] Launching 3-channel waveform viewer..."
     Write-Host ""
-    Set-Location $ProjectRoot
-    Start-Process "python" -ArgumentList "pc_tools\ecg_plotter.py --port COM4" -WindowStyle Normal
+    Start-Process "python" -ArgumentList "pc_tools\ecg_plotter.py --port COM4" -WindowStyle Normal -WorkingDirectory $ProjectRoot
     Start-Sleep 1
 }
 
@@ -35,8 +34,7 @@ function Start-Monitor {
     Clear-Host
     Write-Host "[Monitor] Opening serial monitor on COM4 @ 115200..."
     Write-Host ""
-    Set-Location $ProjectRoot
-    Start-Process "cmd" -ArgumentList "/c `"$PioExe`" device monitor -p COM4 -b 115200" -WindowStyle Normal
+    Start-Process -FilePath "$PioExe" -ArgumentList "device monitor -p COM4 -b 115200" -WindowStyle Normal -WorkingDirectory $ProjectRoot
     Start-Sleep 1
 }
 
