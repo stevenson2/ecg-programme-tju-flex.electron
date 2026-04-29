@@ -1,10 +1,10 @@
 @echo off
-title ESP32-ECG 绘图仪
-chcp 65001 >nul
+title ESP32-ECG Plotter
+chcp 936 >nul
 
 echo ========================================
-echo   ESP32-ECG 三通道心电绘图仪
-echo   自动检测 COM 口，双击即用
+echo   ESP32-ECG 3-Channel Plotter
+echo   Auto-detecting COM4...
 echo ========================================
 echo.
 
