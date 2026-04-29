@@ -3,6 +3,7 @@
 #include "bluetooth/ble.h"
 #include "signal_generator/ecg_simulator.h"
 #include "adc_afe/afe_hal.h"
+#include "heartrate/heartrate.h"
 
 /**
  * @file main.cpp
@@ -74,7 +75,8 @@ void setup()
     Serial.println(" ESP32-ECG-MONITOR 心电采集系统 v1.0");
     Serial.println(" 广播名称: ESP32-ECG");
     Serial.println(" 模式：软件验证模式（无外部电路）");
-    Serial.println(" 串口格式：clean,noisy,filtered");
+    Serial.println(" 串口格式：clean,noisy,filtered,bpm");
+    Serial.println(" 板上心率:  简化 Pan-Tompkins QRS 检测");
     Serial.println("========================================");
 
     /* 初始化板载 LED */
@@ -100,6 +102,12 @@ void setup()
 
     filterInit();
     Serial.println("[系统] 数字滤波器已初始化");
+
+    hrInit();
+    Serial.println("[系统] 心率监测器已启动");
+    Serial.print("[系统] 模拟器真实心率: ");
+    Serial.print(ecgSimulatorGetTrueBPM());
+    Serial.println(" BPM");
 
     initBLE();
 
@@ -162,8 +170,9 @@ static void toggleInputMode(void)
         Serial.println("\n>>> 切换至: 模拟发生器模式 <<<");
     }
 
-    /* 切换后复位滤波器, 消除瞬态 */
+    /* 切换后复位滤波器与心率检测器, 消除瞬态 */
     filterReset();
+    hrReset();
 
     /* LED 闪烁 3 次指示切换 */
     for (int i = 0; i < 3; i++) {
@@ -223,25 +232,35 @@ void loop()
         /* ======== 步骤2：数字滤波 ======== */
         float filteredSample = applyFilter(noisySample);
 
+        /* ======== 步骤2.5：心率检测 ======== */
+        HR_Result hr = hrProcess(filteredSample);
+
         /* ======== 步骤3：去除直流偏置，统一显示基准 ======== */
         /* 手机 App 三通道叠加显示，需同一电平基准 */
         float noisyNoDC = noisySample - DC_OFFSET_REMOVE;
 
         /* ======== 步骤4：通过 BLE 发送 ======== */
-        /* 格式：clean,noisy_no_dc,filtered */
-        char csvLine[32];
+        /* 格式：clean,noisy_no_dc,filtered,bpm */
+        char csvLine[48];
         snprintf(csvLine, sizeof(csvLine),
-                 "%.3f,%.3f,%.3f\r\n",
-                 cleanSample, noisyNoDC, filteredSample);
+                 "%.3f,%.3f,%.3f,%u\r\n",
+                 cleanSample, noisyNoDC, filteredSample, hr.bpm);
         sendBLEMessage(csvLine);
 
         /* ======== 步骤5：串口输出（PC 绘图仪使用） ======== */
+        /* 格式: clean,noisy,filtered,bpm,true_bpm */
         /* 串口保留原始含偏置的 noisy，方便调试 */
+        uint8_t trueBPM = (s_inputMode == SOURCE_SIMULATOR)
+                          ? ecgSimulatorGetTrueBPM() : 0;
         Serial.print(cleanSample, 4);
         Serial.print(",");
         Serial.print(noisySample, 4);  /* 保留原始含 DC 的 noisy */
         Serial.print(",");
-        Serial.println(filteredSample, 4);
+        Serial.print(filteredSample, 4);
+        Serial.print(",");
+        Serial.print(hr.bpm);
+        Serial.print(",");
+        Serial.println(trueBPM);
 
         /* ======== 步骤6：实时削顶预警 (仅真实模式) ======== */
         if (s_inputMode == SOURCE_AFE_REAL && afeHalIsClipping()) {
@@ -249,6 +268,33 @@ void loop()
             if (currentTime - lastClipWarn > 2000) {  /* 每2秒打印一次 */
                 lastClipWarn = currentTime;
                 Serial.println("[警告] ADC 信号削顶! 请减小 AFE 增益");
+            }
+        }
+
+        /* ======== 步骤7：BPM 状态打印 (每250帧≈1秒) ======== */
+        if (frameCount % 250 == 0 && hr.beatCount > 0) {
+            Serial.print("[心率] ");
+            if (hr.confidence >= 0.3f) {
+                Serial.print("检测 ");
+                Serial.print(hr.bpm);
+                Serial.print(" BPM");
+                /* 模拟模式下对比真实心率 */
+                if (s_inputMode == SOURCE_SIMULATOR) {
+                    Serial.print(" | 真实 ");
+                    Serial.print(ecgSimulatorGetTrueBPM());
+                    Serial.print(" BPM");
+                }
+                Serial.print(" | 心拍: ");
+                Serial.print(hr.beatCount);
+                Serial.print(" | RR: ");
+                Serial.print(hr.rrInterval * 1000.0f, 1);
+                Serial.print(" ms");
+                Serial.print(" | 置信度: ");
+                Serial.println(hr.confidence, 2);
+            } else {
+                Serial.print("学习中... (心拍: ");
+                Serial.print(hr.beatCount);
+                Serial.println(" / 需 5)");
             }
         }
 

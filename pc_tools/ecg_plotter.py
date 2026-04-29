@@ -27,10 +27,13 @@ time_data = deque(maxlen=MAX_DATA_POINTS)
 serial_port = None
 running = True
 sample_count = 0
+current_bpm = 0
+current_true_bpm = 0
+bpm_confidence = 0.0
 
 
 def serial_reader(port, baud):
-    global serial_port, running, sample_count
+    global serial_port, running, sample_count, current_bpm, current_true_bpm, bpm_confidence
     try:
         serial_port = serial.Serial(port, baud, timeout=1)
         print("Connected: " + port + " @ " + str(baud) + " bps")
@@ -58,6 +61,24 @@ def serial_reader(port, baud):
                 data_filtered.append(filtered_val)
                 time_data.append(sample_count)
                 sample_count += 1
+
+                # 第4列: 检测 BPM (可选)
+                if len(parts) >= 4:
+                    try:
+                        bpm_val = int(parts[3].strip())
+                        if bpm_val > 0:
+                            current_bpm = bpm_val
+                            bpm_confidence = min(1.0, bpm_confidence + 0.125)
+                    except ValueError:
+                        pass
+
+                # 第5列: 真实 BPM (模拟器模式, 可选)
+                if len(parts) >= 5:
+                    try:
+                        true_val = int(parts[4].strip())
+                        current_true_bpm = true_val
+                    except ValueError:
+                        pass
         except ValueError:
             pass
         except serial.SerialException:
@@ -90,9 +111,21 @@ def update_plot(frame):
         current_end = t_sec[-1]
         current_start = max(0, current_end - WINDOW_SIZE / 250.0)
         ax.set_xlim(current_start, current_end + 0.1)
-    txt = "Samples: %d | Window: %.1fs | Rate: %dms" % (sample_count, WINDOW_SIZE/250.0, UPDATE_INTERVAL_MS)
+
+    # BPM 显示 (左上角白底文本框)
+    if current_bpm > 0 and bpm_confidence >= 0.3:
+        if current_true_bpm > 0:
+            bpm_str = "♥ %d BPM  (真实 %d BPM)" % (current_bpm, current_true_bpm)
+        else:
+            bpm_str = "♥ %d BPM" % current_bpm
+    else:
+        bpm_str = "♥ -- BPM"
+    bpm_text.set_text(bpm_str)
+
+    txt = "Samples: %d | Window: %.1fs | Rate: %dms" % (
+        sample_count, WINDOW_SIZE/250.0, UPDATE_INTERVAL_MS)
     status_text.set_text(txt)
-    return line_clean, line_noisy, line_filtered, status_text
+    return line_clean, line_noisy, line_filtered, status_text, bpm_text
 
 
 def on_key(event):
@@ -147,14 +180,11 @@ def find_esp32_port():
     ports = serial.tools.list_ports.comports()
     for port in ports:
         desc = port.description.lower()
-        # 常见 USB 转串口芯片
         if any(kw in desc for kw in ["ch340", "ch341", "ch343", "cp210", "ftdi", "usb-serial"]):
             return port.device
-        # ESP32-S3 原生 USB Serial/JTAG (Espressif)
         if "esp32" in desc or "espressif" in desc:
             return port.device
-        # 已知 VID 列表
-        if port.vid in [0x1A86, 0x10C4, 0x0403, 0x303A]:  # 0x303A = Espressif
+        if port.vid in [0x1A86, 0x10C4, 0x0403, 0x303A]:
             return port.device
     return None
 
@@ -193,13 +223,23 @@ if __name__ == "__main__":
     ax.set_title("ESP32-ECG Real-time Signal Monitor (V)")
     ax.grid(True, alpha=0.3)
     ax.legend(loc="upper right")
-    status_text = ax.text(0.02, 0.02, "", transform=ax.transAxes, fontsize=9, color="gray", va="bottom")
+
+    # BPM 显示: 图内左上角 + 白底不挡波形
+    bpm_text = ax.text(0.02, 0.95, "♥ -- BPM",
+                       transform=ax.transAxes, fontsize=20, color="red",
+                       ha="left", va="top", fontweight="bold",
+                       bbox=dict(boxstyle="round,pad=0.3", facecolor="white",
+                                 edgecolor="lightgray", alpha=0.85))
+
+    status_text = ax.text(0.02, 0.02, "", transform=ax.transAxes,
+                          fontsize=9, color="gray", va="bottom")
 
     fig.canvas.mpl_connect("key_press_event", on_key)
     ani = FuncAnimation(fig, update_plot, interval=UPDATE_INTERVAL_MS, blit=False, cache_frame_data=False)
 
     print("="*50)
-    print("  ESP32-ECG Serial Plotter v1.0")
+    print("  ESP32-ECG Serial Plotter v2.0")
+    print("  (with onboard BPM detection)")
     print("="*50)
     print("  ->/<- : Time axis   up/down : Y axis")
     print("  1/2/3 : Toggle curves      R : Reset")

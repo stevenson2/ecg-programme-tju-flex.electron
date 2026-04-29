@@ -265,6 +265,17 @@ float getCleanECGValue(void)
     return cleanValue;
 }
 
+uint8_t ecgSimulatorGetTrueBPM(void)
+{
+    /* BPM = 60 * 250 / CYCLE_LENGTH */
+    return (uint8_t)(15000 / CYCLE_LENGTH);
+}
+
+uint16_t ecgSimulatorGetCycleLength(void)
+{
+    return CYCLE_LENGTH;
+}
+
 void ecgSimulatorReset(void)
 {
     sampleIndex = 0;

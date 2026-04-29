@@ -43,6 +43,25 @@ float getCleanECGValue(void);
  */
 void ecgSimulatorReset(void);
 
+/**
+ * @brief 获取模拟器真实心率 (BPM)
+ *
+ * 基于 CYCLE_LENGTH 计算: BPM = 60 × 250 / CYCLE_LENGTH
+ * 默认 200 样本/拍 = 75 BPM
+ *
+ * @return uint8_t 真实心率 (30~200)
+ */
+uint8_t ecgSimulatorGetTrueBPM(void);
+
+/**
+ * @brief 获取模拟器一个心拍的样本数
+ *
+ * 用于外部模块计算预期 RR 间期
+ *
+ * @return uint16_t 每拍样本数
+ */
+uint16_t ecgSimulatorGetCycleLength(void);
+
 #ifdef __cplusplus
 }
 #endif
