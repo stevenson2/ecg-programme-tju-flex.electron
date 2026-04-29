@@ -10,6 +10,6 @@ echo.
 
 cd /d "%~dp0"
 
-python pc_tools\ecg_plotter.py --port COM4
+python pc_tools\ecg_plotter.py
 
 pause

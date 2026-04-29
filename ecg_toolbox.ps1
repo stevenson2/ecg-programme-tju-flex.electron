@@ -22,19 +22,26 @@ function Show-Menu {
     Write-Host "========================================" -ForegroundColor Cyan
 }
 
+function Get-ESP32Port {
+    $result = & "python" "$ProjectRoot\pc_tools\find_port.py" 2>$null
+    if ($result -match 'COM\d+') { return $matches[0] }
+    return "COM4"
+}
+
 function Start-Plotter {
     Clear-Host
     Write-Host "[Plotter] Launching 3-channel waveform viewer..."
     Write-Host ""
-    Start-Process "python" -ArgumentList "pc_tools\ecg_plotter.py --port COM4" -WindowStyle Normal -WorkingDirectory $ProjectRoot
+    Start-Process "python" -ArgumentList "pc_tools\ecg_plotter.py" -WindowStyle Normal -WorkingDirectory $ProjectRoot
     Start-Sleep 1
 }
 
 function Start-Monitor {
+    $comPort = Get-ESP32Port
     Clear-Host
-    Write-Host "[Monitor] Opening serial monitor on COM4 @ 115200..."
+    Write-Host "[Monitor] Opening serial monitor on $comPort @ 115200..."
     Write-Host ""
-    Start-Process -FilePath "$PioExe" -ArgumentList "device monitor -p COM4 -b 115200" -WindowStyle Normal -WorkingDirectory $ProjectRoot
+    Start-Process -FilePath "$PioExe" -ArgumentList "device monitor -p $comPort -b 115200" -WindowStyle Normal -WorkingDirectory $ProjectRoot
     Start-Sleep 1
 }
 
