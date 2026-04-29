@@ -147,9 +147,14 @@ def find_esp32_port():
     ports = serial.tools.list_ports.comports()
     for port in ports:
         desc = port.description.lower()
+        # 常见 USB 转串口芯片
         if any(kw in desc for kw in ["ch340", "ch341", "ch343", "cp210", "ftdi", "usb-serial"]):
             return port.device
-        if port.vid in [0x1A86, 0x10C4, 0x0403]:
+        # ESP32-S3 原生 USB Serial/JTAG (Espressif)
+        if "esp32" in desc or "espressif" in desc:
+            return port.device
+        # 已知 VID 列表
+        if port.vid in [0x1A86, 0x10C4, 0x0403, 0x303A]:  # 0x303A = Espressif
             return port.device
     return None
 
