@@ -5,9 +5,9 @@
 
 /**
  * @file heartrate.cpp
- * @brief 板上心率计算模块 - 实现 (v3.3)
+ * @brief 板上心率计算模块 - 实现 (v3.4)
  *
- * ========== 简化 Pan-Tompkins + 4 维形态学验证 ==========
+ * ========== 简化 Pan-Tompkins + 4 维形态学验证 + 记录纠错 ==========
  *
  * 经典 Pan-Tompkins 五步 (1985):
  *   ① 带通滤波 5~15Hz  → 信号已由 filter.cpp 预处理, 跳过
@@ -15,6 +15,20 @@
  *   ③ 逐点平方          → 放大 R 波能量, 使 T/P 波相对更小
  *   ④ 滑动窗口积分      → 150ms 矩形窗, 将 QRS 能量汇聚为单个峰
  *   ⑤ 自适应阈值检测    → 单阈值 + 200ms 不应期
+ *
+ * ========== v3.4 新增: BPM 记录+纠错 ==========
+ *
+ *   v3.3 的 EMA 异常降权和 slew rate 是"软纠错" — 仍让异常 RR 进入
+ *   缓冲区污染中位数。v3.4 采用"硬纠错": 在 isQRSValid 层直接拒绝。
+ *
+ *   记录阶段:
+ *     - 维护近期确认输出 BPM 环形缓冲 (5 个值)
+ *     - 每拍输出后记录, 取中位数作为"可信 BPM"
+ *
+ *   纠错阶段:
+ *     - instBPM 偏离确认中位数 >30% (运动 45%) → 拒绝该拍
+ *     - 拒绝后不污染 RR 缓冲区、不触发阈值更新
+ *     - 只当噪声更新阈值 (若峰值够大)
  *
  * ========== v3.3 修复: 运动锁死 + BPM 跃升 ==========
  *
@@ -119,6 +133,12 @@
 #define BPM_ANOMALY_THRESH  0.40f   /**< instBPM 偏离中位>40% 视为异常 */
 #define BPM_SLEW_MAX        3.0f    /**< 输出 BPM 每次最大变化 ±3 BPM/拍 */
 
+/* ======== v3.4 BPM 记录+纠错 ======== */
+#define BPM_CONFIRMED_LEN   5       /**< 近期确认 BPM 历史长度 */
+#define BPM_REJECT_DEV      0.30f   /**< instBPM 偏离确认中位数>30% → 拒绝该拍 */
+#define BPM_REJECT_DEV_MOT  0.45f   /**< 运动期放宽到 45% */
+#define BPM_REJECT_MIN_CNT  3       /**< 至少 3 个确认值才开始纠错 */
+
 /* ======================== 状态机 ======================== */
 typedef enum {
     HR_LEARNING,
@@ -179,6 +199,11 @@ static int        s_bpmEmaFadeCnt; /**< 恢复期 EMA→中位数渐进步数 */
 
 /* ======== v3.3 BPM 跃升防护状态 ======== */
 static float      s_lastOutputBPM; /**< 上一帧输出 BPM (用于 slew rate) */
+
+/* ======== v3.4 BPM 记录+纠错状态 ======== */
+static float      s_confirmedBPM[BPM_CONFIRMED_LEN]; /**< 近期确认输出 BPM 环形缓冲 */
+static int        s_confirmedBPMIdx;                 /**< 当前写入位置 */
+static int        s_confirmedBPMCount;               /**< 已记录数量 */
 
 /* ======================== 工具函数 ======================== */
 
@@ -289,6 +314,23 @@ static int cmpFloat(const void *a, const void *b)
     if (fa < fb) return -1;
     if (fa > fb) return  1;
     return 0;
+}
+
+/**
+ * @brief 计算确认 BPM 历史的中位数 (v3.4)
+ */
+static float getConfirmedBPMMedian(void)
+{
+    if (s_confirmedBPMCount == 0) return 0.0f;
+    float temp[BPM_CONFIRMED_LEN];
+    memcpy(temp, s_confirmedBPM, sizeof(float) * s_confirmedBPMCount);
+    qsort(temp, s_confirmedBPMCount, sizeof(float), cmpFloat);
+    if (s_confirmedBPMCount % 2 == 1) {
+        return temp[s_confirmedBPMCount / 2];
+    } else {
+        return (temp[s_confirmedBPMCount / 2 - 1]
+              + temp[s_confirmedBPMCount / 2]) * 0.5f;
+    }
 }
 
 static float computeMedianRR(void)
@@ -536,11 +578,15 @@ static bool isRRConsistent(float rrSec)
 }
 
 /**
- * @brief 综合 QRS 有效性判定 (v3.3)
+ * @brief 综合 QRS 有效性判定 (v3.4)
  *
  * v3.3 修复:
  *   - 运动期峰噪比降到 1.5x (防止阈值崩溃导致全拒)
  *   - 运动期跳过 RR 一致性检查
+ *
+ * v3.4 新增:
+ *   - BPM 记录+纠错: instBPM 偏离确认历史中位数 >30% → 拒绝该拍
+ *   - 防止 T 波误检的短 RR 进入缓冲区污染中位数
  *
  * @param peakVal  候选峰值
  * @param rrSec    候选 RR 间期 (秒)
@@ -587,6 +633,20 @@ static bool isQRSValid(float peakVal, float rrSec)
             if (ratio < RISE_FALL_MIN || ratio > RISE_FALL_MAX) return false;
 
             if (!isRRConsistent(rrSec)) return false;
+        }
+    }
+
+    /* v3.4: BPM 记录+纠错 — instBPM 偏离确认历史中位数过多 → 拒绝 */
+    if (s_confirmedBPMCount >= BPM_REJECT_MIN_CNT) {
+        float confirmedMed = getConfirmedBPMMedian();
+        if (confirmedMed > 1.0f && rrSec > 0.001f) {
+            float instBPM = 60.0f / rrSec;
+            float dev = fabsf(instBPM - confirmedMed) / confirmedMed;
+            float rejectThresh = s_motionConfirmed
+                               ? BPM_REJECT_DEV_MOT : BPM_REJECT_DEV;
+            if (dev > rejectThresh) {
+                return false;  /* T 波误检/伪迹 → 拒绝, 不污染 RR 缓冲 */
+            }
         }
     }
 
@@ -732,6 +792,13 @@ HR_Result hrProcess(float filteredSample)
                 uint8_t bpmRaw = computeOutputBPM();
                 if (bpmRaw >= 30 && bpmRaw <= 200) {
                     result.bpm = bpmRaw;
+                    /* v3.4: 记录确认 BPM 到纠错历史 */
+                    s_confirmedBPM[s_confirmedBPMIdx] = (float)bpmRaw;
+                    s_confirmedBPMIdx = (s_confirmedBPMIdx + 1)
+                                      % BPM_CONFIRMED_LEN;
+                    if (s_confirmedBPMCount < BPM_CONFIRMED_LEN) {
+                        s_confirmedBPMCount++;
+                    }
                 }
                 float bufConf = (float)s_rrCount / (float)RR_BUFFER_SIZE;
                 float sqiWeight = (s_sqi < 0.4f) ? (s_sqi / 0.4f) : 1.0f;
@@ -819,6 +886,11 @@ void hrReset(void)
     s_bpmEMA       = 0.0f;
     s_bpmEmaFadeCnt = 0;
 
+    /* v3.4: 确认 BPM 历史重置 */
+    for (int i = 0; i < BPM_CONFIRMED_LEN; i++) s_confirmedBPM[i] = 0.0f;
+    s_confirmedBPMIdx   = 0;
+    s_confirmedBPMCount = 0;
+
     /* v3.3: slew rate 状态保留, 不重置 (避免重置后跃升) */
     /* 不重置 SQI/运动/MWI 历史, 保留连续性 */
 }
@@ -845,6 +917,11 @@ void hrFullReset(void)
     /* MWI 历史清零 */
     for (int i = 0; i < MWI_HIST_LEN; i++) s_mwiHistory[i] = 0.0f;
     s_mwiHistIdx = 0;
+
+    /* v3.4: 确认 BPM 历史重置 */
+    for (int i = 0; i < BPM_CONFIRMED_LEN; i++) s_confirmedBPM[i] = 0.0f;
+    s_confirmedBPMIdx   = 0;
+    s_confirmedBPMCount = 0;
 
     /* v3.3: 重置输出 BPM 跟踪 */
     s_lastOutputBPM = 0.0f;
