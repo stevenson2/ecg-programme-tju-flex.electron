@@ -61,6 +61,8 @@ typedef struct {
     uint32_t beatCount;      /**< 累计检测心拍数 */
     bool     beatDetected;   /**< 本轮采样是否检测到新心拍 */
     float    confidence;     /**< 置信度 0.0~1.0, <0.5 建议显示 "--" */
+    float    sqi;            /**< 信号质量指数 0.0~1.0, ≥0.6 可靠 */
+    bool     motionActive;   /**< 是否处于运动/噪声干扰状态 */
 } HR_Result;
 
 /* ======================== API ======================== */
@@ -84,12 +86,40 @@ void hrInit(void);
 HR_Result hrProcess(float filteredSample);
 
 /**
- * @brief 复位心率检测器
+ * @brief 复位心率检测器 (保留信号活动状态)
  *
- * 输入模式切换 (模拟↔真实AFE) 时必须调用，
- * 清除历史 RR 数据，避免模式切换导致瞬态误检。
+ * 清除 QRS 检测历史与 RR 缓冲区, 但保留信号存在/消失标记。
+ * 由 checkSignalActivity 内部调用。
  */
 void hrReset(void);
+
+/**
+ * @brief 完全复位心率检测器 (含信号活动检测)
+ *
+ * 输入模式切换 (模拟↔真实AFE) 时必须调用此函数,
+ * 清除所有状态包括信号存在标记, 强制重新学习。
+ */
+void hrFullReset(void);
+
+/**
+ * @brief 获取当前信号质量指数 (SQI)
+ *
+ * SQI 基于信号-噪声比计算, 0.0=纯噪声, 1.0=理想信号。
+ * ≥0.6 表示信号质量可接受; <0.4 建议冻结 BPM 输出。
+ *
+ * @return SQI 值 0.0~1.0
+ */
+float hrGetSQI(void);
+
+/**
+ * @brief 查询当前是否处于运动/高噪声干扰状态
+ *
+ * 当连续多帧 SQI < 0.35 时置位, SQI > 0.55 时清除。
+ * 运动状态下自动冻结阈值更新, 防止阈值漂移。
+ *
+ * @return true=运动干扰中, false=正常
+ */
+bool hrIsMotionActive(void);
 
 #ifdef __cplusplus
 }

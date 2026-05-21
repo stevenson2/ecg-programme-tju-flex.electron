@@ -36,6 +36,16 @@ float applyFilter(float inputSample);
  */
 void filterReset(void);
 
+/**
+ * @brief 滤波器预热: 消除启动瞬态
+ *
+ * 用首样本反复迭代使内部状态收敛，消除高通阻尼振荡。
+ * 应在开始正式采样循环前调用一次。
+ *
+ * @param firstSample 第一个有效样本值
+ */
+void filterWarmup(float firstSample);
+
 #ifdef __cplusplus
 }
 #endif

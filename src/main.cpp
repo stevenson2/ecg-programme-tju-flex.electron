@@ -172,7 +172,8 @@ static void toggleInputMode(void)
 
     /* 切换后复位滤波器与心率检测器, 消除瞬态 */
     filterReset();
-    hrReset();
+
+    hrFullReset();
 
     /* LED 闪烁 3 次指示切换 */
     for (int i = 0; i < 3; i++) {
@@ -229,38 +230,43 @@ void loop()
             cleanSample = afeHalReadECG();          /* 已去偏置 */
         }
 
-        /* ======== 步骤2：数字滤波 ======== */
-        float filteredSample = applyFilter(noisySample);
-
-        /* ======== 步骤2.5：心率检测 ======== */
-        HR_Result hr = hrProcess(filteredSample);
-
-        /* ======== 步骤3：去除直流偏置，统一显示基准 ======== */
-        /* 手机 App 三通道叠加显示，需同一电平基准 */
+        /* ======== 步骤2：去除直流偏置，统一显示基准 ======== */
+        /* 先去除偏置再滤波，避免 HPF 启动瞬态，且串口/BLE 三通道同基准 */
         float noisyNoDC = noisySample - DC_OFFSET_REMOVE;
 
+        /* ======== 步骤3：数字滤波 ======== */
+        float filteredSample = applyFilter(noisyNoDC);
+
+        /* ======== 步骤3.5：心率检测 ======== */
+        HR_Result hr = hrProcess(filteredSample);
+
         /* ======== 步骤4：通过 BLE 发送 ======== */
-        /* 格式：clean,noisy_no_dc,filtered,bpm */
-        char csvLine[48];
+        /* 格式：clean,noisy_no_dc,filtered,bpm,sqi */
+        char csvLine[64];
         snprintf(csvLine, sizeof(csvLine),
-                 "%.3f,%.3f,%.3f,%u\r\n",
-                 cleanSample, noisyNoDC, filteredSample, hr.bpm);
+                 "%.3f,%.3f,%.3f,%u,%.2f\r\n",
+                 cleanSample, noisyNoDC, filteredSample,
+                 hr.bpm, hr.sqi);
         sendBLEMessage(csvLine);
 
         /* ======== 步骤5：串口输出（PC 绘图仪使用） ======== */
-        /* 格式: clean,noisy,filtered,bpm,true_bpm */
-        /* 串口保留原始含偏置的 noisy，方便调试 */
+        /* 格式: clean,noisy,filtered,bpm,true_bpm,sqi,motion */
+        /* 三通道共用去偏置基准，与 BLE 格式对齐 */
         uint8_t trueBPM = (s_inputMode == SOURCE_SIMULATOR)
                           ? ecgSimulatorGetTrueBPM() : 0;
         Serial.print(cleanSample, 4);
         Serial.print(",");
-        Serial.print(noisySample, 4);  /* 保留原始含 DC 的 noisy */
+        Serial.print(noisyNoDC, 4);
         Serial.print(",");
         Serial.print(filteredSample, 4);
         Serial.print(",");
         Serial.print(hr.bpm);
         Serial.print(",");
-        Serial.println(trueBPM);
+        Serial.print(trueBPM);
+        Serial.print(",");
+        Serial.print(hr.sqi, 3);
+        Serial.print(",");
+        Serial.println(hr.motionActive ? 1 : 0);
 
         /* ======== 步骤6：实时削顶预警 (仅真实模式) ======== */
         if (s_inputMode == SOURCE_AFE_REAL && afeHalIsClipping()) {
@@ -272,29 +278,51 @@ void loop()
         }
 
         /* ======== 步骤7：BPM 状态打印 (每250帧≈1秒) ======== */
-        if (frameCount % 250 == 0 && hr.beatCount > 0) {
-            Serial.print("[心率] ");
-            if (hr.confidence >= 0.3f) {
-                Serial.print("检测 ");
-                Serial.print(hr.bpm);
-                Serial.print(" BPM");
-                /* 模拟模式下对比真实心率 */
-                if (s_inputMode == SOURCE_SIMULATOR) {
-                    Serial.print(" | 真实 ");
-                    Serial.print(ecgSimulatorGetTrueBPM());
-                    Serial.print(" BPM");
+        if (frameCount % 250 == 0) {
+            /* 运动警告 */
+            if (hr.motionActive) {
+                static bool wasInMotion = false;
+                if (!wasInMotion) {
+                    Serial.println("[运动] ⚠ 检测到运动干扰, 心率冻结中...");
+                    wasInMotion = true;
                 }
-                Serial.print(" | 心拍: ");
-                Serial.print(hr.beatCount);
-                Serial.print(" | RR: ");
-                Serial.print(hr.rrInterval * 1000.0f, 1);
-                Serial.print(" ms");
-                Serial.print(" | 置信度: ");
-                Serial.println(hr.confidence, 2);
             } else {
-                Serial.print("学习中... (心拍: ");
-                Serial.print(hr.beatCount);
-                Serial.println(" / 需 5)");
+                /* 隐式重置 wasInMotion (静态局部变量保持) */
+            }
+
+            if (hr.beatCount > 0) {
+                Serial.print("[心率] ");
+                if (hr.confidence >= 0.3f) {
+                    Serial.print("检测 ");
+                    Serial.print(hr.bpm);
+                    Serial.print(" BPM");
+                    /* 模拟模式下对比真实心率 */
+                    if (s_inputMode == SOURCE_SIMULATOR) {
+                        Serial.print(" | 真实 ");
+                        Serial.print(ecgSimulatorGetTrueBPM());
+                        Serial.print(" BPM");
+                    }
+                    Serial.print(" | 心拍: ");
+                    Serial.print(hr.beatCount);
+                    Serial.print(" | RR: ");
+                    Serial.print(hr.rrInterval * 1000.0f, 1);
+                    Serial.print(" ms");
+                    Serial.print(" | SQI: ");
+                    Serial.print(hr.sqi, 2);
+                    if (hr.motionActive) {
+                        Serial.print(" [运动中]");
+                    }
+                    Serial.print(" | 置信度: ");
+                    Serial.println(hr.confidence, 2);
+                } else {
+                    Serial.print("学习中... (心拍: ");
+                    Serial.print(hr.beatCount);
+                    Serial.print(" / 需 5) | SQI: ");
+                    Serial.println(hr.sqi, 2);
+                }
+            } else {
+                Serial.print("[心率] 等待心拍... | SQI: ");
+                Serial.println(hr.sqi, 2);
             }
         }
 
