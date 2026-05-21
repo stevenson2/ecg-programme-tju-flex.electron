@@ -5,7 +5,7 @@
 
 /**
  * @file heartrate.cpp
- * @brief 板上心率计算模块 - 实现 (v3.2)
+ * @brief 板上心率计算模块 - 实现 (v3.3)
  *
  * ========== 简化 Pan-Tompkins + 4 维形态学验证 ==========
  *
@@ -16,15 +16,34 @@
  *   ④ 滑动窗口积分      → 150ms 矩形窗, 将 QRS 能量汇聚为单个峰
  *   ⑤ 自适应阈值检测    → 单阈值 + 200ms 不应期
  *
- * ========== v3.2 修复: 运动后心率锁死 ==========
- *   根因: addRRInterval() 运动期直接 return → RR 缓冲区冻结
- *         BPM 输出被 !s_motionConfirmed 阻断 → 运动/恢复期无新 BPM
- *   修复:
- *     ① 移除 addRRInterval() 运动守卫 → RR 缓冲区持续更新
- *     ② 运动期间放宽 RR 一致性容差 (30%→50%)
- *     ③ 运动期间放宽形态学约束 (脉宽 15~50, 跳振幅校验)
- *     ④ BPM EMA: 快速跟踪瞬时心率, 运动/恢复期用 EMA 代替中位数
- *     ⑤ BPM 输出移除运动阻断 → 全程输出 (仅降置信度)
+ * ========== v3.3 修复: 运动锁死 + BPM 跃升 ==========
+ *
+ *   锁死根因分析:
+ *     v3.2 虽移除了 addRRInterval 阻断, 但运动期 isQRSValid 仍有:
+ *       - 峰噪比 3.0x (静止 2.0x)
+ *       - noisePeak 1.5x 加速增长
+ *       - signalPeak 完全冻结
+ *     → 运动几秒后 noisePeak 超过 signalPeak, 所有 QRS 被峰噪比拒绝
+ *     → 且 isRRConsistent 用陈旧中位数拒绝所有新 RR
+ *
+ *   跃升根因分析:
+ *     - BPM EMA 权重 0.3 无条件使用
+ *     - T 波误检产生极短 RR → instBPM = 150+ → EMA 快速攀升
+ *
+ *   修复 (3 项):
+ *     ① 运动期阈值策略重写:
+ *        - signalPeak: 极慢更新 0.02 (代替完全冻结)
+ *        - noisePeak:  正常权重 0.125 (移除 1.5x 加速)
+ *        - 峰噪比:     运动期降低到 1.5x (易检测, 不怕误检)
+ *     ② 运动期跳过 RR 一致性检查 → 新 RR 畅通进入缓冲区
+ *     ③ BPM 跃升防护:
+ *        - instBPM 偏离中位数 > 40% → EMA 权重降到 0.05
+ *        - 输出 BPM 变化速率限制: 最大 ±2 BPM/拍
+ *
+ * ========== v3.2 保留特性 ==========
+ *   - BPM EMA 快速跟踪 (运动/恢复期)
+ *   - 运动期形态学约束放宽 (脉宽/对称性)
+ *   - 恢复期 EMA→中位数线性渐变
  *
  * ========== v3.1 保留特性 ==========
  *   - 4 维 QRS 形态学验证 (振幅/脉宽/对称性/RR 一致性)
@@ -32,7 +51,7 @@
  *
  * ========== v3.0 保留特性 ==========
  *   - SQI (信号质量指数)
- *   - 运动检测: 滞回判定 + 峰值/阈值冻结
+ *   - 运动检测: 滞回判定
  *   - BPM 平滑: 运动恢复期 3 秒快速收敛
  */
 
@@ -50,6 +69,7 @@
 #define SIGNAL_WEIGHT   0.125f      /**< 信号峰值更新因子 (EMA) */
 #define NOISE_WEIGHT    0.125f      /**< 噪声峰值更新因子 (EMA) */
 #define SIGNAL_WEIGHT_FAST 0.25f    /**< 运动恢复期快速收敛信号峰值 */
+#define SIGNAL_WEIGHT_MOT  0.02f    /**< v3.3: 运动期极慢更新 signalPeak */
 
 #define MIN_RR_SAMP     75          /**< 最小 RR: 300ms @250Hz */
 #define MAX_RR_SAMP     500         /**< 最大 RR: 2000ms @250Hz */
@@ -58,7 +78,8 @@
 #define HOLD_SAMP       250         /**< 1 秒无新拍 → 停止输出旧 BPM */
 #define MIN_CONF_BEATS  5           /**< 至少 5 拍才开始输出 BPM */
 #define MIN_CONF_FEAT   8           /**< 至少 8 拍才开启特征验证 */
-#define MIN_PEAK_RATIO  2.0f        /**< 峰/噪比门限 */
+#define MIN_PEAK_RATIO  2.0f        /**< 峰/噪比门限 (静止) */
+#define MIN_PEAK_RATIO_MOT 1.5f     /**< v3.3: 运动期峰噪比 (降低, 易检测) */
 
 /* ======== 信号活动检测 ======== */
 #define ACT_WIN_SAMP    250         /**< 活动检测窗口: 1秒 @250Hz */
@@ -85,7 +106,6 @@
 /* ======== v3.2 运动期放宽约束 ======== */
 #define MIN_QRS_WIDTH_MOT  15       /**< 运动期最小 QRS 半高宽 60ms */
 #define MAX_QRS_WIDTH_MOT  50       /**< 运动期最大 QRS 半高宽 200ms */
-#define RR_CONSISTENCY_MOT 0.50f    /**< 运动期 RR 一致性容差 ±50% */
 #define RISE_FALL_MIN_MOT  0.35f    /**< 运动期最小上升/下降比 */
 #define RISE_FALL_MAX_MOT  2.5f     /**< 运动期最大上升/下降比 */
 
@@ -93,6 +113,11 @@
 #define BPM_EMA_WEIGHT_FAST 0.30f   /**< 运动/恢复期 BPM EMA 权重 (快速跟踪) */
 #define BPM_EMA_WEIGHT_SLOW 0.10f   /**< 静止期 BPM EMA 权重 (平滑) */
 #define BPM_EMA_FADE_STEPS  500     /**< 恢复期 EMA→中位数渐进步数 (2秒) */
+
+/* ======== v3.3 BPM 跃升防护 ======== */
+#define BPM_EMA_WEIGHT_ANOM 0.05f   /**< 异常 instBPM (偏离中位>40%) EMA 权重 */
+#define BPM_ANOMALY_THRESH  0.40f   /**< instBPM 偏离中位>40% 视为异常 */
+#define BPM_SLEW_MAX        3.0f    /**< 输出 BPM 每次最大变化 ±3 BPM/拍 */
 
 /* ======================== 状态机 ======================== */
 typedef enum {
@@ -152,6 +177,9 @@ static int        s_peakHistCount;            /**< 已记录峰值数 */
 static float      s_bpmEMA;        /**< EMA 平滑后的 BPM (快速跟踪) */
 static int        s_bpmEmaFadeCnt; /**< 恢复期 EMA→中位数渐进步数 */
 
+/* ======== v3.3 BPM 跃升防护状态 ======== */
+static float      s_lastOutputBPM; /**< 上一帧输出 BPM (用于 slew rate) */
+
 /* ======================== 工具函数 ======================== */
 
 static inline float computeMWI(float squared)
@@ -165,19 +193,24 @@ static inline float computeMWI(float squared)
 
 static void updateThreshold(float peakVal, bool isSignal)
 {
-    /* 运动期峰值冻结: 不更新 signalPeak */
-    if (s_motionConfirmed && isSignal) {
-        return;
-    }
-
     if (isSignal) {
-        float weight = (s_motionRecoverCnt > 0)
-                       ? SIGNAL_WEIGHT_FAST : SIGNAL_WEIGHT;
+        /* v3.3: 运动期 signalPeak 极慢更新 (0.02), 防止阈值完全崩溃 */
+        /* 恢复期快速收敛 (0.25) */
+        float weight;
+
+        if (s_motionConfirmed) {
+            weight = SIGNAL_WEIGHT_MOT;    /* 0.02: 极慢, 跟踪趋势 */
+        } else if (s_motionRecoverCnt > 0) {
+            weight = SIGNAL_WEIGHT_FAST;   /* 0.25: 快速恢复 */
+        } else {
+            weight = SIGNAL_WEIGHT;        /* 0.125: 正常 */
+        }
+
         s_signalPeak = weight * peakVal
                      + (1.0f - weight) * s_signalPeak;
     } else {
-        float nWeight = s_motionConfirmed ? (NOISE_WEIGHT * 1.5f) : NOISE_WEIGHT;
-        if (nWeight > 0.25f) nWeight = 0.25f;
+        /* v3.3: 运动期噪声权重不加速, 防止 noisePeak 失控 */
+        float nWeight = NOISE_WEIGHT;
         s_noisePeak = nWeight * peakVal
                     + (1.0f - nWeight) * s_noisePeak;
     }
@@ -272,33 +305,51 @@ static float computeMedianRR(void)
 }
 
 /**
- * @brief 记录 RR 间期到缓冲区 (v3.2: 运动期不再阻断)
+ * @brief 记录 RR 间期到缓冲区 + BPM EMA (v3.3: 跃升防护)
  *
- * v3.1 在运动期间直接 return, 导致 RR 缓冲区冻结,
- * 运动结束后中位数 RR 仍为运动前旧值 → BPM 锁死。
- * v3.2 移除该守卫, RR 缓冲区持续更新。
- * 同时维护 BPM EMA, 用于快速跟踪瞬时心率变化。
+ * v3.3 BPM 跃升防护:
+ *   - instBPM 偏离中位数 > 40% → EMA 降权到 0.05
+ *   - 防止 T 波误检的极短 RR 污染 EMA
  */
 static void addRRInterval(float rrSeconds)
 {
     int rrSamp = (int)(rrSeconds / TS + 0.5f);
     if (rrSamp < MIN_RR_SAMP || rrSamp > MAX_RR_SAMP) return;
 
-    /* v3.2: 移除运动期阻断, 允许 RR 缓冲区持续更新 */
     s_rrBuf[s_rrIdx] = rrSeconds;
     s_rrIdx = (s_rrIdx + 1) % RR_BUFFER_SIZE;
     if (s_rrCount < RR_BUFFER_SIZE) s_rrCount++;
 
+    float oldMedianRR = s_medianRR;
     s_medianRR = computeMedianRR();
     s_lastRR = rrSeconds;
 
-    /* v3.2: BPM EMA — 快速跟踪瞬时心率 */
+    /* v3.3: BPM EMA — 跃升防护 */
     float instBPM = 60.0f / rrSeconds;
+
     if (s_bpmEMA < 1.0f) {
-        s_bpmEMA = instBPM;  /* 首拍直接赋值 */
+        s_bpmEMA = instBPM;
     } else {
-        float weight = (s_motionConfirmed || s_motionRecoverCnt > 0)
-                       ? BPM_EMA_WEIGHT_FAST : BPM_EMA_WEIGHT_SLOW;
+        /* 检测 instBPM 是否异常偏离 (vs 中位数) */
+        bool isAnomalous = false;
+        if (oldMedianRR > 0.001f) {
+            float medBPM = 60.0f / oldMedianRR;
+            float deviation = fabsf(instBPM - medBPM) / medBPM;
+            if (deviation > BPM_ANOMALY_THRESH) {
+                isAnomalous = true;
+            }
+        }
+
+        float weight;
+        if (isAnomalous) {
+            /* 异常骤变: 极低权重, 避免 EMA 被污染 */
+            weight = BPM_EMA_WEIGHT_ANOM;
+        } else if (s_motionConfirmed || s_motionRecoverCnt > 0) {
+            weight = BPM_EMA_WEIGHT_FAST;
+        } else {
+            weight = BPM_EMA_WEIGHT_SLOW;
+        }
+
         s_bpmEMA = weight * instBPM + (1.0f - weight) * s_bpmEMA;
     }
 }
@@ -345,15 +396,10 @@ static bool isAmplitudeConsistent(float peakVal)
  * 利用当前 mwi 斜率外推下降沿 50% 点,
  * 求和即得半高宽估计。
  *
- * T 波典型半高宽 > 50 样本 (>200ms),
- * 噪声尖峰 < 10 样本 (<40ms),
- * QRS 落在指定窄窗内。
- *
  * @return 脉宽样本数, 超出范围返回 999
  */
 static int getQRSWidth(void)
 {
-    /* 峰位于 s_mwiPrev (即历史缓冲中 s_mwiHistIdx-2 位置) */
     int peakIdx = (s_mwiHistIdx - 2 + MWI_HIST_LEN) % MWI_HIST_LEN;
     float peakVal = s_mwiHistory[peakIdx];
     if (peakVal < 0.00001f) return 999;
@@ -370,24 +416,22 @@ static int getQRSWidth(void)
         float nextVal = s_mwiHistory[nextIdx];
 
         if (val <= halfPeak) {
-            /* 线性插值: 精确 50% 穿越点 */
             if (nextVal > halfPeak) {
                 float frac = (halfPeak - val) / (nextVal - val + 0.00001f);
-                riseCount += 1;  /* 保守取整 */
+                riseCount += 1;
             }
             break;
         }
         if (val > nextVal) {
-            /* 穿越发生在 val 与 nextVal 之间 */
             if (nextVal <= halfPeak) {
                 float frac = (val - halfPeak) / (val - nextVal + 0.00001f);
-                riseCount += 1;  /* 不足 1 样本 */
+                riseCount += 1;
             }
         }
 
         riseCount++;
         scanIdx = nextIdx;
-        if (scanIdx == peakIdx) break;  /* 兜底 */
+        if (scanIdx == peakIdx) break;
     }
 
     /* ---- 下降沿: 用当前 mwi (峰后 1 样本) 线性外推 ---- */
@@ -396,7 +440,6 @@ static int getQRSWidth(void)
 
     int fallCount = 0;
     if (fallVal >= halfPeak) {
-        /* 1 个样本后仍未降至半高 → 宽脉冲, 保守扫后续历史 */
         int fIdx = fallIdx;
         while (fallCount < (MWI_HIST_LEN - 2)) {
             float v = s_mwiHistory[fIdx];
@@ -406,8 +449,7 @@ static int getQRSWidth(void)
             if (fIdx == s_mwiHistIdx) break;
         }
     } else {
-        /* 峰后 1 样本已降至半高以下 → 窄脉冲 */
-        float grad = peakVal - fallVal;  /* 正数, 峰>fall */
+        float grad = peakVal - fallVal;
         if (grad > 0.00001f) {
             float fallTime = (peakVal - halfPeak) / grad;
             fallCount = (int)(fallTime + 0.5f);
@@ -417,15 +459,12 @@ static int getQRSWidth(void)
         }
     }
 
-    int totalWidth = riseCount + fallCount + 1;  /* +1 为峰本身 */
+    int totalWidth = riseCount + fallCount + 1;
     return totalWidth;
 }
 
 /**
  * @brief 校验 ③ 上升/下降对称性
- *
- * QRS 波上升与下降时间大致对称,
- * T 波上升缓慢下降快, 噪声尖峰上升快下降也快。
  *
  * @return 上升/下降比, 无法计算返回 1.0
  */
@@ -437,7 +476,6 @@ static float getRiseFallRatio(void)
 
     float halfPeak = peakVal * 0.5f;
 
-    /* 上升时间: 从峰前 1 位置向更早方向扫描, 找到 50% 穿越点 */
     int riseSamp = 0;
     int scanIdx = (peakIdx - 1 + MWI_HIST_LEN) % MWI_HIST_LEN;
     while (riseSamp < (MWI_HIST_LEN - 2)) {
@@ -448,7 +486,6 @@ static float getRiseFallRatio(void)
         if (scanIdx == peakIdx) break;
     }
 
-    /* 下降时间: 从峰开始扫描后续直到低于半高 */
     int fallSamp = 0;
     int fIdx = (peakIdx + 1) % MWI_HIST_LEN;
     while (fallSamp < (MWI_HIST_LEN - 2)) {
@@ -458,7 +495,6 @@ static float getRiseFallRatio(void)
         fIdx = (fIdx + 1) % MWI_HIST_LEN;
         if (fIdx == s_mwiHistIdx) break;
     }
-    /* 如果当前 MWI 低于半高, 用梯度补正 */
     if (fallSamp == 0) {
         int fallIdx = (peakIdx + 1) % MWI_HIST_LEN;
         float fallVal = s_mwiHistory[fallIdx];
@@ -479,29 +515,32 @@ static float getRiseFallRatio(void)
 }
 
 /**
- * @brief 校验 ④ RR 一致性 (v3.2: 运动期放宽容差)
+ * @brief 校验 ④ RR 一致性 (v3.3: 运动期完全跳过)
  *
  * 静止期: 新 RR 与中位数偏差 < 30%
- * 运动期: 新 RR 与中位数偏差 < 50% (运动时 RR 变化幅度大)
+ * 运动期: 完全跳过 (运动 RR 变化是正常生理反应, 不应拒绝)
  *
  * @param rrSec 候选 RR 间期 (秒)
  * @return true 通过校验
  */
 static bool isRRConsistent(float rrSec)
 {
+    /* v3.3: 运动期完全跳过 RR 一致性检查 */
+    if (s_motionConfirmed) return true;
+
     if (s_rrCount < 3) return true;
     if (s_medianRR < 0.001f) return true;
 
-    float tolerance = s_motionConfirmed ? RR_CONSISTENCY_MOT : RR_CONSISTENCY;
     float deviation = fabsf(rrSec - s_medianRR) / s_medianRR;
-    return (deviation <= tolerance);
+    return (deviation <= RR_CONSISTENCY);
 }
 
 /**
- * @brief 综合 QRS 有效性判定 (v3.2)
+ * @brief 综合 QRS 有效性判定 (v3.3)
  *
- * 基础条件: 信号存在 + 非不应期 + 超阈值 + 峰噪比足够
- * 形态验证: 运动期放宽约束 (运动 QRS 形态变化大)
+ * v3.3 修复:
+ *   - 运动期峰噪比降到 1.5x (防止阈值崩溃导致全拒)
+ *   - 运动期跳过 RR 一致性检查
  *
  * @param peakVal  候选峰值
  * @param rrSec    候选 RR 间期 (秒)
@@ -512,16 +551,15 @@ static bool isQRSValid(float peakVal, float rrSec)
     if (!s_signalPresent)                 return false;
     if (s_state == HR_REFRACTORY)         return false;
     if (peakVal <= s_threshold)           return false;
-    if (peakVal < s_noisePeak * MIN_PEAK_RATIO) return false;
 
-    /* 运动期间提高峰噪比要求 (3.0x 代替 2.0x) */
-    if (s_motionConfirmed && peakVal < s_noisePeak * (MIN_PEAK_RATIO * 1.5f))
-        return false;
+    /* 峰噪比: 运动期降低门限, 易检测 */
+    float peakRatio = s_motionConfirmed ? MIN_PEAK_RATIO_MOT : MIN_PEAK_RATIO;
+    if (peakVal < s_noisePeak * peakRatio) return false;
 
     /* 形态学验证: 需要至少 MIN_CONF_FEAT 拍历史 */
     if (s_beatCount >= MIN_CONF_FEAT) {
         if (s_motionConfirmed) {
-            /* === v3.2: 运动期放宽约束 === */
+            /* === v3.3: 运动期放宽约束 === */
             /* 跳过振幅一致性 (运动 QRS 振幅波动大) */
 
             /* 脉宽: 放宽到 60~200ms */
@@ -536,10 +574,8 @@ static bool isQRSValid(float peakVal, float rrSec)
                 return false;
             }
 
-            /* RR 一致性: 放宽到 50% */
-            if (!isRRConsistent(rrSec)) {
-                return false;
-            }
+            /* v3.3: 运动期跳过 RR 一致性 */
+            /* (isRRConsistent 自动返回 true) */
         } else {
             /* === 静止期: 严格 4 维验证 === */
             if (!isAmplitudeConsistent(peakVal)) return false;
@@ -592,11 +628,11 @@ static void checkSignalActivity(float filteredSample)
 }
 
 /**
- * @brief 计算输出 BPM (v3.2: 运动/恢复期用 EMA, 静止期用中位数)
+ * @brief 计算输出 BPM (v3.3: 添加跃升防护 slew rate)
  *
- * 运动/恢复期: RR 变化快, EMA 可以几乎即时跟踪
- * 静止期: 中位数抗噪, 输出稳定
- * 恢复期渐变: 从 EMA 权重 (0.3) 线性过渡到中位数
+ * 运动/恢复期: EMA 快速跟踪
+ * 静止期: 中位数抗噪
+ * v3.3 新增: 输出 BPM 变化速率限制 (±3 BPM/拍)
  */
 static uint8_t computeOutputBPM(void)
 {
@@ -617,6 +653,18 @@ static uint8_t computeOutputBPM(void)
         bpm = medBPM;
     }
 
+    /* v3.3: 跃升防护 — slew rate limit (±3 BPM/拍) */
+    if (s_lastOutputBPM > 1.0f) {
+        float delta = bpm - s_lastOutputBPM;
+        if (delta > BPM_SLEW_MAX) {
+            bpm = s_lastOutputBPM + BPM_SLEW_MAX;
+        } else if (delta < -BPM_SLEW_MAX) {
+            bpm = s_lastOutputBPM - BPM_SLEW_MAX;
+        }
+    }
+
+    s_lastOutputBPM = bpm;
+
     uint8_t bpmRaw = (uint8_t)(bpm + 0.5f);
     if (bpmRaw < 30 || bpmRaw > 200) return 0;
     return bpmRaw;
@@ -631,6 +679,7 @@ void hrInit(void)
     s_noisePeak      = THRESHOLD_INIT * 0.3f;
     s_threshold      = THRESHOLD_INIT;
     s_sqi            = 0.5f;
+    s_lastOutputBPM  = 0.0f;
 }
 
 HR_Result hrProcess(float filteredSample)
@@ -664,7 +713,7 @@ HR_Result hrProcess(float filteredSample)
         if (isQRSValid(peakVal, rrSec)) {
             addRRInterval(rrSec);
             updateThreshold(peakVal, true);
-            recordValidPeak(peakVal);  /* 记录通过验证的峰值 */
+            recordValidPeak(peakVal);
 
             s_state = HR_REFRACTORY;
             s_refractCount = 0;
@@ -680,14 +729,12 @@ HR_Result hrProcess(float filteredSample)
             }
 
             if (s_state == HR_TRACKING && s_medianRR > 0.001f) {
-                /* v3.2: 运动期也输出 BPM (用 EMA), 仅降置信度 */
                 uint8_t bpmRaw = computeOutputBPM();
                 if (bpmRaw >= 30 && bpmRaw <= 200) {
                     result.bpm = bpmRaw;
                 }
                 float bufConf = (float)s_rrCount / (float)RR_BUFFER_SIZE;
                 float sqiWeight = (s_sqi < 0.4f) ? (s_sqi / 0.4f) : 1.0f;
-                /* 运动期降置信度 */
                 float motionFactor = s_motionConfirmed ? 0.5f : 1.0f;
                 result.confidence = fminf(1.0f, bufConf * sqiWeight * motionFactor);
             }
@@ -720,7 +767,7 @@ HR_Result hrProcess(float filteredSample)
     s_mwiPrevPrev = s_mwiPrev;
     s_mwiPrev     = mwi;
 
-    /* 步骤 8: 无新拍时保持 (v3.2: 运动期照常输出) */
+    /* 步骤 8: 无新拍时保持 */
     if (!result.beatDetected && s_beatCount > 0 && s_medianRR > 0.001f
         && s_signalPresent && s_sampSinceBeat < HOLD_SAMP) {
         uint8_t bpmRaw = computeOutputBPM();
@@ -764,7 +811,6 @@ void hrReset(void)
     s_beatCount     = 0;
     s_lastRR        = 0.0f;
 
-    /* v3.1: 峰值历史也需重置 (避免新旧混合) */
     for (int i = 0; i < PEAK_HIST_LEN; i++) s_recentPeaks[i] = 0.0f;
     s_peakHistIdx   = 0;
     s_peakHistCount = 0;
@@ -773,6 +819,7 @@ void hrReset(void)
     s_bpmEMA       = 0.0f;
     s_bpmEmaFadeCnt = 0;
 
+    /* v3.3: slew rate 状态保留, 不重置 (避免重置后跃升) */
     /* 不重置 SQI/运动/MWI 历史, 保留连续性 */
 }
 
@@ -798,6 +845,9 @@ void hrFullReset(void)
     /* MWI 历史清零 */
     for (int i = 0; i < MWI_HIST_LEN; i++) s_mwiHistory[i] = 0.0f;
     s_mwiHistIdx = 0;
+
+    /* v3.3: 重置输出 BPM 跟踪 */
+    s_lastOutputBPM = 0.0f;
 }
 
 float hrGetSQI(void)
