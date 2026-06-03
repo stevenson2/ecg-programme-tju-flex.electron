@@ -75,6 +75,53 @@ static InputSource  s_inputMode     = SOURCE_SIMULATOR;
 static unsigned long s_lastBtnPress = 0;
 static bool         s_btnLastState  = HIGH;   /* 上拉, 默认高电平 */
 
+/*
+ * ========== 50Hz 梳状滤波器 (v2.2 双级级联) ==========
+ * 两级 5 抽头滑动平均级联:
+ *   第1级: y1[n] = (x[n] + x[n-1] + x[n-2] + x[n-3] + x[n-4]) / 5
+ *   第2级: y[n]  = (y1[n] + y1[n-1] + y1[n-2] + y1[n-3] + y1[n-4]) / 5
+ *
+ * 利用 250Hz/50Hz = 5 的精确比，在 50Hz/100Hz 处精确陷零。
+ * 双级级联效果:
+ *   - 50Hz 衰减: -59.6dB + (-59.6dB) = -119.2dB
+ *   - 有效阻带宽度提升 2 倍 (应对电网频率 ±0.5Hz 漂移)
+ *   - QRS 10Hz 增益: -0.6dB + (-0.6dB) = -1.2dB (可接受)
+ *   - 群延迟: 8ms(第1级) + 8ms(第2级) = 16ms (远小于RR间期800ms)
+ *
+ * 重要: 只能放在 main.cpp 且每帧只调用一次。
+ */
+#define COMB_TAPS   5
+/* 第1级梳状 */
+static float s_combBuf1[COMB_TAPS] = {0};
+static int   s_combIdx1 = 0;
+static float s_combSum1 = 0.0f;
+/* 第2级梳状 */
+static float s_combBuf2[COMB_TAPS] = {0};
+static int   s_combIdx2 = 0;
+static float s_combSum2 = 0.0f;
+
+/**
+ * @brief 双级级联梳状滤波器 (50Hz/100Hz 精确陷零)
+ * @param x 输入样本
+ * @return 滤波后样本
+ */
+static inline float applyCombFilter(float x)
+{
+    /* 第1级: 5抽头滑动平均 */
+    s_combSum1 -= s_combBuf1[s_combIdx1];
+    s_combBuf1[s_combIdx1] = x;
+    s_combSum1 += x;
+    s_combIdx1 = (s_combIdx1 + 1) % COMB_TAPS;
+    float y1 = s_combSum1 / (float)COMB_TAPS;
+    
+    /* 第2级: 对第1级输出再做一次5抽头滑动平均 */
+    s_combSum2 -= s_combBuf2[s_combIdx2];
+    s_combBuf2[s_combIdx2] = y1;
+    s_combSum2 += y1;
+    s_combIdx2 = (s_combIdx2 + 1) % COMB_TAPS;
+    return s_combSum2 / (float)COMB_TAPS;
+}
+
 void setup()
 {
     Serial.begin(115200);
@@ -118,6 +165,7 @@ void setup()
     afeHalInit(&afeCfg);
 
     filterInit();
+    filterWarmup(0.0f);  /* 预热滤波器，消除启动瞬态 */
     Serial.println("[系统] 数字滤波器已初始化");
 
     hrInit();
@@ -200,8 +248,17 @@ static void toggleInputMode(void)
 
     /* 切换后复位滤波器与心率检测器, 消除瞬态 */
     filterReset();
-
     hrFullReset();
+    
+    /* v2.2: 复位双级梳状滤波器状态 */
+    for (int i = 0; i < COMB_TAPS; i++) {
+        s_combBuf1[i] = 0.0f;
+        s_combBuf2[i] = 0.0f;
+    }
+    s_combIdx1 = 0;
+    s_combSum1 = 0.0f;
+    s_combIdx2 = 0;
+    s_combSum2 = 0.0f;
 
     /* LED 闪烁 3 次指示切换 (SUPERMINI 共阳极) */
     for (int i = 0; i < 3; i++) {
@@ -261,6 +318,11 @@ void loop()
         /* ======== 步骤2：去除直流偏置，统一显示基准 ======== */
         /* 先去除偏置再滤波，避免 HPF 启动瞬态，且串口/BLE 三通道同基准 */
         float noisyNoDC = noisySample - DC_OFFSET_REMOVE;
+
+        /* ======== 步骤2.5: 50Hz 梳状滤波 (v2.1) ======== */
+        /* 利用 250Hz/50Hz=5 的精确比, 5抽头滑动平均精确陷零50Hz */
+        /* 注意: 只能在此处调一次! 不在 afe_hal 里调是因每帧调两次ADC */
+        noisyNoDC = applyCombFilter(noisyNoDC);
 
         /* ======== 步骤3：数字滤波 ======== */
         float filteredSample = applyFilter(noisyNoDC);

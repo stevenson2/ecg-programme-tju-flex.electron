@@ -5,73 +5,76 @@
 
 /**
  * @file heartrate.cpp
- * @brief 板上心率计算模块 - 实现 (v3.4)
+ * @brief 板上心率计算模块 - 实现 (v4.0)
+ *
+ * ========== v4.0 改进: 新增QRS专用5~15Hz带通滤波器 ==========
+ *
+ * 经典 Pan-Tompkins 算法的第一步是 5~15Hz 带通滤波，专用于
+ * 突出 QRS 波群能量、抑制 T/P 波和肌电干扰。此前代码直接使用
+ * 0.5~40Hz 滤波后的信号，其中包含大量肌电噪声和残余工频分量，
+ * 导致假阳性高企。
+ *
+ * v4.0 在 hrProcess() 入口处新增两级 Butterworth 2阶节：
+ *   第1节: 低通 15Hz (抑制肌电干扰和工频谐波)
+ *   第2节: 高通 5Hz  (抑制 T 波和基线漂移)
+ *   → 等效 4阶 5~15Hz 带通，专用于 QRS 检测
+ *
+ * 系数由 scipy.signal.butter(2, [5,15], 'band', fs=250) 验证
+ * 生成工具: pc_tools/verify_filter_coeffs.py
  *
  * ========== 简化 Pan-Tompkins + 4 维形态学验证 + 记录纠错 ==========
  *
  * 经典 Pan-Tompkins 五步 (1985):
- *   ① 带通滤波 5~15Hz  → 信号已由 filter.cpp 预处理, 跳过
+ *   ① 带通滤波 5~15Hz  → v4.0: 新增！在 hrProcess 入口实现
  *   ② 一阶差分          → 突出 QRS 的快速上升/下降沿
  *   ③ 逐点平方          → 放大 R 波能量, 使 T/P 波相对更小
  *   ④ 滑动窗口积分      → 150ms 矩形窗, 将 QRS 能量汇聚为单个峰
  *   ⑤ 自适应阈值检测    → 单阈值 + 200ms 不应期
  *
  * ========== v3.4 新增: BPM 记录+纠错 ==========
- *
- *   v3.3 的 EMA 异常降权和 slew rate 是"软纠错" — 仍让异常 RR 进入
- *   缓冲区污染中位数。v3.4 采用"硬纠错": 在 isQRSValid 层直接拒绝。
- *
- *   记录阶段:
- *     - 维护近期确认输出 BPM 环形缓冲 (5 个值)
- *     - 每拍输出后记录, 取中位数作为"可信 BPM"
- *
- *   纠错阶段:
- *     - instBPM 偏离确认中位数 >30% (运动 45%) → 拒绝该拍
- *     - 拒绝后不污染 RR 缓冲区、不触发阈值更新
- *     - 只当噪声更新阈值 (若峰值够大)
- *
- * ========== v3.3 修复: 运动锁死 + BPM 跃升 ==========
- *
- *   锁死根因分析:
- *     v3.2 虽移除了 addRRInterval 阻断, 但运动期 isQRSValid 仍有:
- *       - 峰噪比 3.0x (静止 2.0x)
- *       - noisePeak 1.5x 加速增长
- *       - signalPeak 完全冻结
- *     → 运动几秒后 noisePeak 超过 signalPeak, 所有 QRS 被峰噪比拒绝
- *     → 且 isRRConsistent 用陈旧中位数拒绝所有新 RR
- *
- *   跃升根因分析:
- *     - BPM EMA 权重 0.3 无条件使用
- *     - T 波误检产生极短 RR → instBPM = 150+ → EMA 快速攀升
- *
- *   修复 (3 项):
- *     ① 运动期阈值策略重写:
- *        - signalPeak: 极慢更新 0.02 (代替完全冻结)
- *        - noisePeak:  正常权重 0.125 (移除 1.5x 加速)
- *        - 峰噪比:     运动期降低到 1.5x (易检测, 不怕误检)
- *     ② 运动期跳过 RR 一致性检查 → 新 RR 畅通进入缓冲区
- *     ③ BPM 跃升防护:
- *        - instBPM 偏离中位数 > 40% → EMA 权重降到 0.05
- *        - 输出 BPM 变化速率限制: 最大 ±2 BPM/拍
- *
- * ========== v3.2 保留特性 ==========
- *   - BPM EMA 快速跟踪 (运动/恢复期)
- *   - 运动期形态学约束放宽 (脉宽/对称性)
- *   - 恢复期 EMA→中位数线性渐变
- *
- * ========== v3.1 保留特性 ==========
- *   - 4 维 QRS 形态学验证 (振幅/脉宽/对称性/RR 一致性)
- *   - 峰值历史 + MWI 历史缓冲
- *
- * ========== v3.0 保留特性 ==========
- *   - SQI (信号质量指数)
- *   - 运动检测: 滞回判定
- *   - BPM 平滑: 运动恢复期 3 秒快速收敛
+ *   ...
  */
 
 /* ======================== 算法常数 ======================== */
 #define FS              250.0f      /**< 采样率 (Hz) */
 #define TS              0.004f      /**< 采样间隔 (s) */
+
+/*
+ * ========== QRS 专用带通滤波器 (v4.0 新增) ==========
+ *
+ * 两级级联 Butterworth 2阶 → 等效 4阶 5~15Hz 带通
+ *
+ * 第1节: 低通 15Hz (2阶 Butterworth)
+ *   B = (0.02786, 0.05572, 0.02786)
+ *   A = (1, -1.47548, 0.58692)
+ *   -3dB @ 15Hz, 40Hz 衰减 -18.5dB
+ *
+ * 第2节: 高通 5Hz (2阶 Butterworth)
+ *   B = (0.91497, -1.82994, 0.91497)
+ *   A = (1, -1.82269, 0.83718)
+ *   -3dB @ 5Hz, 0.5Hz 衰减 -40dB
+ *
+ * 级联后 -3dB 通带: 5.13 ~ 14.89Hz
+ * 10Hz 增益: -1.03dB (接近平坦)
+ * 50Hz 衰减: -23.3dB (额外抑制残余工频)
+ */
+#define QRS_LP15_A1  -1.47548f
+#define QRS_LP15_A2   0.58692f
+#define QRS_LP15_B0   0.02786f
+#define QRS_LP15_B1   0.05572f
+#define QRS_LP15_B2   0.02786f
+
+#define QRS_HP5_A1   -1.82269f
+#define QRS_HP5_A2    0.83718f
+#define QRS_HP5_B0    0.91497f
+#define QRS_HP5_B1   -1.82994f
+#define QRS_HP5_B2    0.91497f
+
+/* QRS BPF 状态变量 (v4.0 新增) */
+static float qrs_bpf_lp_w1 = 0.0f;  /**< 低通15Hz 状态1 */
+static float qrs_bpf_lp_w2 = 0.0f;  /**< 低通15Hz 状态2 */
+static float qrs_bpf_hp_w1 = 0.0f;  /**< 高通5Hz 状态1 */
+static float qrs_bpf_hp_w2 = 0.0f;  /**< 高通5Hz 状态2 */
 
 #define MWI_WINDOW      38          /**< 滑动积分窗口 150ms @250Hz */
 #define REFRACTORY_SAMP 50          /**< 不应期 200ms = 50 样本 */
@@ -100,12 +103,20 @@
 #define ACT_THRESHOLD   0.005f      /**< 最小信号幅度 5mV */
 #define ACT_TIMEOUT_CNT 2           /**< 连续 2 秒无信号→标记消失 */
 
-/* ======== SQI 与运动检测 ======== */
+/* ======== 自适应初始阈值 (v4.0 P2-1) ======== */
+#define ADAPT_INIT_SAMP 50          /**< 自适应学习采样数 (200ms @250Hz) */
+#define ADAPT_INIT_FACTOR 2.0f      /**< 阈值 = 基线噪声 RMS × 2.0 */
+
+/* ======== SQI 与运动检测 (v4.0 P2-2: 优化滞回参数) ======== */
 #define SQI_EMA_WEIGHT  0.05f       /**< SQI 指数平滑因子 (慢) */
 #define SQI_MOTION_ENTER 0.35f      /**< SQI 低于此值 → 进入运动状态 */
 #define SQI_MOTION_EXIT  0.55f      /**< SQI 高于此值 → 退出运动状态 */
 #define SQI_SNR_FLOOR    0.001f     /**< SNR 最小值, 防止除零 */
 #define MOTION_BPM_HOLD  750        /**< 运动结束后保持峰值冻结的帧数 (3秒) */
+
+/* ======== 运动检测滞回 (v4.0 P2-2: 加速响应) ======== */
+#define MOTION_ENTER_CNT 125        /**< 连续125帧(0.5秒)SQI低→进入运动 (原250) */
+#define MOTION_EXIT_CNT  50         /**< 连续50帧(0.2秒)SQI高→退出运动 (原125) */
 
 /* ======== v3.1 形态学验证常数 (静止) ======== */
 #define MWI_HIST_LEN     60         /**< MWI 历史长度 (240ms @250Hz) */
@@ -205,7 +216,43 @@ static float      s_confirmedBPM[BPM_CONFIRMED_LEN]; /**< 近期确认输出 BPM
 static int        s_confirmedBPMIdx;                 /**< 当前写入位置 */
 static int        s_confirmedBPMCount;               /**< 已记录数量 */
 
+/* ======== v4.0 P2-1: 自适应初始阈值状态 ======== */
+static bool        s_adaptInitDone;    /**< 自适应初始化是否完成 */
+static int         s_adaptInitCount;   /**< 已收集样本数 */
+static float       s_adaptInitSumSq;   /**< 平方和累加器 (用于计算RMS) */
+
 /* ======================== 工具函数 ======================== */
+
+/**
+ * @brief QRS 专用带通滤波器 (v4.0 新增)
+ *
+ * 在差分/平方/MWI 之前对信号进行 5~15Hz 带通滤波，
+ * 突出 QRS 波群，抑制 T/P 波和肌电干扰。
+ *
+ * 实现: 两级双二阶级联 (LP15 → HP5)
+ * 使用 Transposed Direct Form II 结构与 filter.cpp 保持一致。
+ *
+ * @param x 输入样本 (已由 filter.cpp 做 0.5~40Hz+陷波处理)
+ * @return float 滤波后的样本 (5~15Hz 带通)
+ */
+static float applyQRSBandpass(float x)
+{
+    /* 第1节: 低通 15Hz */
+    float w_lp = x - QRS_LP15_A1 * qrs_bpf_lp_w1 - QRS_LP15_A2 * qrs_bpf_lp_w2;
+    float y_lp = QRS_LP15_B0 * w_lp + QRS_LP15_B1 * qrs_bpf_lp_w1
+               + QRS_LP15_B2 * qrs_bpf_lp_w2;
+    qrs_bpf_lp_w2 = qrs_bpf_lp_w1;
+    qrs_bpf_lp_w1 = w_lp;
+
+    /* 第2节: 高通 5Hz */
+    float w_hp = y_lp - QRS_HP5_A1 * qrs_bpf_hp_w1 - QRS_HP5_A2 * qrs_bpf_hp_w2;
+    float y_hp = QRS_HP5_B0 * w_hp + QRS_HP5_B1 * qrs_bpf_hp_w1
+               + QRS_HP5_B2 * qrs_bpf_hp_w2;
+    qrs_bpf_hp_w2 = qrs_bpf_hp_w1;
+    qrs_bpf_hp_w1 = w_hp;
+
+    return y_hp;
+}
 
 static inline float computeMWI(float squared)
 {
@@ -219,10 +266,7 @@ static inline float computeMWI(float squared)
 static void updateThreshold(float peakVal, bool isSignal)
 {
     if (isSignal) {
-        /* v3.3: 运动期 signalPeak 极慢更新 (0.02), 防止阈值完全崩溃 */
-        /* 恢复期快速收敛 (0.25) */
         float weight;
-
         if (s_motionConfirmed) {
             weight = SIGNAL_WEIGHT_MOT;    /* 0.02: 极慢, 跟踪趋势 */
         } else if (s_motionRecoverCnt > 0) {
@@ -230,14 +274,10 @@ static void updateThreshold(float peakVal, bool isSignal)
         } else {
             weight = SIGNAL_WEIGHT;        /* 0.125: 正常 */
         }
-
-        s_signalPeak = weight * peakVal
-                     + (1.0f - weight) * s_signalPeak;
+        s_signalPeak = weight * peakVal + (1.0f - weight) * s_signalPeak;
     } else {
-        /* v3.3: 运动期噪声权重不加速, 防止 noisePeak 失控 */
         float nWeight = NOISE_WEIGHT;
-        s_noisePeak = nWeight * peakVal
-                    + (1.0f - nWeight) * s_noisePeak;
+        s_noisePeak = nWeight * peakVal + (1.0f - nWeight) * s_noisePeak;
     }
 
     float delta = s_signalPeak - s_noisePeak;
@@ -267,7 +307,7 @@ static void updateMotionState(void)
         } else {
             s_motionLowCount = 0;
         }
-        if (s_motionLowCount >= 250) {
+        if (s_motionLowCount >= MOTION_ENTER_CNT) {
             s_motionConfirmed = true;
             s_motionActive = true;
             s_motionLowCount = 0;
@@ -283,13 +323,12 @@ static void updateMotionState(void)
         } else {
             s_motionHighCount = 0;
         }
-        if (s_motionHighCount >= 125) {
+        if (s_motionHighCount >= MOTION_EXIT_CNT) {
             s_motionConfirmed = false;
             s_motionActive = false;
             s_motionHighCount = 0;
             s_motionRecoverCnt = MOTION_BPM_HOLD;
             s_bpmEmaFadeCnt = BPM_EMA_FADE_STEPS;
-            /* 恢复冻结前的峰值 (防止阈值已漂移) */
             if (s_motionHoldSP > s_signalPeak) {
                 s_signalPeak = s_motionHoldSP;
             }
@@ -316,9 +355,6 @@ static int cmpFloat(const void *a, const void *b)
     return 0;
 }
 
-/**
- * @brief 计算确认 BPM 历史的中位数 (v3.4)
- */
 static float getConfirmedBPMMedian(void)
 {
     if (s_confirmedBPMCount == 0) return 0.0f;
@@ -346,13 +382,6 @@ static float computeMedianRR(void)
     }
 }
 
-/**
- * @brief 记录 RR 间期到缓冲区 + BPM EMA (v3.3: 跃升防护)
- *
- * v3.3 BPM 跃升防护:
- *   - instBPM 偏离中位数 > 40% → EMA 降权到 0.05
- *   - 防止 T 波误检的极短 RR 污染 EMA
- */
 static void addRRInterval(float rrSeconds)
 {
     int rrSamp = (int)(rrSeconds / TS + 0.5f);
@@ -366,13 +395,11 @@ static void addRRInterval(float rrSeconds)
     s_medianRR = computeMedianRR();
     s_lastRR = rrSeconds;
 
-    /* v3.3: BPM EMA — 跃升防护 */
     float instBPM = 60.0f / rrSeconds;
 
     if (s_bpmEMA < 1.0f) {
         s_bpmEMA = instBPM;
     } else {
-        /* 检测 instBPM 是否异常偏离 (vs 中位数) */
         bool isAnomalous = false;
         if (oldMedianRR > 0.001f) {
             float medBPM = 60.0f / oldMedianRR;
@@ -384,7 +411,6 @@ static void addRRInterval(float rrSeconds)
 
         float weight;
         if (isAnomalous) {
-            /* 异常骤变: 极低权重, 避免 EMA 被污染 */
             weight = BPM_EMA_WEIGHT_ANOM;
         } else if (s_motionConfirmed || s_motionRecoverCnt > 0) {
             weight = BPM_EMA_WEIGHT_FAST;
@@ -396,9 +422,6 @@ static void addRRInterval(float rrSeconds)
     }
 }
 
-/**
- * @brief 记录已验证的 QRS 峰值 → 用于振幅一致性校验
- */
 static void recordValidPeak(float peakVal)
 {
     s_recentPeaks[s_peakHistIdx] = peakVal;
@@ -408,38 +431,19 @@ static void recordValidPeak(float peakVal)
     }
 }
 
-/**
- * @brief 校验 ① 振幅一致性: 候选峰 vs 近期 QRS 峰均值
- *
- * 若候选峰偏离均值 > 35%, 很可能是 T 波或伪迹。
- *
- * @param peakVal 候选峰值
- * @return true 通过校验
- */
 static bool isAmplitudeConsistent(float peakVal)
 {
-    if (s_peakHistCount < 3) return true;  /* 历史不足, 放行 */
-
+    if (s_peakHistCount < 3) return true;
     float sum = 0.0f;
     for (int i = 0; i < s_peakHistCount; i++) {
         sum += s_recentPeaks[i];
     }
     float mean = sum / (float)s_peakHistCount;
     if (mean < 0.0001f) return true;
-
     float deviation = fabsf(peakVal - mean) / mean;
     return (deviation <= AMP_CONSISTENCY);
 }
 
-/**
- * @brief 校验 ② 脉宽 (半高宽): 静止 80~160ms, 运动 60~200ms @250Hz
- *
- * 在 MWI 历史缓冲中逆序扫描找到上升沿 50% 穿越点,
- * 利用当前 mwi 斜率外推下降沿 50% 点,
- * 求和即得半高宽估计。
- *
- * @return 脉宽样本数, 超出范围返回 999
- */
 static int getQRSWidth(void)
 {
     int peakIdx = (s_mwiHistIdx - 2 + MWI_HIST_LEN) % MWI_HIST_LEN;
@@ -505,11 +509,6 @@ static int getQRSWidth(void)
     return totalWidth;
 }
 
-/**
- * @brief 校验 ③ 上升/下降对称性
- *
- * @return 上升/下降比, 无法计算返回 1.0
- */
 static float getRiseFallRatio(void)
 {
     int peakIdx = (s_mwiHistIdx - 2 + MWI_HIST_LEN) % MWI_HIST_LEN;
@@ -556,96 +555,52 @@ static float getRiseFallRatio(void)
     return (float)riseSamp / (float)fallSamp;
 }
 
-/**
- * @brief 校验 ④ RR 一致性 (v3.3: 运动期完全跳过)
- *
- * 静止期: 新 RR 与中位数偏差 < 30%
- * 运动期: 完全跳过 (运动 RR 变化是正常生理反应, 不应拒绝)
- *
- * @param rrSec 候选 RR 间期 (秒)
- * @return true 通过校验
- */
 static bool isRRConsistent(float rrSec)
 {
-    /* v3.3: 运动期完全跳过 RR 一致性检查 */
     if (s_motionConfirmed) return true;
-
     if (s_rrCount < 3) return true;
     if (s_medianRR < 0.001f) return true;
-
     float deviation = fabsf(rrSec - s_medianRR) / s_medianRR;
     return (deviation <= RR_CONSISTENCY);
 }
 
-/**
- * @brief 综合 QRS 有效性判定 (v3.4)
- *
- * v3.3 修复:
- *   - 运动期峰噪比降到 1.5x (防止阈值崩溃导致全拒)
- *   - 运动期跳过 RR 一致性检查
- *
- * v3.4 新增:
- *   - BPM 记录+纠错: instBPM 偏离确认历史中位数 >30% → 拒绝该拍
- *   - 防止 T 波误检的短 RR 进入缓冲区污染中位数
- *
- * @param peakVal  候选峰值
- * @param rrSec    候选 RR 间期 (秒)
- * @return true 认定为 QRS 波
- */
 static bool isQRSValid(float peakVal, float rrSec)
 {
     if (!s_signalPresent)                 return false;
     if (s_state == HR_REFRACTORY)         return false;
     if (peakVal <= s_threshold)           return false;
 
-    /* 峰噪比: 运动期降低门限, 易检测 */
     float peakRatio = s_motionConfirmed ? MIN_PEAK_RATIO_MOT : MIN_PEAK_RATIO;
     if (peakVal < s_noisePeak * peakRatio) return false;
 
-    /* 形态学验证: 需要至少 MIN_CONF_FEAT 拍历史 */
     if (s_beatCount >= MIN_CONF_FEAT) {
         if (s_motionConfirmed) {
-            /* === v3.3: 运动期放宽约束 === */
-            /* 跳过振幅一致性 (运动 QRS 振幅波动大) */
-
-            /* 脉宽: 放宽到 60~200ms */
             int width = getQRSWidth();
             if (width < MIN_QRS_WIDTH_MOT || width > MAX_QRS_WIDTH_MOT) {
                 return false;
             }
-
-            /* 上升/下降比: 放宽 */
             float ratio = getRiseFallRatio();
             if (ratio < RISE_FALL_MIN_MOT || ratio > RISE_FALL_MAX_MOT) {
                 return false;
             }
-
-            /* v3.3: 运动期跳过 RR 一致性 */
-            /* (isRRConsistent 自动返回 true) */
         } else {
-            /* === 静止期: 严格 4 维验证 === */
             if (!isAmplitudeConsistent(peakVal)) return false;
-
             int width = getQRSWidth();
             if (width < MIN_QRS_WIDTH || width > MAX_QRS_WIDTH) return false;
-
             float ratio = getRiseFallRatio();
             if (ratio < RISE_FALL_MIN || ratio > RISE_FALL_MAX) return false;
-
             if (!isRRConsistent(rrSec)) return false;
         }
     }
 
-    /* v3.4: BPM 记录+纠错 — instBPM 偏离确认历史中位数过多 → 拒绝 */
     if (s_confirmedBPMCount >= BPM_REJECT_MIN_CNT) {
         float confirmedMed = getConfirmedBPMMedian();
         if (confirmedMed > 1.0f && rrSec > 0.001f) {
             float instBPM = 60.0f / rrSec;
             float dev = fabsf(instBPM - confirmedMed) / confirmedMed;
-            float rejectThresh = s_motionConfirmed
-                               ? BPM_REJECT_DEV_MOT : BPM_REJECT_DEV;
+            float rejectThresh = s_motionConfirmed ? BPM_REJECT_DEV_MOT : BPM_REJECT_DEV;
             if (dev > rejectThresh) {
-                return false;  /* T 波误检/伪迹 → 拒绝, 不污染 RR 缓冲 */
+                return false;
             }
         }
     }
@@ -687,13 +642,6 @@ static void checkSignalActivity(float filteredSample)
     }
 }
 
-/**
- * @brief 计算输出 BPM (v3.3: 添加跃升防护 slew rate)
- *
- * 运动/恢复期: EMA 快速跟踪
- * 静止期: 中位数抗噪
- * v3.3 新增: 输出 BPM 变化速率限制 (±3 BPM/拍)
- */
 static uint8_t computeOutputBPM(void)
 {
     if (s_medianRR < 0.001f) return 0;
@@ -702,18 +650,14 @@ static uint8_t computeOutputBPM(void)
     float bpm;
 
     if (s_motionConfirmed) {
-        /* 运动期: 纯 EMA */
         bpm = s_bpmEMA;
     } else if (s_bpmEmaFadeCnt > 0 && BPM_EMA_FADE_STEPS > 0) {
-        /* 恢复期: EMA → 中位数 线性渐变 */
         float fadeFrac = (float)s_bpmEmaFadeCnt / (float)BPM_EMA_FADE_STEPS;
         bpm = fadeFrac * s_bpmEMA + (1.0f - fadeFrac) * medBPM;
     } else {
-        /* 静止期: 纯中位数 */
         bpm = medBPM;
     }
 
-    /* v3.3: 跃升防护 — slew rate limit (±3 BPM/拍) */
     if (s_lastOutputBPM > 1.0f) {
         float delta = bpm - s_lastOutputBPM;
         if (delta > BPM_SLEW_MAX) {
@@ -746,16 +690,40 @@ HR_Result hrProcess(float filteredSample)
 {
     HR_Result result = { 0 };
 
-    /* 步骤 0: 信号活动检测 */
+    /* 步骤 0: 信号活动检测 (基于原始滤波信号) */
     checkSignalActivity(filteredSample);
 
     /* 步骤 0.5: SQI 更新 + 运动状态 */
     updateSQI();
     updateMotionState();
 
-    /* 步骤 1-3: 差分 → 平方 → 滑动积分 */
-    float diff = filteredSample - s_prevSample;
-    s_prevSample = filteredSample;
+    /* ====== v4.0: QRS 专用带通 5~15Hz (新增) ====== */
+    /* 对滤波后的信号再做一次带通滤波，专用于 QRS 检测 */
+    float qrsSignal = applyQRSBandpass(filteredSample);
+
+    /* ====== v4.0 P2-1: 自适应初始阈值 ====== */
+    /* 前 ADAPT_INIT_SAMP 个样本收集 QRS BPF 信号能量 */
+    /* 用于根据实际噪声环境动态设定初始阈值，而非固定 THRESHOLD_INIT */
+    if (!s_adaptInitDone && s_beatCount == 0) {
+        s_adaptInitCount++;
+        s_adaptInitSumSq += qrsSignal * qrsSignal;
+        if (s_adaptInitCount >= ADAPT_INIT_SAMP) {
+            /* 计算基线 RMS 并设定阈值 */
+            float baselineRMS = sqrtf(s_adaptInitSumSq / (float)ADAPT_INIT_SAMP);
+            float adaptiveThreshold = baselineRMS * ADAPT_INIT_FACTOR;
+            /* 确保阈值在最小区间内，且不低于固定参考值 */
+            if (adaptiveThreshold > THRESHOLD_INIT) {
+                s_threshold = adaptiveThreshold;
+                s_signalPeak = adaptiveThreshold;
+                s_noisePeak = adaptiveThreshold * 0.3f;
+            }
+            s_adaptInitDone = true;
+        }
+    }
+
+    /* 步骤 1-3: 差分 → 平方 → 滑动积分 (使用 qrsSignal) */
+    float diff = qrsSignal - s_prevSample;
+    s_prevSample = qrsSignal;
     float squared = diff * diff;
     float mwi = computeMWI(squared);
 
@@ -792,10 +760,8 @@ HR_Result hrProcess(float filteredSample)
                 uint8_t bpmRaw = computeOutputBPM();
                 if (bpmRaw >= 30 && bpmRaw <= 200) {
                     result.bpm = bpmRaw;
-                    /* v3.4: 记录确认 BPM 到纠错历史 */
                     s_confirmedBPM[s_confirmedBPMIdx] = (float)bpmRaw;
-                    s_confirmedBPMIdx = (s_confirmedBPMIdx + 1)
-                                      % BPM_CONFIRMED_LEN;
+                    s_confirmedBPMIdx = (s_confirmedBPMIdx + 1) % BPM_CONFIRMED_LEN;
                     if (s_confirmedBPMCount < BPM_CONFIRMED_LEN) {
                         s_confirmedBPMCount++;
                     }
@@ -819,8 +785,7 @@ HR_Result hrProcess(float filteredSample)
     if (s_state == HR_REFRACTORY) {
         s_refractCount++;
         if (s_refractCount >= REFRACTORY_SAMP) {
-            s_state = (s_beatCount >= MIN_CONF_BEATS)
-                      ? HR_TRACKING : HR_IDLE;
+            s_state = (s_beatCount >= MIN_CONF_BEATS) ? HR_TRACKING : HR_IDLE;
         }
     }
 
@@ -891,8 +856,16 @@ void hrReset(void)
     s_confirmedBPMIdx   = 0;
     s_confirmedBPMCount = 0;
 
-    /* v3.3: slew rate 状态保留, 不重置 (避免重置后跃升) */
-    /* 不重置 SQI/运动/MWI 历史, 保留连续性 */
+    /* v4.0: QRS BPF 状态重置 */
+    qrs_bpf_lp_w1 = 0.0f;
+    qrs_bpf_lp_w2 = 0.0f;
+    qrs_bpf_hp_w1 = 0.0f;
+    qrs_bpf_hp_w2 = 0.0f;
+    
+    /* v4.0 P2-1: 自适应初始阈值状态重置 */
+    s_adaptInitDone = false;
+    s_adaptInitCount = 0;
+    s_adaptInitSumSq = 0.0f;
 }
 
 void hrFullReset(void)
@@ -904,7 +877,6 @@ void hrFullReset(void)
     s_winCount        = 0;
     s_noSignalSeconds = 0;
 
-    /* 运动检测完全重置 */
     s_sqi              = 0.5f;
     s_motionActive     = false;
     s_motionConfirmed  = false;
@@ -914,17 +886,20 @@ void hrFullReset(void)
     s_motionHoldSP     = 0.0f;
     s_motionHoldNP     = 0.0f;
 
-    /* MWI 历史清零 */
     for (int i = 0; i < MWI_HIST_LEN; i++) s_mwiHistory[i] = 0.0f;
     s_mwiHistIdx = 0;
 
-    /* v3.4: 确认 BPM 历史重置 */
     for (int i = 0; i < BPM_CONFIRMED_LEN; i++) s_confirmedBPM[i] = 0.0f;
     s_confirmedBPMIdx   = 0;
     s_confirmedBPMCount = 0;
 
-    /* v3.3: 重置输出 BPM 跟踪 */
     s_lastOutputBPM = 0.0f;
+
+    /* v4.0: QRS BPF 状态完全重置 */
+    qrs_bpf_lp_w1 = 0.0f;
+    qrs_bpf_lp_w2 = 0.0f;
+    qrs_bpf_hp_w1 = 0.0f;
+    qrs_bpf_hp_w2 = 0.0f;
 }
 
 float hrGetSQI(void)
