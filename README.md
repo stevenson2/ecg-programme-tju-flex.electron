@@ -92,7 +92,7 @@ PC (离线训练)                            ESP32-S3 (边缘推理)
 | 1. MIT-BIH 数据集下载     |            | 采样: 250Hz 滤波后 ECG     |
 | 2. 预处理: 重采样+心拍切割|            | 环形缓冲: 250 样本累积     |
 | 3. 标签: 15类 -> 二分类   |  模型     | Z-score 归一化              |
-| 4. 数据增强 (10x)         |  导出     | INT8 量化输入               |
+| 4. 原始心拍 (无增强)      |  导出     | INT8 量化输入               |
 | 5. 1D-CNN 训练 (30 epoch) | =======>  | TFLite Micro 推理 (~5ms)    |
 | 6. INT8 量化 -> TFLite    |  .tflite  | 输出: Normal/Abnormal + conf |
 | 7. 模型权重 -> C 头文件   |  .h       | 串口/BLE 追加异常标签       |
@@ -121,48 +121,43 @@ PC (离线训练)                            ESP32-S3 (边缘推理)
 
 ### 模型架构
 
-**超轻量 1D-CNN**，总参数仅 1,082 个 (INT8 量化后 ~1.1KB)：
+**1D-CNN v2**，~15K 参数 (INT8 量化后 24.8 KB)：
 
 ```
 Input (250, 1)
   |
-  +-- Conv1D: filters=8, kernel_size=5, padding=same
-  +-- BatchNormalization
-  +-- ReLU
-  +-- MaxPooling1D: pool_size=2
+  +-- Conv1D: filters=16, kernel_size=7, padding=same
+  +-- BatchNormalization + ReLU
+  +-- MaxPooling1D: pool_size=2              -> (125, 16)
   |
-  +-- Conv1D: filters=8, kernel_size=3, padding=same
-  +-- BatchNormalization
-  +-- ReLU
-  +-- MaxPooling1D: pool_size=2
+  +-- Conv1D: filters=32, kernel_size=5, padding=same
+  +-- BatchNormalization + ReLU
+  +-- MaxPooling1D: pool_size=2              -> (62, 32)
   |
-  +-- Conv1D: filters=16, kernel_size=3, padding=same
-  +-- BatchNormalization
-  +-- ReLU
-  +-- GlobalAveragePooling1D
+  +-- Conv1D: filters=64, kernel_size=3, padding=same
+  +-- BatchNormalization + ReLU
+  +-- GlobalAveragePooling1D                 -> (64)
   |
-  +-- Dense: 16 units, ReLU
-  +-- Dropout: 0.3 (训练时, 推理时移除)
+  +-- Dense: 32 units, ReLU
+  +-- Dropout: 0.4 (训练时, 推理时移除)
   +-- Dense: 2 units, Softmax
   |
   v
-Output: [Normal, Abnormal]
+Output: [P(Normal), P(Abnormal)]
 ```
 
 **模型特性：**
 
 | 指标 | 值 |
 |------|-----|
-| 总参数量 | 1,082 |
-| 可训练参数 | 1,018 |
-| 非训练参数 (BN) | 64 |
-| FP32 模型大小 | 4.2 KB |
-| INT8 模型大小 | 1.1 KB (权重) + 10.7 KB (FlatBuffer 开销) = **11.8 KB** |
-| 推理时间 @240MHz (ESP32-S3) | 预计 4-7ms |
-| PC 推理时间 (XNNPACK) | 0.046ms |
+| 总参数量 | ~15,000 |
+| FP32 模型大小 | 207 KB |
+| INT8 模型大小 | **24.8 KB** |
+| C 数组头文件 | 160 KB |
+| 推理时间 @240MHz (ESP32-S3) | 预计 5-10ms |
+| PC 推理时间 (XNNPACK) | <0.1ms |
 | 输入窗口 | 250 样本 (1 秒 @250Hz) |
 | 滑动步进 | 125 样本 (50% 重叠) |
-| 推理频率 | 每 0.5 秒一次 |
 
 ### 训练配置
 
@@ -173,34 +168,43 @@ Output: [Normal, Abnormal]
 | 损失函数 | CategoricalCrossentropy |
 | 评估指标 | Accuracy, Precision, Recall, AUC |
 | 批大小 | 32 |
-| 训练轮数 | 30 (EarlyStopping: patience=10, restore_best_weights) |
-| 数据划分 | 训练 60% / 验证 20% / 测试 20% (分层采样) |
+| 训练轮数 | 50 (EarlyStopping: patience=10, restore_best_weights) |
+| 数据划分 | 训练 23 / 验证 7 / 测试 7 条记录 (按病人分组, 防数据泄露) |
 | 随机种子 | 42 |
 
 ### 数据增强
 
-| 增强方法 | 参数 | 扩增倍数 |
-|---------|------|---------|
-| 加性高斯噪声 | sigma = 0.01, 0.03, 0.05 | 3x |
-| 时间缩放 | 0.9 - 1.1 倍 | 2x |
-| 幅度缩放 | 0.8 - 1.2 倍 | 2x |
-| 基线漂移 | 低频正弦波叠加 | 2x |
-| **合计** | | **~10x** |
+> **重要发现：数据增强对跨病人泛化有严重负面影响。**
+> 10x 增强后的模型精度仅 75.7%，去除增强后提升至 85.6%。
+> 原因：增强产生的噪声模式失真，模型学到了增强伪影而非真实心律特征。
+> 最终模型 **不使用数据增强**，仅用 87K 原始心拍训练。
 
 ### 评估结果
 
-| 指标 | FP32 (H5) | INT8 (TFLite) | 差异 |
-|------|-----------|---------------|------|
-| Accuracy | 98.39% | 98.05% | **-0.34%** |
-| Precision (Normal) | 0.98 | - | - |
-| Recall (Normal) | 1.00 | - | - |
-| Precision (Abnormal) | 0.99 | - | - |
-| Recall (Abnormal) | 0.87 | - | - |
-| AUC | 0.9935 | - | - |
-| 模型文件大小 | 86.7 KB | 11.8 KB | **-86%** |
+**测试集：7 条未见过病人记录，16,664 个心拍，按记录号分组（无数据泄露）**
 
-> 量化精度损失 0.34%，在可接受范围 (<2%)。
-> Abnormal Recall 0.87 说明还有优化空间（对少数类漏检率 13%），后续可通过类别加权或 QAT 改进。
+| 指标 | FP32 (H5) | INT8 (TFLite) | 说明 |
+|------|-----------|---------------|------|
+| Accuracy | **85.63%** | **88.11%** | INT8 反而更高 (量化正则化效应) |
+| AUC | 0.9423 | - | 优秀 |
+| Normal Recall | 84.0% | 86.5% | 误报率仅 16% |
+| Abnormal Recall | 88.0% | 89.5% | 漏检率仅 12% |
+| Abnormal Precision | 77.0% | 79.0% | 告警中 ~21% 为误报 |
+| 模型文件大小 | 207 KB | **24.8 KB** | 压缩 88% |
+
+> INT8 量化不仅未损失精度，反而因量化噪声起到正则化作用，精度提升 2.5%。
+
+### 模型进化史
+
+| 阶段 | 数据 | 划分方式 | 精度 | 结论 |
+|------|------|---------|------|------|
+| 阶段 1 | 3 条记录, 10x 增强 | **样本随机划分** | 98.4% | 数据泄露假象 |
+| 阶段 2 | 37 条记录, 10x 增强 | 按病人分组 | 75.7% | 增强毒化泛化 |
+| 阶段 3 | 37 条记录, **无增强** | 按病人分组 | **85.6%** | 真实泛化能力 |
+
+![模型进化](models/fig_evolution.png)
+
+![模型总览](models/fig_model_summary.png)
 
 ### INT8 量化原理
 
