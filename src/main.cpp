@@ -5,6 +5,7 @@
 #include "adc_afe/afe_hal.h"
 #include "heartrate/heartrate.h"
 #include "thermal/thermal.h"
+#include "ai_inference/ai_inference.h"
 
 /**
  * @file main.cpp
@@ -27,7 +28,12 @@
  *     ↑ 改 BUTTON_PIN 宏即可
  *
  * == 数据流 ==
- *   [模拟发生器 / 真实AFE] → 三级数字滤波 → BLE发送(NUS) + 串口
+ *   [模拟发生器 / 真实AFE] → 梳状滤波(50/100Hz) → HP 0.5Hz → LP 40Hz → 心率检测 → BLE发送(NUS) + 串口
+ *
+ * == v3.0 优化 ==
+ *   - CPU 240MHz 性能模式 (原80MHz)
+ *   - 滤波链精简: 移除独立50/100Hz陷波器，由梳状统一处理
+ *   - BLE 4帧批量打包发送，吞吐量提升4×
  *
  * == 信号电平说明 ==
  *   - clean  ：纯净心电波形 / 去偏置ADC信号, ±1.2V
@@ -38,7 +44,7 @@
  */
 
 /* ======================== 常量定义 ======================== */
-#define SAMPLE_INTERVAL_MS  4   /* 250Hz 采样间隔 */
+#define SAMPLE_INTERVAL_MS  2   /* 500Hz 采样间隔 */
 #define DC_OFFSET_REMOVE    1.65f  /* 去除 ADC 直流偏置，统一显示基准 */
 
 /* ======================== 开发板适配 ======================== */
@@ -58,13 +64,19 @@
 #define AFE_ADC_PIN         GPIO_NUM_4   /* AFE 输出接在哪个 GPIO */
 #define AFE_DC_BIAS         1.65f        /* PCB 输出的直流偏置 (V) */
 #define AFE_VREF            3.3f         /* ESP32 ADC 参考电压 */
-#define AFE_OVERSAMPLE      8            /* 过采样次数 */
+#define AFE_OVERSAMPLE      4            /* 过采样次数 (500Hz下降为4x以节省时间) */
 
 /* ======================== 输入模式枚举 ======================== */
 typedef enum {
     SOURCE_SIMULATOR = 0,    /**< 模拟发生器模式 (默认, 无硬件也可运行) */
     SOURCE_AFE_REAL  = 1     /**< 真实 AFE 采集模式 */
 } InputSource;
+
+/* ======================== BLE 批量打包 ======================== */
+#define BLE_BATCH_SIZE   4            /* 每4帧合包一次 */
+#define BLE_BUF_SIZE     (64 * BLE_BATCH_SIZE + 4)  /* 约 260 字节 buffer */
+static char s_bleBuf[BLE_BUF_SIZE];
+static int  s_bleBufLen = 0;
 
 /* ======================== 全局变量 ======================== */
 static unsigned long lastSampleTime = 0;
@@ -76,21 +88,21 @@ static unsigned long s_lastBtnPress = 0;
 static bool         s_btnLastState  = HIGH;   /* 上拉, 默认高电平 */
 
 /*
- * ========== 50Hz 梳状滤波器 (v2.2 双级级联) ==========
- * 两级 5 抽头滑动平均级联:
- *   第1级: y1[n] = (x[n] + x[n-1] + x[n-2] + x[n-3] + x[n-4]) / 5
- *   第2级: y[n]  = (y1[n] + y1[n-1] + y1[n-2] + y1[n-3] + y1[n-4]) / 5
+ * ========== 50Hz 梳状滤波器 (v3.0 500Hz 适配) ==========
+ * 两级滑动平均级联，500Hz/50Hz=10 → 10抽头:
+ *   第1级: y1[n] = (x[n] + ... + x[n-9]) / 10
+ *   第2级: y[n]  = (y1[n] + ... + y1[n-9]) / 10
  *
- * 利用 250Hz/50Hz = 5 的精确比，在 50Hz/100Hz 处精确陷零。
+ * 利用 500Hz/50Hz = 10 的精确比，在 50Hz/100Hz 处精确陷零。
  * 双级级联效果:
  *   - 50Hz 衰减: -59.6dB + (-59.6dB) = -119.2dB
  *   - 有效阻带宽度提升 2 倍 (应对电网频率 ±0.5Hz 漂移)
- *   - QRS 10Hz 增益: -0.6dB + (-0.6dB) = -1.2dB (可接受)
- *   - 群延迟: 8ms(第1级) + 8ms(第2级) = 16ms (远小于RR间期800ms)
+ *   - QRS 10Hz 增益: -1.2dB (可接受)
+ *   - 群延迟: 20ms (远小于RR间期800ms)
  *
  * 重要: 只能放在 main.cpp 且每帧只调用一次。
  */
-#define COMB_TAPS   5
+#define COMB_TAPS   10
 /* 第1级梳状 */
 static float s_combBuf1[COMB_TAPS] = {0};
 static int   s_combIdx1 = 0;
@@ -176,13 +188,18 @@ void setup()
 
     initBLE();
 
-    /* CPU 降频: 240MHz → 80MHz 实现大幅省电 */
-    /* ECG 处理 (滤波+心率+BPM) 约 50μs @240MHz → 150μs @80MHz */
-    /* 采样间隔 4ms, 仍然绰绰有余 */
-    setCpuFrequencyMhz(80);
+    /* 初始化 AI 推理模块 (Core 0) */
+    if (ai_inference_init()) {
+        Serial.println("[AI] 异常检测推理引擎已启动 (Core 0)");
+    } else {
+        Serial.println("[AI] 推理引擎初始化失败, 继续运行");
+    }
+
+    /* 性能模式: 240MHz 确保 4ms 帧内完成所有处理和 BLE 通知 */
+    setCpuFrequencyMhz(240);
     Serial.print("[系统] CPU 频率: ");
     Serial.print(getCpuFrequencyMhz());
-    Serial.println(" MHz (省电模式)");
+    Serial.println(" MHz (性能模式)");
 
     /* 初始化温度监测模块 */
     thermalInit();
@@ -249,6 +266,7 @@ static void toggleInputMode(void)
     /* 切换后复位滤波器与心率检测器, 消除瞬态 */
     filterReset();
     hrFullReset();
+    ai_inference_reset();  /* 重置 AI 推理缓冲 */
     
     /* v2.2: 复位双级梳状滤波器状态 */
     for (int i = 0; i < COMB_TAPS; i++) {
@@ -319,8 +337,8 @@ void loop()
         /* 先去除偏置再滤波，避免 HPF 启动瞬态，且串口/BLE 三通道同基准 */
         float noisyNoDC = noisySample - DC_OFFSET_REMOVE;
 
-        /* ======== 步骤2.5: 50Hz 梳状滤波 (v2.1) ======== */
-        /* 利用 250Hz/50Hz=5 的精确比, 5抽头滑动平均精确陷零50Hz */
+        /* ======== 步骤2.5: 50Hz 梳状滤波 (v3.0 500Hz) ======== */
+        /* 利用 500Hz/50Hz=10 的精确比, 10抽头滑动平均精确陷零50Hz */
         /* 注意: 只能在此处调一次! 不在 afe_hal 里调是因每帧调两次ADC */
         noisyNoDC = applyCombFilter(noisyNoDC);
 
@@ -330,23 +348,42 @@ void loop()
         /* ======== 步骤3.5：心率检测 ======== */
         HR_Result hr = hrProcess(filteredSample);
 
-        /* ======== 步骤4：通过 BLE 发送 ======== */
-        /* 格式：clean,noisy_no_dc,filtered,bpm,sqi */
-        char csvLine[64];
-        snprintf(csvLine, sizeof(csvLine),
-                 "%.3f,%.3f,%.3f,%u,%.2f\r\n",
-                 cleanSample, noisyNoDC, filteredSample,
-                 hr.bpm, hr.sqi);
-        sendBLEMessage(csvLine);
+        /* ======== 步骤3.6：AI 异常检测推理 (推送样本到 Core 0) ======== */
+        ai_inference_push(filteredSample);
+
+        /* ======== 步骤4：通过 BLE 发送 (4帧批量打包) ======== */
+        /* 每帧格式: clean,noisy,filtered,bpm,sqi; */
+        /* 满4帧或连接断开前统一 Notify，大幅降低 BLE 协议开销 */
+        int len = snprintf(s_bleBuf + s_bleBufLen, 
+                           sizeof(s_bleBuf) - s_bleBufLen,
+                           "%.3f,%.3f,%.3f,%u,%.2f;",
+                           cleanSample, noisyNoDC, filteredSample,
+                           hr.bpm, hr.sqi);
+        if (len > 0) s_bleBufLen += len;
+        
+        if (frameCount % BLE_BATCH_SIZE == 0 && s_bleBufLen > 0) {
+            sendBLEMessage(s_bleBuf);
+            s_bleBuf[0] = '\0';
+            s_bleBufLen = 0;
+        }
 
         /* ======== 步骤5：串口输出（PC 绘图仪使用） ======== */
-        /* 降频: 每 10 帧输出一次 (250Hz → 25Hz) 以降低 USB PHY 功耗 */
-        /* 格式: clean,noisy,filtered,bpm,true_bpm,sqi,motion */
-        /* 三通道共用去偏置基准，与 BLE 格式对齐 */
-        if (frameCount % 10 == 0)
+        /* 降频: 每 20 帧输出一次 (500Hz -> 25Hz) 以降低 USB PHY 功耗 */
+        /* 格式: clean,noisy,filtered,bpm,true_bpm,sqi,motion,abnormal_flag,confidence */
+        if (frameCount % 20 == 0)
         {
             uint8_t trueBPM = (s_inputMode == SOURCE_SIMULATOR)
                               ? ecgSimulatorGetTrueBPM() : 0;
+
+            /* 检查 AI 推理结果 */
+            uint8_t abnormFlag = 0;
+            float abnormConf = 0.0f;
+            ai_result_t aiResult;
+            if (ai_inference_pop_result(&aiResult)) {
+                abnormFlag = aiResult.is_abnormal;
+                abnormConf = aiResult.confidence;
+            }
+
             Serial.print(cleanSample, 4);
             Serial.print(",");
             Serial.print(noisyNoDC, 4);
@@ -359,7 +396,11 @@ void loop()
             Serial.print(",");
             Serial.print(hr.sqi, 3);
             Serial.print(",");
-            Serial.println(hr.motionActive ? 1 : 0);
+            Serial.print(hr.motionActive ? 1 : 0);
+            Serial.print(",");
+            Serial.print(abnormFlag);
+            Serial.print(",");
+            Serial.println(abnormConf, 3);
         }
 
         /* ======== 步骤6：实时削顶预警 (仅真实模式) ======== */
@@ -376,14 +417,14 @@ void loop()
             /* ---- 温度监测 ---- */
             ThermalState ts = thermalUpdate();
 
-            /* 温度恢复正常后恢复 80MHz */
+            /* 温度恢复正常后恢复 240MHz */
             static bool s_wasOverheated = false;
             if (ts.avg < 55.0f && s_wasOverheated) {
                 s_wasOverheated = false;
-                setCpuFrequencyMhz(80);
+                setCpuFrequencyMhz(240);
                 Serial.print("[温度] ✅ 温度已降至 ");
                 Serial.print(ts.avg, 1);
-                Serial.println("°C, 恢复 80MHz");
+                Serial.println("°C, 恢复 240MHz");
             }
 
             if (ts.alertLevel >= THERMAL_WARN) {
@@ -475,6 +516,21 @@ void loop()
                 case 't':
                 case 'T':
                     thermalPrintStatus();
+                    break;
+
+                case 'a':
+                case 'A':
+                    {
+                        uint32_t ti, ta, al;
+                        ai_inference_stats(&ti, &ta, &al);
+                        Serial.print("[AI] 推理统计 | 总次数: ");
+                        Serial.print(ti);
+                        Serial.print(" | 异常: ");
+                        Serial.print(ta);
+                        Serial.print(" | 平均延迟: ");
+                        Serial.print(al);
+                        Serial.println(" us");
+                    }
                     break;
 
                 case 'c':

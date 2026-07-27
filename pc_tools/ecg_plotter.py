@@ -30,10 +30,12 @@ sample_count = 0
 current_bpm = 0
 current_true_bpm = 0
 bpm_confidence = 0.0
+current_abnormal = 0
+current_abnormal_conf = 0.0
 
 
 def serial_reader(port, baud):
-    global serial_port, running, sample_count, current_bpm, current_true_bpm, bpm_confidence
+    global serial_port, running, sample_count, current_bpm, current_true_bpm, bpm_confidence, current_abnormal, current_abnormal_conf
     try:
         serial_port = serial.Serial(port, baud, timeout=1)
         print("Connected: " + port + " @ " + str(baud) + " bps")
@@ -77,6 +79,20 @@ def serial_reader(port, baud):
                     try:
                         true_val = int(parts[4].strip())
                         current_true_bpm = true_val
+                    except ValueError:
+                        pass
+
+                # 第6列: AI 异常标志 (可选)
+                if len(parts) >= 6:
+                    try:
+                        current_abnormal = int(parts[5].strip())
+                    except ValueError:
+                        pass
+
+                # 第7列: AI 异常置信度 (可选)
+                if len(parts) >= 7:
+                    try:
+                        current_abnormal_conf = float(parts[6].strip())
                     except ValueError:
                         pass
         except ValueError:
@@ -125,6 +141,13 @@ def update_plot(frame):
     txt = "Samples: %d | Window: %.1fs | Rate: %dms" % (
         sample_count, WINDOW_SIZE/250.0, UPDATE_INTERVAL_MS)
     status_text.set_text(txt)
+
+    # AI 异常检测指示
+    if current_abnormal == 1:
+        bpm_text.set_color('red')
+        bpm_text.set_fontweight('bold')
+    else:
+        bpm_text.set_color('green')
     return line_clean, line_noisy, line_filtered, status_text, bpm_text
 
 

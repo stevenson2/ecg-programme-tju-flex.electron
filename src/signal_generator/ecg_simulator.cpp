@@ -4,11 +4,11 @@
 
 /**
  * @file ecg_simulator.cpp
- * @brief 临床级心电信号生成（适配ESP32 ADC量程，场景三噪声分布）
+ * @brief 临床级心电信号生成（适配ESP32 ADC量程，场景三噪声分布，500Hz采样）
  *
  * 信号特性：
  *   - 直流偏置 1.65V，心电波形峰峰值约1.3V（0.95~2.28V）
- *   - 心拍200点 @250Hz = 75bpm
+ *   - 心拍400点 @500Hz = 75bpm
  *
  * 噪声分布（IEC 60601-2-51 家用单导联便携设备场景）：
  *   1. 工频干扰 43%  — 50Hz + 100Hz谐波
@@ -21,7 +21,7 @@
  *   合计总RMS ≈ 0.20V（SNR约16dB，符合ESP32实测）
  */
 
-#define CYCLE_LENGTH    200
+#define CYCLE_LENGTH    400
 
 /* 心电波形参数（单位：V） */
 #define P_AMP    0.25f
@@ -118,8 +118,8 @@ static float generateCleanECG(void)
  */
 static float generatePowerlineNoise(void)
 {
-    float angle50 = 2.0f * 3.14159265f * 50.0f * sampleIndex / 250.0f;
-    float angle100 = 2.0f * 3.14159265f * 100.0f * sampleIndex / 250.0f;
+    float angle50 = 2.0f * 3.14159265f * 50.0f * sampleIndex / 500.0f;
+    float angle100 = 2.0f * 3.14159265f * 100.0f * sampleIndex / 500.0f;
 
     /* 50Hz主频 + 100Hz谐波（约3%总失真） */
     return PL_50HZ_AMP * sinf(angle50)
@@ -131,9 +131,9 @@ static float generatePowerlineNoise(void)
  */
 static float generateBaselineWander(void)
 {
-    float angleResp  = 2.0f * 3.14159265f * 0.25f * sampleIndex / 250.0f;
-    float angleSlow  = 2.0f * 3.14159265f * 0.10f * sampleIndex / 250.0f;
-    float angleVSlow = 2.0f * 3.14159265f * 0.03f * sampleIndex / 250.0f;
+    float angleResp  = 2.0f * 3.14159265f * 0.25f * sampleIndex / 500.0f;
+    float angleSlow  = 2.0f * 3.14159265f * 0.10f * sampleIndex / 500.0f;
+    float angleVSlow = 2.0f * 3.14159265f * 0.03f * sampleIndex / 500.0f;
 
     return BL_RESP_AMP * sinf(angleResp)
          + BL_SLOW_AMP * sinf(angleSlow + 1.3f)
@@ -267,8 +267,8 @@ float getCleanECGValue(void)
 
 uint8_t ecgSimulatorGetTrueBPM(void)
 {
-    /* BPM = 60 * 250 / CYCLE_LENGTH */
-    return (uint8_t)(15000 / CYCLE_LENGTH);
+    /* BPM = 60 * 500 / CYCLE_LENGTH */
+    return (uint8_t)(30000 / CYCLE_LENGTH);
 }
 
 uint16_t ecgSimulatorGetCycleLength(void)

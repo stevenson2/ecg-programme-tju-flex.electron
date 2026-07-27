@@ -5,11 +5,13 @@
  * @file filter.h
  * @brief 心电信号数字滤波器模块
  *
- * 级联结构：高通0.5Hz → 低通40Hz → 50Hz陷波
+ * 级联结构：高通0.5Hz → 低通40Hz
  * 所有级均为二阶直接II型转置结构（biquad）
  *
+ * 50Hz/100Hz 工频抑制由 main.cpp 中的双级梳状滤波器提供。
+ *
  * 设计参考 IEC 60601-2-51 家用单导联设备（场景三）
- * 采样率固定 250Hz
+ * 采样率固定 500Hz
  */
 
 #ifdef __cplusplus
@@ -24,7 +26,8 @@ void filterInit(void);
 /**
  * @brief 对单个输入样本进行滤波处理
  *
- * 处理流程：原始信号 → 带通滤波器（0.5~40Hz）→ 50Hz 陷波器 → 输出
+ * 处理流程：原始信号 → HP 0.5Hz → LP 40Hz → 输出
+ * 注：50Hz/100Hz 由 main.cpp 双级梳状滤波处理（500/50=10 精确陷零）
  *
  * @param inputSample 原始输入样本值
  * @return float 滤波后的输出样本值
