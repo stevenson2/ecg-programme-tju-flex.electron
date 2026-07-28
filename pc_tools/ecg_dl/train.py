@@ -44,6 +44,7 @@ def train(
     use_ptbxl: bool = False,
     use_merged: bool = False,
     use_incart: bool = False,
+    use_ptbxl_rhythm: bool = False,
     use_ecg1000: bool = False,
     use_no_focal: bool = False,
     epochs: int = None,
@@ -66,7 +67,9 @@ def train(
         skip_evaluate: 跳过评估.
     """
     print(f"\n{'='*60}")
-    if use_incart:
+    if use_ptbxl_rhythm:
+        ds_name = "MIT+INCART+PTBXL"
+    elif use_incart:
         ds_name = "MIT-BIH+INCART"
     elif use_ecg1000:
         ds_name = "MIT-BIH+ECG1000"
@@ -88,6 +91,7 @@ def train(
         use_merged=use_merged,
         use_incart=use_incart,
         use_ecg1000=use_ecg1000,
+        use_ptbxl_rhythm=use_ptbxl_rhythm,
     )
     
     # Step 2: 模型构建
@@ -260,6 +264,7 @@ if __name__ == "__main__":
     parser.add_argument("--ptbxl", action="store_true", help="仅用 PTB-XL 数据集")
     parser.add_argument("--merged", action="store_true", help="MIT-BIH + PTB-XL 合并")
     parser.add_argument("--incart", action="store_true", help="MIT-BIH + INCART 合并 (P0)")
+    parser.add_argument("--ptbxl-r", action="store_true", help="MIT-BIH+INCART+PTBXL节律合并")
     parser.add_argument("--ecg1000", action="store_true", help="MIT-BIH + ECG1000 合并 (本地)")
     parser.add_argument("--no-focal", action="store_true", help="禁用 FocalLoss, 用标准交叉熵")
     parser.add_argument("--tiny", action="store_true", help="使用 tiny 模型")
@@ -283,6 +288,7 @@ if __name__ == "__main__":
             use_merged=args.merged,
             use_incart=args.incart,
             use_ecg1000=args.ecg1000,
+            use_ptbxl_rhythm=args.ptbxl_r,
             use_no_focal=args.no_focal,
             epochs=args.epochs,
             batch_size=args.batch_size,

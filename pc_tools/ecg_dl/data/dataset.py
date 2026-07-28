@@ -145,7 +145,31 @@ def load_ecg1000_data() -> dict:
     return {"beats": beats, "labels": labels, "record_ids": rids}
 
 
-def load_mit_ecg1000_merged() -> dict:
+def load_ptbxl_rhythm_data() -> dict:
+    """Load PTB-XL rhythm-only preprocessed data."""
+    npz = PROCESSED_DIR / "ptbxl_rhythm_processed.npz"
+    if not npz.exists():
+        raise FileNotFoundError(f"Run: python data/preprocess_ptbxl_rhythm.py")
+    d = np.load(npz)
+    print(f"[PTBXL-R] {len(d['beats'])} beats (N={(d['labels']==0).sum()}, A={(d['labels']==1).sum()})")
+    return {"beats": d["beats"], "labels": d["labels"], "record_ids": d.get("record_ids")}
+
+
+def load_all_three_merged() -> dict:
+    """MIT-BIH + INCART + PTB-XL Rhythm (all beat-applicable labels)."""
+    mit_inc = load_mit_incart_merged()
+    ptb = load_ptbxl_rhythm_data()
+    # Offset PTB-XL IDs to avoid collision (MIT=100-234, INCART=1-75+100000, PTBXL=300000+)
+    if ptb["record_ids"] is not None:
+        ptb["record_ids"] = ptb["record_ids"] + 300000
+    beats = np.concatenate([mit_inc["beats"], ptb["beats"]])
+    labels = np.concatenate([mit_inc["labels"], ptb["labels"]])
+    rids = (np.concatenate([mit_inc["record_ids"], ptb["record_ids"]])
+            if mit_inc.get("record_ids") is not None and ptb.get("record_ids") is not None
+            else None)
+    nN, nA = (labels==0).sum(), (labels==1).sum()
+    print(f"\n[Merged ALL] {len(beats)} beats (N={nN}, A={nA}, {nA/len(labels)*100:.1f}% abnormal)")
+    return {"beats": beats, "labels": labels, "record_ids": rids}
     """Load MIT-BIH + ECG1000 merged dataset."""
     mit = load_processed_data()
     ecg = load_ecg1000_data()
@@ -394,6 +418,7 @@ def prepare_datasets(
     use_merged: bool = False,
     use_incart: bool = False,
     use_ecg1000: bool = False,
+    use_ptbxl_rhythm: bool = False,
 ) -> dict:
     """
     一站式准备所有数据集。
@@ -404,7 +429,9 @@ def prepare_datasets(
         use_incart: MIT-BIH + INCART.
         use_ecg1000: MIT-BIH + ECG1000.
     """
-    if use_ecg1000:
+    if use_ptbxl_rhythm:
+        data = load_all_three_merged()
+    elif use_ecg1000:
         data = load_mit_ecg1000_merged()
     elif use_incart:
         data = load_mit_incart_merged()
