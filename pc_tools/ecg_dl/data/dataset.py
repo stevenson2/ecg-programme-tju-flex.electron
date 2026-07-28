@@ -47,6 +47,155 @@ def load_processed_data() -> dict:
     return {"beats": beats, "labels": labels, "record_ids": record_ids}
 
 
+def load_ptbxl_data() -> dict:
+    """
+    Load preprocessed PTB-XL data.
+
+    Returns:
+        {"beats": np.ndarray, "labels": np.ndarray, "record_ids": np.ndarray}
+    """
+    npz_path = PROCESSED_DIR / "ptbxl_processed.npz"
+    if not npz_path.exists():
+        raise FileNotFoundError(
+            f"PTB-XL 预处理数据未找到: {npz_path}\n"
+            f"请先运行: python data/preprocess_ptbxl.py"
+        )
+    data = np.load(npz_path)
+    beats = data["beats"]
+    labels = data["labels"]
+    record_ids = data.get("record_ids", None)
+    print(f"[PTB-XL] 加载: {len(beats)} 心拍, 形状: {beats.shape}")
+    for i, name in enumerate(CLASS_NAMES):
+        count = int((labels == i).sum())
+        print(f"[PTB-XL]   {name}: {count} ({count/len(labels)*100:.1f}%)")
+    return {"beats": beats, "labels": labels, "record_ids": record_ids}
+
+
+def load_incart_data() -> dict:
+    """
+    Load preprocessed INCART data.
+
+    Returns:
+        {"beats": np.ndarray, "labels": np.ndarray, "record_ids": np.ndarray}
+    """
+    npz_path = PROCESSED_DIR / "incart_processed.npz"
+    if not npz_path.exists():
+        raise FileNotFoundError(
+            f"INCART 预处理数据未找到: {npz_path}\n"
+            f"请先运行: python data/preprocess_incart.py"
+        )
+    data = np.load(npz_path)
+    beats = data["beats"]
+    labels = data["labels"]
+    record_ids = data.get("record_ids", None)
+    print(f"[INCART] 加载: {len(beats)} 心拍, 形状: {beats.shape}")
+    for i, name in enumerate(CLASS_NAMES):
+        count = int((labels == i).sum())
+        print(f"[INCART]   {name}: {count} ({count/len(labels)*100:.1f}%)")
+    return {"beats": beats, "labels": labels, "record_ids": record_ids}
+
+
+def load_mit_incart_merged() -> dict:
+    """
+    Load MIT-BIH + INCART merged dataset.
+
+    Returns:
+        {"beats": np.ndarray, "labels": np.ndarray, "record_ids": np.ndarray}
+    """
+    mit = load_processed_data()
+    inc = load_incart_data()
+
+    # INCART record IDs are I01-I75, convert to int offset
+    # to avoid collision with MIT-BIH IDs (100-234)
+    if inc["record_ids"] is not None:
+        inc["record_ids"] = inc["record_ids"] + 100000
+
+    beats = np.concatenate([mit["beats"], inc["beats"]], axis=0)
+    labels = np.concatenate([mit["labels"], inc["labels"]], axis=0)
+
+    if mit.get("record_ids") is not None and inc.get("record_ids") is not None:
+        rids = np.concatenate([mit["record_ids"], inc["record_ids"]], axis=0)
+    else:
+        rids = None
+
+    print(f"\n[合并数据集] MIT-BIH + INCART")
+    print(f"  总心拍: {len(beats)}")
+    for i, name in enumerate(CLASS_NAMES):
+        count = int((labels == i).sum())
+        print(f"  {name}: {count} ({count/len(labels)*100:.1f}%)")
+
+    return {"beats": beats, "labels": labels, "record_ids": rids}
+
+
+def load_ecg1000_data() -> dict:
+    """Load preprocessed ECG1000 data."""
+    npz_path = PROCESSED_DIR / "ecg1000_processed.npz"
+    if not npz_path.exists():
+        raise FileNotFoundError(
+            f"ECG1000 data not found: {npz_path}\n"
+            f"Run: python data/preprocess_ecg1000.py"
+        )
+    data = np.load(npz_path)
+    beats, labels = data["beats"], data["labels"]
+    rids = data.get("record_ids", None)
+    print(f"[ECG1000] Loaded: {len(beats)} beats, shape: {beats.shape}")
+    for i, name in enumerate(CLASS_NAMES):
+        c = int((labels == i).sum())
+        print(f"[ECG1000]   {name}: {c} ({c/len(labels)*100:.1f}%)")
+    return {"beats": beats, "labels": labels, "record_ids": rids}
+
+
+def load_mit_ecg1000_merged() -> dict:
+    """Load MIT-BIH + ECG1000 merged dataset."""
+    mit = load_processed_data()
+    ecg = load_ecg1000_data()
+    if ecg["record_ids"] is not None:
+        ecg["record_ids"] = ecg["record_ids"] + 200000
+    beats = np.concatenate([mit["beats"], ecg["beats"]], axis=0)
+    labels = np.concatenate([mit["labels"], ecg["labels"]], axis=0)
+    rids = (np.concatenate([mit["record_ids"], ecg["record_ids"]])
+            if mit.get("record_ids") is not None and ecg.get("record_ids") is not None
+            else None)
+    print(f"\n[Merged] MIT-BIH + ECG1000: {len(beats)} beats")
+    for i, name in enumerate(CLASS_NAMES):
+        c = int((labels == i).sum())
+        print(f"  {name}: {c} ({c/len(labels)*100:.1f}%)")
+    return {"beats": beats, "labels": labels, "record_ids": rids}
+
+
+def load_merged_data() -> dict:
+    """
+    Load MIT-BIH + PTB-XL merged dataset.
+
+    Returns:
+        {"beats": np.ndarray, "labels": np.ndarray, "record_ids": np.ndarray}
+    """
+    mit = load_processed_data()
+    ptb = load_ptbxl_data()
+
+    # Offset PTB-XL record IDs to avoid collision
+    if ptb["record_ids"] is not None:
+        offset = 100000  # MIT-BIH IDs are 100-234
+        ptb["record_ids"] = ptb["record_ids"] + offset
+
+    beats = np.concatenate([mit["beats"], ptb["beats"]], axis=0)
+    labels = np.concatenate([mit["labels"], ptb["labels"]], axis=0)
+
+    if mit.get("record_ids") is not None and ptb.get("record_ids") is not None:
+        rids = np.concatenate([mit["record_ids"], ptb["record_ids"]], axis=0)
+    else:
+        rids = None
+
+    print(f"\n[合并数据集] MIT-BIH + PTB-XL")
+    print(f"  总心拍: {len(beats)}")
+    for i, name in enumerate(CLASS_NAMES):
+        count = int((labels == i).sum())
+        print(f"  {name}: {count} ({count/len(labels)*100:.1f}%)")
+
+    return {"beats": beats, "labels": labels, "record_ids": rids}
+
+
+
 def train_val_test_split(
     beats: np.ndarray,
     labels: np.ndarray,
@@ -135,6 +284,73 @@ def add_channel_dim(beats: np.ndarray) -> np.ndarray:
     return beats[..., np.newaxis]
 
 
+def make_balanced_dataset(
+    x: np.ndarray,
+    y: np.ndarray,
+    batch_size: int = None,
+    buffer_size: int = 10000
+) -> tf.data.Dataset:
+    """
+    类别均衡 Dataset：每个 batch 中 Normal/Abnormal 数量相等。
+
+    通过 oversample 少数类实现，避免模型被多数类淹没。
+    用于训练集可以显著提升 Abnormal Recall。
+    """
+    if batch_size is None:
+        batch_size = TRAIN_CONFIG['batch_size']
+
+    half = batch_size // 2
+
+    x = add_channel_dim(x)
+    y_onehot = tf.keras.utils.to_categorical(y, num_classes=2)
+
+    # Split by class
+    mask_n = (y == 0)
+    mask_a = (y == 1)
+
+    x_n, y_n = x[mask_n], y_onehot[mask_n]
+    x_a, y_a = x[mask_a], y_onehot[mask_a]
+
+    n_n, n_a = len(x_n), len(x_a)
+    print(f"[均衡采样] Normal: {n_n}, Abnormal: {n_a}, "
+          f"每 batch {half}+{half}")
+
+    if n_a == 0:
+        # Fallback: no abnormal samples
+        ds = tf.data.Dataset.from_tensor_slices((x, y_onehot))
+        return ds.shuffle(buffer_size).batch(batch_size).prefetch(tf.data.AUTOTUNE)
+
+    ds_n = tf.data.Dataset.from_tensor_slices(x_n).repeat()
+    ds_n = ds_n.shuffle(buffer_size).batch(half)
+    ds_n_labels = tf.data.Dataset.from_tensor_slices(y_n).repeat()
+    ds_n_labels = ds_n_labels.shuffle(buffer_size).batch(half)
+    ds_n = tf.data.Dataset.zip((ds_n, ds_n_labels))
+
+    ds_a = tf.data.Dataset.from_tensor_slices(x_a).repeat()
+    ds_a = ds_a.shuffle(buffer_size).batch(half)
+    ds_a_labels = tf.data.Dataset.from_tensor_slices(y_a).repeat()
+    ds_a_labels = ds_a_labels.shuffle(buffer_size).batch(half)
+    ds_a = tf.data.Dataset.zip((ds_a, ds_a_labels))
+
+    # Interleave: alternate normal and abnormal batches
+    ds = tf.data.Dataset.zip((ds_n, ds_a))
+    ds = ds.map(lambda n, a: (
+        tf.concat([n[0], a[0]], axis=0),
+        tf.concat([n[1], a[1]], axis=0)
+    ))
+
+    # Shuffle the combined batch internally
+    def shuffle_batch(x_batch, y_batch):
+        idx = tf.random.shuffle(tf.range(batch_size))
+        return tf.gather(x_batch, idx), tf.gather(y_batch, idx)
+
+    ds = ds.map(shuffle_batch)
+    ds = ds.prefetch(tf.data.AUTOTUNE)
+
+    # Steps per epoch: roughly n_n / half (cover all normal samples)
+    return ds
+
+
 def make_tf_dataset(
     x: np.ndarray,
     y: np.ndarray,
@@ -173,24 +389,31 @@ def make_tf_dataset(
 
 def prepare_datasets(
     augment: bool = False,
-    batch_size: int = None
+    batch_size: int = None,
+    use_ptbxl: bool = False,
+    use_merged: bool = False,
+    use_incart: bool = False,
+    use_ecg1000: bool = False,
 ) -> dict:
     """
-    一站式准备所有数据集（从原始预处理数据到TF Dataset）
-    
+    一站式准备所有数据集。
+
     Args:
-        augment: 是否使用数据增强后的数据
-        batch_size: 批大小
-        
-    Returns:
-        {
-            "train_ds": tf.data.Dataset,
-            "val_ds": tf.data.Dataset,
-            "test_ds": tf.data.Dataset,
-            "data": {"train": (x,y), "val": (x,y), "test": (x,y)}
-        }
+        use_ptbxl: 仅用 PTB-XL.
+        use_merged: MIT-BIH + PTB-XL.
+        use_incart: MIT-BIH + INCART.
+        use_ecg1000: MIT-BIH + ECG1000.
     """
-    data = load_processed_data()
+    if use_ecg1000:
+        data = load_mit_ecg1000_merged()
+    elif use_incart:
+        data = load_mit_incart_merged()
+    elif use_merged:
+        data = load_merged_data()
+    elif use_ptbxl:
+        data = load_ptbxl_data()
+    else:
+        data = load_processed_data()
     splits = train_val_test_split(data["beats"], data["labels"],
                                    record_ids=data.get("record_ids"))
     

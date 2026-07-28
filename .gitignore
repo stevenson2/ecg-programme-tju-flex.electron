@@ -1,0 +1,28 @@
+.pio
+.vscode/
+.idea/
+.venv/
+__pycache__/
+*.pyc
+.gitignore
+project_snapshot.md
+
+# AI 训练大数据 (>10MB)
+pc_tools/ecg_dl/data/raw/
+pc_tools/ecg_dl/data/processed/
+pc_tools/ecg_dl/models/*.h5
+pc_tools/ecg_dl/models/*.weights.h5
+pc_tools/ecg_dl/models/*.tflite
+pc_tools/ecg_dl/models/*.png
+pc_tools/ecg_dl/models/model_summary.txt
+pc_tools/ecg_dl/__pycache__/
+pc_tools/ecg_dl/**/__pycache__/
+
+# 外部数据集 (不推送)
+ECGdata_1000/
+PTB-XL_ECG/
+INCARTdata/
+st-petersburg-incart-12-lead-arrhythmia-database-1.0.0/
+*.zip
+*.npz
+*.mat

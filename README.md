@@ -181,18 +181,29 @@ Output: [P(Normal), P(Abnormal)]
 
 ### 评估结果
 
-**测试集：7 条未见过病人记录，16,664 个心拍，按记录号分组（无数据泄露）**
+**最新模型：CNN v2 (15K 参数, ESP32 滤波匹配)**
 
-| 指标 | FP32 (H5) | INT8 (TFLite) | 说明 |
-|------|-----------|---------------|------|
-| Accuracy | **85.63%** | **88.11%** | INT8 反而更高 (量化正则化效应) |
-| AUC | 0.9423 | - | 优秀 |
-| Normal Recall | 84.0% | 86.5% | 误报率仅 16% |
-| Abnormal Recall | 88.0% | 89.5% | 漏检率仅 12% |
-| Abnormal Precision | 77.0% | 79.0% | 告警中 ~21% 为误报 |
-| 模型文件大小 | 207 KB | **24.8 KB** | 压缩 88% |
+| 指标 | FP32 (H5) | 说明 |
+|------|-----------|------|
+| Accuracy | **88.5%** | 测试集 (按病人分组, 无数据泄露) |
+| AUC | **0.954** | 优秀 |
+| Normal Recall | 91% | |
+| Abnormal Recall | 84% | |
+| Abnormal Precision | 85% | |
+| 模型大小 | 207 KB (FP32) / **15 KB (INT8)** | ESP32-S3 完全适配 |
 
-> INT8 量化不仅未损失精度，反而因量化噪声起到正则化作用，精度提升 2.5%。
+### 模型强化实验记录
+
+| 实验 | Test AUC | 结论 |
+|------|----------|------|
+| CNN v2 (原版, 无滤波) | 0.935 | 基线 |
+| **CNN v2 + ESP32 滤波** | **0.954** | ✅ 当前最优 |
+| CNN v3 (30K) | 0.936 | 过参数化 |
+| ResNet-Lite (25K) | 0.761 | 小数据崩溃 |
+| v2 + PTB-XL | 0.764 | 标签不兼容 |
+| GPU (WSL2/RTX 5070) | — | ✅ 3 min/epoch |
+
+> 📖 详细模型强化方案见 **[ModelPlan.md](ModelPlan.md)**
 
 ### 模型进化史
 
@@ -464,10 +475,46 @@ ecg-programme-tju-flex.electron/
 
 | 脚本 | 功能 | 关键参数 |
 |------|------|---------|
-| `train.py` | 完整训练流程 | `--epochs` `--batch-size` `--quick-test` |
+| `train.py` | 完整训练流程 | `--epochs` `--batch-size` `--v3` `--resnet` `--merged` |
 | `evaluate.py` | H5/TFLite 精度对比 | `--compare` `--h5` `--tflite` |
 | `export.py` | INT8 量化 + C 数组 | `--pipeline` `--all` `--to-c` |
 | `07_pc_inference.py` | 实时推理 + 基准 | `--source` `--benchmark` |
+
+新增模块：
+
+| 模块 | 功能 |
+|------|------|
+| `losses/focal_loss.py` | Focal Loss + Label Smoothing + Mixup + ECG 增强 |
+| `models/resnet_lite_1d.py` | ECG-ResNet-Lite (Small 25K / Medium 55K / Large 80K) |
+| `models/cnn_1d.py` | CNN v1/v2/v3 (含 v3: 30K, 4 层, Dropout 正则化) |
+| `data/preprocess.py` | MIT-BIH 预处理 (含 ESP32 滤波器匹配) |
+| `data/preprocess_ptbxl.py` | PTB-XL 预处理 |
+| `data/preprocess_svdb.py` | SVDB 预处理 |
+
+### GPU 训练 (WSL2)
+
+Windows TensorFlow ≥2.11 原生不支持 GPU，需通过 WSL2：
+
+```bash
+# PowerShell (管理员)
+wsl --install -d Ubuntu-24.04
+wsl
+
+# WSL 内
+sudo apt update && sudo apt install python3-pip -y
+pip install --break-system-packages tensorflow[and-cuda] -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install --break-system-packages numpy scipy pandas wfdb matplotlib scikit-learn -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+# 设置 CUDA 库路径
+echo 'export LD_LIBRARY_PATH=/usr/local/lib/python3.12/dist-packages/nvidia/cuda_runtime/lib:/usr/local/lib/python3.12/dist-packages/nvidia/cublas/lib:/usr/local/lib/python3.12/dist-packages/nvidia/cudnn/lib:/usr/local/lib/python3.12/dist-packages/nvidia/cufft/lib:/usr/local/lib/python3.12/dist-packages/nvidia/curand/lib:/usr/local/lib/python3.12/dist-packages/nvidia/cusolver/lib:/usr/local/lib/python3.12/dist-packages/nvidia/cusparse/lib:/usr/local/lib/python3.12/dist-packages/nvidia/nccl/lib:/usr/local/lib/python3.12/dist-packages/nvidia/nvjitlink/lib:/usr/lib/wsl/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
+source ~/.bashrc
+
+# 训练
+cd /mnt/c/Users/cai/OneDrive/Desktop/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl
+python3 train.py --epochs 200 --batch-size 128
+```
+
+> ⚠️ RTX 5070 (compute capability 12.0a) 首次运行需 JIT 编译 CUDA 内核 (~30 min)，后续缓存后 ~7ms/step。
 
 ---
 

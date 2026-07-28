@@ -25,6 +25,33 @@ from config import (
 )
 
 
+# ===========================================================================
+# ESP32-matched Digital Filters (must match src/filter/filter.cpp exactly)
+# ===========================================================================
+
+def _butter_hp(cutoff, fs, order=2):
+    b, a = scipy_signal.butter(order, cutoff/(0.5*fs), btype='high')
+    return b, a
+
+def _butter_lp(cutoff, fs, order=2):
+    b, a = scipy_signal.butter(order, cutoff/(0.5*fs), btype='low')
+    return b, a
+
+def _notch(f0, fs, Q=20.0):
+    return scipy_signal.iirnotch(f0, Q, fs)
+
+def apply_esp32_filters(signal, fs):
+    """HP(0.5Hz) → LP(40Hz) → Notch(50Hz) — matches ESP32 IIR Biquad chain."""
+    bh, ah = _butter_hp(0.5, fs); bl, al = _butter_lp(40.0, fs)
+    bn, an = _notch(50.0, fs)
+    sig = scipy_signal.filtfilt(bh, ah, signal)
+    sig = scipy_signal.filtfilt(bl, al, sig)
+    sig = scipy_signal.filtfilt(bn, an, sig)
+    return sig.astype(np.float32)
+
+
+
+
 def find_record_path(record_name: str) -> Path:
     """
     查找记录文件路径 (支持多个数据目录)
@@ -120,11 +147,31 @@ def extract_beats(
     ann_indices: np.ndarray,
     ann_symbols: List[str],
     orig_fs: int,
-    target_fs: int
+    target_fs: int,
+    dual_lead: bool = False,     # ← 新增：提取双导联
+    lead_indices: Tuple[int, int] = (0, 1),  # ← 导联选择
 ) -> Tuple[np.ndarray, np.ndarray]:
-    """以 R 峰为中心提取心拍"""
+    """以 R 峰为中心提取心拍
+    
+    dual_lead=True: 从两个导联分别提取同一心拍，每个心拍产生2个训练样本。
+    12-lead 数据集推荐 lead_indices=(0,1) 即 Lead I + Lead II。
+    MIT-BIH 双导联推荐 lead_indices=(0,1) 即 MLII + V1。
+    """
     resampled = resample_ecg(signal, orig_fs, target_fs)
-    n_resampled = resampled.shape[0]
+    
+    # 选择要提取的导联
+    if dual_lead and resampled.shape[1] >= max(lead_indices) + 1:
+        leads = [min(i, resampled.shape[1] - 1) for i in lead_indices]
+    else:
+        leads = [0]  # 回退到单导联
+    
+    # Apply ESP32-matched filter chain to each lead
+    resampled_filtered_leads = []
+    for lead_idx in leads:
+        filtered = apply_esp32_filters(resampled[:, lead_idx], target_fs)
+        resampled_filtered_leads.append(filtered)
+    
+    n_resampled = resampled_filtered_leads[0].shape[0]
     resample_ratio = target_fs / orig_fs
     ann_indices_resampled = (ann_indices * resample_ratio).astype(int)
     
@@ -140,16 +187,19 @@ def extract_beats(
         end = min(n_resampled, idx + half_window)
         if end - start < BEAT_WINDOW_SAMPLES * 0.5:
             continue
-        beat = resampled[start:end, 0]
-        if len(beat) < BEAT_WINDOW_SAMPLES:
-            pad_before = (BEAT_WINDOW_SAMPLES - len(beat)) // 2
-            pad_after = BEAT_WINDOW_SAMPLES - len(beat) - pad_before
-            beat = np.pad(beat, (pad_before, pad_after), mode='constant')
-        elif len(beat) > BEAT_WINDOW_SAMPLES:
-            center = len(beat) // 2
-            beat = beat[center - half_window:center + half_window]
-        beats.append(beat)
-        labels.append(label)
+        
+        # 对每个导联分别提取同一心拍
+        for lead_filtered in resampled_filtered_leads:
+            beat = lead_filtered[start:end]
+            if len(beat) < BEAT_WINDOW_SAMPLES:
+                pad_before = (BEAT_WINDOW_SAMPLES - len(beat)) // 2
+                pad_after = BEAT_WINDOW_SAMPLES - len(beat) - pad_before
+                beat = np.pad(beat, (pad_before, pad_after), mode='constant')
+            elif len(beat) > BEAT_WINDOW_SAMPLES:
+                center = len(beat) // 2
+                beat = beat[center - half_window:center + half_window]
+            beats.append(beat)
+            labels.append(label)
     
     if len(beats) == 0:
         raise ValueError("未提取到任何心拍! 请检查标注文件。")
@@ -198,7 +248,8 @@ def augment_data(beats: np.ndarray, labels: np.ndarray, config: dict = None) -> 
 def process_all_records(
     records: List[int] = None,
     augment: bool = True,
-    test_mode: bool = False
+    test_mode: bool = False,
+    dual_lead: bool = False,
 ) -> Dict[str, np.ndarray]:
     """处理所有 MIT-BIH 记录"""
     if records is None:
@@ -219,7 +270,11 @@ def process_all_records(
         
         try:
             signal, ann_indices, ann_symbols, fs = load_mit_bih_record(rec_name)
-            beats, labels = extract_beats(signal, ann_indices, ann_symbols, orig_fs=fs, target_fs=TARGET_FS)
+            beats, labels = extract_beats(
+                signal, ann_indices, ann_symbols,
+                orig_fs=fs, target_fs=TARGET_FS,
+                dual_lead=dual_lead,
+            )
             
             if augment:
                 beats_aug, labels_aug = augment_data(beats, labels)
@@ -264,11 +319,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="MIT-BIH 心电数据预处理")
     parser.add_argument("--test", action="store_true", help="测试模式 (仅处理前3条记录)")
     parser.add_argument("--no-augment", action="store_true", help="不进行数据增强")
+    parser.add_argument("--dual", action="store_true", help="双导联提取 (Lead I + Lead II)")
     args = parser.parse_args()
     
     result = process_all_records(
         test_mode=args.test,
-        augment=not args.no_augment
+        augment=not args.no_augment,
+        dual_lead=args.dual,
     )
     
     output_path = PROCESSED_DIR / "mit_bih_processed.npz"

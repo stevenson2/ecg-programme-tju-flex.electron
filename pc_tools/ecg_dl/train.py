@@ -19,8 +19,15 @@ np.random.seed(TRAIN_CONFIG['random_seed'])
 # 导入自定义模块
 from data.dataset import prepare_datasets
 from models.cnn_1d import (
-    build_ecg_cnn_1d, build_ecg_cnn_1d_v2, build_ecg_cnn_1d_tiny,
-    compile_model, get_callbacks, model_summary_table
+    build_ecg_cnn_1d, build_ecg_cnn_1d_v2, build_ecg_cnn_1d_v3, build_ecg_cnn_1d_tiny,
+    compile_model as compile_cnn, get_callbacks as get_cnn_callbacks,
+    model_summary_table
+)
+from models.resnet_lite_1d import (
+    build_ecg_resnet_lite, build_ecg_resnet_lite_small,
+    build_ecg_resnet_lite_medium, build_ecg_resnet_lite_large,
+    compile_model as compile_resnet, get_callbacks as get_resnet_callbacks,
+    model_summary_table as resnet_summary
 )
 from models.utils import (
     plot_training_history, plot_confusion_matrix,
@@ -32,37 +39,74 @@ from config import MODELS_DIR, CLASS_NAMES
 def train(
     use_tiny: bool = False,
     use_v2: bool = True,
+    use_v3: bool = False,
+    use_resnet: bool = False,
+    use_ptbxl: bool = False,
+    use_merged: bool = False,
+    use_incart: bool = False,
+    use_ecg1000: bool = False,
+    use_no_focal: bool = False,
     epochs: int = None,
     batch_size: int = None,
     skip_evaluate: bool = False
 ) -> tf.keras.Model:
     """
-    完整训练流程
-    
+    完整训练流程 (支持多模型 + 多数据集).
+
     Args:
-        use_tiny: 使用更轻量的 tiny 版本
-        epochs: 训练轮数
-        batch_size: 批大小
-        skip_evaluate: 跳过评估
-        
-    Returns:
-        训练好的模型
+        use_tiny:    CNN tiny (<5K).
+        use_v2:      CNN v2 (15K, 默认).
+        use_resnet:  ECG-ResNet-Lite medium (55K, Phase 1).
+        use_ptbxl:   仅用 PTB-XL 数据.
+        use_merged:  MIT-BIH + PTB-XL 合并.
+        use_incart:  MIT-BIH + INCART 合并 (P0: 当前优先).
+        use_no_focal: 禁用 FocalLoss, 使用标准交叉熵.
+        epochs:      训练轮数.
+        batch_size:  批大小.
+        skip_evaluate: 跳过评估.
     """
     print(f"\n{'='*60}")
-    print(" ECG 异常检测模型训练")
+    if use_incart:
+        ds_name = "MIT-BIH+INCART"
+    elif use_ecg1000:
+        ds_name = "MIT-BIH+ECG1000"
+    elif use_merged:
+        ds_name = "Merged"
+    else:
+        ds_name = "PTB-XL" if use_ptbxl else "MIT-BIH"
+    model_type = "ECG-ResNet-Lite" if use_resnet else \
+                 ("CNN-v3" if use_v3 else ("CNN-v2" if use_v2 else ("CNN-tiny" if use_tiny else "CNN-v1")))
+    loss_type = "CE" if use_no_focal else "FocalLoss"
+    print(f" ECG [{ds_name}] [{model_type}] [{loss_type}]")
     print(f"{'='*60}\n")
     
     # Step 1: 数据准备
     print("[1/5] 准备数据集...")
     datasets = prepare_datasets(
-        augment=True,
-        batch_size=batch_size or TRAIN_CONFIG['batch_size']
+        batch_size=batch_size or TRAIN_CONFIG['batch_size'],
+        use_ptbxl=use_ptbxl,
+        use_merged=use_merged,
+        use_incart=use_incart,
+        use_ecg1000=use_ecg1000,
     )
     
     # Step 2: 模型构建
     print("\n[2/5] 构建模型...")
-    if use_tiny:
+    if use_resnet:
+        model = build_ecg_resnet_lite_small(
+            input_shape=datasets['input_shape']
+        )
+        model = compile_resnet(model, learning_rate=TRAIN_CONFIG['learning_rate'])
+        resnet_summary(model)
+        callbacks = get_resnet_callbacks()
+        save_model_summary(model)
+    elif use_tiny:
         model = build_ecg_cnn_1d_tiny(
+            input_shape=datasets['input_shape'],
+            n_classes=len(CLASS_NAMES)
+        )
+    elif use_v3:
+        model = build_ecg_cnn_1d_v3(
             input_shape=datasets['input_shape'],
             n_classes=len(CLASS_NAMES)
         )
@@ -77,16 +121,23 @@ def train(
             n_classes=len(CLASS_NAMES)
         )
     
-    model = compile_model(
-        model,
-        learning_rate=TRAIN_CONFIG['learning_rate']
-    )
-    model_summary_table(model)
-    save_model_summary(model)
+    if not use_resnet:
+        model = compile_cnn(
+            model,
+            learning_rate=TRAIN_CONFIG['learning_rate'],
+            loss='categorical_crossentropy' if use_no_focal else None
+        )
+        model_summary_table(model)
+        save_model_summary(model)
     
     # Step 3: 训练
     print("\n[3/5] 开始训练...")
-    callbacks = get_callbacks()
+    if not use_resnet:
+        callbacks = get_cnn_callbacks()
+    
+    # NOTE: class_weight is incompatible with tf.data.Dataset in Keras 3.x.
+    # FocalLoss handles class imbalance internally via alpha parameter.
+    # See ModelPlan §11.2 for details.
     
     history = model.fit(
         datasets['train_ds'],
@@ -177,7 +228,7 @@ def quick_test():
     
     # 构建模型
     model = build_ecg_cnn_1d(input_shape=input_shape)
-    model = compile_model(model)
+    model = compile_cnn(model)
     model_summary_table(model)
     
     # 训练
@@ -204,6 +255,13 @@ if __name__ == "__main__":
     import argparse
     
     parser = argparse.ArgumentParser(description="ECG 异常检测模型训练")
+    parser.add_argument("--v3", action="store_true", help="CNN v3 (30K, scaled-up)")
+    parser.add_argument("--resnet", action="store_true", help="ECG-ResNet-Lite (55K)")
+    parser.add_argument("--ptbxl", action="store_true", help="仅用 PTB-XL 数据集")
+    parser.add_argument("--merged", action="store_true", help="MIT-BIH + PTB-XL 合并")
+    parser.add_argument("--incart", action="store_true", help="MIT-BIH + INCART 合并 (P0)")
+    parser.add_argument("--ecg1000", action="store_true", help="MIT-BIH + ECG1000 合并 (本地)")
+    parser.add_argument("--no-focal", action="store_true", help="禁用 FocalLoss, 用标准交叉熵")
     parser.add_argument("--tiny", action="store_true", help="使用 tiny 模型")
     parser.add_argument("--v1", action="store_true", help="使用 v1 原版模型")
     parser.add_argument("--epochs", type=int, default=None, help="训练轮数")
@@ -217,8 +275,15 @@ if __name__ == "__main__":
         quick_test()
     else:
         train(
+            use_v3=args.v3,
+            use_resnet=args.resnet,
             use_tiny=args.tiny,
             use_v2=not args.v1,
+            use_ptbxl=args.ptbxl,
+            use_merged=args.merged,
+            use_incart=args.incart,
+            use_ecg1000=args.ecg1000,
+            use_no_focal=args.no_focal,
             epochs=args.epochs,
             batch_size=args.batch_size,
             skip_evaluate=args.skip_eval

@@ -127,6 +127,56 @@ def build_ecg_cnn_1d_v2(
     model = Model(inputs=inputs, outputs=outputs, name='ecg_cnn_1d_v2')
     return model
 
+
+def build_ecg_cnn_1d_v3(
+    input_shape=None,
+    n_classes=2,
+    dropout_rate=0.4
+) -> tf.keras.Model:
+    """
+    CNN v3: scaled-up standard convolutions (~30K params).
+    No depthwise separable — stable on small datasets.
+    """
+    if input_shape is None:
+        input_shape = (INFERENCE_CONFIG['window_size'], 1)
+
+    inputs = layers.Input(shape=input_shape, name="ecg_input")
+
+    # Block 1: Conv1D 32, k7 → BN → ReLU → Pool → Dropout
+    x = layers.Conv1D(32, 7, padding='same', name='c1')(inputs)
+    x = layers.BatchNormalization(name='b1')(x)
+    x = layers.ReLU(name='r1')(x)
+    x = layers.MaxPooling1D(2, name='p1')(x)
+    x = layers.Dropout(0.15, name='d1')(x)
+
+    # Block 2: Conv1D 64, k5
+    x = layers.Conv1D(64, 5, padding='same', name='c2')(x)
+    x = layers.BatchNormalization(name='b2')(x)
+    x = layers.ReLU(name='r2')(x)
+    x = layers.MaxPooling1D(2, name='p2')(x)
+    x = layers.Dropout(0.2, name='d2')(x)
+
+    # Block 3: Conv1D 96, k3
+    x = layers.Conv1D(96, 3, padding='same', name='c3')(x)
+    x = layers.BatchNormalization(name='b3')(x)
+    x = layers.ReLU(name='r3')(x)
+    x = layers.MaxPooling1D(2, name='p3')(x)
+    x = layers.Dropout(0.25, name='d3')(x)
+
+    # Block 4: Conv1D 128, k3 → GAP
+    x = layers.Conv1D(128, 3, padding='same', name='c4')(x)
+    x = layers.BatchNormalization(name='b4')(x)
+    x = layers.ReLU(name='r4')(x)
+    x = layers.GlobalAveragePooling1D(name='gap')(x)
+
+    # Classifier
+    x = layers.Dense(64, activation='relu', name='fc1')(x)
+    x = layers.Dropout(dropout_rate, name='do')(x)
+    outputs = layers.Dense(n_classes, activation='softmax', name='out')(x)
+
+    return Model(inputs=inputs, outputs=outputs, name='ecg_cnn_1d_v3')
+
+
 def build_ecg_cnn_1d_tiny(
     input_shape: tuple = None,
     n_classes: int = 2
@@ -165,7 +215,8 @@ def build_ecg_cnn_1d_tiny(
 
 def compile_model(
     model: tf.keras.Model,
-    learning_rate: float = None
+    learning_rate: float = None,
+    loss = None
 ) -> tf.keras.Model:
     """
     编译模型
@@ -173,6 +224,7 @@ def compile_model(
     Args:
         model: 未编译的模型
         learning_rate: 学习率
+        loss: 损失函数 (默认 categorical_crossentropy)
         
     Returns:
         编译后的模型
@@ -180,11 +232,27 @@ def compile_model(
     if learning_rate is None:
         learning_rate = TRAIN_CONFIG['learning_rate']
     
+    if loss is None:
+        fl_cfg = TRAIN_CONFIG.get('focal_loss', {})
+        if fl_cfg.get('enabled', False):
+            from losses.focal_loss import FocalLoss
+            loss = FocalLoss(
+                gamma=fl_cfg.get('gamma', 1.0),
+                alpha=fl_cfg.get('alpha', 0.75),
+                label_smoothing=fl_cfg.get('label_smoothing', 0.0),
+                from_logits=False,
+            )
+            print(f"[编译] 使用 FocalLoss (γ={loss.gamma}, α={loss.alpha}, "
+                  f"LS={loss.label_smoothing})")
+        else:
+            loss = 'categorical_crossentropy'
+            print("[编译] 使用 CategoricalCrossentropy")
+    
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
     
     model.compile(
         optimizer=optimizer,
-        loss='categorical_crossentropy',
+        loss=loss,
         metrics=[
             'accuracy',
             tf.keras.metrics.Precision(name='precision'),

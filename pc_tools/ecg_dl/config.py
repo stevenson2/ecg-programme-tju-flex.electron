@@ -70,24 +70,68 @@ CLASS_NAMES = ['Normal', 'Abnormal']
 # ======================== 训练配置 ========================
 TRAIN_CONFIG = {
     'batch_size': 64,
-    'epochs': 50,
-    'learning_rate': 0.001,
+    'epochs': 200,
+    'learning_rate': 0.0005,
     'validation_split': 0.2,
     'test_split': 0.2,
     'random_seed': 42,
     
-    # 数据增强
+    # ------ Data Augmentation (Mild, Max 2x) ------
     'augmentation': {
-        'noise_std': [0.02],
-        'time_scale_range': [0.95, 1.05],
-        'amplitude_scale_range': [0.8, 1.2],
-        'baseline_drift_amplitude': 0.1,
+        'enabled': False,               # Disabled by default (use programmatic)
+        'noise_std': [0.01],            # Reduced from 0.02
+        'time_scale_range': [0.92, 1.08],  # Narrower
+        'amplitude_scale_range': [0.85, 1.15],  # Narrower
+        'baseline_drift_amplitude': 0.15,
     },
     
-    # 早停
-    'early_stopping_patience': 10,
-    'reduce_lr_patience': 5,
+    # ------ Loss (Phase 1: FocalLoss + LabelSmoothing) ------
+    'focal_loss': {
+        'enabled': True,
+        'gamma': 1.0,                       # Reduced from 2.0 (避免梯度消失)
+        'alpha': 0.75,                      # 最佳: α=0.75 (Acc 93.98%, A.Recall 0.72)
+        'label_smoothing': 0.0,             # 关闭，优先验证纯 FocalLoss
+    },
+    
+    # ------ Mixup ------
+    'mixup': {
+        'enabled': True,
+        'alpha': 0.2,                   # Beta distribution shape
+        'prob': 0.5,                    # Application probability
+    },
+    
+    # ------ Class Weights ------
+    'class_weight': {
+        'enabled': True,
+        'abnormal_weight': 2.5,         # Abnormal class weighted 2.5x vs Normal
+    },
+    
+    # ------ AdamW ------
+    'optimizer': {
+        'type': 'adamw',
+        'weight_decay': 1e-4,
+    },
+    
+    # ------ Learning Rate Schedule ------
+    'lr_schedule': {
+        'type': 'cosine_restart',       # cosine_restart / reduce_on_plateau
+        'warmup_epochs': 5,
+        'warmup_start_lr': 1e-6,
+        'initial_lr': 1e-3,
+        'min_lr': 1e-6,
+        'restart_period': 20,           # Cosine restart every 20 epochs
+    },
+    
+    # ------ Early Stopping ------
+    'early_stopping_patience': 20,
+    'reduce_lr_patience': 8,
     'reduce_lr_factor': 0.5,
+    
+    # ------ Cross-Validation ------
+    'cross_validation': {
+        'enabled': False,               # Enable for 5-fold CV
+        'n_folds': 5,
+    },
 }
 
 # ======================== TFLite 导出配置 ========================
