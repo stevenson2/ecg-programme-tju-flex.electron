@@ -76,13 +76,14 @@ TRAIN_CONFIG = {
     'test_split': 0.2,
     'random_seed': 42,
     
-    # ------ Data Augmentation (Mild, Max 2x) ------
+    # ------ Data Augmentation (Phase 2A-3: 增强, ~2x stronger) ------
     'augmentation': {
-        'enabled': False,               # Disabled by default (use programmatic)
-        'noise_std': [0.01],            # Reduced from 0.02
-        'time_scale_range': [0.92, 1.08],  # Narrower
-        'amplitude_scale_range': [0.85, 1.15],  # Narrower
-        'baseline_drift_amplitude': 0.15,
+        'enabled': True,
+        'apply_prob': 0.80,                         # ↑ 0.50→0.80, more augmentation
+        'noise_std': 0.015,                         # ↑ 0.01→0.015
+        'time_scale_range': [0.88, 1.12],           # ↑ ±8%→±12%
+        'amplitude_scale_range': [0.80, 1.20],      # ↑ ±15%→±20%
+        'baseline_drift_amplitude': 0.20,           # ↑ 0.15→0.20
     },
     
     # ------ Loss (Phase 1: FocalLoss + LabelSmoothing) ------
@@ -146,5 +147,6 @@ TFLITE_CONFIG = {
 INFERENCE_CONFIG = {
     'window_size': BEAT_WINDOW_SAMPLES,  # 250
     'stride': BEAT_WINDOW_SAMPLES // 2,  # 125 (50% 重叠滑动窗口)
-    'threshold': 0.5,                    # 异常判定阈值
+    'threshold': 0.35,                   # 异常判定阈值 (P0优化: 0.50→0.35, 牺牲少量精确率换取召回率)
+    'multi_beat_confirm': 2,             # 多拍确认: 连续N拍异常才报警 (减少假阳性)
 }

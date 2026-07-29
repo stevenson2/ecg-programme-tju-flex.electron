@@ -116,7 +116,7 @@ static float parse_output_confidence(void) {
     return exp_a / (exp_n + exp_a);
 }
 
-/** 执行单次推理 */
+/** 执行单次推理 (含多拍确认滤波) */
 static ai_result_t run_single_inference(const float* samples, uint32_t sample_index) {
     ai_result_t result = {0};
     uint32_t t_start = micros();
@@ -138,8 +138,18 @@ static ai_result_t run_single_inference(const float* samples, uint32_t sample_in
     }
 
     float abnormal_conf = parse_output_confidence();
+    bool raw_abnormal = (abnormal_conf > INFERENCE_THRESHOLD);
+
+    /* P0优化: 多拍确认滤波 — 连续MULTI_BEAT_CONFIRM拍异常才报警 */
+    static uint32_t s_consecutive_abnormal = 0;
+    if (raw_abnormal) {
+        s_consecutive_abnormal++;
+    } else {
+        s_consecutive_abnormal = 0;
+    }
+
     result.confidence = abnormal_conf;
-    result.is_abnormal = (abnormal_conf > INFERENCE_THRESHOLD) ? 1 : 0;
+    result.is_abnormal = (s_consecutive_abnormal >= MULTI_BEAT_CONFIRM) ? 1 : 0;
     result.sample_index = sample_index;
     result.latency_us = t_elapsed;
     return result;

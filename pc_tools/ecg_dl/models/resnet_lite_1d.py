@@ -197,7 +197,7 @@ def get_callbacks(model_name="best_resnet_lite.h5",
             min_lr=1e-6, verbose=1),
         tf.keras.callbacks.ModelCheckpoint(
             filepath=str(MODELS_DIR / model_name),
-            monitor='val_accuracy', save_best_only=True, verbose=1),
+            monitor='val_auc', mode='max', save_best_only=True, verbose=1),
     ]
 
 

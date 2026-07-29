@@ -32,7 +32,8 @@
 #define TENSOR_ARENA_SIZE    (32 * 1024)   /* 32KB */
 
 /* ======================== 推理配置 ======================== */
-#define INFERENCE_THRESHOLD  0.5f    /* 异常判定阈值 (>0.5 = 异常) */
+#define INFERENCE_THRESHOLD  0.35f   /* 异常判定阈值 (P0优化: 0.50→0.35, 提升召回率) */
+#define MULTI_BEAT_CONFIRM   2       /* 多拍确认: 连续N拍异常才报警 */
 #define INFERENCE_ENABLED    1       /* 默认启用 */
 
 /* ======================== 性能配置 ======================== */

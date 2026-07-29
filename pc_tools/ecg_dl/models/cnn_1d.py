@@ -292,12 +292,13 @@ def get_callbacks() -> list:
         # 模型检查点 (最佳模型)
         tf.keras.callbacks.ModelCheckpoint(
             filepath=str(MODELS_DIR / 'best_model.h5'),
-            monitor='val_accuracy',
+            monitor='val_auc',
+            mode='max',
             save_best_only=True,
             verbose=1
         ),
     ]
-    
+
     return callbacks
 
 

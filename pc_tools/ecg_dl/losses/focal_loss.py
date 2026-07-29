@@ -102,12 +102,14 @@ def focal_loss_with_smoothing(gamma=2.0, alpha=0.75, label_smoothing=0.1,
 @tf.function
 def mixup_1d(x_batch, y_batch, alpha=0.2):
     """Mixup: x_mix = λ·x_i + (1-λ)·x_j, λ ~ Beta(α,α)."""
+    x_batch = tf.cast(x_batch, tf.float32)
+    y_batch = tf.cast(y_batch, tf.float32)
     batch_size = tf.shape(x_batch)[0]
-    gamma_1 = tf.random.gamma((batch_size,), alpha=alpha, dtype=x_batch.dtype)
-    gamma_2 = tf.random.gamma((batch_size,), alpha=alpha, dtype=x_batch.dtype)
+    gamma_1 = tf.random.gamma((batch_size,), alpha=alpha, dtype=tf.float32)
+    gamma_2 = tf.random.gamma((batch_size,), alpha=alpha, dtype=tf.float32)
     lam = gamma_1 / (gamma_1 + gamma_2 + K.epsilon())
-    lam_x = tf.reshape(lam, (batch_size, 1, 1))
-    lam_y = tf.reshape(lam, (batch_size, 1))
+    lam_x = tf.cast(tf.reshape(lam, (batch_size, 1, 1)), tf.float32)
+    lam_y = tf.cast(tf.reshape(lam, (batch_size, 1)), tf.float32)
     indices = tf.random.shuffle(tf.range(batch_size))
     x_shuf, y_shuf = tf.gather(x_batch, indices), tf.gather(y_batch, indices)
     return lam_x * x_batch + (1 - lam_x) * x_shuf, \
@@ -141,35 +143,41 @@ class MixupDataGenerator(tf.keras.utils.Sequence):
 # ===========================================================================
 
 @tf.function
-def ecg_time_warp(x, max_stretch=0.08):
-    """Random time-stretch (±8%) simulating HR variability."""
+def ecg_time_warp(x, max_stretch=0.12):
+    """Random time-stretch for whole batch (simplified from per-sample, sufficient for augmentation)."""
     bs = tf.shape(x)[0]
     sl = tf.cast(tf.shape(x)[1], tf.float32)
-    st = tf.random.uniform((bs, 1, 1), 1.0 - max_stretch, 1.0 + max_stretch)
-    new_len = tf.clip_by_value(tf.cast(sl * st, tf.int32),
-                               tf.cast(sl * 0.85, tf.int32),
-                               tf.cast(sl * 1.15, tf.int32))
-    resized = tf.map_fn(lambda a: tf.image.resize(a[0], (a[1][0], 1)),
-                        (x, new_len), dtype=x.dtype)
-    return tf.image.resize_with_crop_or_pad(resized, tf.cast(sl, tf.int32), 1)
+    sl_i = tf.cast(sl, tf.int32)
+
+    st = tf.random.uniform((), 1.0 - max_stretch, 1.0 + max_stretch)
+    new_len = tf.clip_by_value(
+        tf.cast(sl * st, tf.int32),
+        tf.cast(sl * 0.80, tf.int32),
+        tf.cast(sl * 1.20, tf.int32)
+    )
+
+    x_4d = x[:, :, :, tf.newaxis]                               # (bs, time, 1) -> (bs, time, 1, 1)
+    resized = tf.image.resize(x_4d, (new_len, 1))               # (bs, new_len, 1, 1)
+    padded = tf.image.resize_with_crop_or_pad(resized, sl_i, 1) # (bs, sl_i, 1, 1)
+    return tf.squeeze(padded, axis=-1)                          # (bs, sl_i, 1)
 
 
 @tf.function
-def ecg_amplitude_scale(x, min_s=0.85, max_s=1.15):
-    """Scale amplitude (±15%) to simulate electrode impedance changes."""
+def ecg_amplitude_scale(x, min_s=0.80, max_s=1.20):
+    """Scale amplitude (±20%) to simulate electrode impedance changes. (Phase 2A: ↑ from ±15%)"""
     s = tf.random.uniform((tf.shape(x)[0], 1, 1), min_s, max_s, dtype=x.dtype)
     return x * s
 
 
 @tf.function
-def ecg_gaussian_noise(x, noise_std=0.01):
-    """Add tiny noise (σ=0.01) simulating ADC quantization noise."""
+def ecg_gaussian_noise(x, noise_std=0.015):
+    """Add noise (σ=0.015) simulating ADC quantization noise. (Phase 2A: ↑ from 0.01)"""
     return x + tf.random.normal(tf.shape(x), 0.0, noise_std, dtype=x.dtype)
 
 
 @tf.function
-def ecg_baseline_wander(x, amplitude=0.15, max_freq=0.05):
-    """Add low-freq sinusoidal wander simulating respiration."""
+def ecg_baseline_wander(x, amplitude=0.20, max_freq=0.05):
+    """Add low-freq sinusoidal wander simulating respiration. (Phase 2A: ↑ amplitude from 0.15)"""
     bs = tf.shape(x)[0]
     sl = tf.cast(tf.shape(x)[1], tf.float32)
     t = tf.reshape(tf.linspace(0.0, 1.0, tf.cast(sl, tf.int32)), (1, -1, 1))
@@ -180,15 +188,31 @@ def ecg_baseline_wander(x, amplitude=0.15, max_freq=0.05):
     return x + tf.cast(wander, x.dtype)
 
 
-def apply_mild_augmentation(x, prob=0.5):
-    """Apply mild augmentations with given probability."""
+def apply_mild_augmentation(x, prob=0.80):
+    """Apply mild augmentations with given probability. (Phase 2A: ↑ default prob 0.50→0.80)"""
     if tf.random.uniform(()) > prob:
         return x
-    augs = [ecg_time_warp, ecg_amplitude_scale,
-            ecg_gaussian_noise, ecg_baseline_wander]
-    for i in tf.random.shuffle(tf.range(len(augs))):
-        if tf.random.uniform(()) < 0.4:
-            x = augs[i](x, *([] if i > 0 else [0.08]))
+    # Apply each augmentation independently with 50% chance each
+    x = tf.cond(
+        tf.random.uniform(()) < 0.5,
+        lambda: ecg_time_warp(x, max_stretch=0.12),
+        lambda: x
+    )
+    x = tf.cond(
+        tf.random.uniform(()) < 0.5,
+        lambda: ecg_amplitude_scale(x, min_s=0.80, max_s=1.20),
+        lambda: x
+    )
+    x = tf.cond(
+        tf.random.uniform(()) < 0.5,
+        lambda: ecg_gaussian_noise(x, noise_std=0.015),
+        lambda: x
+    )
+    x = tf.cond(
+        tf.random.uniform(()) < 0.5,
+        lambda: ecg_baseline_wander(x, amplitude=0.20),
+        lambda: x
+    )
     return x
 
 

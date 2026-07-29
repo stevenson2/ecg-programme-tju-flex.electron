@@ -127,6 +127,24 @@ def load_mit_incart_merged() -> dict:
     return {"beats": beats, "labels": labels, "record_ids": rids}
 
 
+def load_3beat_merged() -> dict:
+    """Load MIT-BIH + INCART 3-beat merged dataset (Phase 2B)."""
+    npz = PROCESSED_DIR / "mit_incart_3beat.npz"
+    if not npz.exists():
+        raise FileNotFoundError(
+            f"3-beat 预处理数据未找到: {npz}\n"
+            f"请先运行: python data/preprocess_3beat.py"
+        )
+    data = np.load(npz)
+    beats, labels = data["beats"], data["labels"]
+    rids = data.get("record_ids", None)
+    print(f"[3-beat] 加载: {len(beats)} 序列, 形状: {beats.shape}")
+    for i, name in enumerate(CLASS_NAMES):
+        c = int((labels == i).sum())
+        print(f"[3-beat]   {name}: {c} ({c/len(labels)*100:.1f}%)")
+    return {"beats": beats, "labels": labels, "record_ids": rids}
+
+
 def load_ecg1000_data() -> dict:
     """Load preprocessed ECG1000 data."""
     npz_path = PROCESSED_DIR / "ecg1000_processed.npz"
@@ -170,6 +188,9 @@ def load_all_three_merged() -> dict:
     nN, nA = (labels==0).sum(), (labels==1).sum()
     print(f"\n[Merged ALL] {len(beats)} beats (N={nN}, A={nA}, {nA/len(labels)*100:.1f}% abnormal)")
     return {"beats": beats, "labels": labels, "record_ids": rids}
+
+
+def load_mit_ecg1000_merged() -> dict:
     """Load MIT-BIH + ECG1000 merged dataset."""
     mit = load_processed_data()
     ecg = load_ecg1000_data()
@@ -380,34 +401,63 @@ def make_tf_dataset(
     y: np.ndarray,
     batch_size: int = None,
     shuffle: bool = True,
-    buffer_size: int = 10000
+    buffer_size: int = 10000,
+    augment: bool = False
 ) -> tf.data.Dataset:
     """
     构建 TensorFlow Dataset
-    
+
     Args:
         x: 特征数据 (n, 250)
         y: 标签 (n,)
         batch_size: 批大小
         shuffle: 是否打乱
         buffer_size: 打乱缓冲区大小
-        
+        augment: 是否应用数据增强 (仅训练集)
+
     Returns:
         tf.data.Dataset
     """
     if batch_size is None:
         batch_size = TRAIN_CONFIG['batch_size']
-    
+
     x = add_channel_dim(x)
     y = tf.keras.utils.to_categorical(y, num_classes=2)
-    
+
     dataset = tf.data.Dataset.from_tensor_slices((x, y))
-    
+
     if shuffle:
         dataset = dataset.shuffle(buffer_size=min(buffer_size, len(x)))
-    
-    dataset = dataset.batch(batch_size).prefetch(tf.data.AUTOTUNE)
-    
+
+    dataset = dataset.batch(batch_size)
+
+    # Phase 2A: 训练时应用 Mixup + 温和 ECG 数据增强（在 batch 后）
+    if augment and TRAIN_CONFIG['augmentation']['enabled']:
+        from losses.focal_loss import mixup_1d, apply_mild_augmentation
+
+        aug_cfg = TRAIN_CONFIG['augmentation']
+        aug_prob = aug_cfg.get('apply_prob', 0.80)
+
+        def augment_batch(x_batch, y_batch):
+            x_batch = tf.cast(x_batch, tf.float32)
+            y_batch = tf.cast(y_batch, tf.float32)
+            x_aug = apply_mild_augmentation(x_batch, prob=aug_prob)
+            if TRAIN_CONFIG['mixup']['enabled']:
+                mixup_prob = TRAIN_CONFIG['mixup']['prob']
+                if tf.random.uniform(()) < mixup_prob:
+                    x_aug, y_batch = mixup_1d(
+                        x_aug, y_batch,
+                        alpha=TRAIN_CONFIG['mixup']['alpha']
+                    )
+            return x_aug, y_batch
+
+        dataset = dataset.map(
+            augment_batch,
+            num_parallel_calls=tf.data.AUTOTUNE
+        )
+
+    dataset = dataset.prefetch(tf.data.AUTOTUNE)
+
     return dataset
 
 
@@ -419,6 +469,9 @@ def prepare_datasets(
     use_incart: bool = False,
     use_ecg1000: bool = False,
     use_ptbxl_rhythm: bool = False,
+    use_balanced: bool = False,
+    use_3beat: bool = False,
+    input_shape_override: tuple = None,
 ) -> dict:
     """
     一站式准备所有数据集。
@@ -428,8 +481,11 @@ def prepare_datasets(
         use_merged: MIT-BIH + PTB-XL.
         use_incart: MIT-BIH + INCART.
         use_ecg1000: MIT-BIH + ECG1000.
+        use_balanced: 训练集 50/50 类别均衡 oversample.
     """
-    if use_ptbxl_rhythm:
+    if use_3beat:
+        data = load_3beat_merged()
+    elif use_ptbxl_rhythm:
         data = load_all_three_merged()
     elif use_ecg1000:
         data = load_mit_ecg1000_merged()
@@ -443,11 +499,18 @@ def prepare_datasets(
         data = load_processed_data()
     splits = train_val_test_split(data["beats"], data["labels"],
                                    record_ids=data.get("record_ids"))
-    
-    train_ds = make_tf_dataset(
-        splits["train"][0], splits["train"][1],
-        batch_size=batch_size, shuffle=True
-    )
+
+    if use_balanced:
+        print("[数据集] 使用类别均衡采样 (50/50 per batch)")
+        train_ds = make_balanced_dataset(
+            splits["train"][0], splits["train"][1],
+            batch_size=batch_size
+        )
+    else:
+        train_ds = make_tf_dataset(
+            splits["train"][0], splits["train"][1],
+            batch_size=batch_size, shuffle=True, augment=True
+        )
     val_ds = make_tf_dataset(
         splits["val"][0], splits["val"][1],
         batch_size=batch_size, shuffle=False
@@ -456,14 +519,15 @@ def prepare_datasets(
         splits["test"][0], splits["test"][1],
         batch_size=batch_size, shuffle=False
     )
-    
+
     return {
         "train_ds": train_ds,
         "val_ds": val_ds,
         "test_ds": test_ds,
         "data": splits,
         "class_names": CLASS_NAMES,
-        "input_shape": (INFERENCE_CONFIG['window_size'], 1)
+        "input_shape": input_shape_override if input_shape_override
+                       else (750 if use_3beat else INFERENCE_CONFIG['window_size'], 1)
     }
 
 

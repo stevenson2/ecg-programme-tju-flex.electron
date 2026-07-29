@@ -29,6 +29,11 @@ from models.resnet_lite_1d import (
     compile_model as compile_resnet, get_callbacks as get_resnet_callbacks,
     model_summary_table as resnet_summary
 )
+from models.cnn_m import (
+    build_ecg_cnn_m_classifier, build_ecg_cnn_m_small, build_ecg_cnn_m_large,
+    compile_model as compile_cnn_m, get_callbacks as get_cnn_m_callbacks,
+    model_summary_table as cnn_m_summary
+)
 from models.utils import (
     plot_training_history, plot_confusion_matrix,
     plot_sample_beats, save_model_summary
@@ -41,12 +46,21 @@ def train(
     use_v2: bool = True,
     use_v3: bool = False,
     use_resnet: bool = False,
+    use_resnet_medium: bool = False,
+    use_resnet_large: bool = False,
+    use_cnn_m: bool = False,
+    use_cnn_m_small: bool = False,
+    use_cnn_m_large: bool = False,
+    use_3beat: bool = False,
     use_ptbxl: bool = False,
     use_merged: bool = False,
     use_incart: bool = False,
     use_ptbxl_rhythm: bool = False,
     use_ecg1000: bool = False,
     use_no_focal: bool = False,
+    use_balanced: bool = False,
+    focal_gamma: float = None,
+    focal_alpha: float = None,
     epochs: int = None,
     batch_size: int = None,
     skip_evaluate: bool = False
@@ -57,11 +71,19 @@ def train(
     Args:
         use_tiny:    CNN tiny (<5K).
         use_v2:      CNN v2 (15K, 默认).
-        use_resnet:  ECG-ResNet-Lite medium (55K, Phase 1).
+        use_v3:      CNN v3 (30K, scaled-up).
+        use_resnet:  ECG-ResNet-Lite small (25K).
+        use_resnet_medium:  ECG-ResNet-Lite medium (55K, P0推荐).
+        use_resnet_large:   ECG-ResNet-Lite large (80K).
+        use_cnn_m:  ECG-CNN-M (600K, Phase 2B 三拍输入).
+        use_3beat: 使用 3-beat 序列数据 (750 点, 仅配合 --cnn-m).
         use_ptbxl:   仅用 PTB-XL 数据.
         use_merged:  MIT-BIH + PTB-XL 合并.
         use_incart:  MIT-BIH + INCART 合并 (P0: 当前优先).
         use_no_focal: 禁用 FocalLoss, 使用标准交叉熵.
+        use_balanced: 训练集 50/50 类别均衡采样.
+        focal_gamma:  覆盖 config 中的 FocalLoss gamma.
+        focal_alpha:  覆盖 config 中的 FocalLoss alpha.
         epochs:      训练轮数.
         batch_size:  批大小.
         skip_evaluate: 跳过评估.
@@ -77,12 +99,35 @@ def train(
         ds_name = "Merged"
     else:
         ds_name = "PTB-XL" if use_ptbxl else "MIT-BIH"
-    model_type = "ECG-ResNet-Lite" if use_resnet else \
-                 ("CNN-v3" if use_v3 else ("CNN-v2" if use_v2 else ("CNN-tiny" if use_tiny else "CNN-v1")))
-    loss_type = "CE" if use_no_focal else "FocalLoss"
-    print(f" ECG [{ds_name}] [{model_type}] [{loss_type}]")
-    print(f"{'='*60}\n")
     
+    if use_cnn_m_small:
+        model_type = "ECG-CNN-M-Small (114K, 3-beat)"
+    elif use_cnn_m_large:
+        model_type = "ECG-CNN-M-Large (453K, 3-beat)"
+    elif use_cnn_m:
+        model_type = "ECG-CNN-M (140K, 3-beat)"
+    elif use_resnet_large:
+        model_type = "ECG-ResNet-Lite-Large (80K)"
+    elif use_resnet_medium:
+        model_type = "ECG-ResNet-Lite-Medium (55K)"
+    elif use_resnet:
+        model_type = "ECG-ResNet-Lite-Small (25K)"
+    else:
+        model_type = "CNN-v3" if use_v3 else ("CNN-v2" if use_v2 else ("CNN-tiny" if use_tiny else "CNN-v1"))
+    
+    loss_type = "CE" if use_no_focal else "FocalLoss"
+    bal_tag = "+Bal" if use_balanced else ""
+    print(f" ECG [{ds_name}] [{model_type}] [{loss_type}]{bal_tag}")
+    print(f"{'='*60}\n")
+
+    # Override FocalLoss params from CLI
+    if focal_gamma is not None:
+        TRAIN_CONFIG['focal_loss']['gamma'] = focal_gamma
+        print(f"[参数覆盖] FocalLoss gamma = {focal_gamma}")
+    if focal_alpha is not None:
+        TRAIN_CONFIG['focal_loss']['alpha'] = focal_alpha
+        print(f"[参数覆盖] FocalLoss alpha = {focal_alpha}")
+
     # Step 1: 数据准备
     print("[1/5] 准备数据集...")
     datasets = prepare_datasets(
@@ -92,11 +137,59 @@ def train(
         use_incart=use_incart,
         use_ecg1000=use_ecg1000,
         use_ptbxl_rhythm=use_ptbxl_rhythm,
+        use_balanced=use_balanced,
+        use_3beat=use_3beat,
     )
     
     # Step 2: 模型构建
     print("\n[2/5] 构建模型...")
-    if use_resnet:
+    is_cnn_m = False
+    if use_cnn_m_small:
+        model = build_ecg_cnn_m_small(
+            input_shape=datasets['input_shape'],
+            n_classes=len(CLASS_NAMES)
+        )
+        model = compile_cnn_m(model, learning_rate=TRAIN_CONFIG['learning_rate'])
+        cnn_m_summary(model)
+        callbacks = get_cnn_m_callbacks(model_name="best_cnn_m_small.h5")
+        is_resnet = False
+        is_cnn_m = True
+    elif use_cnn_m_large:
+        model = build_ecg_cnn_m_large(
+            input_shape=datasets['input_shape'],
+            n_classes=len(CLASS_NAMES)
+        )
+        model = compile_cnn_m(model, learning_rate=TRAIN_CONFIG['learning_rate'])
+        cnn_m_summary(model)
+        callbacks = get_cnn_m_callbacks(model_name="best_cnn_m_large.h5")
+        is_resnet = False
+        is_cnn_m = True
+    elif use_cnn_m:
+        model = build_ecg_cnn_m_classifier(
+            input_shape=datasets['input_shape'],
+            n_classes=len(CLASS_NAMES)
+        )
+        model = compile_cnn_m(model, learning_rate=TRAIN_CONFIG['learning_rate'])
+        cnn_m_summary(model)
+        callbacks = get_cnn_m_callbacks()
+        is_resnet = False
+        is_cnn_m = True
+        model = build_ecg_resnet_lite_large(
+            input_shape=datasets['input_shape']
+        )
+        model = compile_resnet(model, learning_rate=TRAIN_CONFIG['learning_rate'])
+        resnet_summary(model)
+        callbacks = get_resnet_callbacks(model_name="best_resnet_large.h5")
+        save_model_summary(model)
+    elif use_resnet_medium:
+        model = build_ecg_resnet_lite_medium(
+            input_shape=datasets['input_shape']
+        )
+        model = compile_resnet(model, learning_rate=TRAIN_CONFIG['learning_rate'])
+        resnet_summary(model)
+        callbacks = get_resnet_callbacks(model_name="best_resnet_medium.h5")
+        save_model_summary(model)
+    elif use_resnet:
         model = build_ecg_resnet_lite_small(
             input_shape=datasets['input_shape']
         )
@@ -125,7 +218,10 @@ def train(
             n_classes=len(CLASS_NAMES)
         )
     
-    if not use_resnet:
+    is_resnet = use_resnet or use_resnet_medium or use_resnet_large
+    is_cnn_m = use_cnn_m
+
+    if not is_resnet and not is_cnn_m:
         model = compile_cnn(
             model,
             learning_rate=TRAIN_CONFIG['learning_rate'],
@@ -133,10 +229,11 @@ def train(
         )
         model_summary_table(model)
         save_model_summary(model)
-    
+
+    is_resnet = use_resnet or use_resnet_medium or use_resnet_large
     # Step 3: 训练
     print("\n[3/5] 开始训练...")
-    if not use_resnet:
+    if not is_resnet and not is_cnn_m:
         callbacks = get_cnn_callbacks()
     
     # NOTE: class_weight is incompatible with tf.data.Dataset in Keras 3.x.
@@ -154,9 +251,28 @@ def train(
     # 训练曲线
     plot_training_history(history)
     
-    # 保存最终模型
-    model.save(str(MODELS_DIR / 'final_model.h5'))
-    print(f"[训练] 模型已保存到: {MODELS_DIR}")
+    # 保存最终模型 (模型特异性命名，不再覆盖)
+    final_name = {
+        "tiny": "final_cnn_tiny.h5", "v2": "final_cnn_v2.h5",
+        "v3": "final_cnn_v3.h5", "v1": "final_cnn_v1.h5",
+        "resnet_s": "final_resnet_s.h5", "resnet_m": "final_resnet_m.h5",
+        "resnet_l": "final_resnet_l.h5",
+        "cnn_m": "final_cnn_m.h5",
+        "cnn_m_s": "final_cnn_m_small.h5",
+        "cnn_m_l": "final_cnn_m_large.h5",
+    }
+    if use_cnn_m_small:      _key = "cnn_m_s"
+    elif use_cnn_m_large:    _key = "cnn_m_l"
+    elif use_cnn_m:          _key = "cnn_m"
+    elif use_resnet_large:   _key = "resnet_l"
+    elif use_resnet_medium:  _key = "resnet_m"
+    elif use_resnet:         _key = "resnet_s"
+    elif use_v3:             _key = "v3"
+    elif use_tiny:           _key = "tiny"
+    elif use_v2:             _key = "v2"
+    else:                    _key = "v1"
+    model.save(str(MODELS_DIR / final_name[_key]))
+    print(f"[训练] 模型已保存到: {MODELS_DIR / final_name[_key]}")
     
     # Step 4: 评估
     if not skip_evaluate:
@@ -260,13 +376,23 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description="ECG 异常检测模型训练")
     parser.add_argument("--v3", action="store_true", help="CNN v3 (30K, scaled-up)")
-    parser.add_argument("--resnet", action="store_true", help="ECG-ResNet-Lite (55K)")
+    parser.add_argument("--resnet", action="store_true", help="ECG-ResNet-Lite Small (25K)")
+    parser.add_argument("--resnet-medium", action="store_true", help="ECG-ResNet-Lite Medium (55K, P0推荐)")
+    parser.add_argument("--resnet-large", action="store_true", help="ECG-ResNet-Lite Large (80K)")
+    parser.add_argument("--cnn-m", action="store_true", help="ECG-CNN-M (140K, Phase 2B)")
+    parser.add_argument("--cnn-m-small", action="store_true", help="ECG-CNN-M-Small (114K)")
+    parser.add_argument("--cnn-m-large", action="store_true", help="ECG-CNN-M-Large (453K)")
+    parser.add_argument("--3beat", dest="use_3beat", action="store_true",
+                        help="使用 3-beat 序列数据 (配合 --cnn-m)")
     parser.add_argument("--ptbxl", action="store_true", help="仅用 PTB-XL 数据集")
     parser.add_argument("--merged", action="store_true", help="MIT-BIH + PTB-XL 合并")
     parser.add_argument("--incart", action="store_true", help="MIT-BIH + INCART 合并 (P0)")
     parser.add_argument("--ptbxl-r", action="store_true", help="MIT-BIH+INCART+PTBXL节律合并")
     parser.add_argument("--ecg1000", action="store_true", help="MIT-BIH + ECG1000 合并 (本地)")
     parser.add_argument("--no-focal", action="store_true", help="禁用 FocalLoss, 用标准交叉熵")
+    parser.add_argument("--balanced", action="store_true", help="训练集 50/50 类别均衡采样 (Phase 2A-4)")
+    parser.add_argument("--focal-gamma", type=float, default=None, help="覆盖 FocalLoss gamma")
+    parser.add_argument("--focal-alpha", type=float, default=None, help="覆盖 FocalLoss alpha")
     parser.add_argument("--tiny", action="store_true", help="使用 tiny 模型")
     parser.add_argument("--v1", action="store_true", help="使用 v1 原版模型")
     parser.add_argument("--epochs", type=int, default=None, help="训练轮数")
@@ -282,6 +408,12 @@ if __name__ == "__main__":
         train(
             use_v3=args.v3,
             use_resnet=args.resnet,
+            use_resnet_medium=args.resnet_medium,
+            use_resnet_large=args.resnet_large,
+            use_cnn_m=args.cnn_m,
+            use_cnn_m_small=args.cnn_m_small,
+            use_cnn_m_large=args.cnn_m_large,
+            use_3beat=args.use_3beat,
             use_tiny=args.tiny,
             use_v2=not args.v1,
             use_ptbxl=args.ptbxl,
@@ -290,6 +422,9 @@ if __name__ == "__main__":
             use_ecg1000=args.ecg1000,
             use_ptbxl_rhythm=args.ptbxl_r,
             use_no_focal=args.no_focal,
+            use_balanced=args.balanced,
+            focal_gamma=args.focal_gamma,
+            focal_alpha=args.focal_alpha,
             epochs=args.epochs,
             batch_size=args.batch_size,
             skip_evaluate=args.skip_eval
