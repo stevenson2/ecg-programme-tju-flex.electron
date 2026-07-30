@@ -418,6 +418,63 @@ def make_balanced_dataset(
     return ds
 
 
+def make_multitask_dataset(
+    x: np.ndarray,
+    y_cls: np.ndarray,
+    y_bpm: np.ndarray,
+    y_sqi: np.ndarray,
+    batch_size: int = None,
+    shuffle: bool = True,
+    buffer_size: int = 10000,
+    augment: bool = False
+) -> tf.data.Dataset:
+    """
+    Build TF Dataset for multi-task learning.
+
+    Produces (x, (y_cls_onehot, y_bpm, y_sqi)) tuple for multi-output models.
+    """
+    if batch_size is None:
+        batch_size = TRAIN_CONFIG['batch_size']
+
+    x = add_channel_dim(x)
+    y_cls_onehot = tf.keras.utils.to_categorical(y_cls, num_classes=2)
+    y_bpm = y_bpm.reshape(-1, 1).astype(np.float32)
+    y_sqi = y_sqi.reshape(-1, 1).astype(np.float32)
+
+    dataset = tf.data.Dataset.from_tensor_slices(
+        (x, (y_cls_onehot, y_bpm, y_sqi)))
+    if shuffle:
+        dataset = dataset.shuffle(buffer_size=min(buffer_size, len(x)))
+    dataset = dataset.batch(batch_size)
+
+    if augment and TRAIN_CONFIG['augmentation']['enabled']:
+        from losses.focal_loss import mixup_1d, apply_mild_augmentation
+
+        aug_cfg = TRAIN_CONFIG['augmentation']
+        aug_prob = aug_cfg.get('apply_prob', 0.80)
+
+        def augment_batch(x_batch, y_tuple):
+            y_cls_batch, y_bpm_batch, y_sqi_batch = y_tuple
+            x_batch = tf.cast(x_batch, tf.float32)
+            y_cls_batch = tf.cast(y_cls_batch, tf.float32)
+            y_bpm_batch = tf.cast(y_bpm_batch, tf.float32)
+            y_sqi_batch = tf.cast(y_sqi_batch, tf.float32)
+            x_aug = apply_mild_augmentation(x_batch, prob=aug_prob)
+            if TRAIN_CONFIG['mixup']['enabled']:
+                mixup_prob = TRAIN_CONFIG['mixup']['prob']
+                if tf.random.uniform(()) < mixup_prob:
+                    x_aug, y_cls_batch = mixup_1d(
+                        x_aug, y_cls_batch,
+                        alpha=TRAIN_CONFIG['mixup']['alpha']
+                    )
+            return x_aug, (y_cls_batch, y_bpm_batch, y_sqi_batch)
+
+        dataset = dataset.map(augment_batch, num_parallel_calls=tf.data.AUTOTUNE)
+
+    dataset = dataset.prefetch(tf.data.AUTOTUNE)
+    return dataset
+
+
 def make_tf_dataset(
     x: np.ndarray,
     y: np.ndarray,

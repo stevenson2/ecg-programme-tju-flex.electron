@@ -111,6 +111,19 @@
       "input_window": 250,
       "description": "Natural(×3) + Balanced(×1) soft-voting",
       "h5": ["ensemble_seed42.h5", "ensemble_seed123.h5", "ensemble_seed456.h5", "final_cls_tuned.h5"]
+    },
+    {
+      "id": "resnet_mt_phase3",
+      "name": "ResNet-MT",
+      "phase": "Phase 3",
+      "family": "MultiTask",
+      "color": "#E6AB02",
+      "marker": "v",
+      "params": 65000,
+      "input_window": 250,
+      "description": "Multi-task ResNet: cls+bpm+sqi, P3 Route F",
+      "h5": "final_resnet_multitask.h5",
+      "tta": { "sliding": 3, "stride": 62, "n_confirm": 3 }
     }
   ]
 }

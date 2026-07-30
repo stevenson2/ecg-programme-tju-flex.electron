@@ -135,6 +135,44 @@ TRAIN_CONFIG = {
     },
 }
 
+# ======================== 多任务学习配置 (Route F) ========================
+MULTITASK_CONFIG = {
+    'enabled': True,
+    'tasks': {
+        'classification': {'enabled': True, 'loss_weight': 1.0},
+        'bpm_regression': {'enabled': True, 'loss_weight': 0.3},
+        'sqi_regression': {'enabled': True, 'loss_weight': 0.2},
+    },
+    'focal_loss': {
+        'gamma': 1.0,
+        'alpha': 0.75,
+    },
+    'bpm_range': [30, 180],
+    'sqi_range': [0.0, 1.0],
+}
+
+# ======================== TTA 推理配置 (Route G) ========================
+TTA_CONFIG = {
+    'enabled': True,
+    'sliding_window': {
+        'enabled': False,           # OFF for isolated beats; ON for streaming ECG
+        'stride_samples': 62,       # 0.25s at 250Hz
+        'n_views': 3,
+        'aggregation': 'mean',
+    },
+    'augmentation': {
+        'enabled': True,            # Primary TTA for beat-level inference
+        'n_aug': 5,                 # 5 augmented + 1 original = 6 views
+        'noise_std': 0.01,
+        'amp_range': 0.05,
+        'aggregation': 'mean',
+    },
+    'multi_beat_confirm': {
+        'n_confirm': 3,
+    },
+    'threshold': 0.35,
+}
+
 # ======================== TFLite 导出配置 ========================
 TFLITE_CONFIG = {
     'representative_dataset_size': 1000,  # 量化校准集大小
