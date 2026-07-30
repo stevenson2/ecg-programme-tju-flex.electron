@@ -46,18 +46,8 @@ def process_svdb():
 
 if __name__ == "__main__":
     b_svdb, l_svdb, r_svdb = process_svdb()
-    
-    # Load existing MIT-BIH
-    mit = np.load(PROCESSED_DIR / "mit_bih_processed.npz")
-    b_mit, l_mit, r_mit = mit["beats"], mit["labels"], mit["record_ids"]
-    
-    # Merge (offset SVDB IDs to avoid collision)
-    b_all = np.concatenate([b_mit, b_svdb])
-    l_all = np.concatenate([l_mit, l_svdb])
-    r_all = np.concatenate([r_mit, r_svdb + 10000])
-    
-    out = PROCESSED_DIR / "mit_bih_processed.npz"
-    np.savez_compressed(out, beats=b_all, labels=l_all, record_ids=r_all)
-    nN, nA = (l_all==0).sum(), (l_all==1).sum()
-    print(f"\nMerged: {len(b_all)} beats, N={nN}, A={nA}")
+    out = PROCESSED_DIR / "svdb_processed.npz"
+    np.savez_compressed(out, beats=b_svdb, labels=l_svdb, record_ids=r_svdb)
+    nN, nA = (l_svdb==0).sum(), (l_svdb==1).sum()
+    print(f"SVDB: {len(b_svdb)} beats, N={nN}, A={nA}")
     print(f"Saved: {out}")

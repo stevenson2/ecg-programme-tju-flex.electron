@@ -1,0 +1,116 @@
+{
+  "_comment": "ECG Model Registry — add new models here. Re-generate figures with: python3 figures.py --all",
+  "_test_split": "MIT-BIH+INCART, record-level, seed=42",
+  "models": [
+    {
+      "id": "cnn_v2_p1",
+      "name": "CNN-v2",
+      "phase": "Phase 1",
+      "family": "CNN",
+      "color": "#2E86AB",
+      "marker": "o",
+      "params": 15000,
+      "input_window": 250,
+      "description": "FocalLoss + MIT+INCART",
+      "metrics": { "acc": 0.9398, "auc": 0.9716, "prec": 0.84, "recall": 0.72, "f1": 0.78 }
+    },
+    {
+      "id": "resnet_m_p2a",
+      "name": "ResNet-M",
+      "phase": "Phase 2A",
+      "family": "ResNet",
+      "color": "#D4A017",
+      "marker": "s",
+      "params": 55000,
+      "input_window": 250,
+      "description": "4 stages, enhanced augment",
+      "h5": "best_resnet_medium.h5"
+    },
+    {
+      "id": "resnet_l_p2a",
+      "name": "ResNet-L",
+      "phase": "Phase 2A",
+      "family": "ResNet",
+      "color": "#C73E1D",
+      "marker": "D",
+      "params": 63000,
+      "input_window": 250,
+      "description": "Deeper ResNet, best P2A",
+      "h5": "final_resnet_l.h5"
+    },
+    {
+      "id": "cnn_m_p2b",
+      "name": "CNN-M",
+      "phase": "Phase 2B",
+      "family": "CNN-M",
+      "color": "#A23B72",
+      "marker": "^",
+      "params": 140000,
+      "input_window": 750,
+      "description": "3-beat input, overfit",
+      "h5": "final_cnn_m.h5"
+    },
+    {
+      "id": "ssl_resnet_l_p2c",
+      "name": "SSL-ResNet-L",
+      "phase": "Phase 2C",
+      "family": "SSL",
+      "color": "#1B9E77",
+      "marker": "*",
+      "params": 80000,
+      "input_window": 250,
+      "description": "SimCLR SSL + Finetune",
+      "h5": "final_ssl_finetuned.h5",
+      "history_csv": "ssl_ft_history.csv",
+      "ssl_history_csv": "ssl_stage1_history.csv"
+    },
+    {
+      "id": "ensemble_p2c",
+      "name": "Ensemble×3",
+      "phase": "Phase 2C",
+      "family": "Ensemble",
+      "color": "#7570B3",
+      "marker": "P",
+      "params": 240000,
+      "input_window": 250,
+      "description": "3× ResNet-L soft-voting",
+      "h5": ["ensemble_seed42.h5", "ensemble_seed123.h5", "ensemble_seed456.h5"]
+    },
+    {
+      "id": "ssl_ensemble",
+      "name": "SSL+Ensemble",
+      "phase": "Phase 2C",
+      "family": "SSL+Ens",
+      "color": "#D95F02",
+      "marker": "X",
+      "params": 320000,
+      "input_window": 250,
+      "description": "SSL model + 3x ResNet-L voting",
+      "h5": ["final_ssl_finetuned.h5", "ensemble_seed42.h5", "ensemble_seed123.h5", "ensemble_seed456.h5"]
+    },
+    {
+      "id": "super_ensemble",
+      "name": "Super Ensemble",
+      "phase": "Phase 2C",
+      "family": "SuperEns",
+      "color": "#E7298A",
+      "marker": "H",
+      "params": 500000,
+      "input_window": 250,
+      "description": "All strategies voting: SSL + BestHead + Ensemble×3",
+      "h5": ["final_ssl_finetuned.h5", "best_head_tuned.h5", "ensemble_seed42.h5", "ensemble_seed123.h5", "ensemble_seed456.h5"]
+    },
+    {
+      "id": "nat_bal_ensemble",
+      "name": "Natural+Balanced",
+      "phase": "Phase 2C",
+      "family": "Hybrid",
+      "color": "#66A61E",
+      "marker": "p",
+      "params": 240000,
+      "input_window": 250,
+      "description": "Natural(×3) + Balanced(×1) soft-voting",
+      "h5": ["ensemble_seed42.h5", "ensemble_seed123.h5", "ensemble_seed456.h5", "final_cls_tuned.h5"]
+    }
+  ]
+}

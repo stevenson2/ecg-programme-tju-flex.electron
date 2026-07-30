@@ -1,0 +1,5 @@
+[
+  {"name":"CNN-v2 (Phase1)","family":"CNN","file":"baseline","params":15000,
+   "acc":0.9398,"auc":0.9716,"prec":0.84,"recall":0.72,"f1":0.78,
+   "tuned_recall":0.79,"tuned_prec":0.85,"tuned_f1":0.82,"n_samples":48914}
+]

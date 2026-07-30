@@ -127,6 +127,28 @@ def load_mit_incart_merged() -> dict:
     return {"beats": beats, "labels": labels, "record_ids": rids}
 
 
+def load_svdb_data() -> dict:
+    npz_path = PROCESSED_DIR / "svdb_processed.npz"
+    if not npz_path.exists():
+        raise FileNotFoundError(f"Run: python data/preprocess_svdb.py")
+    data = np.load(npz_path)
+    beats, labels, rids = data["beats"], data["labels"], data["record_ids"]
+    print(f"[SVDB] {len(beats)} beats (N={(labels==0).sum()}, A={(labels==1).sum()})")
+    return {"beats": beats, "labels": labels, "record_ids": rids}
+
+
+def load_mit_incart_svdb_merged() -> dict:
+    mit_inc = load_mit_incart_merged()
+    svdb = load_svdb_data()
+    svdb["record_ids"] = svdb["record_ids"] + 200000
+    beats = np.concatenate([mit_inc["beats"], svdb["beats"]])
+    labels = np.concatenate([mit_inc["labels"], svdb["labels"]])
+    rids = np.concatenate([mit_inc["record_ids"], svdb["record_ids"]])
+    nN, nA = (labels==0).sum(), (labels==1).sum()
+    print(f"\n[MIT+INCART+SVDB] {len(beats)} beats (N={nN}, A={nA}, {nA/len(labels)*100:.1f}%)")
+    return {"beats": beats, "labels": labels, "record_ids": rids}
+
+
 def load_3beat_merged() -> dict:
     """Load MIT-BIH + INCART 3-beat merged dataset (Phase 2B)."""
     npz = PROCESSED_DIR / "mit_incart_3beat.npz"
