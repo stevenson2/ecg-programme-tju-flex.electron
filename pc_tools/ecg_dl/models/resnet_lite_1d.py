@@ -172,9 +172,23 @@ def build_ecg_resnet_lite_large(input_shape=None):
 # ===========================================================================
 
 def compile_model(model, learning_rate=0.001, loss=None):
-    """Compile with AdamW. Default: categorical_crossentropy (stable)."""
+    """Compile with AdamW. Default: FocalLoss if enabled, else categorical_crossentropy."""
     if loss is None:
-        loss = 'categorical_crossentropy'
+        from config import TRAIN_CONFIG
+        fl_cfg = TRAIN_CONFIG.get('focal_loss', {})
+        if fl_cfg.get('enabled', False):
+            from losses.focal_loss import FocalLoss
+            loss = FocalLoss(
+                gamma=fl_cfg.get('gamma', 1.0),
+                alpha=fl_cfg.get('alpha', 0.75),
+                label_smoothing=fl_cfg.get('label_smoothing', 0.0),
+                from_logits=False,
+            )
+            print(f"[编译] 使用 FocalLoss (γ={loss.gamma}, α={loss.alpha}, "
+                  f"LS={loss.label_smoothing})")
+        else:
+            loss = 'categorical_crossentropy'
+            print("[编译] 使用 CategoricalCrossentropy")
     opt = tf.keras.optimizers.AdamW(learning_rate=learning_rate,
                                     weight_decay=1e-4)
     model.compile(optimizer=opt, loss=loss, metrics=[

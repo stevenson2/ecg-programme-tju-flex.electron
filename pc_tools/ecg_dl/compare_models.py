@@ -61,15 +61,20 @@ def model_name_from_path(path: Path):
         "final_resnet_m":        ("ResNet-M",    "ResNet", 55),
         "best_resnet_large":     ("ResNet-L",    "ResNet", 80),
         "final_resnet_l":        ("ResNet-L",    "ResNet", 80),
+        "best_resnet_multitask": ("ResNet-MT",   "MultiTask", 68),
+        "final_resnet_multitask":("ResNet-MT",   "MultiTask", 68),
+        "final_resnet_multitask_fg":       ("ResNet-MT-FG", "MultiTask", 68),
+        "final_resnet_multitask_freeze25":  ("ResNet-MT-f25","MultiTask", 68),
+        "final_resnet_multitask_nofreeze":  ("ResNet-MT-f0", "MultiTask", 68),
     }
-    for k, v in mapping.items():
+    for k, v in dict(sorted(mapping.items(), key=lambda x: -len(x[0]))).items():
         if stem == k or stem.startswith(k):
             return v
     return (stem.replace("_", " ").title(), "Unknown", 0)
 
 
 # Paper-ready: model-family color scheme
-FAMILY_COLORS = {"CNN": "#2E86AB", "CNN-M": "#A23B72", "ResNet": "#C73E1D", "Baseline": "#666666", "Unknown": "#888888"}
+FAMILY_COLORS = {"CNN": "#2E86AB", "CNN-M": "#A23B72", "ResNet": "#C73E1D", "MultiTask": "#E6AB02", "Baseline": "#666666", "Unknown": "#888888"}
 
 
 def eval_one_model(model_path: Path, x_test, y_test, threshold=0.50):
@@ -77,8 +82,21 @@ def eval_one_model(model_path: Path, x_test, y_test, threshold=0.50):
     model = tf.keras.models.load_model(str(model_path), compile=False)
 
     x_in = add_channel_dim(x_test)
-    y_prob = model.predict(x_in, verbose=0)
-    y_pred_hard = np.argmax(y_prob, axis=1)
+    raw = model.predict(x_in, verbose=0)
+
+    # Handle multi-output models (ResNet-MT: [cls, bpm, sqi])
+    if isinstance(raw, (list, tuple)):
+        y_prob = raw[0]
+    else:
+        y_prob = raw
+
+    # Handle single-class or 2-class output
+    if y_prob.shape[-1] >= 2:
+        prob_ab = y_prob[:, ABNORMAL_IDX]
+        y_pred_hard = np.argmax(y_prob, axis=1)
+    else:
+        prob_ab = y_prob[:, 0]
+        y_pred_hard = (prob_ab >= 0.5).astype(int)
 
     # Metrics at threshold 0.5
     tp_05 = int(((y_pred_hard == 1) & (y_test == 1)).sum())
@@ -99,7 +117,6 @@ def eval_one_model(model_path: Path, x_test, y_test, threshold=0.50):
         auc = 0.0
 
     # Metrics at tuned threshold
-    prob_ab = y_prob[:, ABNORMAL_IDX]
     y_pred_t = (prob_ab >= threshold).astype(int)
     tp_t = int(((y_pred_t == 1) & (y_test == 1)).sum())
     fp_t = int(((y_pred_t == 1) & (y_test == 0)).sum())
@@ -363,14 +380,14 @@ def main():
     parser.add_argument("--baseline", type=str, default=None,
                         help="注入基线 JSON (与 --models 结果合并)")
     parser.add_argument("--output-dir", type=str, default=None,
-                        help="输出目录 (默认 models/)")
+                        help="输出目录 (默认 models/figures)")
     parser.add_argument("--incart", action="store_true", default=True,
                         help="使用 MIT-BIH + INCART 测试集")
     parser.add_argument("--3beat", dest="use_3beat", action="store_true",
                         help="使用 3-beat 测试数据 (配合 CNN-M 等 750 点模型)")
     args = parser.parse_args()
 
-    out_dir = Path(args.output_dir) if args.output_dir else MODELS_DIR
+    out_dir = Path(args.output_dir) if args.output_dir else MODELS_DIR / "figures"
     out_dir.mkdir(parents=True, exist_ok=True)
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -414,8 +431,17 @@ def main():
 
             for mf in model_files:
                 print(f"[对比] 评估 {mf.name}...")
-                r = eval_one_model(mf, x_test, y_test, threshold=args.threshold)
-                results.append(r)
+                try:
+                    r = eval_one_model(mf, x_test, y_test, threshold=args.threshold)
+                    results.append(r)
+                except (ValueError, tf.errors.InvalidArgumentError) as e:
+                    msg = str(e)
+                    if "shape" in msg.lower() or "incompatible" in msg.lower():
+                        print(f"  [跳过] 输入形状不兼容: {mf.name}")
+                    else:
+                        print(f"  [跳过] 错误: {mf.name} — {msg[:80]}")
+                except Exception as e:
+                    print(f"  [跳过] 错误: {mf.name} — {str(e)[:80]}")
 
             json_path = out_dir / f"model_comparison_{ts}.json"
             json_path.write_text(json.dumps(results, indent=2, ensure_ascii=False))

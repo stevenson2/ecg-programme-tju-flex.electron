@@ -51,3 +51,32 @@
   $ cd /mnt/c/Users/cai/OneDrive/Desktop/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl
   $ python3 train.py --incart --epochs 200
   ```
+
+### 3. 长时训练任务: 交给用户终端 + Loss 可视化
+- 需要长时间执行的训练任务，**不得**由 Agent 在后台悄悄运行；
+  必须给出完整终端命令，让用户在自己的终端运行。
+- 训练的同时必须启动 Loss 可视化：给出两个终端的命令
+  （终端 A 训练 + 终端 B `plot_history.py --watch --show` 实时监控）。
+- 示例格式：
+  ```
+  在 WSL2 Ubuntu 终端 A（训练）中运行：
+  $ cd /mnt/c/Users/cai/OneDrive/Desktop/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl
+  $ python3 train.py --resnet-large --incart --sliding-dup 1
+
+  在 WSL2 Ubuntu 终端 B（Loss 可视化，每 30s 刷新实时曲线）中运行：
+  $ python3 plot_history.py --csv models/train_history.csv --watch 30 --show
+  ```
+- Agent 负责：训练前完成代码正确性验证（冒烟测试/编译检查），给出命令，
+  在用户训练完成后评估与汇总结果。
+
+### 4. Git 状态检查
+- 每次做出**大更改之前**，先运行 `git status` 检查当前工作区状态。
+- 每次修改**成功生效之后**（编译通过/实验完成/归档完成），再运行 `git status`
+  确认变更范围符合预期。
+- 只提交用户明确要求的文件；大文件（模型权重 .h5/.tflite 等）不得擅自提交。
+
+### 5. 回答可信度要求
+- 回答技术问题/做项目决策时，在必要的情形使用**联网搜索**（webfetch）与
+  **文献阅读**来支撑结论，保证内容可信度。
+- 发现用户陈述中的错误时，必须**直接指出**，不得掩盖或附和。
+- 不确定的信息必须明确标注"不确定"，不得编造数据、引用或指标。

@@ -29,8 +29,18 @@ def plot(csv_path, output_path=None, show=False):
     if not csv_path.exists():
         print(f"[ERROR] Not found: {csv_path}")
         return
+    if csv_path.stat().st_size == 0:
+        print(f"[WATCH] {csv_path.name} 为空 (等待训练写入首个 epoch)...")
+        return
 
-    df = pd.read_csv(csv_path)
+    try:
+        df = pd.read_csv(csv_path)
+    except pd.errors.EmptyDataError:
+        print(f"[WATCH] {csv_path.name} 尚无有效数据 (等待首个 epoch)...")
+        return
+    except Exception as e:
+        print(f"[WATCH] 读取 {csv_path.name} 失败: {e}")
+        return
     cols = df.columns.tolist()
     epochs = np.arange(1, len(df) + 1)
 
@@ -79,7 +89,7 @@ def plot(csv_path, output_path=None, show=False):
     plt.close()
 
 
-def watch(csv_path, interval=30):
+def watch(csv_path, interval=30, show=False):
     print(f"Watching {csv_path} (refresh every {interval}s)...")
     last_mtime = 0
     while True:
@@ -89,7 +99,7 @@ def watch(csv_path, interval=30):
             if mtime > last_mtime:
                 last_mtime = mtime
                 name = p.stem
-                plot(csv_path, str(FIGURES_DIR / f"{name}.png"))
+                plot(csv_path, str(FIGURES_DIR / f"{name}.png"), show=show)
                 print(f"  Updated — {_count_rows(csv_path)} epochs")
         time.sleep(interval)
 
@@ -105,6 +115,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--csv", type=str, required=True)
     parser.add_argument("--watch", type=int, default=0, help="Auto-refresh seconds")
+    parser.add_argument("--show", action="store_true", help="Interactive window (needs WSLg/GUI)")
     parser.add_argument("--output", type=str, default=None)
     args = parser.parse_args()
 
@@ -113,6 +124,21 @@ if __name__ == "__main__":
         csv_path = str(MODELS_DIR / csv_path) if not Path(args.csv).exists() else args.csv
 
     if args.watch > 0:
-        watch(csv_path, args.watch)
+        if args.show:
+            # 尝试切换 GUI 后端 (WSLg); 无可用后端则退回文件模式
+            import matplotlib
+            gui_ok = False
+            for backend in ("GTK3Agg", "TkAgg", "QtAgg", "Qt5Agg"):
+                try:
+                    matplotlib.use(backend, force=True)
+                    gui_ok = True
+                    break
+                except Exception:
+                    continue
+            if not gui_ok:
+                args.show = False
+                print("[警告] 无可用 GUI 后端, 退回文件模式 "
+                      "(PNG 每 30s 保存到 models/figures/train_history.png)")
+        watch(csv_path, args.watch, show=args.show)
     else:
-        plot(csv_path, args.output)
+        plot(csv_path, args.output, show=args.show)

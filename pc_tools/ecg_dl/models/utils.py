@@ -20,6 +20,9 @@ import tensorflow as tf
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from config import MODELS_DIR, CLASS_NAMES, INFERENCE_CONFIG
 
+FIGURES_DIR = MODELS_DIR / "figures"
+FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+
 
 def plot_training_history(history, save_path: str = None):
     """
@@ -27,10 +30,10 @@ def plot_training_history(history, save_path: str = None):
     
     Args:
         history: model.fit() 返回的 History 对象
-        save_path: 保存路径, 默认保存到 models/training_history.png
+        save_path: 保存路径, 默认保存到 models/figures/training_history.png
     """
     if save_path is None:
-        save_path = str(MODELS_DIR / 'training_history.png')
+        save_path = str(FIGURES_DIR / 'training_history.png')
     
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
     
@@ -72,7 +75,7 @@ def plot_confusion_matrix(
         save_path: 保存路径
     """
     if save_path is None:
-        save_path = str(MODELS_DIR / 'confusion_matrix.png')
+        save_path = str(FIGURES_DIR / 'confusion_matrix.png')
     
     cm = confusion_matrix(y_true, y_pred)
     
@@ -126,7 +129,7 @@ def plot_sample_beats(
         save_path: 保存路径
     """
     if save_path is None:
-        save_path = str(MODELS_DIR / 'sample_beats.png')
+        save_path = str(FIGURES_DIR / 'sample_beats.png')
     
     n_cols = min(3, n_samples)
     n_rows = (n_samples + n_cols - 1) // n_cols
@@ -175,7 +178,7 @@ def save_model_summary(model: tf.keras.Model, save_path: str = None):
         save_path: 保存路径
     """
     if save_path is None:
-        save_path = str(MODELS_DIR / 'model_summary.txt')
+        save_path = str(FIGURES_DIR / 'model_summary.txt')
     
     with open(save_path, 'w') as f:
         # 重定向 stdout

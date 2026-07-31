@@ -57,8 +57,15 @@ def train(
     use_incart: bool = False,
     use_ptbxl_rhythm: bool = False,
     use_ecg1000: bool = False,
+    use_ptb_beat: bool = False,
+    ptb_abn_max: int = 10000,
+    domain_balanced: bool = False,
+    ptb_batch_frac: float = 0.20,
+    ptb_loss_weight: float = 0.5,
     use_no_focal: bool = False,
     use_balanced: bool = False,
+    sliding_dup: int = 0,
+    sliding_max_shift: int = 40,
     focal_gamma: float = None,
     focal_alpha: float = None,
     epochs: int = None,
@@ -89,7 +96,9 @@ def train(
         skip_evaluate: 跳过评估.
     """
     print(f"\n{'='*60}")
-    if use_ptbxl_rhythm:
+    if use_ptb_beat:
+        ds_name = "MIT+INCART+PTB"
+    elif use_ptbxl_rhythm:
         ds_name = "MIT+INCART+PTBXL"
     elif use_incart:
         ds_name = "MIT-BIH+INCART"
@@ -117,7 +126,9 @@ def train(
     
     loss_type = "CE" if use_no_focal else "FocalLoss"
     bal_tag = "+Bal" if use_balanced else ""
-    print(f" ECG [{ds_name}] [{model_type}] [{loss_type}]{bal_tag}")
+    sliding_tag = (f"+Sliding(dup={sliding_dup},shift={sliding_max_shift})"
+                   if sliding_dup > 0 else "")
+    print(f" ECG [{ds_name}] [{model_type}] [{loss_type}]{bal_tag}{sliding_tag}")
     print(f"{'='*60}\n")
 
     # Override FocalLoss params from CLI
@@ -136,9 +147,16 @@ def train(
         use_merged=use_merged,
         use_incart=use_incart,
         use_ecg1000=use_ecg1000,
+        use_ptb_beat=use_ptb_beat,
+        ptb_abn_max=ptb_abn_max,
+        domain_balanced=domain_balanced,
+        ptb_batch_frac=ptb_batch_frac,
+        ptb_loss_weight=ptb_loss_weight,
         use_ptbxl_rhythm=use_ptbxl_rhythm,
         use_balanced=use_balanced,
         use_3beat=use_3beat,
+        sliding_dup=sliding_dup,
+        sliding_max_shift=sliding_max_shift,
     )
     
     # Step 2: 模型构建
@@ -174,10 +192,13 @@ def train(
         callbacks = get_cnn_m_callbacks()
         is_resnet = False
         is_cnn_m = True
+    elif use_resnet_large:
         model = build_ecg_resnet_lite_large(
             input_shape=datasets['input_shape']
         )
-        model = compile_resnet(model, learning_rate=TRAIN_CONFIG['learning_rate'])
+        model = compile_resnet(
+            model, learning_rate=TRAIN_CONFIG['learning_rate'],
+            loss='categorical_crossentropy' if use_no_focal else None)
         resnet_summary(model)
         callbacks = get_resnet_callbacks(model_name="best_resnet_large.h5")
         save_model_summary(model)
@@ -185,7 +206,9 @@ def train(
         model = build_ecg_resnet_lite_medium(
             input_shape=datasets['input_shape']
         )
-        model = compile_resnet(model, learning_rate=TRAIN_CONFIG['learning_rate'])
+        model = compile_resnet(
+            model, learning_rate=TRAIN_CONFIG['learning_rate'],
+            loss='categorical_crossentropy' if use_no_focal else None)
         resnet_summary(model)
         callbacks = get_resnet_callbacks(model_name="best_resnet_medium.h5")
         save_model_summary(model)
@@ -193,7 +216,9 @@ def train(
         model = build_ecg_resnet_lite_small(
             input_shape=datasets['input_shape']
         )
-        model = compile_resnet(model, learning_rate=TRAIN_CONFIG['learning_rate'])
+        model = compile_resnet(
+            model, learning_rate=TRAIN_CONFIG['learning_rate'],
+            loss='categorical_crossentropy' if use_no_focal else None)
         resnet_summary(model)
         callbacks = get_resnet_callbacks()
         save_model_summary(model)
@@ -239,7 +264,14 @@ def train(
     # NOTE: class_weight is incompatible with tf.data.Dataset in Keras 3.x.
     # FocalLoss handles class imbalance internally via alpha parameter.
     # See ModelPlan §11.2 for details.
-    
+
+    # Loss 可视化支持: 追加 CSVLogger (配合 plot_history.py --watch)
+    from tensorflow.keras.callbacks import CSVLogger
+    history_csv_path = str(MODELS_DIR / "train_history.csv")
+    callbacks = callbacks + [CSVLogger(history_csv_path, append=False)]
+    print(f"[训练] Loss 历史: {history_csv_path}")
+    print(f"[训练] 实时可视化: python3 plot_history.py --csv {history_csv_path} --watch 30 --show")
+
     history = model.fit(
         datasets['train_ds'],
         validation_data=datasets['val_ds'],
@@ -388,9 +420,23 @@ if __name__ == "__main__":
     parser.add_argument("--merged", action="store_true", help="MIT-BIH + PTB-XL 合并")
     parser.add_argument("--incart", action="store_true", help="MIT-BIH + INCART 合并 (P0)")
     parser.add_argument("--ptbxl-r", action="store_true", help="MIT-BIH+INCART+PTBXL节律合并")
+    parser.add_argument("--ptb-beat", action="store_true",
+                        help="MIT+INCART+PTB原始库(beat级)合并 (Phase 3B)")
+    parser.add_argument("--ptb-abn-max", type=int, default=10000,
+                        help="PTB 异常拍限量 (默认10000, 防MI形态主导)")
+    parser.add_argument("--domain-balanced", action="store_true",
+                        help="域平衡采样: 每batch固定比例PTB拍 (配合--ptb-beat)")
+    parser.add_argument("--ptb-frac", type=float, default=0.20,
+                        help="每batch中PTB拍占比 (默认0.20)")
+    parser.add_argument("--ptb-weight", type=float, default=0.5,
+                        help="PTB拍loss权重 (默认0.5, 记录级标签降权)")
     parser.add_argument("--ecg1000", action="store_true", help="MIT-BIH + ECG1000 合并 (本地)")
     parser.add_argument("--no-focal", action="store_true", help="禁用 FocalLoss, 用标准交叉熵")
     parser.add_argument("--balanced", action="store_true", help="训练集 50/50 类别均衡采样 (Phase 2A-4)")
+    parser.add_argument("--sliding-dup", type=int, default=0,
+                        help="异常类滑窗采样增强: 每个异常心拍生成的移位视图数 (0=关闭, 张异凡2019方法)")
+    parser.add_argument("--sliding-shift", type=int, default=40,
+                        help="滑窗最大平移量 (采样点, 默认40=160ms @250Hz)")
     parser.add_argument("--focal-gamma", type=float, default=None, help="覆盖 FocalLoss gamma")
     parser.add_argument("--focal-alpha", type=float, default=None, help="覆盖 FocalLoss alpha")
     parser.add_argument("--tiny", action="store_true", help="使用 tiny 模型")
@@ -420,9 +466,16 @@ if __name__ == "__main__":
             use_merged=args.merged,
             use_incart=args.incart,
             use_ecg1000=args.ecg1000,
+            use_ptb_beat=args.ptb_beat,
+            ptb_abn_max=args.ptb_abn_max,
+            domain_balanced=args.domain_balanced,
+            ptb_batch_frac=args.ptb_frac,
+            ptb_loss_weight=args.ptb_weight,
             use_ptbxl_rhythm=args.ptbxl_r,
             use_no_focal=args.no_focal,
             use_balanced=args.balanced,
+            sliding_dup=args.sliding_dup,
+            sliding_max_shift=args.sliding_shift,
             focal_gamma=args.focal_gamma,
             focal_alpha=args.focal_alpha,
             epochs=args.epochs,

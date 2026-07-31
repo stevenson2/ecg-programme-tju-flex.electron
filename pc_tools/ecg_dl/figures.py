@@ -3,7 +3,7 @@
 ECG Model Figure Generator — Publication-Quality Comparison Plots
 
 Model Registry: models/model_registry.json
-Add new models by editing the JSON. Re-run to regenerate all figures.
+Add new models by editing the JSON. Re-run to regenerateall figures.
 
 Usage:
   python3 figures.py --all                    # Generate all figures
@@ -26,6 +26,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 from matplotlib.patches import Patch
+
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.serif'] = ['Times New Roman']
 
 import tensorflow as tf
 from sklearn.metrics import roc_curve, roc_auc_score, confusion_matrix
@@ -67,6 +70,16 @@ def compute_metrics(y_true, prob_ab, threshold=0.50):
             "tp": tp, "fp": fp, "fn": fn, "tn": tn}
 
 
+def _predict_cls(model, x):
+    """Extract classification probabilities, handling multi-output models."""
+    raw = model.predict(x, verbose=0)
+    if isinstance(raw, (list, tuple)):
+        raw = raw[0]
+    if raw.shape[-1] >= 2:
+        return raw[:, ABNORMAL_IDX]
+    return raw[:, 0]
+
+
 def evaluate_model(entry, x_test, y_test):
     h5 = entry.get("h5")
     ensemble_h5s = entry.get("h5", None)
@@ -74,20 +87,19 @@ def evaluate_model(entry, x_test, y_test):
         ensemble_h5s = ensemble_h5s
 
     if isinstance(h5, list):
-        # Ensemble: load all models, average probabilities
         probs = []
         for path in h5:
             m = tf.keras.models.load_model(str(MODELS_DIR / path), compile=False)
-            p = m.predict(add_channel_dim(x_test), verbose=0)[:, ABNORMAL_IDX]
+            p = _predict_cls(m, add_channel_dim(x_test))
             probs.append(p)
             tf.keras.backend.clear_session()
         prob_ab = np.mean(probs, axis=0)
     elif h5:
         m = tf.keras.models.load_model(str(MODELS_DIR / h5), compile=False)
-        prob_ab = m.predict(add_channel_dim(x_test), verbose=0)[:, ABNORMAL_IDX]
+        prob_ab = _predict_cls(m, add_channel_dim(x_test))
         tf.keras.backend.clear_session()
     else:
-        return None  # No H5, use pre-computed metrics
+        return None
 
     metrics = compute_metrics(y_test, prob_ab)
     tuned = compute_metrics(y_test, prob_ab, 0.35)
@@ -233,7 +245,8 @@ def plot_bar_chart(results, registry):
     ax.set_ylabel("Score", fontsize=11, fontweight="bold")
     ax.set_title("ECG Arrhythmia Detection — Model Performance Comparison",
                  fontsize=13, fontweight="bold", pad=12)
-    ax.legend(loc="lower right", fontsize=8, ncol=5, framealpha=0.9)
+    # ax.legend(loc="upper center", fontsize=8, ncol=5, framealpha=0.9,
+    #           bbox_to_anchor=(0.5, 1.15))
     ax.grid(axis="y", alpha=0.12, linestyle="--")
     ax.yaxis.set_major_formatter(mticker.PercentFormatter(1.0))
 
@@ -249,17 +262,17 @@ def plot_bar_chart(results, registry):
             last_idx = i
 
     # Family legend
-    fam_patches = []
-    seen = set()
-    for mid, r in sorted_models:
-        fam = r.get("family", "")
-        if fam not in seen:
-            seen.add(fam)
-            fam_patches.append(Patch(color=r.get("color", "#666"), alpha=0.3, label=fam))
-    if len(fam_patches) > 1:
-        leg2 = ax.legend(handles=fam_patches, loc="upper left", fontsize=9,
-                         framealpha=0.9, title="Model Family")
-        ax.add_artist(leg2)
+    # fam_patches = []
+    # seen = set()
+    # for mid, r in sorted_models:
+    #     fam = r.get("family", "")
+    #     if fam not in seen:
+    #         seen.add(fam)
+    #         fam_patches.append(Patch(color=r.get("color", "#666"), alpha=0.3, label=fam))
+    # if len(fam_patches) > 1:
+    #     leg2 = ax.legend(handles=fam_patches, loc="upper left", fontsize=9,
+    #                      framealpha=0.9, title="Model Family")
+    #     ax.add_artist(leg2)
 
     plt.tight_layout()
     path = FIGURES_DIR / "compare_bars.png"
@@ -507,7 +520,7 @@ def plot_confusion_matrices(results, registry):
 # ============================================================================
 
 def plot_params_vs_perf(results, registry):
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(16, 5))
 
     for mid, r in results.items():
         entry = next((e for e in registry["models"] if e["id"] == mid), {})
@@ -516,26 +529,38 @@ def plot_params_vs_perf(results, registry):
         params = entry.get("params", 0) / 1000
         recall = r["metrics"]["recall"]
         auc = r["metrics"]["auc"]
+        acc = r["metrics"]["acc"]
+        marker = entry.get("marker", "o")
 
         ax1.scatter(params, recall, s=200, c=color, edgecolors="white",
-                    linewidth=1.5, zorder=5, alpha=0.85)
-        ax1.annotate(name, (params, recall), textcoords="offset points",
-                     xytext=(8, 6), fontsize=9, fontweight="bold", color=color)
+                    linewidth=1.5, zorder=5, alpha=0.85,
+                    marker=marker, label=f"{name} ({params:.0f}K)")
         ax2.scatter(params, auc, s=200, c=color, edgecolors="white",
-                    linewidth=1.5, zorder=5, alpha=0.85)
-        ax2.annotate(name, (params, auc), textcoords="offset points",
-                     xytext=(8, 6), fontsize=9, fontweight="bold", color=color)
+                    linewidth=1.5, zorder=5, alpha=0.85,
+                    marker=marker, label=f"{name} ({params:.0f}K)")
+        ax3.scatter(params, acc, s=200, c=color, edgecolors="white",
+                    linewidth=1.5, zorder=5, alpha=0.85,
+                    marker=marker, label=f"{name} ({params:.0f}K)")
 
     ax1.set_xlabel("Parameters (K)", fontsize=11, fontweight="bold")
     ax1.set_ylabel("Abnormal Recall", fontsize=11, fontweight="bold")
     ax1.set_title("(a) Params vs Recall", fontsize=12, fontweight="bold")
+    ax1.legend(fontsize=7, framealpha=0.9, loc="lower right")
     ax1.grid(alpha=0.12, linestyle="--")
     ax1.yaxis.set_major_formatter(mticker.PercentFormatter(1.0))
 
     ax2.set_xlabel("Parameters (K)", fontsize=11, fontweight="bold")
     ax2.set_ylabel("AUC", fontsize=11, fontweight="bold")
     ax2.set_title("(b) Params vs AUC", fontsize=12, fontweight="bold")
+    ax2.legend(fontsize=7, framealpha=0.9, loc="lower right")
     ax2.grid(alpha=0.12, linestyle="--")
+
+    ax3.set_xlabel("Parameters (K)", fontsize=11, fontweight="bold")
+    ax3.set_ylabel("Accuracy", fontsize=11, fontweight="bold")
+    ax3.set_title("(c) Params vs Accuracy", fontsize=12, fontweight="bold")
+    ax3.legend(fontsize=7, framealpha=0.9, loc="lower right")
+    ax3.grid(alpha=0.12, linestyle="--")
+    ax3.yaxis.set_major_formatter(mticker.PercentFormatter(1.0))
 
     plt.suptitle("Model Efficiency — Parameters vs Performance",
                  fontsize=14, fontweight="bold", y=1.02)
@@ -574,9 +599,10 @@ def plot_recall_vs_threshold(results, registry):
     ax.legend(fontsize=8, framealpha=0.9)
     ax.grid(alpha=0.12, linestyle="--")
     ax.yaxis.set_major_formatter(mticker.PercentFormatter(1.0))
-    ax.axvline(x=0.35, color="gray", linestyle="--", alpha=0.5, label="deploy θ=0.35")
-    ax.axvline(x=0.50, color="black", linestyle="--", alpha=0.3, label="default θ=0.50")
-    ax.legend(fontsize=7, loc="lower left")
+    ax.axvline(x=0.35, color="gray", linestyle="--", alpha=0.5)
+    ax.annotate("deploy θ=0.35", xy=(0.35, 0.98), xycoords=("data", "axes fraction"),
+                fontsize=7, color="gray", ha="center")
+    ax.legend(fontsize=8, framealpha=0.9, loc="lower left")
 
     ax = axes[1]
     for mid, r in models_with_probs:
@@ -589,14 +615,15 @@ def plot_recall_vs_threshold(results, registry):
         m = compute_metrics(r["y_test"], r["prob_ab"], best_th)
         name, color = entry.get("name", mid), entry.get("color", "#666")
         marker = entry.get("marker", "o")
-        ax.scatter(m["prec"], m["recall"], s=150, c=color,
-                   edgecolors="white", linewidth=1.5, zorder=5, marker=marker)
-        ax.annotate(f"{name}\nθ={best_th:.2f}", (m["prec"], m["recall"]),
-                    textcoords="offset points", xytext=(8, 8),
-                    fontsize=8, fontweight="bold", color=color)
+        label = f"{name} (θ={best_th:.2f})"
+        ax.scatter(m["prec"], m["recall"], s=140, c=color,
+                   edgecolors="white", linewidth=1.5, zorder=5,
+                   marker=marker, label=label)
     ax.set_xlabel("Precision", fontsize=11, fontweight="bold")
     ax.set_ylabel("Recall", fontsize=11, fontweight="bold")
     ax.set_title("(b) Best F1 Operating Points", fontsize=12, fontweight="bold")
+    ax.legend(fontsize=7, framealpha=0.9, edgecolor="#ccc",
+              loc="lower left", ncol=2)
     ax.grid(alpha=0.12, linestyle="--")
     ax.xaxis.set_major_formatter(mticker.PercentFormatter(1.0))
     ax.yaxis.set_major_formatter(mticker.PercentFormatter(1.0))
@@ -645,7 +672,6 @@ def plot_paper_figure(results, registry):
     ax_bar.set_ylim(0, 1.08)
     ax_bar.set_ylabel("Score", fontsize=10, fontweight="bold")
     ax_bar.set_title("(a) Performance Metrics", fontsize=12, fontweight="bold")
-    ax_bar.legend(loc="lower right", fontsize=7, ncol=5, framealpha=0.9)
     ax_bar.grid(axis="y", alpha=0.12, linestyle="--")
     ax_bar.yaxis.set_major_formatter(mticker.PercentFormatter(1.0))
 
@@ -688,7 +714,6 @@ def plot_paper_figure(results, registry):
         tick.set_color(c)
     ax_rec.set_ylabel("Abnormal Recall", fontsize=10, fontweight="bold")
     ax_rec.set_title("(c) Recall vs Threshold", fontsize=12, fontweight="bold")
-    ax_rec.legend(fontsize=7, framealpha=0.9)
     ax_rec.grid(axis="y", alpha=0.12, linestyle="--")
     ax_rec.yaxis.set_major_formatter(mticker.PercentFormatter(1.0))
 
@@ -698,16 +723,16 @@ def plot_paper_figure(results, registry):
         entry = next((e for e in entries if e["id"] == mid), {})
         params_k = entry.get("params", 0) / 1000
         recall = results[mid]["metrics"]["recall"]
-        auc = results[mid]["metrics"]["auc"]
         c = entry.get("color", "#666")
+        name = entry.get("name", mid)
+        marker = entry.get("marker", "o")
         ax_sc.scatter(params_k, recall, s=200, c=c, edgecolors="white",
-                      linewidth=1.5, zorder=5, alpha=0.85)
-        ax_sc.annotate(entry.get("name", mid), (params_k, recall),
-                       textcoords="offset points", xytext=(6, 8),
-                       fontsize=8, fontweight="bold", color=c)
+                      linewidth=1.5, zorder=5, alpha=0.85,
+                      marker=marker, label=f"{name} ({params_k:.0f}K)")
     ax_sc.set_xlabel("Parameters (K)", fontsize=10, fontweight="bold")
     ax_sc.set_ylabel("Recall @0.5", fontsize=10, fontweight="bold")
     ax_sc.set_title("(d) Params vs Recall", fontsize=12, fontweight="bold")
+    ax_sc.legend(fontsize=7, framealpha=0.9, loc="lower right")
     ax_sc.grid(alpha=0.12, linestyle="--")
     ax_sc.yaxis.set_major_formatter(mticker.PercentFormatter(1.0))
 

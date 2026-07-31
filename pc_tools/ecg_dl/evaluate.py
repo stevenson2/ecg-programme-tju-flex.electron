@@ -144,7 +144,7 @@ def evaluate_tflite_model(tflite_path: str = None):
     # 混淆矩阵
     plot_confusion_matrix(
         y_test, y_pred,
-        save_path=str(MODELS_DIR / 'tflite_confusion_matrix.png')
+        save_path=str(MODELS_DIR / 'figures' / 'tflite_confusion_matrix.png')
     )
     
     return accuracy, y_pred
