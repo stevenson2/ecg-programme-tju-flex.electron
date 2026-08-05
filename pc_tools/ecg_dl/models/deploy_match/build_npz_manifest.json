@@ -1,0 +1,56 @@
+{
+  "date": "2026-08-03 04:41:11",
+  "purpose": "部署链 (D3) 训练数据, 供 exp4/5/6 部署链重训 (TUNING_HISTORY 十三章)",
+  "npz_files": {
+    "mit_bih": "data/processed/mit_bih_processed_deploy.npz",
+    "incart": "data/processed/incart_processed_deploy.npz",
+    "ptb": "data/processed/ptb_processed_deploy.npz"
+  },
+  "totals": {
+    "mit_bih": {
+      "records": 48,
+      "raw_beats": 109827,
+      "augmented_beats": 658962,
+      "normal": 543786,
+      "abnormal": 115176
+    },
+    "incart": {
+      "records": 75,
+      "beats": 175779,
+      "normal": 153596,
+      "abnormal": 22183
+    },
+    "ptb": {
+      "records": 533,
+      "beats": 69482,
+      "normal": 10416,
+      "abnormal": 59066,
+      "failed_records": 16
+    }
+  },
+  "assumptions": [
+    "波形链 = 固件部署链 (resample_poly→500→均值DC→双级10抽头梳状→因果HP/LP→2:1抽取→固件z-score)",
+    "R 峰位置/标签/患者划分/增强倍数与原管线完全一致; PTB 峰值在 baseline 链检测并复用",
+    "增强按当前 config (noise_std=0.015) 重新随机, 与原 npz 增强副本不逐拍相同 (设计上即随机)",
+    "INCART/PTB 无增强; MIT 6× = 原始 + 1 噪声 + 2 缩放 + 2 漂移"
+  ],
+  "failed_ptb_records": [
+    400030,
+    400046,
+    400058,
+    400076,
+    400077,
+    400078,
+    400107,
+    400125,
+    400126,
+    400127,
+    400173,
+    400198,
+    400232,
+    400276,
+    400474,
+    400512
+  ],
+  "wall_time_seconds": 162.5
+}

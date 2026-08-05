@@ -1,0 +1,111 @@
+{
+  "meta": {
+    "model": "best_resnet_large_exp6_hp005.h5",
+    "tag": "baseline_hp005",
+    "split": "patient-level 60/20/20 seed42 (MIT+INCART)",
+    "n_test": 163078,
+    "n_incart_unknown": 173756,
+    "note": "per-class table covers beats with recovered AAMI symbols (MIT full + INCART I01,I10-I15); INCART beats without .atr marked 'U' and excluded from per-class but included in aggregate"
+  },
+  "per_class": {
+    "N": {
+      "n": 116921,
+      "n_abn": 0,
+      "auc": null,
+      "thr": {
+        "thr_0.35": {
+          "recall": 0.0,
+          "precision": 0.0,
+          "f1": 0.0
+        },
+        "thr_0.5": {
+          "recall": 0.0,
+          "precision": 0.0,
+          "f1": 0.0
+        },
+        "thr_0.65": {
+          "recall": 0.0,
+          "precision": 0.0,
+          "f1": 0.0
+        }
+      }
+    },
+    "S": {
+      "n": 1812,
+      "n_abn": 1812,
+      "auc": null,
+      "thr": {
+        "thr_0.35": {
+          "recall": 0.8951434878587197,
+          "precision": 1.0,
+          "f1": 0.9446709376820035
+        },
+        "thr_0.5": {
+          "recall": 0.8658940397350994,
+          "precision": 1.0,
+          "f1": 0.9281277728482697
+        },
+        "thr_0.65": {
+          "recall": 0.8316777041942605,
+          "precision": 1.0,
+          "f1": 0.9081048508586924
+        }
+      }
+    },
+    "V": {
+      "n": 14390,
+      "n_abn": 14390,
+      "auc": null,
+      "thr": {
+        "thr_0.35": {
+          "recall": 0.9496177901320362,
+          "precision": 1.0,
+          "f1": 0.9741579041169132
+        },
+        "thr_0.5": {
+          "recall": 0.9122307157748436,
+          "precision": 1.0,
+          "f1": 0.9541011011374787
+        },
+        "thr_0.65": {
+          "recall": 0.8630298818624045,
+          "precision": 1.0,
+          "f1": 0.9264799134618972
+        }
+      }
+    },
+    "F": {
+      "n": 2334,
+      "n_abn": 2334,
+      "auc": null,
+      "thr": {
+        "thr_0.35": {
+          "recall": 0.2810625535561268,
+          "precision": 1.0,
+          "f1": 0.4387959866220736
+        },
+        "thr_0.5": {
+          "recall": 0.21165381319622964,
+          "precision": 1.0,
+          "f1": 0.3493635077793494
+        },
+        "thr_0.65": {
+          "recall": 0.15424164524421594,
+          "precision": 1.0,
+          "f1": 0.267260579064588
+        }
+      }
+    }
+  },
+  "aggregate_recall": {
+    "thr_0.35": {
+      "recall": 0.8684601024364559
+    },
+    "thr_0.5": {
+      "recall": 0.8293044851850079
+    },
+    "thr_0.65": {
+      "recall": 0.7796658848307884
+    }
+  }
+}

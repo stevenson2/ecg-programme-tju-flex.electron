@@ -23,7 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from config import PROCESSED_DIR, TARGET_FS, BEAT_WINDOW_SAMPLES
 
 # Paths
-PTBXL_DIR = Path(r"C:\Users\cai\OneDrive\Desktop\ecg-programme-tju-flex.electron-master\PTB-XL_ECG")
+PTBXL_DIR = Path(r"C:\Users\cai\OneDrive\Desktop\Fe programme 25261\ecg-programme-tju-flex.electron-master\PTB-XL_ECG")
 PTBXL_CSV = PTBXL_DIR / "ptbxl_database.csv"
 SCP_CSV = PTBXL_DIR / "scp_statements.csv"
 

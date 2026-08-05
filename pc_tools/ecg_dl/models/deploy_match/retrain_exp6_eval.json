@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "date": "2026-08-02 22:08:39",
+    "model": "best_resnet_large_exp6_deploy.h5",
+    "purpose": "exp6 deploy-chain retrain evaluation on cached test beats",
+    "anchors": {
+      "exp6c_d3_floor": {
+        "mit": {
+          "d3_floor": 0.899,
+          "d0_target": 0.8942
+        },
+        "ptb": {
+          "d3_floor": 0.7184,
+          "d0_target": 0.8232
+        }
+      },
+      "description": "Old exp6c D3 = recovery floor; D0 = target"
+    }
+  },
+  "results": {
+    "mit": {
+      "d0": {
+        "auc": 0.947075114211847,
+        "thr_0.35": {
+          "recall": 0.8600070972320795,
+          "precision": 0.515748031496063,
+          "f1": 0.6448051084209125
+        },
+        "thr_0.5": {
+          "recall": 0.8468772178850248,
+          "precision": 0.5518557058619493,
+          "f1": 0.6682534126706335
+        }
+      },
+      "d3": {
+        "auc": 0.9170745953513446,
+        "thr_0.35": {
+          "recall": 0.9233498935415189,
+          "precision": 0.35029617662897145,
+          "f1": 0.5079055241069685
+        },
+        "thr_0.5": {
+          "recall": 0.9151880766501065,
+          "precision": 0.36745743392462776,
+          "f1": 0.5243735068367814
+        }
+      },
+      "n_beats": 51883,
+      "n_abnormal": 5636
+    },
+    "ptb": {
+      "d0": {
+        "auc": 0.6372521582835592,
+        "thr_0.35": {
+          "recall": 0.18482947863582908,
+          "precision": 0.8257443082311734,
+          "f1": 0.3020499679692505
+        },
+        "thr_0.5": {
+          "recall": 0.16875735005880046,
+          "precision": 0.8258992805755395,
+          "f1": 0.28025063064529254
+        }
+      },
+      "d3": {
+        "auc": 0.7350638083310692,
+        "thr_0.35": {
+          "recall": 0.7112896903175225,
+          "precision": 0.8914271677720462,
+          "f1": 0.7912351466259675
+        },
+        "thr_0.5": {
+          "recall": 0.6883575068600549,
+          "precision": 0.8966045442941026,
+          "f1": 0.7788003104557046
+        }
+      },
+      "n_beats": 13058,
+      "n_abnormal": 10204
+    }
+  },
+  "verdicts": {
+    "mit": [
+      "MIT D3 AUC >= 0.8990: PASS",
+      "MIT D3 AUC vs 0.8942: recovered by +0.0229",
+      "MIT D0 AUC vs target 0.8942: above by +0.0529"
+    ],
+    "ptb": [
+      "PTB D3 AUC >= 0.7184: PASS",
+      "PTB D3 AUC vs 0.8232: shortfall -0.0881",
+      "PTB D0 AUC vs target 0.8232: shortfall -0.1859"
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "meta": {
+    "date": "2026-08-05",
+    "task": "T3-6/M10 泄漏审计",
+    "method": "历史记录级划分 (seed42, choice 20% 记录作测试, 无患者隔离) vs 患者级划分 (patient_level_split, 60/20/20)",
+    "source": "RECORDS 患者前缀 + ptb_processed.npz 拍级映射"
+  },
+  "record_level": {
+    "n_records": 549,
+    "n_test_records": 109,
+    "n_test_patients": 96,
+    "n_leak_patients": 54,
+    "n_test_beats": 13616,
+    "n_leak_beats": 9022,
+    "leak_fraction": 0.6626,
+    "verdict": "需复核"
+  },
+  "patient_level": {
+    "n_leak_beats_clean": 0,
+    "verdict": "清洁版无泄漏"
+  }
+}

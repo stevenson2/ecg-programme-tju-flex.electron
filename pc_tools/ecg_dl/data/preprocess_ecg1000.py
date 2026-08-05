@@ -19,7 +19,7 @@ from scipy import signal as scipy_signal
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from config import PROCESSED_DIR, TARGET_FS, BEAT_WINDOW_SAMPLES
 
-DATA_DIR = Path(r"C:\Users\cai\OneDrive\Desktop\ecg-programme-tju-flex.electron-master\ECGdata_1000")
+DATA_DIR = Path(r"C:\Users\cai\OneDrive\Desktop\Fe programme 25261\ecg-programme-tju-flex.electron-master\ECGdata_1000")
 TRAIN_DIR = DATA_DIR / "TRAIN"
 REF_FILE = DATA_DIR / "reference.txt"
 ORIG_FS = 500

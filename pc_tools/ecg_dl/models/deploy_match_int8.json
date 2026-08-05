@@ -1,0 +1,90 @@
+{
+  "meta": {
+    "date": "2026-08-02 16:19:33",
+    "purpose": "INT8 vs float32 consistency on deployment (D3) beats",
+    "quantization": "Firmware-exact: trunc-toward-zero, clip(-128,127)",
+    "pass_thresholds": "|DAUC|<=0.01, max|Dp|<=0.05, agreement>=99%"
+  },
+  "results": {
+    "P2A": {
+      "mit": {
+        "n_beats": 51883,
+        "auc_f32": 0.9645405230896531,
+        "auc_int8": 0.9613682209498008,
+        "delta_auc": -0.003172302139852312,
+        "max_abs_delta_prob": 0.6249622795370463,
+        "mean_abs_delta_prob": 0.2497609888652307,
+        "sign_agreement": {
+          "thr_0.35": 0.9522194167646435,
+          "thr_0.50": 0.9778540176936569
+        },
+        "quant_params": {
+          "input_scale": 0.0620606504380703,
+          "input_zp": -20,
+          "output_scale": 0.00390625,
+          "output_zp": -128
+        },
+        "verdict": "FAIL"
+      },
+      "ptb": {
+        "n_beats": 13058,
+        "auc_f32": 0.7355023738578137,
+        "auc_int8": 0.7604354352704479,
+        "delta_auc": 0.024933061412634183,
+        "max_abs_delta_prob": 0.5619565462027498,
+        "mean_abs_delta_prob": 0.24670070680246148,
+        "sign_agreement": {
+          "thr_0.35": 0.9545106448154388,
+          "thr_0.50": 0.9740389033542656
+        },
+        "quant_params": {
+          "input_scale": 0.0620606504380703,
+          "input_zp": -20,
+          "output_scale": 0.00390625,
+          "output_zp": -128
+        },
+        "verdict": "FAIL"
+      }
+    },
+    "exp5c": {
+      "mit": {
+        "n_beats": 51883,
+        "auc_f32": 0.9485605998604434,
+        "auc_int8": 0.9464461205417148,
+        "delta_auc": -0.002114479318728546,
+        "max_abs_delta_prob": 0.594399387628834,
+        "mean_abs_delta_prob": 0.20853152276489637,
+        "sign_agreement": {
+          "thr_0.35": 0.9238286143823603,
+          "thr_0.50": 0.9593315729622419
+        },
+        "quant_params": {
+          "input_scale": 0.0620606504380703,
+          "input_zp": -20,
+          "output_scale": 0.00390625,
+          "output_zp": -128
+        },
+        "verdict": "FAIL"
+      },
+      "ptb": {
+        "n_beats": 13058,
+        "auc_f32": 0.7427564921570529,
+        "auc_int8": 0.7343727208121799,
+        "delta_auc": -0.008383771344873003,
+        "max_abs_delta_prob": 0.5058691875337143,
+        "mean_abs_delta_prob": 0.19513030470960852,
+        "sign_agreement": {
+          "thr_0.35": 0.9127737785265737,
+          "thr_0.50": 0.9445550620309389
+        },
+        "quant_params": {
+          "input_scale": 0.0620606504380703,
+          "input_zp": -20,
+          "output_scale": 0.00390625,
+          "output_zp": -128
+        },
+        "verdict": "FAIL"
+      }
+    }
+  }
+}

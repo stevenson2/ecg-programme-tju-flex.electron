@@ -1,0 +1,1006 @@
+{
+  "meta": {
+    "date": "2026-08-02 15:00:27",
+    "purpose": "Deployment-vs-baseline paired evaluation (acceptance criterion a)",
+    "chains_description": "baseline = filtfilt IIR + FFT resample; deployment = causal biquad + comb MA + 2:1 decimate",
+    "bootstrap_reps": 500,
+    "bootstrap_seed": 123,
+    "delta_offsets": [
+      -12,
+      -9,
+      -6,
+      -3,
+      0,
+      3,
+      6,
+      9,
+      12
+    ],
+    "acceptance_criterion": "|ΔAUC| ≤ 0.01",
+    "cross_reference_augmented_npz": {
+      "_note": "NON-COMPARABLE: npz-era MIT test includes 6× augmented beats vs eval stage which uses raw beats only from both chains. PTB test has same records but different beat counts (re-extraction vs npz). Values are for context only.",
+      "models": {
+        "P2A": {
+          "mit_auc": 0.9739891884431034,
+          "ptb_auc": 0.7501793476155798,
+          "n_test_mit": 163078,
+          "n_test_ptb": 13058
+        },
+        "exp4c": {
+          "mit_auc": 0.8669176807556995,
+          "ptb_auc": 0.7319016519896699,
+          "n_test_mit": 163078,
+          "n_test_ptb": 13058
+        },
+        "exp5c": {
+          "mit_auc": 0.8873926632723388,
+          "ptb_auc": 0.7845474739971711,
+          "n_test_mit": 163078,
+          "n_test_ptb": 13058
+        },
+        "exp6c": {
+          "mit_auc": 0.8244628914777251,
+          "ptb_auc": 0.823182806555655,
+          "n_test_mit": 163078,
+          "n_test_ptb": 13058
+        }
+      }
+    }
+  },
+  "results": {
+    "P2A": {
+      "mit": {
+        "n_beats": 51883,
+        "n_normal": 46247,
+        "n_abnormal": 5636,
+        "n_patients": 15,
+        "auc_baseline": 0.9877531004523908,
+        "auc_deploy": 0.9645405230896531,
+        "delta_auc": -0.02321257736273774,
+        "bootstrap_95ci": [
+          -0.05861274689139187,
+          -0.0038598108388772077
+        ],
+        "bootstrap_reps": 500,
+        "baseline_metrics": {
+          "auc": 0.9877531004523908,
+          "thr_0.35": {
+            "rec": 0.9398509581263307,
+            "prec": 0.694688524590164,
+            "f1": 0.7988839454038157
+          },
+          "thr_0.50": {
+            "rec": 0.9311568488289567,
+            "prec": 0.760249167028828,
+            "f1": 0.8370683467581147
+          }
+        },
+        "deploy_metrics": {
+          "auc": 0.9645405230896531,
+          "thr_0.35": {
+            "rec": 0.9570617459190915,
+            "prec": 0.42449043834107186,
+            "f1": 0.5881262606989042
+          },
+          "thr_0.50": {
+            "rec": 0.9497870830376153,
+            "prec": 0.45024812852216334,
+            "f1": 0.6108987161198288
+          }
+        },
+        "delta_metrics": {
+          "thr_0.35": {
+            "rec_delta": 0.017210787792760862,
+            "prec_delta": -0.2701980862490921,
+            "f1_delta": -0.21075768470491152
+          },
+          "thr_0.50": {
+            "rec_delta": 0.018630234208658614,
+            "prec_delta": -0.3100010385066647,
+            "f1_delta": -0.22616963063828588
+          }
+        },
+        "verdict": "FAIL"
+      },
+      "ptb": {
+        "n_beats": 13058,
+        "n_normal": 2854,
+        "n_abnormal": 10204,
+        "n_patients": 57,
+        "auc_baseline": 0.7501794162916723,
+        "auc_deploy": 0.7355023738578137,
+        "delta_auc": -0.01467704243385859,
+        "bootstrap_95ci": [
+          -0.09861891255917923,
+          0.0805366536535863
+        ],
+        "bootstrap_reps": 500,
+        "baseline_metrics": {
+          "auc": 0.7501794162916723,
+          "thr_0.35": {
+            "rec": 0.2847902783222266,
+            "prec": 0.9676989676989677,
+            "f1": 0.4400696600287726
+          },
+          "thr_0.50": {
+            "rec": 0.25519404155233244,
+            "prec": 0.9723674383868559,
+            "f1": 0.4042850489054495
+          }
+        },
+        "deploy_metrics": {
+          "auc": 0.7355023738578137,
+          "thr_0.35": {
+            "rec": 0.3403567228537828,
+            "prec": 0.984131482006234,
+            "f1": 0.5057889754605694
+          },
+          "thr_0.50": {
+            "rec": 0.31791454331634655,
+            "prec": 0.9872185027388922,
+            "f1": 0.4809488510007413
+          }
+        },
+        "delta_metrics": {
+          "thr_0.35": {
+            "rec_delta": 0.055566444531556236,
+            "prec_delta": 0.016432514307266333,
+            "f1_delta": 0.06571931543179682
+          },
+          "thr_0.50": {
+            "rec_delta": 0.06272050176401411,
+            "prec_delta": 0.014851064352036314,
+            "f1_delta": 0.07666380209529183
+          }
+        },
+        "verdict": "FAIL"
+      }
+    },
+    "exp4c": {
+      "mit": {
+        "n_beats": 51883,
+        "n_normal": 46247,
+        "n_abnormal": 5636,
+        "n_patients": 15,
+        "auc_baseline": 0.9128622702521069,
+        "auc_deploy": 0.9158017527325693,
+        "delta_auc": 0.0029394824804623854,
+        "bootstrap_95ci": [
+          -0.015314751153582655,
+          0.023117983392924302
+        ],
+        "bootstrap_reps": 500,
+        "baseline_metrics": {
+          "auc": 0.9128622702521069,
+          "thr_0.35": {
+            "rec": 0.9036550745209369,
+            "prec": 0.37725925925925924,
+            "f1": 0.5322951505016722
+          },
+          "thr_0.50": {
+            "rec": 0.8624911284599006,
+            "prec": 0.4599299839152238,
+            "f1": 0.5999382906510337
+          }
+        },
+        "deploy_metrics": {
+          "auc": 0.9158017527325693,
+          "thr_0.35": {
+            "rec": 0.9237047551454932,
+            "prec": 0.37254901960784315,
+            "f1": 0.5309535951045385
+          },
+          "thr_0.50": {
+            "rec": 0.8901703335699077,
+            "prec": 0.44441491717601206,
+            "f1": 0.5928508124076809
+          }
+        },
+        "delta_metrics": {
+          "thr_0.35": {
+            "rec_delta": 0.020049680624556365,
+            "prec_delta": -0.004710239651416093,
+            "f1_delta": -0.0013415553971336536
+          },
+          "thr_0.50": {
+            "rec_delta": 0.0276792051100071,
+            "prec_delta": -0.015515066739211714,
+            "f1_delta": -0.007087478243352763
+          }
+        },
+        "verdict": "PASS"
+      },
+      "ptb": {
+        "n_beats": 13058,
+        "n_normal": 2854,
+        "n_abnormal": 10204,
+        "n_patients": 57,
+        "auc_baseline": 0.7319017034967394,
+        "auc_deploy": 0.7137930197344873,
+        "delta_auc": -0.018108683762252165,
+        "bootstrap_95ci": [
+          -0.1197029861662673,
+          0.07838856368941916
+        ],
+        "bootstrap_reps": 500,
+        "baseline_metrics": {
+          "auc": 0.7319017034967394,
+          "thr_0.35": {
+            "rec": 0.6173069384555077,
+            "prec": 0.9037302725968436,
+            "f1": 0.7335507161989053
+          },
+          "thr_0.50": {
+            "rec": 0.5362602900823207,
+            "prec": 0.9269862781636456,
+            "f1": 0.6794561370832557
+          }
+        },
+        "deploy_metrics": {
+          "auc": 0.7137930197344873,
+          "thr_0.35": {
+            "rec": 0.5582124656997256,
+            "prec": 0.8901390842319112,
+            "f1": 0.686141058844787
+          },
+          "thr_0.50": {
+            "rec": 0.45531164249313993,
+            "prec": 0.8970843792237884,
+            "f1": 0.6040434245595787
+          }
+        },
+        "delta_metrics": {
+          "thr_0.35": {
+            "rec_delta": -0.05909447275578206,
+            "prec_delta": -0.013591188364932338,
+            "f1_delta": -0.047409657354118284
+          },
+          "thr_0.50": {
+            "rec_delta": -0.08094864758918074,
+            "prec_delta": -0.029901898939857285,
+            "f1_delta": -0.07541271252367698
+          }
+        },
+        "verdict": "FAIL"
+      }
+    },
+    "exp5c": {
+      "mit": {
+        "n_beats": 51883,
+        "n_normal": 46247,
+        "n_abnormal": 5636,
+        "n_patients": 15,
+        "auc_baseline": 0.9295275581760254,
+        "auc_deploy": 0.9485605998604434,
+        "delta_auc": 0.019033041684417995,
+        "bootstrap_95ci": [
+          -0.01111220170188694,
+          0.04896917238320384
+        ],
+        "bootstrap_reps": 500,
+        "baseline_metrics": {
+          "auc": 0.9295275581760254,
+          "thr_0.35": {
+            "rec": 0.9380766501064585,
+            "prec": 0.34052557001159345,
+            "f1": 0.49966921841035816
+          },
+          "thr_0.50": {
+            "rec": 0.9263662171753017,
+            "prec": 0.3856551927906633,
+            "f1": 0.544591634505059
+          }
+        },
+        "deploy_metrics": {
+          "auc": 0.9485605998604434,
+          "thr_0.35": {
+            "rec": 0.9666430092264017,
+            "prec": 0.31678102104895917,
+            "f1": 0.4771831479372865
+          },
+          "thr_0.50": {
+            "rec": 0.955819730305181,
+            "prec": 0.3656913990903537,
+            "f1": 0.5289929788383169
+          }
+        },
+        "delta_metrics": {
+          "thr_0.35": {
+            "rec_delta": 0.028566359119943208,
+            "prec_delta": -0.023744548962634282,
+            "f1_delta": -0.022486070473071662
+          },
+          "thr_0.50": {
+            "rec_delta": 0.029453513129879316,
+            "prec_delta": -0.019963793700309596,
+            "f1_delta": -0.015598655666742123
+          }
+        },
+        "verdict": "FAIL"
+      },
+      "ptb": {
+        "n_beats": 13058,
+        "n_normal": 2854,
+        "n_abnormal": 10204,
+        "n_patients": 57,
+        "auc_baseline": 0.7845474396591249,
+        "auc_deploy": 0.7427564921570529,
+        "delta_auc": -0.04179094750207202,
+        "bootstrap_95ci": [
+          -0.15525313838619184,
+          0.07640368270488379
+        ],
+        "bootstrap_reps": 500,
+        "baseline_metrics": {
+          "auc": 0.7845474396591249,
+          "thr_0.35": {
+            "rec": 0.6934535476283811,
+            "prec": 0.9010569209219407,
+            "f1": 0.7837403776928615
+          },
+          "thr_0.50": {
+            "rec": 0.6280870246961976,
+            "prec": 0.908691337019708,
+            "f1": 0.7427710494292171
+          }
+        },
+        "deploy_metrics": {
+          "auc": 0.7427564921570529,
+          "thr_0.35": {
+            "rec": 0.534594276754214,
+            "prec": 0.9245762711864407,
+            "f1": 0.6774714356681569
+          },
+          "thr_0.50": {
+            "rec": 0.4751078008624069,
+            "prec": 0.9398991857309035,
+            "f1": 0.6311678166905351
+          }
+        },
+        "delta_metrics": {
+          "thr_0.35": {
+            "rec_delta": -0.15885927087416707,
+            "prec_delta": 0.023519350264500027,
+            "f1_delta": -0.1062689420247046
+          },
+          "thr_0.50": {
+            "rec_delta": -0.1529792238337907,
+            "prec_delta": 0.03120784871119553,
+            "f1_delta": -0.111603232738682
+          }
+        },
+        "verdict": "FAIL"
+      }
+    },
+    "exp6c": {
+      "mit": {
+        "n_beats": 51883,
+        "n_normal": 46247,
+        "n_abnormal": 5636,
+        "n_patients": 15,
+        "auc_baseline": 0.8942304937340574,
+        "auc_deploy": 0.8990329229035754,
+        "delta_auc": 0.004802429169518008,
+        "bootstrap_95ci": [
+          -0.0227288272280904,
+          0.037543088882300485
+        ],
+        "bootstrap_reps": 500,
+        "baseline_metrics": {
+          "auc": 0.8942304937340574,
+          "thr_0.35": {
+            "rec": 0.9348828956706884,
+            "prec": 0.2574639628634254,
+            "f1": 0.40373932033255433
+          },
+          "thr_0.50": {
+            "rec": 0.9194464158977999,
+            "prec": 0.28059345895603205,
+            "f1": 0.42997012943909724
+          }
+        },
+        "deploy_metrics": {
+          "auc": 0.8990329229035754,
+          "thr_0.35": {
+            "rec": 0.9604329311568488,
+            "prec": 0.2455766264404319,
+            "f1": 0.39114097839439266
+          },
+          "thr_0.50": {
+            "rec": 0.9490773598296665,
+            "prec": 0.2759492364836979,
+            "f1": 0.4275779376498801
+          }
+        },
+        "delta_metrics": {
+          "thr_0.35": {
+            "rec_delta": 0.025550035486160416,
+            "prec_delta": -0.011887336422993472,
+            "f1_delta": -0.012598341938161672
+          },
+          "thr_0.50": {
+            "rec_delta": 0.029630943931866605,
+            "prec_delta": -0.004644222472334147,
+            "f1_delta": -0.002392191789217124
+          }
+        },
+        "verdict": "PASS"
+      },
+      "ptb": {
+        "n_beats": 13058,
+        "n_normal": 2854,
+        "n_abnormal": 10204,
+        "n_patients": 57,
+        "auc_baseline": 0.8231828237246781,
+        "auc_deploy": 0.7183923434947396,
+        "delta_auc": -0.10479048022993853,
+        "bootstrap_95ci": [
+          -0.20739087246502677,
+          -0.013561557826600045
+        ],
+        "bootstrap_reps": 500,
+        "baseline_metrics": {
+          "auc": 0.8231828237246781,
+          "thr_0.35": {
+            "rec": 0.7486279890239121,
+            "prec": 0.9237001209189842,
+            "f1": 0.8270001082602576
+          },
+          "thr_0.50": {
+            "rec": 0.7018816150529205,
+            "prec": 0.9262803931712364,
+            "f1": 0.7986173059768065
+          }
+        },
+        "deploy_metrics": {
+          "auc": 0.7183923434947396,
+          "thr_0.35": {
+            "rec": 0.6353390827126617,
+            "prec": 0.8997918112421929,
+            "f1": 0.7447871790453214
+          },
+          "thr_0.50": {
+            "rec": 0.5569384555076441,
+            "prec": 0.9089891234804862,
+            "f1": 0.6906903257170637
+          }
+        },
+        "delta_metrics": {
+          "thr_0.35": {
+            "rec_delta": -0.11328890631125044,
+            "prec_delta": -0.02390830967679136,
+            "f1_delta": -0.08221292921493617
+          },
+          "thr_0.50": {
+            "rec_delta": -0.14494315954527637,
+            "prec_delta": -0.017291269690750233,
+            "f1_delta": -0.10792698025974279
+          }
+        },
+        "verdict": "FAIL"
+      }
+    }
+  },
+  "delta_sweep": [
+    {
+      "delta": -12,
+      "model": "P2A",
+      "domain": "mit",
+      "auc": 0.955027961464645,
+      "n_beats": 51884
+    },
+    {
+      "delta": -12,
+      "model": "exp4c",
+      "domain": "mit",
+      "auc": 0.8926855709502838,
+      "n_beats": 51884
+    },
+    {
+      "delta": -12,
+      "model": "exp5c",
+      "domain": "mit",
+      "auc": 0.9312082196652873,
+      "n_beats": 51884
+    },
+    {
+      "delta": -12,
+      "model": "exp6c",
+      "domain": "mit",
+      "auc": 0.8859288711190043,
+      "n_beats": 51884
+    },
+    {
+      "delta": -9,
+      "model": "P2A",
+      "domain": "mit",
+      "auc": 0.9709552840157344,
+      "n_beats": 51884
+    },
+    {
+      "delta": -9,
+      "model": "exp4c",
+      "domain": "mit",
+      "auc": 0.905197887674179,
+      "n_beats": 51884
+    },
+    {
+      "delta": -9,
+      "model": "exp5c",
+      "domain": "mit",
+      "auc": 0.9429270909948388,
+      "n_beats": 51884
+    },
+    {
+      "delta": -9,
+      "model": "exp6c",
+      "domain": "mit",
+      "auc": 0.8787576385632972,
+      "n_beats": 51884
+    },
+    {
+      "delta": -6,
+      "model": "P2A",
+      "domain": "mit",
+      "auc": 0.9491502416215652,
+      "n_beats": 51883
+    },
+    {
+      "delta": -6,
+      "model": "exp4c",
+      "domain": "mit",
+      "auc": 0.9013669568699547,
+      "n_beats": 51883
+    },
+    {
+      "delta": -6,
+      "model": "exp5c",
+      "domain": "mit",
+      "auc": 0.9370807786308292,
+      "n_beats": 51883
+    },
+    {
+      "delta": -6,
+      "model": "exp6c",
+      "domain": "mit",
+      "auc": 0.9075811458462546,
+      "n_beats": 51883
+    },
+    {
+      "delta": -3,
+      "model": "P2A",
+      "domain": "mit",
+      "auc": 0.9694156498947246,
+      "n_beats": 51883
+    },
+    {
+      "delta": -3,
+      "model": "exp4c",
+      "domain": "mit",
+      "auc": 0.8982569417772681,
+      "n_beats": 51883
+    },
+    {
+      "delta": -3,
+      "model": "exp5c",
+      "domain": "mit",
+      "auc": 0.9343755506946125,
+      "n_beats": 51883
+    },
+    {
+      "delta": -3,
+      "model": "exp6c",
+      "domain": "mit",
+      "auc": 0.8845207430100811,
+      "n_beats": 51883
+    },
+    {
+      "delta": 3,
+      "model": "P2A",
+      "domain": "mit",
+      "auc": 0.945670990377715,
+      "n_beats": 51882
+    },
+    {
+      "delta": 3,
+      "model": "exp4c",
+      "domain": "mit",
+      "auc": 0.8990129873546003,
+      "n_beats": 51882
+    },
+    {
+      "delta": 3,
+      "model": "exp5c",
+      "domain": "mit",
+      "auc": 0.9286940056304563,
+      "n_beats": 51882
+    },
+    {
+      "delta": 3,
+      "model": "exp6c",
+      "domain": "mit",
+      "auc": 0.8914929557754013,
+      "n_beats": 51882
+    },
+    {
+      "delta": 6,
+      "model": "P2A",
+      "domain": "mit",
+      "auc": 0.9723853809296784,
+      "n_beats": 51881
+    },
+    {
+      "delta": 6,
+      "model": "exp4c",
+      "domain": "mit",
+      "auc": 0.9036232658915957,
+      "n_beats": 51881
+    },
+    {
+      "delta": 6,
+      "model": "exp5c",
+      "domain": "mit",
+      "auc": 0.9303063722922954,
+      "n_beats": 51881
+    },
+    {
+      "delta": 6,
+      "model": "exp6c",
+      "domain": "mit",
+      "auc": 0.8686850154172384,
+      "n_beats": 51881
+    },
+    {
+      "delta": 9,
+      "model": "P2A",
+      "domain": "mit",
+      "auc": 0.9496357191589432,
+      "n_beats": 51881
+    },
+    {
+      "delta": 9,
+      "model": "exp4c",
+      "domain": "mit",
+      "auc": 0.9128109834980338,
+      "n_beats": 51881
+    },
+    {
+      "delta": 9,
+      "model": "exp5c",
+      "domain": "mit",
+      "auc": 0.9392704376918042,
+      "n_beats": 51881
+    },
+    {
+      "delta": 9,
+      "model": "exp6c",
+      "domain": "mit",
+      "auc": 0.9063854370230577,
+      "n_beats": 51881
+    },
+    {
+      "delta": 12,
+      "model": "P2A",
+      "domain": "mit",
+      "auc": 0.9460156761427643,
+      "n_beats": 51881
+    },
+    {
+      "delta": 12,
+      "model": "exp4c",
+      "domain": "mit",
+      "auc": 0.8975715461077219,
+      "n_beats": 51881
+    },
+    {
+      "delta": 12,
+      "model": "exp5c",
+      "domain": "mit",
+      "auc": 0.9230129783658347,
+      "n_beats": 51881
+    },
+    {
+      "delta": 12,
+      "model": "exp6c",
+      "domain": "mit",
+      "auc": 0.8789792152160236,
+      "n_beats": 51881
+    },
+    {
+      "delta": -12,
+      "model": "P2A",
+      "domain": "ptb",
+      "auc": 0.5739718096828776,
+      "n_beats": 13053
+    },
+    {
+      "delta": -12,
+      "model": "exp4c",
+      "domain": "ptb",
+      "auc": 0.7297597566610979,
+      "n_beats": 13053
+    },
+    {
+      "delta": -12,
+      "model": "exp5c",
+      "domain": "ptb",
+      "auc": 0.7383111210805859,
+      "n_beats": 13053
+    },
+    {
+      "delta": -12,
+      "model": "exp6c",
+      "domain": "ptb",
+      "auc": 0.7834018520858376,
+      "n_beats": 13053
+    },
+    {
+      "delta": -9,
+      "model": "P2A",
+      "domain": "ptb",
+      "auc": 0.7501895637323404,
+      "n_beats": 13055
+    },
+    {
+      "delta": -9,
+      "model": "exp4c",
+      "domain": "ptb",
+      "auc": 0.7398430085906469,
+      "n_beats": 13055
+    },
+    {
+      "delta": -9,
+      "model": "exp5c",
+      "domain": "ptb",
+      "auc": 0.729896452679361,
+      "n_beats": 13055
+    },
+    {
+      "delta": -9,
+      "model": "exp6c",
+      "domain": "ptb",
+      "auc": 0.7752922511018746,
+      "n_beats": 13055
+    },
+    {
+      "delta": -6,
+      "model": "P2A",
+      "domain": "ptb",
+      "auc": 0.6265531504433374,
+      "n_beats": 13057
+    },
+    {
+      "delta": -6,
+      "model": "exp4c",
+      "domain": "ptb",
+      "auc": 0.706944128789635,
+      "n_beats": 13057
+    },
+    {
+      "delta": -6,
+      "model": "exp5c",
+      "domain": "ptb",
+      "auc": 0.6942914477315815,
+      "n_beats": 13057
+    },
+    {
+      "delta": -6,
+      "model": "exp6c",
+      "domain": "ptb",
+      "auc": 0.693474877643267,
+      "n_beats": 13057
+    },
+    {
+      "delta": -3,
+      "model": "P2A",
+      "domain": "ptb",
+      "auc": 0.6612399165888319,
+      "n_beats": 13057
+    },
+    {
+      "delta": -3,
+      "model": "exp4c",
+      "domain": "ptb",
+      "auc": 0.7524305305864875,
+      "n_beats": 13057
+    },
+    {
+      "delta": -3,
+      "model": "exp5c",
+      "domain": "ptb",
+      "auc": 0.7449716789811536,
+      "n_beats": 13057
+    },
+    {
+      "delta": -3,
+      "model": "exp6c",
+      "domain": "ptb",
+      "auc": 0.7229022737517394,
+      "n_beats": 13057
+    },
+    {
+      "delta": 3,
+      "model": "P2A",
+      "domain": "ptb",
+      "auc": 0.6009085469320055,
+      "n_beats": 13058
+    },
+    {
+      "delta": 3,
+      "model": "exp4c",
+      "domain": "ptb",
+      "auc": 0.6988351264203245,
+      "n_beats": 13058
+    },
+    {
+      "delta": 3,
+      "model": "exp5c",
+      "domain": "ptb",
+      "auc": 0.7230601029811743,
+      "n_beats": 13058
+    },
+    {
+      "delta": 3,
+      "model": "exp6c",
+      "domain": "ptb",
+      "auc": 0.7409369019170794,
+      "n_beats": 13058
+    },
+    {
+      "delta": 6,
+      "model": "P2A",
+      "domain": "ptb",
+      "auc": 0.7484072624942812,
+      "n_beats": 13057
+    },
+    {
+      "delta": 6,
+      "model": "exp4c",
+      "domain": "ptb",
+      "auc": 0.7479316682831167,
+      "n_beats": 13057
+    },
+    {
+      "delta": 6,
+      "model": "exp5c",
+      "domain": "ptb",
+      "auc": 0.7527637281338788,
+      "n_beats": 13057
+    },
+    {
+      "delta": 6,
+      "model": "exp6c",
+      "domain": "ptb",
+      "auc": 0.7400102550323733,
+      "n_beats": 13057
+    },
+    {
+      "delta": 9,
+      "model": "P2A",
+      "domain": "ptb",
+      "auc": 0.717523784102132,
+      "n_beats": 13056
+    },
+    {
+      "delta": 9,
+      "model": "exp4c",
+      "domain": "ptb",
+      "auc": 0.7122168805407572,
+      "n_beats": 13056
+    },
+    {
+      "delta": 9,
+      "model": "exp5c",
+      "domain": "ptb",
+      "auc": 0.7285676737059266,
+      "n_beats": 13056
+    },
+    {
+      "delta": 9,
+      "model": "exp6c",
+      "domain": "ptb",
+      "auc": 0.680613073518294,
+      "n_beats": 13056
+    },
+    {
+      "delta": 12,
+      "model": "P2A",
+      "domain": "ptb",
+      "auc": 0.5793905795302021,
+      "n_beats": 13054
+    },
+    {
+      "delta": 12,
+      "model": "exp4c",
+      "domain": "ptb",
+      "auc": 0.7409094206106746,
+      "n_beats": 13054
+    },
+    {
+      "delta": 12,
+      "model": "exp5c",
+      "domain": "ptb",
+      "auc": 0.7584882797240589,
+      "n_beats": 13054
+    },
+    {
+      "delta": 12,
+      "model": "exp6c",
+      "domain": "ptb",
+      "auc": 0.7706269768058106,
+      "n_beats": 13054
+    },
+    {
+      "delta": 0,
+      "model": "P2A",
+      "domain": "mit",
+      "auc_baseline": 0.9877531004523908,
+      "auc_deploy": 0.9645405230896531,
+      "n_beats_baseline": 51883,
+      "n_beats_deploy": 51883
+    },
+    {
+      "delta": 0,
+      "model": "P2A",
+      "domain": "ptb",
+      "auc_baseline": 0.7501794162916723,
+      "auc_deploy": 0.7355023738578137,
+      "n_beats_baseline": 13058,
+      "n_beats_deploy": 13058
+    },
+    {
+      "delta": 0,
+      "model": "exp4c",
+      "domain": "mit",
+      "auc_baseline": 0.9128622702521069,
+      "auc_deploy": 0.9158017527325693,
+      "n_beats_baseline": 51883,
+      "n_beats_deploy": 51883
+    },
+    {
+      "delta": 0,
+      "model": "exp4c",
+      "domain": "ptb",
+      "auc_baseline": 0.7319017034967394,
+      "auc_deploy": 0.7137930197344873,
+      "n_beats_baseline": 13058,
+      "n_beats_deploy": 13058
+    },
+    {
+      "delta": 0,
+      "model": "exp5c",
+      "domain": "mit",
+      "auc_baseline": 0.9295275581760254,
+      "auc_deploy": 0.9485605998604434,
+      "n_beats_baseline": 51883,
+      "n_beats_deploy": 51883
+    },
+    {
+      "delta": 0,
+      "model": "exp5c",
+      "domain": "ptb",
+      "auc_baseline": 0.7845474396591249,
+      "auc_deploy": 0.7427564921570529,
+      "n_beats_baseline": 13058,
+      "n_beats_deploy": 13058
+    },
+    {
+      "delta": 0,
+      "model": "exp6c",
+      "domain": "mit",
+      "auc_baseline": 0.8942304937340574,
+      "auc_deploy": 0.8990329229035754,
+      "n_beats_baseline": 51883,
+      "n_beats_deploy": 51883
+    },
+    {
+      "delta": 0,
+      "model": "exp6c",
+      "domain": "ptb",
+      "auc_baseline": 0.8231828237246781,
+      "auc_deploy": 0.7183923434947396,
+      "n_beats_baseline": 13058,
+      "n_beats_deploy": 13058
+    }
+  ]
+}

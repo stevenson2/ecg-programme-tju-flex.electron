@@ -10,6 +10,15 @@ import os
 from pathlib import Path
 import numpy as np
 import tensorflow as tf
+from typing import Optional
+
+# 显存按需分配 (避免 TF 贪心占满整池, 真实需求 ~1GB; TUNING_HISTORY 十三章)
+_gpus = tf.config.list_physical_devices("GPU")
+if _gpus:
+    try:
+        tf.config.experimental.set_memory_growth(_gpus[0], True)
+    except Exception:
+        pass
 
 # 设置随机种子
 from config import TRAIN_CONFIG
@@ -66,11 +75,15 @@ def train(
     use_balanced: bool = False,
     sliding_dup: int = 0,
     sliding_max_shift: int = 40,
-    focal_gamma: float = None,
-    focal_alpha: float = None,
-    epochs: int = None,
-    batch_size: int = None,
-    skip_evaluate: bool = False
+    focal_gamma: Optional[float] = None,
+    focal_alpha: Optional[float] = None,
+    epochs: Optional[int] = None,
+    batch_size: Optional[int] = None,
+    skip_evaluate: bool = False,
+    patient_split: bool = False,     # 4.4-4: 患者级划分训练 (消除记录级泄漏, 发表级严谨)
+    early_patience: int = 20,        # EarlyStopping patience (val_loss), 部署链试点用 40
+    optimizer: str = "adamw",        # adamw (默认) 或 sgd (Nesterov, 泛化更强, Wilson 2017)
+    lr: Optional[float] = None       # 覆盖 TRAIN_CONFIG learning_rate (sgd 需 ~1e-2)
 ) -> tf.keras.Model:
     """
     完整训练流程 (支持多模型 + 多数据集).
@@ -157,11 +170,13 @@ def train(
         use_3beat=use_3beat,
         sliding_dup=sliding_dup,
         sliding_max_shift=sliding_max_shift,
+        patient_split=patient_split,
     )
     
     # Step 2: 模型构建
     print("\n[2/5] 构建模型...")
     is_cnn_m = False
+    callbacks: list = []
     if use_cnn_m_small:
         model = build_ecg_cnn_m_small(
             input_shape=datasets['input_shape'],
@@ -177,9 +192,13 @@ def train(
             input_shape=datasets['input_shape'],
             n_classes=len(CLASS_NAMES)
         )
-        model = compile_cnn_m(model, learning_rate=TRAIN_CONFIG['learning_rate'])
+        model = compile_cnn_m(
+            model,
+            learning_rate=(lr if lr is not None else TRAIN_CONFIG['learning_rate']),
+            optimizer=optimizer)
         cnn_m_summary(model)
-        callbacks = get_cnn_m_callbacks(model_name="best_cnn_m_large.h5")
+        callbacks = get_cnn_m_callbacks(model_name="best_cnn_m_large.h5",
+                                        early_patience=early_patience)
         is_resnet = False
         is_cnn_m = True
     elif use_cnn_m:
@@ -197,30 +216,35 @@ def train(
             input_shape=datasets['input_shape']
         )
         model = compile_resnet(
-            model, learning_rate=TRAIN_CONFIG['learning_rate'],
-            loss='categorical_crossentropy' if use_no_focal else None)
+            model, learning_rate=(lr if lr is not None else TRAIN_CONFIG['learning_rate']),
+            loss='categorical_crossentropy' if use_no_focal else None,
+            optimizer=optimizer)
         resnet_summary(model)
-        callbacks = get_resnet_callbacks(model_name="best_resnet_large.h5")
+        callbacks = get_resnet_callbacks(model_name="best_resnet_large.h5",
+                                         early_patience=early_patience)
         save_model_summary(model)
     elif use_resnet_medium:
         model = build_ecg_resnet_lite_medium(
             input_shape=datasets['input_shape']
         )
         model = compile_resnet(
-            model, learning_rate=TRAIN_CONFIG['learning_rate'],
-            loss='categorical_crossentropy' if use_no_focal else None)
+            model, learning_rate=(lr if lr is not None else TRAIN_CONFIG['learning_rate']),
+            loss='categorical_crossentropy' if use_no_focal else None,
+            optimizer=optimizer)
         resnet_summary(model)
-        callbacks = get_resnet_callbacks(model_name="best_resnet_medium.h5")
+        callbacks = get_resnet_callbacks(model_name="best_resnet_medium.h5",
+                                         early_patience=early_patience)
         save_model_summary(model)
     elif use_resnet:
         model = build_ecg_resnet_lite_small(
             input_shape=datasets['input_shape']
         )
         model = compile_resnet(
-            model, learning_rate=TRAIN_CONFIG['learning_rate'],
-            loss='categorical_crossentropy' if use_no_focal else None)
+            model, learning_rate=(lr if lr is not None else TRAIN_CONFIG['learning_rate']),
+            loss='categorical_crossentropy' if use_no_focal else None,
+            optimizer=optimizer)
         resnet_summary(model)
-        callbacks = get_resnet_callbacks()
+        callbacks = get_resnet_callbacks(early_patience=early_patience)
         save_model_summary(model)
     elif use_tiny:
         model = build_ecg_cnn_1d_tiny(
@@ -445,8 +469,31 @@ if __name__ == "__main__":
     parser.add_argument("--batch-size", type=int, default=None, help="批大小")
     parser.add_argument("--quick-test", action="store_true", help="快速测试")
     parser.add_argument("--skip-eval", action="store_true", help="跳过评估")
-    
+    parser.add_argument("--patient-split", action="store_true",
+                        help="4.4-4 患者级划分训练 (消除记录级泄漏, 发表级严谨)")
+    parser.add_argument("--deploy-chain", action="store_true",
+                        help="阶段1.5: 使用部署链重建数据 (*_deploy.npz) 训练 (TUNING_HISTORY 十三章)")
+    parser.add_argument("--patience", type=int, default=20,
+                        help="EarlyStopping patience (val_loss), 部署链延长跑用 40")
+    parser.add_argument("--optimizer", type=str, default="adamw",
+                        choices=["adamw", "sgd"],
+                        help="adamw (默认) 或 sgd (Nesterov, 泛化更强, Wilson 2017)")
+    parser.add_argument("--lr", type=float, default=None,
+                        help="覆盖学习率 (sgd 建议 1e-2 量级)")
+    parser.add_argument("--phase-shift", type=int, default=0,
+                        help="T2-5: 全类相位扰动最大样本数 (batch 统一 roll, 两类一起; "
+                             "0=关闭; 10=±10 样本 @250Hz)")
+
     args = parser.parse_args()
+    
+    if args.deploy_chain:
+        import data.dataset as _ds
+        _ds.set_npz_suffix("_deploy")
+
+    if args.phase_shift and args.phase_shift > 0:
+        from config import TRAIN_CONFIG
+        TRAIN_CONFIG['augmentation']['phase_shift'] = args.phase_shift
+        print(f"[T2-5] 全类相位扰动增强: ±{args.phase_shift} 样本 (batch 统一, 两类一起)")
     
     if args.quick_test:
         quick_test()
@@ -480,5 +527,9 @@ if __name__ == "__main__":
             focal_alpha=args.focal_alpha,
             epochs=args.epochs,
             batch_size=args.batch_size,
-            skip_evaluate=args.skip_eval
+            skip_evaluate=args.skip_eval,
+            patient_split=args.patient_split,
+            early_patience=args.patience,
+            optimizer=args.optimizer,
+            lr=args.lr
         )

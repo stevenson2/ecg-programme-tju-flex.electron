@@ -41,8 +41,8 @@ np.random.seed(TRAIN_CONFIG['random_seed'])
 # PTB-XL Raw Signal Loader
 # ===========================================================================
 
-_RAW = r"C:\Users\cai\OneDrive\Desktop\ecg-programme-tju-flex.electron-master\PTB-XL_ECG"
-_WSL = "/mnt/c/Users/cai/OneDrive/Desktop/ecg-programme-tju-flex.electron-master/PTB-XL_ECG"
+_RAW = r"C:\Users\cai\OneDrive\Desktop\Fe programme 25261\ecg-programme-tju-flex.electron-master\PTB-XL_ECG"
+_WSL = "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/PTB-XL_ECG"
 PTBXL_DIR = Path(_WSL if os.path.exists(_WSL) else _RAW)
 PTBXL_CSV = PTBXL_DIR / "ptbxl_database.csv"
 

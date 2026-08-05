@@ -13,7 +13,10 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 # 数据目录
 DATA_DIR = PROJECT_ROOT / "data"
 RAW_DATA_DIR = DATA_DIR / "raw"         # MIT-BIH 原始数据
-PROCESSED_DIR = DATA_DIR / "processed"  # 预处理后的 NumPy 数据
+# 预处理数据目录 (可被环境变量 ECG_PROCESSED_DIR 覆盖, 如指向 WSL 本地盘以避开
+# OneDrive/9p 慢 IO 与主机内存压力 — TUNING_HISTORY 十三章)
+PROCESSED_DIR = Path(os.environ.get("ECG_PROCESSED_DIR",
+                                    str(DATA_DIR / "processed")))
 MODELS_DIR = PROJECT_ROOT / "models"    # 训练好的模型文件
 
 # 自动创建目录

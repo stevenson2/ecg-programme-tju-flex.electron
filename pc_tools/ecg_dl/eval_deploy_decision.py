@@ -20,8 +20,8 @@ x_mit, y_mit = splits["test"]
 # PTB 独立测试集 (患者级留出)
 PTB_NPZ = Path(__file__).resolve().parent / "data" / "processed" / "ptb_processed.npz"
 RECORDS = next((Path(c) for c in [
-    r"C:\Users\cai\OneDrive\Desktop\ecg-programme-tju-flex.electron-master\ECG-Database\RECORDS",
-    "/mnt/c/Users/cai/OneDrive/Desktop/ecg-programme-tju-flex.electron-master/ECG-Database/RECORDS",
+    r"C:\Users\cai\OneDrive\Desktop\Fe programme 25261\ecg-programme-tju-flex.electron-master\ECG-Database\RECORDS",
+    "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/ECG-Database/RECORDS",
 ] if Path(c).exists()), None)
 recs = [l.strip() for l in open(RECORDS) if l.strip()]
 d = np.load(PTB_NPZ)
@@ -40,7 +40,9 @@ test_mask = np.array([recs[int(r) - 400000] in test_recs for r in rids])
 x_ptb, y_ptb = x_ptb[test_mask], y_ptb[test_mask]
 
 cands = [
-    ("exp5 PTB受控", MODELS / "best_resnet_large.h5"),
+    # 注意: 通用名 best_resnet_large.h5 现为 exp6 权重 (4.4-4 权重对比证实),
+    # exp5 真权重 = best_resnet_large_exp5_ptb_capped.h5
+    ("exp5 PTB受控", MODELS / "best_resnet_large_exp5_ptb_capped.h5"),
     ("P2A 部署", MODELS / "archived" / "final_resnet_l_p2a_backup.h5"),
 ]
 thresholds = [0.35, 0.50, 0.65, 0.80]

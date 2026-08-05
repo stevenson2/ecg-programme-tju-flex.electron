@@ -26,12 +26,12 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from config import PROCESSED_DIR, TARGET_FS, BEAT_WINDOW_SAMPLES
-from preprocess_incart import apply_filters, resample_ecg
+from data.preprocess_incart import apply_filters, resample_ecg
 
 PTB_DIR = None
 for cand in [
-    Path(r"C:\Users\cai\OneDrive\Desktop\ecg-programme-tju-flex.electron-master\ECG-Database"),
-    Path("/mnt/c/Users/cai/OneDrive/Desktop/ecg-programme-tju-flex.electron-master/ECG-Database"),
+    Path(r"C:\Users\cai\OneDrive\Desktop\Fe programme 25261\ecg-programme-tju-flex.electron-master\ECG-Database"),
+    Path("/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/ECG-Database"),
 ]:
     if cand.exists():
         PTB_DIR = cand

@@ -8,7 +8,7 @@ set -e
 export HOME=/home/devcontainers
 export LD_LIBRARY_PATH=/usr/local/lib/python3.12/dist-packages/nvidia/cuda_runtime/lib:/usr/local/lib/python3.12/dist-packages/nvidia/cublas/lib:/usr/local/lib/python3.12/dist-packages/nvidia/cudnn/lib:/usr/local/lib/python3.12/dist-packages/nvidia/cufft/lib:/usr/local/lib/python3.12/dist-packages/nvidia/curand/lib:/usr/local/lib/python3.12/dist-packages/nvidia/cusolver/lib:/usr/local/lib/python3.12/dist-packages/nvidia/cusparse/lib:/usr/local/lib/python3.12/dist-packages/nvidia/nccl/lib:/usr/local/lib/python3.12/dist-packages/nvidia/nvjitlink/lib:/usr/lib/wsl/lib:$LD_LIBRARY_PATH
 export ECG_PROCESSED_DIR=$HOME/ecg_data
-cd /mnt/c/Users/cai/OneDrive/Desktop/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl
+cd /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl
 
 if pgrep -f "train_mixed_balanced.py" > /dev/null; then
     echo "SKIP: another train_mixed_balanced.py training is running"

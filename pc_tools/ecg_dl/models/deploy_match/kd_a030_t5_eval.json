@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "date": "2026-08-03 14:42:16",
+    "model": "kd_a030_t5.h5",
+    "purpose": "exp6 deploy-chain retrain evaluation on cached test beats",
+    "anchors": {
+      "exp6c_d3_floor": {
+        "mit": {
+          "d3_floor": 0.899,
+          "d0_target": 0.8942
+        },
+        "ptb": {
+          "d3_floor": 0.7184,
+          "d0_target": 0.8232
+        }
+      },
+      "description": "Old exp6c D3 = recovery floor; D0 = target"
+    }
+  },
+  "results": {
+    "mit": {
+      "d0": {
+        "auc": 0.9674821022668373,
+        "thr_0.35": {
+          "recall": 0.897444996451384,
+          "precision": 0.5733393788256631,
+          "f1": 0.6996818370452345
+        },
+        "thr_0.5": {
+          "recall": 0.8768630234208659,
+          "precision": 0.633264992311635,
+          "f1": 0.7354166666666667
+        }
+      },
+      "d3": {
+        "auc": 0.9450694022344887,
+        "thr_0.35": {
+          "recall": 0.9355926188786373,
+          "precision": 0.3144492814121295,
+          "f1": 0.47069850479803615
+        },
+        "thr_0.5": {
+          "recall": 0.9153655074520937,
+          "precision": 0.4159477545755059,
+          "f1": 0.5719829258828095
+        }
+      },
+      "n_beats": 51883,
+      "n_abnormal": 5636
+    },
+    "ptb": {
+      "d0": {
+        "auc": 0.7034737844125598,
+        "thr_0.35": {
+          "recall": 0.30693845550764404,
+          "precision": 0.8751047778709137,
+          "f1": 0.4544729014002757
+        },
+        "thr_0.5": {
+          "recall": 0.2464719717757742,
+          "precision": 0.9046762589928058,
+          "f1": 0.38739987677141097
+        }
+      },
+      "d3": {
+        "auc": 0.8243510212272307,
+        "thr_0.35": {
+          "recall": 0.6665033320266562,
+          "precision": 0.9125184489467328,
+          "f1": 0.7703460383983689
+        },
+        "thr_0.5": {
+          "recall": 0.5101920815366523,
+          "precision": 0.93047363717605,
+          "f1": 0.6590290524716754
+        }
+      },
+      "n_beats": 13058,
+      "n_abnormal": 10204
+    }
+  },
+  "verdicts": {
+    "mit": [
+      "MIT D3 AUC >= 0.8990: PASS",
+      "MIT D3 AUC vs 0.8942: recovered by +0.0509",
+      "MIT D0 AUC vs target 0.8942: above by +0.0733"
+    ],
+    "ptb": [
+      "PTB D3 AUC >= 0.7184: PASS",
+      "PTB D3 AUC vs 0.8232: recovered by +0.0012",
+      "PTB D0 AUC vs target 0.8232: shortfall -0.1197"
+    ]
+  }
+}

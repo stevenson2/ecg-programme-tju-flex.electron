@@ -36,6 +36,18 @@
 #define MULTI_BEAT_CONFIRM   2       /* 多拍确认: 连续N拍异常才报警 */
 #define INFERENCE_ENABLED    1       /* 默认启用 */
 
+/* 输入抽取 (方案A, 修复 4.4-4 蹊跷点6: 训练窗口1.0s vs 部署0.5s 不匹配)
+ *   - 抽取前: caller 按 500Hz 推送 (每 2ms 1 样本, main.cpp 已做)
+ *   - 抽取后: AI 环形缓冲有效采样率 250Hz (仅保留偶数序号样本)
+ *   - 窗口    AI_WINDOW_SIZE=250 样本 = 1.0s   (与训练一致)
+ *   - 步进    AI_STRIDE=125       样本 = 0.5s   (50% 重叠)
+ *   - 首次推理: 上电后约 1.0s (原为 0.5s)
+ *   - 多拍确认: MULTI_BEAT_CONFIRM=2 拍异常时, 时间跨度 >= 1.0s
+ *   - 反混叠: LP40 (cutoff 40Hz << Nyquist 125Hz) 已由 filter.cpp 提供
+ *   - 关闭: 改为 1 即回到 500Hz 路径 (窗口退化为 0.5s, 恢复旧行为)
+ */
+#define AI_INPUT_DECIMATION  2   /* 输入抽取: 500Hz->250Hz, 窗口恢复1.0s (方案A, 修复4.4-4蹊跷点6) */
+
 /* ======================== 性能配置 ======================== */
 #define AI_CORE_ID          0       /* 推理任务绑定核心 (Core 0) */
 #define AI_STACK_SIZE       8192    /* 任务栈 (8KB) */

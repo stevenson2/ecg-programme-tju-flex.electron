@@ -1,0 +1,637 @@
+{
+  "generated": "2026-08-03 06:53:51",
+  "assumptions": [
+    "DC offset removal: subtract record mean (firmware subtracts 1.65V; for DB signals simulate as subtracting mean)",
+    "Comb filter: two-stage causal 10-tap MA @500Hz, zero-initialized",
+    "HP/LP biquad: causal direct-form, pre-warmed with 240 copies of first sample",
+    "2:1 decimation: keep even indices (matches firmware counter ctr++ % 2 == 0)",
+    "Resampling to 500Hz: exact rational ratios (MIT 25/18, INCART 500/257, PTB 1/2)",
+    "Beat window z-score: firmware formula pop_std = sqrt(var/N); if <1e-6 then std=1.0",
+    "R-peak positions: same formula int(ann_idx * 250/orig_fs) for both chains",
+    "PTB: uses SAME XQRS peak indices from baseline chain on deployment chain"
+  ],
+  "domains": {
+    "mit": {
+      "n_beats": 51883,
+      "n_normal": 46247,
+      "n_abnormal": 5636,
+      "n_records": 23,
+      "cache_file": "mit_deploy_match.npz",
+      "cache_size_bytes": 95976599,
+      "per_record": {
+        "101": {
+          "n_beats": 1863,
+          "n_normal": 1860,
+          "n_abnormal": 3
+        },
+        "105": {
+          "n_beats": 2567,
+          "n_normal": 2526,
+          "n_abnormal": 41
+        },
+        "108": {
+          "n_beats": 1763,
+          "n_normal": 1740,
+          "n_abnormal": 23
+        },
+        "111": {
+          "n_beats": 2124,
+          "n_normal": 2123,
+          "n_abnormal": 1
+        },
+        "119": {
+          "n_beats": 1987,
+          "n_normal": 1543,
+          "n_abnormal": 444
+        },
+        "201": {
+          "n_beats": 1963,
+          "n_normal": 1635,
+          "n_abnormal": 328
+        },
+        "202": {
+          "n_beats": 2136,
+          "n_normal": 2061,
+          "n_abnormal": 75
+        },
+        "205": {
+          "n_beats": 2656,
+          "n_normal": 2571,
+          "n_abnormal": 85
+        },
+        "207": {
+          "n_beats": 2227,
+          "n_normal": 1543,
+          "n_abnormal": 684
+        },
+        "208": {
+          "n_beats": 2953,
+          "n_normal": 1586,
+          "n_abnormal": 1367
+        },
+        "100001": {
+          "n_beats": 2756,
+          "n_normal": 2412,
+          "n_abnormal": 344
+        },
+        "100002": {
+          "n_beats": 2673,
+          "n_normal": 2444,
+          "n_abnormal": 229
+        },
+        "100008": {
+          "n_beats": 2129,
+          "n_normal": 1776,
+          "n_abnormal": 353
+        },
+        "100012": {
+          "n_beats": 2808,
+          "n_normal": 2799,
+          "n_abnormal": 9
+        },
+        "100013": {
+          "n_beats": 2023,
+          "n_normal": 1793,
+          "n_abnormal": 230
+        },
+        "100014": {
+          "n_beats": 1864,
+          "n_normal": 1800,
+          "n_abnormal": 64
+        },
+        "100059": {
+          "n_beats": 2147,
+          "n_normal": 2066,
+          "n_abnormal": 81
+        },
+        "100060": {
+          "n_beats": 2474,
+          "n_normal": 2474,
+          "n_abnormal": 0
+        },
+        "100061": {
+          "n_beats": 1453,
+          "n_normal": 1452,
+          "n_abnormal": 1
+        },
+        "100068": {
+          "n_beats": 2644,
+          "n_normal": 2481,
+          "n_abnormal": 163
+        },
+        "100069": {
+          "n_beats": 2168,
+          "n_normal": 1999,
+          "n_abnormal": 169
+        },
+        "100074": {
+          "n_beats": 2403,
+          "n_normal": 2081,
+          "n_abnormal": 322
+        },
+        "100075": {
+          "n_beats": 2102,
+          "n_normal": 1482,
+          "n_abnormal": 620
+        }
+      }
+    },
+    "ptb": {
+      "n_beats": 13058,
+      "n_normal": 2854,
+      "n_abnormal": 10204,
+      "n_records": 95,
+      "n_failed": 0,
+      "failed_records": [],
+      "cache_file": "ptb_deploy_match.npz",
+      "cache_size_bytes": 24165221,
+      "peak_indices_file": "ptb_deploy_match_peaks.npy",
+      "per_record": {
+        "400000": {
+          "n_beats": 51,
+          "label": 1,
+          "rec_name": "patient001/s0010_re"
+        },
+        "400001": {
+          "n_beats": 164,
+          "label": 1,
+          "rec_name": "patient001/s0014lre"
+        },
+        "400002": {
+          "n_beats": 152,
+          "label": 1,
+          "rec_name": "patient001/s0016lre"
+        },
+        "400004": {
+          "n_beats": 138,
+          "label": 1,
+          "rec_name": "patient003/s0017lre"
+        },
+        "400005": {
+          "n_beats": 157,
+          "label": 1,
+          "rec_name": "patient004/s0020are"
+        },
+        "400006": {
+          "n_beats": 154,
+          "label": 1,
+          "rec_name": "patient004/s0020bre"
+        },
+        "400032": {
+          "n_beats": 162,
+          "label": 1,
+          "rec_name": "patient013/s0045lre"
+        },
+        "400033": {
+          "n_beats": 158,
+          "label": 1,
+          "rec_name": "patient013/s0051lre"
+        },
+        "400034": {
+          "n_beats": 168,
+          "label": 1,
+          "rec_name": "patient013/s0072lre"
+        },
+        "400054": {
+          "n_beats": 123,
+          "label": 1,
+          "rec_name": "patient020/s0062lre"
+        },
+        "400055": {
+          "n_beats": 97,
+          "label": 1,
+          "rec_name": "patient020/s0069lre"
+        },
+        "400056": {
+          "n_beats": 134,
+          "label": 1,
+          "rec_name": "patient020/s0079lre"
+        },
+        "400071": {
+          "n_beats": 140,
+          "label": 1,
+          "rec_name": "patient025/s0087lre"
+        },
+        "400072": {
+          "n_beats": 115,
+          "label": 1,
+          "rec_name": "patient025/s0091lre"
+        },
+        "400073": {
+          "n_beats": 131,
+          "label": 1,
+          "rec_name": "patient025/s0150lre"
+        },
+        "400079": {
+          "n_beats": 113,
+          "label": 1,
+          "rec_name": "patient028/s0090lre"
+        },
+        "400080": {
+          "n_beats": 103,
+          "label": 1,
+          "rec_name": "patient028/s0093lre"
+        },
+        "400081": {
+          "n_beats": 95,
+          "label": 1,
+          "rec_name": "patient028/s0108lre"
+        },
+        "400120": {
+          "n_beats": 175,
+          "label": 1,
+          "rec_name": "patient040/s0130lre"
+        },
+        "400121": {
+          "n_beats": 143,
+          "label": 1,
+          "rec_name": "patient040/s0131lre"
+        },
+        "400122": {
+          "n_beats": 133,
+          "label": 1,
+          "rec_name": "patient040/s0133lre"
+        },
+        "400123": {
+          "n_beats": 138,
+          "label": 1,
+          "rec_name": "patient040/s0219lre"
+        },
+        "400150": {
+          "n_beats": 185,
+          "label": 1,
+          "rec_name": "patient048/s0171lre"
+        },
+        "400151": {
+          "n_beats": 152,
+          "label": 1,
+          "rec_name": "patient048/s0172lre"
+        },
+        "400152": {
+          "n_beats": 140,
+          "label": 1,
+          "rec_name": "patient048/s0180lre"
+        },
+        "400153": {
+          "n_beats": 126,
+          "label": 1,
+          "rec_name": "patient048/s0277lre"
+        },
+        "400166": {
+          "n_beats": 148,
+          "label": 1,
+          "rec_name": "patient052/s0190lre"
+        },
+        "400167": {
+          "n_beats": 153,
+          "label": 1,
+          "rec_name": "patient053/s0191lre"
+        },
+        "400176": {
+          "n_beats": 1,
+          "label": 1,
+          "rec_name": "patient059/s0208lre"
+        },
+        "400189": {
+          "n_beats": 267,
+          "label": 1,
+          "rec_name": "patient067/s0227lre"
+        },
+        "400190": {
+          "n_beats": 172,
+          "label": 1,
+          "rec_name": "patient067/s0230lre"
+        },
+        "400191": {
+          "n_beats": 119,
+          "label": 1,
+          "rec_name": "patient067/s0283lre"
+        },
+        "400199": {
+          "n_beats": 162,
+          "label": 1,
+          "rec_name": "patient072/s0237lre"
+        },
+        "400200": {
+          "n_beats": 113,
+          "label": 1,
+          "rec_name": "patient072/s0240lre"
+        },
+        "400201": {
+          "n_beats": 110,
+          "label": 1,
+          "rec_name": "patient072/s0244lre"
+        },
+        "400202": {
+          "n_beats": 118,
+          "label": 1,
+          "rec_name": "patient072/s0318lre"
+        },
+        "400207": {
+          "n_beats": 210,
+          "label": 1,
+          "rec_name": "patient074/s0239lre"
+        },
+        "400208": {
+          "n_beats": 169,
+          "label": 1,
+          "rec_name": "patient074/s0241lre"
+        },
+        "400209": {
+          "n_beats": 159,
+          "label": 1,
+          "rec_name": "patient074/s0245lre"
+        },
+        "400210": {
+          "n_beats": 136,
+          "label": 1,
+          "rec_name": "patient074/s0406lre"
+        },
+        "400227": {
+          "n_beats": 153,
+          "label": 1,
+          "rec_name": "patient079/s0256lre"
+        },
+        "400228": {
+          "n_beats": 177,
+          "label": 1,
+          "rec_name": "patient079/s0257lre"
+        },
+        "400229": {
+          "n_beats": 148,
+          "label": 1,
+          "rec_name": "patient079/s0263lre"
+        },
+        "400230": {
+          "n_beats": 126,
+          "label": 1,
+          "rec_name": "patient079/s0269lre"
+        },
+        "400247": {
+          "n_beats": 144,
+          "label": 1,
+          "rec_name": "patient084/s0281lre"
+        },
+        "400248": {
+          "n_beats": 141,
+          "label": 1,
+          "rec_name": "patient084/s0288lre"
+        },
+        "400249": {
+          "n_beats": 136,
+          "label": 1,
+          "rec_name": "patient084/s0289lre"
+        },
+        "400250": {
+          "n_beats": 115,
+          "label": 1,
+          "rec_name": "patient084/s0313lre"
+        },
+        "400255": {
+          "n_beats": 167,
+          "label": 1,
+          "rec_name": "patient086/s0316lre"
+        },
+        "400259": {
+          "n_beats": 143,
+          "label": 1,
+          "rec_name": "patient088/s0339lre"
+        },
+        "400260": {
+          "n_beats": 123,
+          "label": 1,
+          "rec_name": "patient088/s0343lre"
+        },
+        "400261": {
+          "n_beats": 130,
+          "label": 1,
+          "rec_name": "patient088/s0352lre"
+        },
+        "400262": {
+          "n_beats": 176,
+          "label": 1,
+          "rec_name": "patient088/s0413lre"
+        },
+        "400316": {
+          "n_beats": 118,
+          "label": 0,
+          "rec_name": "patient104/s0306lre"
+        },
+        "400320": {
+          "n_beats": 41,
+          "label": 1,
+          "rec_name": "patient108/s0013_re"
+        },
+        "400329": {
+          "n_beats": 117,
+          "label": 0,
+          "rec_name": "patient116/s0302lre"
+        },
+        "400336": {
+          "n_beats": 127,
+          "label": 0,
+          "rec_name": "patient122/s0312lre"
+        },
+        "400345": {
+          "n_beats": 195,
+          "label": 0,
+          "rec_name": "patient131/s0273lre"
+        },
+        "400351": {
+          "n_beats": 65,
+          "label": 1,
+          "rec_name": "patient139/s0223_re"
+        },
+        "400354": {
+          "n_beats": 163,
+          "label": 1,
+          "rec_name": "patient142/s0351lre"
+        },
+        "400370": {
+          "n_beats": 77,
+          "label": 1,
+          "rec_name": "patient157/s0338lre"
+        },
+        "400376": {
+          "n_beats": 53,
+          "label": 1,
+          "rec_name": "patient163/s0034_re"
+        },
+        "400382": {
+          "n_beats": 40,
+          "label": 1,
+          "rec_name": "patient167/s0200_re"
+        },
+        "400390": {
+          "n_beats": 125,
+          "label": 0,
+          "rec_name": "patient173/s0305lre"
+        },
+        "400391": {
+          "n_beats": 147,
+          "label": 0,
+          "rec_name": "patient174/s0300lre"
+        },
+        "400392": {
+          "n_beats": 125,
+          "label": 0,
+          "rec_name": "patient174/s0324lre"
+        },
+        "400393": {
+          "n_beats": 131,
+          "label": 0,
+          "rec_name": "patient174/s0325lre"
+        },
+        "400408": {
+          "n_beats": 136,
+          "label": 0,
+          "rec_name": "patient182/s0308lre"
+        },
+        "400410": {
+          "n_beats": 164,
+          "label": 0,
+          "rec_name": "patient184/s0363lre"
+        },
+        "400413": {
+          "n_beats": 43,
+          "label": 1,
+          "rec_name": "patient187/s0207_re"
+        },
+        "400415": {
+          "n_beats": 132,
+          "label": 1,
+          "rec_name": "patient189/s0309lre"
+        },
+        "400421": {
+          "n_beats": 137,
+          "label": 1,
+          "rec_name": "patient194/s0310lre"
+        },
+        "400444": {
+          "n_beats": 155,
+          "label": 1,
+          "rec_name": "patient212/s0434_re"
+        },
+        "400446": {
+          "n_beats": 194,
+          "label": 0,
+          "rec_name": "patient214/s0436_re"
+        },
+        "400447": {
+          "n_beats": 185,
+          "label": 1,
+          "rec_name": "patient215/s0437_re"
+        },
+        "400449": {
+          "n_beats": 127,
+          "label": 1,
+          "rec_name": "patient217/s0439_re"
+        },
+        "400475": {
+          "n_beats": 125,
+          "label": 0,
+          "rec_name": "patient236/s0463_re"
+        },
+        "400476": {
+          "n_beats": 122,
+          "label": 0,
+          "rec_name": "patient236/s0464_re"
+        },
+        "400478": {
+          "n_beats": 155,
+          "label": 0,
+          "rec_name": "patient238/s0466_re"
+        },
+        "400479": {
+          "n_beats": 160,
+          "label": 0,
+          "rec_name": "patient239/s0467_re"
+        },
+        "400484": {
+          "n_beats": 183,
+          "label": 0,
+          "rec_name": "patient243/s0472_re"
+        },
+        "400485": {
+          "n_beats": 148,
+          "label": 0,
+          "rec_name": "patient244/s0473_re"
+        },
+        "400501": {
+          "n_beats": 154,
+          "label": 1,
+          "rec_name": "patient257/s0493_re"
+        },
+        "400504": {
+          "n_beats": 122,
+          "label": 0,
+          "rec_name": "patient260/s0496_re"
+        },
+        "400505": {
+          "n_beats": 125,
+          "label": 1,
+          "rec_name": "patient261/s0497_re"
+        },
+        "400509": {
+          "n_beats": 121,
+          "label": 1,
+          "rec_name": "patient265/s0501_re"
+        },
+        "400511": {
+          "n_beats": 109,
+          "label": 0,
+          "rec_name": "patient267/s0504_re"
+        },
+        "400514": {
+          "n_beats": 137,
+          "label": 1,
+          "rec_name": "patient270/s0507_re"
+        },
+        "400519": {
+          "n_beats": 157,
+          "label": 1,
+          "rec_name": "patient275/s0513_re"
+        },
+        "400520": {
+          "n_beats": 151,
+          "label": 0,
+          "rec_name": "patient276/s0526_re"
+        },
+        "400529": {
+          "n_beats": 123,
+          "label": 1,
+          "rec_name": "patient280/s0535_re"
+        },
+        "400530": {
+          "n_beats": 148,
+          "label": 1,
+          "rec_name": "patient281/s0537_re"
+        },
+        "400544": {
+          "n_beats": 192,
+          "label": 1,
+          "rec_name": "patient292/s0555_re"
+        },
+        "400545": {
+          "n_beats": 218,
+          "label": 1,
+          "rec_name": "patient292/s0556_re"
+        },
+        "400548": {
+          "n_beats": 148,
+          "label": 1,
+          "rec_name": "patient294/s0559_re"
+        }
+      }
+    }
+  },
+  "timing": {
+    "mit_domain_seconds": 47.0,
+    "ptb_domain_seconds": 17.9,
+    "total_seconds": 64.9
+  },
+  "totals": {
+    "beats_baseline": 64941,
+    "beats_deploy": 64941
+  }
+}

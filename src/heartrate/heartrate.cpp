@@ -5,7 +5,27 @@
 
 /**
  * @file heartrate.cpp
- * @brief 板上心率计算模块 - 实现 (v4.0, fs=500Hz)
+ * @brief 板上心率计算模块 - 实现 (v4.2, fs=500Hz)
+ *
+ * ========== v4.2 改进: 参数级优化 (LUDB 全量 432 组合参数扫描) ==========
+ *
+ * THRESHOLD_RATIO 0.40→0.30, SIGNAL_WEIGHT/NOISE_WEIGHT 0.125→0.0625,
+ * MIN_PEAK_RATIO 2.0→1.5, MIN_RR_SAMP 150→200 (400ms)。
+ * 基于修复A/B/E 之后的参数空间扫描 (F1 0.747→0.774, Se +3.4pp,
+ * BPM P90 10.1→7.0, ±10BPM 89.9%→93.5%)。
+ *
+ * ========== v4.1 改进: 三项结构性修复 (LUDB 金标准数据驱动) ==========
+ *
+ * 修复A: 不应期内 QRS 次级峰不再更新噪声峰值 → noisePeak 不再暴涨,
+ *        阈值稳定在合理水平 (Se +7pp)。
+ * 修复B: 超时复位改为软复位 (hrSoftReset), 保留自适应阈值,
+ *        消除复位后阈值塌缩导致的误报风暴 ("复位后FP" 133→22)。
+ * 修复E: isQRSValid 硬拒绝超范围 RR 间期, 不应期边缘次级峰不再
+ *        计入 beatCount 污染阈值学习 (PPV +23pp)。
+ *
+ * LUDB 全库验证 (200 记录 / 1831 手标 QRS):
+ *   Se 62.2%→69.3%, PPV 58.1%→81.1%, F1 0.600→0.747,
+ *   BPM MAE 13.6→3.8, ±3BPM 36%→73%
  *
  * ========== v4.0 改进: 新增QRS专用5~15Hz带通滤波器 ==========
  *
@@ -66,20 +86,23 @@ static float qrs_bpf_hp_w2 = 0.0f;
 #define RR_BUFFER_SIZE  8           /**< BPM 中位数缓冲区容量 */
 
 #define THRESHOLD_INIT  0.002f      /**< 初始阈值 */
-#define THRESHOLD_RATIO 0.40f       /**< 阈值 = 噪声 + 0.40×(信号−噪声) */
-#define SIGNAL_WEIGHT   0.125f      /**< 信号峰值更新因子 (EMA) */
-#define NOISE_WEIGHT    0.125f      /**< 噪声峰值更新因子 (EMA) */
+/* v4.2: THRESHOLD_RATIO 0.40→0.30, SIGNAL_WEIGHT 0.125→0.0625 (LUDB 参数扫描) */
+#define THRESHOLD_RATIO 0.30f       /**< 阈值 = 噪声 + 0.30×(信号−噪声) */
+#define SIGNAL_WEIGHT   0.0625f     /**< 信号峰值更新因子 (EMA) */
+#define NOISE_WEIGHT    0.0625f     /**< 噪声峰值更新因子 (EMA) */
 #define SIGNAL_WEIGHT_FAST 0.25f    /**< 运动恢复期快速收敛信号峰值 */
 #define SIGNAL_WEIGHT_MOT  0.02f    /**< 运动期极慢更新 signalPeak */
 
-#define MIN_RR_SAMP     150         /**< 最小 RR: 300ms @500Hz */
+/* v4.2: MIN_RR_SAMP 150→200 (400ms, LUDB 参数扫描: 消除 RR 缓冲污染) */
+#define MIN_RR_SAMP     200         /**< 最小 RR: 400ms @500Hz */
 #define MAX_RR_SAMP     1000        /**< 最大 RR: 2000ms @500Hz */
 
 #define TIMEOUT_SAMP    1500        /**< 3 秒无 QRS → 复位 @500Hz */
 #define HOLD_SAMP       500         /**< 1 秒无新拍 → 停止输出旧 BPM */
 #define MIN_CONF_BEATS  5           /**< 至少 5 拍才开始输出 BPM */
 #define MIN_CONF_FEAT   8           /**< 至少 8 拍才开启特征验证 */
-#define MIN_PEAK_RATIO  2.0f        /**< 峰/噪比门限 (静止) */
+/* v4.2: MIN_PEAK_RATIO 2.0→1.5 (LUDB 参数扫描: 修复A后 np 不再暴涨, 2.0 过严) */
+#define MIN_PEAK_RATIO  1.5f        /**< 峰/噪比门限 (静止) */
 #define MIN_PEAK_RATIO_MOT 1.5f     /**< 运动期峰噪比 (降低, 易检测) */
 
 /* ======== 信号活动检测 ======== */
@@ -529,6 +552,13 @@ static bool isQRSValid(float peakVal, float rrSec)
     if (s_state == HR_REFRACTORY)         return false;
     if (peakVal <= s_threshold)           return false;
 
+    /* 修复E (v4.1): 硬拒绝超范围 RR 间期。
+     * 固件 v4.0 只在 addRRInterval() 中丢弃超范围 RR, 但 isQRSValid()
+     * 会接受该峰并递增 beatCount, 导致不应期边缘的次级峰污染
+     * 阈值学习与形态验证开启时机 (LUDB 验证: PPV +23pp)。 */
+    int rrSamp = (int)(rrSec / TS + 0.5f);
+    if (rrSamp < MIN_RR_SAMP || rrSamp > MAX_RR_SAMP) return false;
+
     float peakRatio = s_motionConfirmed ? MIN_PEAK_RATIO_MOT : MIN_PEAK_RATIO;
     if (peakVal < s_noisePeak * peakRatio) return false;
 
@@ -604,7 +634,6 @@ static void checkSignalActivity(float filteredSample)
 static uint8_t computeOutputBPM(void)
 {
     if (s_medianRR < 0.001f) return 0;
-
     float medBPM = 60.0f / s_medianRR;
     float bpm;
 
@@ -632,6 +661,8 @@ static uint8_t computeOutputBPM(void)
     if (bpmRaw < 30 || bpmRaw > 200) return 0;
     return bpmRaw;
 }
+
+static void hrSoftReset(void);   /* v4.1 修复B: 前置声明, 定义见 hrReset 上方 */
 
 /* ======================== 公共 API ======================== */
 
@@ -720,7 +751,12 @@ HR_Result hrProcess(float filteredSample)
             }
 
         } else {
-            if (s_signalPresent && peakVal > s_noisePeak * 0.5f) {
+            /* 修复A (v4.1): 不应期内 QRS 次级峰不更新噪声峰值。
+             * 固件 v4.0 在 REFRACTORY 状态仍把拍后 200ms 内的次级峰
+             * 喂给 noisePeak, 使其暴涨到拍幅量级, 阈值被抬至 ~0.9×拍幅,
+             * 后续真实 QRS 被 MIN_PEAK_RATIO 检查误杀 (LUDB 验证: Se +7pp)。 */
+            if (s_state != HR_REFRACTORY
+                && s_signalPresent && peakVal > s_noisePeak * 0.5f) {
                 updateThreshold(peakVal, false);
             }
         }
@@ -736,7 +772,7 @@ HR_Result hrProcess(float filteredSample)
     }
 
     if (s_signalPresent && s_sampSinceBeat > TIMEOUT_SAMP) {
-        hrReset();
+        hrSoftReset();
         s_state = HR_LEARNING;
     }
 
@@ -760,6 +796,21 @@ HR_Result hrProcess(float filteredSample)
     result.motionActive = s_motionActive;
 
     return result;
+}
+
+static void hrSoftReset(void)
+{
+    /* 修复B (v4.1): 超时复位保留自适应阈值, 仅清检测历史。
+     * 固件 v4.0 超时后 hrReset() 把阈值重置为 THRESHOLD_INIT(0.002),
+     * 阈值塌缩导致噪声峰全部通过, 产生误报风暴 (LUDB 验证: 修复后
+     * ">3s复位后" FP 从 133 降至 22)。 */
+    float holdSP = s_signalPeak;
+    float holdNP = s_noisePeak;
+    float holdTH = s_threshold;
+    hrReset();
+    s_signalPeak = holdSP;
+    s_noisePeak  = holdNP;
+    s_threshold  = holdTH;
 }
 
 void hrReset(void)

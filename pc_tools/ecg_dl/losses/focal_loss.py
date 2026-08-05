@@ -188,10 +188,29 @@ def ecg_baseline_wander(x, amplitude=0.20, max_freq=0.05):
     return x + tf.cast(wander, x.dtype)
 
 
-def apply_mild_augmentation(x, prob=0.80):
-    """Apply mild augmentations with given probability. (Phase 2A: ↑ default prob 0.50→0.80)"""
+@tf.function
+def ecg_phase_shift(x, max_shift):
+    """T2-5: 全类相位扰动 — batch 内所有样本统一随机循环移位 (两类一起, 严禁单类移位).
+
+    D7 教训: 单类移位 = 相位捷径 (模型靠相位判别); 本函数对整个 batch 施加同一 shift,
+    正常/异常拍同等扰动, 训练模型对 R 峰窗口偏移 (部署链群延迟 ±6 样本, T1-3) 鲁棒.
+    """
+    s = tf.random.uniform(shape=[], minval=-max_shift, maxval=max_shift + 1, dtype=tf.int32)
+    return tf.roll(x, s, axis=1)
+
+
+def apply_mild_augmentation(x, prob=0.80, phase_max_shift=0):
+    """Apply mild augmentations with given probability. (Phase 2A: ↑ default prob 0.50→0.80)
+    phase_max_shift>0: T2-5 全类相位扰动 (batch 统一 roll)."""
     if tf.random.uniform(()) > prob:
         return x
+    # T2-5: 相位扰动 (batch 级, 两类一起; 与 time_warp 正交)
+    if phase_max_shift and phase_max_shift > 0:
+        x = tf.cond(
+            tf.random.uniform(()) < 0.5,
+            lambda: ecg_phase_shift(x, phase_max_shift),
+            lambda: x
+        )
     # Apply each augmentation independently with 50% chance each
     x = tf.cond(
         tf.random.uniform(()) < 0.5,

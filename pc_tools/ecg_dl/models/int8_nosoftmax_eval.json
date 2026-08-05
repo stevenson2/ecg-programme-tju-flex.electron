@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "date": "2026-08-05 21:51:19",
+    "task": "T3-6/M3 INT8 去 softmax 对照",
+    "model": "exp6-SGD (h5 + ecg_model_exp6_sgd_int8.tflite)",
+    "method": "FP32 (Keras softmax) vs INT8-single (反量化直接取概率) vs INT8-double (固件语义二次 softmax); 分离量化误差与 softmax 压缩"
+  },
+  "results": {
+    "mit": {
+      "auc_fp32": 0.8946207133563057,
+      "auc_int8_single": 0.8948165118354291,
+      "auc_int8_double": 0.8948486624640245,
+      "quant_error": 0.0001957984791234324,
+      "softmax_loss": 3.2150628595406516e-05,
+      "p_range_single": [
+        0.0,
+        0.99609375
+      ],
+      "p_range_double": [
+        0.26971012353897095,
+        0.730289876461029
+      ],
+      "n_beats": 51883
+    },
+    "ptb": {
+      "auc_fp32": 0.7325537829950853,
+      "auc_int8_single": 0.7265047412600745,
+      "auc_int8_double": 0.7274328299742026,
+      "quant_error": -0.006049041735010863,
+      "softmax_loss": 0.0009280887141280836,
+      "p_range_single": [
+        0.0,
+        0.99609375
+      ],
+      "p_range_double": [
+        0.26971012353897095,
+        0.730289876461029
+      ],
+      "n_beats": 13058
+    }
+  }
+}

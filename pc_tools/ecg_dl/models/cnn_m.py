@@ -155,9 +155,14 @@ def build_ecg_cnn_m_large(input_shape=None, n_classes=2, dropout_rate=0.4):
 
 def compile_model(
     model: Model,
-    learning_rate: float = None
+    learning_rate: float = None,
+    optimizer: str = "adam",
 ) -> Model:
-    """Compile ECG-CNN-M with FocalLoss + Adam + metrics."""
+    """Compile ECG-CNN-M with FocalLoss + Adam + metrics.
+
+    optimizer: "adam" (default, backward compatible) or "sgd" (SGD+Nesterov,
+    matching resnet_lite_1d.compile_model A/B arm).
+    """
     if learning_rate is None:
         learning_rate = TRAIN_CONFIG.get("learning_rate", 0.0005)
 
@@ -174,8 +179,17 @@ def compile_model(
         loss = "categorical_crossentropy"
         print("[ECG-CNN-M] CategoricalCrossentropy")
 
+    if optimizer == "sgd":
+        opt = tf.keras.optimizers.SGD(
+            learning_rate=learning_rate, momentum=0.9, nesterov=True,
+            weight_decay=1e-4)
+        print(f"[ECG-CNN-M] SGD+Nesterov (lr={learning_rate})")
+    else:
+        opt = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+        print(f"[ECG-CNN-M] Adam (lr={learning_rate})")
+
     model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
+        optimizer=opt,
         loss=loss,
         metrics=[
             "accuracy",
@@ -187,15 +201,21 @@ def compile_model(
     return model
 
 
-def get_callbacks(model_name="best_cnn_m.h5"):
-    """Training callbacks for ECG-CNN-M."""
+def get_callbacks(model_name="best_cnn_m.h5", early_patience=None):
+    """Training callbacks for ECG-CNN-M.
+
+    early_patience: override TRAIN_CONFIG early_stopping_patience (deploy-chain
+    A/B arms use 40; None = config default 20).
+    """
     from config import MODELS_DIR
     from config import TRAIN_CONFIG as CFG
 
+    es_patience = (early_patience if early_patience is not None
+                   else CFG.get("early_stopping_patience", 20))
     return [
         tf.keras.callbacks.EarlyStopping(
             monitor="val_loss",
-            patience=CFG.get("early_stopping_patience", 20),
+            patience=es_patience,
             restore_best_weights=True,
             verbose=1
         ),

@@ -6,6 +6,7 @@
  *   - FreeRTOS 任务运行在 Core 0
  *   - 环形缓冲接收 Core 1 的样本数据
  *   - 每 window_size 样本触发一次 TFLite Micro 推理
+ *   - 2:1 输入抽取 (AI_INPUT_DECIMATION): 500Hz 推送 -> 250Hz 有效采样率, 窗口恢复1.0s
  *   - 结果通过 FreeRTOS 队列发送给主循环
  *
  * 依赖:
@@ -18,10 +19,10 @@
 
 /* TFLite Micro */
 #include <tensorflow/lite/micro/all_ops_resolver.h>
+#include <tensorflow/lite/micro/micro_error_reporter.h>
 #include <tensorflow/lite/micro/micro_interpreter.h>
 #include <tensorflow/lite/micro/system_setup.h>
 #include <tensorflow/lite/schema/schema_generated.h>
-#include <tensorflow/lite/version.h>
 
 /* 模型权重 (由 export.py 生成) */
 #include "ai_inference/ecg_model_data.h"
@@ -200,9 +201,10 @@ bool ai_inference_init(void) {
         return false;
     }
 
+    static tflite::MicroErrorReporter error_reporter;
     static tflite::AllOpsResolver resolver;
     static tflite::MicroInterpreter static_interp(
-        g_model, resolver, g_tensor_arena, TENSOR_ARENA_SIZE
+        g_model, resolver, g_tensor_arena, TENSOR_ARENA_SIZE, &error_reporter
     );
     g_interpreter = &static_interp;
 
@@ -225,6 +227,12 @@ bool ai_inference_init(void) {
 
 void ai_inference_push(float value) {
     if (!g_inference_enabled) return;
+
+    #if AI_INPUT_DECIMATION > 1
+        /* 2:1 抽取: 仅保留偶数样本 (500Hz->250Hz), 使250点窗口=1.0s与训练一致 */
+        static uint8_t s_decim_ctr = 0;
+        if ((s_decim_ctr++ % AI_INPUT_DECIMATION) != 0) return;
+    #endif
 
     if (xSemaphoreTake(g_mutex, pdMS_TO_TICKS(5)) == pdTRUE) {
         g_sample_buffer[g_buffer_idx % AI_WINDOW_SIZE] = value;

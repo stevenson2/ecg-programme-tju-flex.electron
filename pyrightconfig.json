@@ -1,0 +1,16 @@
+{
+  "typeCheckingMode": "basic",
+  "reportMissingImports": false,
+  "reportOptionalMemberAccess": false,
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "**/.pio",
+    "**/.opencode",
+    "ecg_app",
+    "test"
+  ],
+  "ignore": [
+    "pc_tools/ecg_dl/models/*.py"
+  ]
+}

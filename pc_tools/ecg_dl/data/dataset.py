@@ -16,6 +16,34 @@ from config import (
     BEAT_WINDOW_SAMPLES,
 )
 
+# 部署链数据源开关 (阶段 1.5, TUNING_HISTORY 十三章):
+# train.py --deploy-chain 时调用 set_npz_suffix("_deploy"),
+# 三个基础加载器改读 *_deploy.npz (部署链重建数据), 默认 "" 行为完全不变。
+_NPZ_SUFFIX = ""
+
+
+def set_npz_suffix(suffix: str) -> None:
+    global _NPZ_SUFFIX
+    _NPZ_SUFFIX = suffix
+    print(f"[数据集] npz 后缀切换: '{suffix}' (部署链数据源)")
+
+
+def _load_arrays(npz_path: Path):
+    """优先 mmap 加载独立 .npy (ECG_PROCESSED_DIR 本地数据, TUNING_HISTORY 十三章);
+    否则回退 npz 常规加载."""
+    stem = npz_path.stem  # e.g. mit_bih_processed_deploy
+    base = npz_path.parent / stem
+    npy_beats = base.with_name(stem + "_beats.npy")
+    if npy_beats.exists():
+        beats = np.load(npy_beats, mmap_mode="r")
+        labels = np.load(base.with_name(stem + "_labels.npy"), mmap_mode="r")
+        rec = base.with_name(stem + "_record_ids.npy")
+        record_ids = np.load(rec, mmap_mode="r") if rec.exists() else None
+        print(f"[数据集] 加载 (mmap): {npy_beats.name}")
+        return beats, labels, record_ids
+    data = np.load(npz_path)
+    return data["beats"], data["labels"], data.get("record_ids", None)
+
 
 def load_processed_data() -> dict:
     """
@@ -24,7 +52,7 @@ def load_processed_data() -> dict:
     Returns:
         {"beats": np.ndarray (n, 250), "labels": np.ndarray (n,)}
     """
-    npz_path = PROCESSED_DIR / "mit_bih_processed.npz"
+    npz_path = PROCESSED_DIR / f"mit_bih_processed{_NPZ_SUFFIX}.npz"
     
     if not npz_path.exists():
         raise FileNotFoundError(
@@ -32,10 +60,7 @@ def load_processed_data() -> dict:
             f"请先运行: python data/preprocess.py"
         )
     
-    data = np.load(npz_path)
-    beats = data["beats"]
-    labels = data["labels"]
-    record_ids = data.get("record_ids", None)
+    beats, labels, record_ids = _load_arrays(npz_path)
     
     print(f"[数据集] 加载数据: {npz_path}")
     print(f"[数据集]   心拍数: {len(beats)}")
@@ -79,16 +104,13 @@ def load_incart_data() -> dict:
     Returns:
         {"beats": np.ndarray, "labels": np.ndarray, "record_ids": np.ndarray}
     """
-    npz_path = PROCESSED_DIR / "incart_processed.npz"
+    npz_path = PROCESSED_DIR / f"incart_processed{_NPZ_SUFFIX}.npz"
     if not npz_path.exists():
         raise FileNotFoundError(
             f"INCART 预处理数据未找到: {npz_path}\n"
             f"请先运行: python data/preprocess_incart.py"
         )
-    data = np.load(npz_path)
-    beats = data["beats"]
-    labels = data["labels"]
-    record_ids = data.get("record_ids", None)
+    beats, labels, record_ids = _load_arrays(npz_path)
     print(f"[INCART] 加载: {len(beats)} 心拍, 形状: {beats.shape}")
     for i, name in enumerate(CLASS_NAMES):
         count = int((labels == i).sum())
@@ -103,16 +125,13 @@ def load_ptb_data() -> dict:
     Returns:
         {"beats": np.ndarray, "labels": np.ndarray, "record_ids": np.ndarray}
     """
-    npz_path = PROCESSED_DIR / "ptb_processed.npz"
+    npz_path = PROCESSED_DIR / f"ptb_processed{_NPZ_SUFFIX}.npz"
     if not npz_path.exists():
         raise FileNotFoundError(
             f"PTB 预处理数据未找到: {npz_path}\n"
             f"请先运行: python data/preprocess_ptb.py"
         )
-    data = np.load(npz_path)
-    beats = data["beats"]
-    labels = data["labels"]
-    record_ids = data.get("record_ids", None)
+    beats, labels, record_ids = _load_arrays(npz_path)
     print(f"[PTB] 加载: {len(beats)} 心拍, 形状: {beats.shape}")
     for i, name in enumerate(CLASS_NAMES):
         count = int((labels == i).sum())
@@ -196,21 +215,22 @@ def load_mit_incart_svdb_merged() -> dict:
 
 
 def load_3beat_merged() -> dict:
-    """Load MIT-BIH + INCART 3-beat merged dataset (Phase 2B)."""
-    npz = PROCESSED_DIR / "mit_incart_3beat.npz"
+    """Load MIT-BIH + INCART 3-beat merged dataset (Phase 2B).
+
+    Honors _NPZ_SUFFIX (deploy-chain 数据源): 读 mit_incart_3beat{_deploy}.npz.
+    """
+    npz = PROCESSED_DIR / f"mit_incart_3beat{_NPZ_SUFFIX}.npz"
     if not npz.exists():
         raise FileNotFoundError(
             f"3-beat 预处理数据未找到: {npz}\n"
             f"请先运行: python data/preprocess_3beat.py"
         )
-    data = np.load(npz)
-    beats, labels = data["beats"], data["labels"]
-    rids = data.get("record_ids", None)
+    beats, labels, record_ids = _load_arrays(npz)
     print(f"[3-beat] 加载: {len(beats)} 序列, 形状: {beats.shape}")
     for i, name in enumerate(CLASS_NAMES):
         c = int((labels == i).sum())
         print(f"[3-beat]   {name}: {c} ({c/len(labels)*100:.1f}%)")
-    return {"beats": beats, "labels": labels, "record_ids": rids}
+    return {"beats": beats, "labels": labels, "record_ids": record_ids}
 
 
 def load_ecg1000_data() -> dict:
@@ -511,10 +531,74 @@ def make_domain_balanced_dataset(
     if nb >= batch_size or na <= 0:
         raise ValueError(f"frac_b={frac_b} 导致 batch 划分无效")
 
-    x_a = add_channel_dim(x_a)
-    x_b = add_channel_dim(x_b)
+    x_a = add_channel_dim(x_a.astype(np.float32))
+    x_b = add_channel_dim(x_b.astype(np.float32))
     y_a = tf.keras.utils.to_categorical(y_a, num_classes=2)
     y_b = tf.keras.utils.to_categorical(y_b, num_classes=2)
+
+    ds_a = tf.data.Dataset.from_tensor_slices((x_a, y_a)).shuffle(
+        min(buffer_size, len(x_a))).repeat().batch(na)
+    ds_b = tf.data.Dataset.from_tensor_slices((x_b, y_b)).shuffle(
+        min(buffer_size, len(x_b))).repeat().batch(nb)
+
+    ds = tf.data.Dataset.zip((ds_a, ds_b))
+
+    def merge(ab, bb):
+        x = tf.concat([ab[0], bb[0]], axis=0)
+        y = tf.concat([ab[1], bb[1]], axis=0)
+        sw = tf.concat([tf.ones(na, tf.float32), tf.ones(nb, tf.float32) * weight_b], axis=0)
+        return x, y, sw
+
+    ds = ds.map(merge)
+
+    def shuffle_batch(x, y, sw):
+        idx = tf.random.shuffle(tf.range(batch_size))
+        return tf.gather(x, idx), tf.gather(y, idx), tf.gather(sw, idx)
+
+    ds = ds.map(shuffle_batch)
+    # 每 epoch 覆盖 A 域一遍 (B 域按 frac 比例过采样)
+    steps = int(np.ceil(len(x_a) / na))
+    ds = ds.take(steps)
+    ds = ds.prefetch(tf.data.AUTOTUNE)
+    return ds
+
+
+def make_domain_balanced_dataset_kd(
+    x_a: np.ndarray,
+    y_a: np.ndarray,
+    z_a: np.ndarray,
+    x_b: np.ndarray,
+    y_b: np.ndarray,
+    z_b: np.ndarray,
+    batch_size: int = None,
+    frac_b: float = 0.20,
+    weight_b: float = 0.5,
+    buffer_size: int = 10000,
+) -> tf.data.Dataset:
+    """
+    域平衡 KD 采样: 同 make_domain_balanced_dataset 但 y 为 (N,4) = concat([onehot, teacher_logits]).
+
+    y_a / y_b 为 caller 预 one-hot 的 (N,2) 标签; z_a / z_b 为 (N,2) teacher logits;
+    函数内部 concat 出 (N,4) KD 目标 (前 2 维 onehot, 后 2 维 teacher logits),
+    供 kd_loss(y_true=(B,4), y_pred=(B,2)) 直接消费。
+    其余流程 (nb/na 划分、zip、merge、shuffle_batch、steps、take、prefetch)
+    与 make_domain_balanced_dataset 完全一致。
+    """
+    if batch_size is None:
+        batch_size = TRAIN_CONFIG['batch_size']
+    nb = max(1, int(round(batch_size * frac_b)))
+    na = batch_size - nb
+    if nb >= batch_size or na <= 0:
+        raise ValueError(f"frac_b={frac_b} 导致 batch 划分无效")
+
+    x_a = add_channel_dim(x_a.astype(np.float32))
+    x_b = add_channel_dim(x_b.astype(np.float32))
+    # y_a/y_b 已是 (N,2) onehot (caller 已 to_categorical), 不再次 one-hot; cast float32 后
+    # 与 z_a/z_b (N,2) concat 产出 (N,4) KD 目标: [onehot(2) | teacher_logits(2)]
+    y_a = np.concatenate(
+        [y_a.astype(np.float32), z_a.astype(np.float32)], axis=-1)
+    y_b = np.concatenate(
+        [y_b.astype(np.float32), z_b.astype(np.float32)], axis=-1)
 
     ds_a = tf.data.Dataset.from_tensor_slices((x_a, y_a)).shuffle(
         min(buffer_size, len(x_a))).repeat().batch(na)
@@ -651,7 +735,9 @@ def make_multitask_dataset(
             y_cls_batch = tf.cast(y_cls_batch, tf.float32)
             y_bpm_batch = tf.cast(y_bpm_batch, tf.float32)
             y_sqi_batch = tf.cast(y_sqi_batch, tf.float32)
-            x_aug = apply_mild_augmentation(x_batch, prob=aug_prob)
+            x_aug = apply_mild_augmentation(
+                x_batch, prob=aug_prob,
+                phase_max_shift=aug_cfg.get('phase_shift', 0))
             if TRAIN_CONFIG['mixup']['enabled']:
                 mixup_prob = TRAIN_CONFIG['mixup']['prob']
                 if tf.random.uniform(()) < mixup_prob:
@@ -712,7 +798,9 @@ def make_tf_dataset(
         def augment_batch(x_batch, y_batch):
             x_batch = tf.cast(x_batch, tf.float32)
             y_batch = tf.cast(y_batch, tf.float32)
-            x_aug = apply_mild_augmentation(x_batch, prob=aug_prob)
+            x_aug = apply_mild_augmentation(
+                x_batch, prob=aug_prob,
+                phase_max_shift=aug_cfg.get('phase_shift', 0))
             if TRAIN_CONFIG['mixup']['enabled']:
                 mixup_prob = TRAIN_CONFIG['mixup']['prob']
                 if tf.random.uniform(()) < mixup_prob:
@@ -750,6 +838,7 @@ def prepare_datasets(
     sliding_dup: int = 0,
     sliding_max_shift: int = 40,
     input_shape_override: tuple = None,
+    patient_split: bool = False,        # 4.4-4: 患者级划分 (发表级严谨)
 ) -> dict:
     """
     一站式准备所有数据集。
@@ -789,8 +878,29 @@ def prepare_datasets(
         data = load_ptbxl_data()
     else:
         data = load_processed_data()
-    splits = train_val_test_split(data["beats"], data["labels"],
-                                   record_ids=data.get("record_ids"))
+    if patient_split:
+        # 4.4-4 患者级划分 (发表级严谨): 同一患者的所有记录/心拍不跨划分。
+        # 与 eval_patient_split_all.py 使用完全相同的映射与 seed=42 划分,
+        # 保证训练/评估的患者分区一致。注意 INCART record_id 在合并时 +100000。
+        from data.patient_split import (build_mit_patient_map,
+                                        build_incart_patient_map,
+                                        patient_level_split)
+        _pmap = {}
+        _pmap.update(build_mit_patient_map())
+        # 与 eval 脚本完全一致 (含双前缀, 保证排序→permutation→测试患者完全相同)
+        _pmap.update({rid + 100000: "inc_" + pat
+                      for rid, pat in build_incart_patient_map().items()})
+        tr_m, va_m, te_m, pstats = patient_level_split(data["record_ids"], _pmap)
+        splits = {"train": (data["beats"][tr_m], data["labels"][tr_m]),
+                  "val":   (data["beats"][va_m], data["labels"][va_m]),
+                  "test":  (data["beats"][te_m], data["labels"][te_m])}
+        print(f"[数据集] 患者级划分 (seed=42): 患者 {pstats['n_patients']} = "
+              f"train {pstats['n_train']} / val {pstats['n_val']} / test {pstats['n_test']}")
+        print(f"[数据集]   拍数: train {pstats['beats_train']:,} / "
+              f"val {pstats['beats_val']:,} / test {pstats['beats_test']:,}")
+    else:
+        splits = train_val_test_split(data["beats"], data["labels"],
+                                       record_ids=data.get("record_ids"))
 
     if use_ptb_beat and not domain_balanced:
         # PTB 受控配比进训练集: val/test 保持 MIT+INCART 原协议。
@@ -799,6 +909,18 @@ def prepare_datasets(
         # (手动 val AUC 0.63); 仅正常拍安全 (0.92)。故异常拍限量配比,
         # 让模型学到 MI 形态而不被主导。
         ptb = load_ptb_data()
+        if patient_split:
+            # 4.4-4: 训练侧消除泄漏 — PTB 拍仅取 train 患者,
+            # test/val 患者的拍绝不进训练集 (历史 exp5: seed42 全患者抽拍,
+            # ~17% 测试拍训练时见过)
+            from data.patient_split import (build_ptb_patient_map,
+                                            patient_level_split)
+            _trp, _, _, _ps = patient_level_split(ptb["record_ids"],
+                                                  build_ptb_patient_map())
+            ptb = {"beats": ptb["beats"][_trp], "labels": ptb["labels"][_trp],
+                   "record_ids": ptb["record_ids"][_trp]}
+            print(f"[数据集] 患者级清洁: PTB 训练拍仅取 train 患者 "
+                  f"({_ps['n_train']}/{_ps['n_patients']} 患者, 剩 {len(ptb['beats']):,} 拍)")
         mask_n = ptb["labels"] == 0
         x_ptb_n = ptb["beats"][mask_n]
         n_ptb_n = len(x_ptb_n)
@@ -828,6 +950,16 @@ def prepare_datasets(
         if not use_ptb_beat:
             raise ValueError("domain_balanced 需配合 --ptb-beat")
         ptb = load_ptb_data()
+        if patient_split:
+            # 4.4-4: 训练侧消除泄漏 (域平衡模式同理)
+            from data.patient_split import (build_ptb_patient_map,
+                                            patient_level_split)
+            _trp, _, _, _ps = patient_level_split(ptb["record_ids"],
+                                                  build_ptb_patient_map())
+            ptb = {"beats": ptb["beats"][_trp], "labels": ptb["labels"][_trp],
+                   "record_ids": ptb["record_ids"][_trp]}
+            print(f"[数据集] 患者级清洁: PTB 训练拍仅取 train 患者 "
+                  f"({_ps['n_train']}/{_ps['n_patients']} 患者, 剩 {len(ptb['beats']):,} 拍)")
         mask_n = ptb["labels"] == 0
         x_ptb = ptb["beats"][mask_n]
         y_ptb = np.zeros(len(x_ptb), dtype=np.int32)

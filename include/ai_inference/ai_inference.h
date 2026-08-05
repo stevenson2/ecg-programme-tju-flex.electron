@@ -22,8 +22,8 @@ extern "C" {
 #endif
 
 /* ======================== 常量定义 ======================== */
-#define AI_WINDOW_SIZE    250    /* 输入窗口大小 (样本数) */
-#define AI_STRIDE         125    /* 步进 (50% 重叠) */
+#define AI_WINDOW_SIZE    250    /* 输入窗口大小 (250 样本 = 1.0s @抽取后250Hz) */
+#define AI_STRIDE         125    /* 步进 50% 重叠 (125 样本 = 0.5s @抽取后250Hz) */
 #define AI_MAX_RESULTS    8      /* 最大缓存结果数 */
 #define AI_TASK_STACK     8192   /* FreeRTOS 任务栈 (字节) */
 #define AI_TASK_PRIORITY  1      /* 任务优先级 (0=最低) */
@@ -55,7 +55,9 @@ bool ai_inference_init(void);
  * @param value 滤波后 ECG 样本值 (float)
  * 
  * 从 Core 1 主循环调用
- * 当缓冲区累积 window_size 样本后, 自动触发推理
+ * caller 仍按 500Hz 推送 (每 2ms 1 样本), 模块内部按 AI_INPUT_DECIMATION 做 2:1 抽取,
+ * 实际入环形缓冲的有效采样率为 250Hz, 因此当缓冲区累积 AI_WINDOW_SIZE 个
+ * 抽取后样本 (约 1.0s) 时自动触发推理.
  */
 void ai_inference_push(float value);
 

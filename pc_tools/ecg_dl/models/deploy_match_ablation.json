@@ -1,0 +1,168 @@
+{
+  "meta": {
+    "date": "2026-08-02 16:15:37",
+    "purpose": "Ablation ladder: decompose deploy-vs-baseline DAUC",
+    "chains": {
+      "d0": "baseline (filtfilt IIR + FFT resample)",
+      "d1": "causal-only @250 (FFT resample + causal HP/LP)",
+      "d2": "D3-minus-comb (500Hz + decimation + causal HP/LP)",
+      "d3": "full deploy (D2 + 2-stage 10-tap MA comb)"
+    }
+  },
+  "results": {
+    "P2A": {
+      "mit": {
+        "auc_d0": 0.9877531004523908,
+        "auc_d1": 0.9586818479377167,
+        "auc_d2": 0.9740603491545988,
+        "auc_d3": 0.9645405230896531,
+        "effect_causal_biquad": -0.02907125251467413,
+        "effect_500hz_decimation": 0.015378501216882112,
+        "effect_comb_filter": -0.009519826064945724
+      },
+      "ptb": {
+        "auc_d0": 0.7501794162916723,
+        "auc_d1": 0.6573826833782155,
+        "auc_d2": 0.6008134133748613,
+        "auc_d3": 0.7355023738578137,
+        "effect_causal_biquad": -0.0927967329134568,
+        "effect_500hz_decimation": -0.05656927000335421,
+        "effect_comb_filter": 0.13468896048295242
+      }
+    },
+    "exp4c": {
+      "mit": {
+        "auc_d0": 0.9128622702521069,
+        "auc_d1": 0.9096300098755375,
+        "auc_d2": 0.9099000943386918,
+        "auc_d3": 0.9158017527325693,
+        "effect_causal_biquad": -0.003232260376569318,
+        "effect_500hz_decimation": 0.00027008446315424095,
+        "effect_comb_filter": 0.0059016583938774625
+      },
+      "ptb": {
+        "auc_d0": 0.7319017034967394,
+        "auc_d1": 0.7302574948280034,
+        "auc_d2": 0.7161297924581014,
+        "auc_d3": 0.7137930197344873,
+        "effect_causal_biquad": -0.0016442086687360469,
+        "effect_500hz_decimation": -0.014127702369902018,
+        "effect_comb_filter": -0.0023367727236141
+      }
+    },
+    "exp5c": {
+      "mit": {
+        "auc_d0": 0.9295275581760254,
+        "auc_d1": 0.9433554994141296,
+        "auc_d2": 0.9377637895772512,
+        "auc_d3": 0.9485605998604434,
+        "effect_causal_biquad": 0.013827941238104158,
+        "effect_500hz_decimation": -0.0055917098368784,
+        "effect_comb_filter": 0.010796810283192237
+      },
+      "ptb": {
+        "auc_d0": 0.7845474396591249,
+        "auc_d1": 0.7427349278640059,
+        "auc_d2": 0.7245959579449586,
+        "auc_d3": 0.7427564921570529,
+        "effect_causal_biquad": -0.04181251179511902,
+        "effect_500hz_decimation": -0.018138969919047288,
+        "effect_comb_filter": 0.018160534212094293
+      }
+    },
+    "exp6c": {
+      "mit": {
+        "auc_d0": 0.8942304937340574,
+        "auc_d1": 0.900183126987939,
+        "auc_d2": 0.9057171939704818,
+        "auc_d3": 0.8990329229035754,
+        "effect_causal_biquad": 0.005952633253881623,
+        "effect_500hz_decimation": 0.0055340669825427735,
+        "effect_comb_filter": -0.006684271066906389
+      },
+      "ptb": {
+        "auc_d0": 0.8231828237246781,
+        "auc_d1": 0.7176546935851309,
+        "auc_d2": 0.7594554617684314,
+        "auc_d3": 0.7183923434947396,
+        "effect_causal_biquad": -0.1055281301395472,
+        "effect_500hz_decimation": 0.041800768183300474,
+        "effect_comb_filter": -0.0410631182736918
+      }
+    }
+  },
+  "attribution_summary": {
+    "P2A/mit": {
+      "dominant_component": "causal_biquad",
+      "dominant_magnitude": 0.02907125251467413,
+      "all_effects": {
+        "causal_biquad": 0.029071,
+        "500hz_decimation": 0.015379,
+        "comb_filter": 0.00952
+      }
+    },
+    "P2A/ptb": {
+      "dominant_component": "comb_filter",
+      "dominant_magnitude": 0.13468896048295242,
+      "all_effects": {
+        "causal_biquad": 0.092797,
+        "500hz_decimation": 0.056569,
+        "comb_filter": 0.134689
+      }
+    },
+    "exp4c/mit": {
+      "dominant_component": "comb_filter",
+      "dominant_magnitude": 0.0059016583938774625,
+      "all_effects": {
+        "causal_biquad": 0.003232,
+        "500hz_decimation": 0.00027,
+        "comb_filter": 0.005902
+      }
+    },
+    "exp4c/ptb": {
+      "dominant_component": "500hz_decimation",
+      "dominant_magnitude": 0.014127702369902018,
+      "all_effects": {
+        "causal_biquad": 0.001644,
+        "500hz_decimation": 0.014128,
+        "comb_filter": 0.002337
+      }
+    },
+    "exp5c/mit": {
+      "dominant_component": "causal_biquad",
+      "dominant_magnitude": 0.013827941238104158,
+      "all_effects": {
+        "causal_biquad": 0.013828,
+        "500hz_decimation": 0.005592,
+        "comb_filter": 0.010797
+      }
+    },
+    "exp5c/ptb": {
+      "dominant_component": "causal_biquad",
+      "dominant_magnitude": 0.04181251179511902,
+      "all_effects": {
+        "causal_biquad": 0.041813,
+        "500hz_decimation": 0.018139,
+        "comb_filter": 0.018161
+      }
+    },
+    "exp6c/mit": {
+      "dominant_component": "comb_filter",
+      "dominant_magnitude": 0.006684271066906389,
+      "all_effects": {
+        "causal_biquad": 0.005953,
+        "500hz_decimation": 0.005534,
+        "comb_filter": 0.006684
+      }
+    },
+    "exp6c/ptb": {
+      "dominant_component": "causal_biquad",
+      "dominant_magnitude": 0.1055281301395472,
+      "all_effects": {
+        "causal_biquad": 0.105528,
+        "500hz_decimation": 0.041801,
+        "comb_filter": 0.041063
+      }
+    }
+  }
+}

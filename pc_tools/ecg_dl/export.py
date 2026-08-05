@@ -149,7 +149,8 @@ def convert_all_variants(h5_path: str = None):
 def tflite_to_c_array(
     tflite_path: str = None,
     output_path: str = None,
-    variable_name: str = "ecg_model_data"
+    variable_name: str = "ecg_model_data",
+    guard_name: str = "ECG_MODEL_DATA_H",
 ) -> str:
     """
     将 TFLite 模型转换为 C 语言头文件 (用于 TFLite Micro)
@@ -158,6 +159,7 @@ def tflite_to_c_array(
         tflite_path: TFLite 文件路径
         output_path: 输出 .h 文件路径
         variable_name: C 变量名
+        guard_name: 头文件宏守卫 (双模型部署时需不同值)
         
     Returns:
         输出文件路径
@@ -195,11 +197,10 @@ def tflite_to_c_array(
     lines.append(f"// Input: {input_details['shape']}, Type: {input_details['dtype']}")
     lines.append(f"// Output: {output_details['shape']}, Type: {output_details['dtype']}")
     lines.append("//")
-    lines.append(f"// Model URL: https://gitee.com/mirrors/mit-bih-arrhythmia-database.git")
     lines.append(f"// Inference: TFLite Micro compatible")
     lines.append("")
-    lines.append("#ifndef ECG_MODEL_DATA_H")
-    lines.append("#define ECG_MODEL_DATA_H")
+    lines.append(f"#ifndef {guard_name}")
+    lines.append(f"#define {guard_name}")
     lines.append("")
     lines.append("#include <cstdint>")
     lines.append("")
@@ -226,7 +227,7 @@ def tflite_to_c_array(
     # 模型长度变量
     lines.append(f"const int {variable_name}_len = {len(model_data)};")
     lines.append("")
-    lines.append("#endif // ECG_MODEL_DATA_H")
+    lines.append(f"#endif // {guard_name}")
     
     # 写入文件
     with open(output_path, 'w') as f:

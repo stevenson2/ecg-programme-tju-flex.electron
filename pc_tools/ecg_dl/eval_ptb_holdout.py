@@ -18,8 +18,8 @@ from data.dataset import add_channel_dim
 MODELS = Path(__file__).resolve().parent / "models"
 PTB_NPZ = Path(__file__).resolve().parent / "data" / "processed" / "ptb_processed.npz"
 RECORDS = next((Path(c) for c in [
-    r"C:\Users\cai\OneDrive\Desktop\ecg-programme-tju-flex.electron-master\ECG-Database\RECORDS",
-    "/mnt/c/Users/cai/OneDrive/Desktop/ecg-programme-tju-flex.electron-master/ECG-Database/RECORDS",
+    r"C:\Users\cai\OneDrive\Desktop\Fe programme 25261\ecg-programme-tju-flex.electron-master\ECG-Database\RECORDS",
+    "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/ECG-Database/RECORDS",
 ] if Path(c).exists()), None)
 if RECORDS is None:
     raise RuntimeError("RECORDS 文件未找到")
@@ -50,7 +50,9 @@ print(f"PTB 测试拍: {len(x_test)} (N={(y_test==0).sum()}, A={(y_test==1).sum(
 
 x_in = add_channel_dim(x_test)
 models = [
-    ("exp5 PTB受控", MODELS / "best_resnet_large.h5"),
+    # 注意: 通用名 best_resnet_large.h5 现为 exp6 权重 (4.4-4 权重对比证实),
+    # exp5 真权重 = best_resnet_large_exp5_ptb_capped.h5
+    ("exp5 PTB受控", MODELS / "best_resnet_large_exp5_ptb_capped.h5"),
     ("P2A 部署", MODELS / "archived" / "final_resnet_l_p2a_backup.h5"),
 ]
 for name, p in models:

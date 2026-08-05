@@ -13,16 +13,41 @@ pc_tools/ecg_dl/data/processed/
 pc_tools/ecg_dl/models/*.h5
 pc_tools/ecg_dl/models/*.weights.h5
 pc_tools/ecg_dl/models/*.tflite
+pc_tools/ecg_dl/models/*.npy
 pc_tools/ecg_dl/models/*.png
+pc_tools/ecg_dl/models/**/*.png
+pc_tools/ecg_dl/reports/**/*.png
 pc_tools/ecg_dl/models/model_summary.txt
 pc_tools/ecg_dl/__pycache__/
 pc_tools/ecg_dl/**/__pycache__/
+# 模型权重/数据 (大文件, 不推送; 评估 JSON 保留)
+*.h5
+*.tflite
+*.npy
+*.npz
 
-# 外部数据集 (不推送)
+# 外部数据集 (PhysioNet 再分发受限, 不推送)
 ECGdata_1000/
 PTB-XL_ECG/
 INCARTdata/
 st-petersburg-incart-12-lead-arrhythmia-database-1.0.0/
+ECG-Database/
 *.zip
-*.npz
 *.mat
+
+# 论文初稿 / 结课报告 / 投稿材料 / 审稿分析 (暂不提交)
+deliverables/
+docs/manuscript_sections_1_4.md
+docs/submission_package/
+docs/SUBMISSION_READY.md
+docs/paper_figure_inventory.md
+docs/human_qa_checklist.md
+solutions.md
+models_problems.md
+# 论文专用脚本 (图表生成/稿件审计, 暂不提交)
+pc_tools/ecg_dl/audit_manuscript.py
+pc_tools/ecg_dl/gen_paper_figures_task10.py
+pc_tools/ecg_dl/gen_paper_figures_task12.py
+
+# 内部工具状态
+.omo/

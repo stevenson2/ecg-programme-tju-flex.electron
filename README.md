@@ -1,15 +1,15 @@
 ﻿# ESP32-ECG 心电采集与 AI 异常检测系统
 
-> **ESP32-S3-SUPERMINI (ESP32S3FH4R2) | PlatformIO + Arduino | 250Hz 采样 | BLE NUS | TFLite Micro AI 推理**
+> **ESP32-S3-SUPERMINI (ESP32S3FH4R2) | PlatformIO + Arduino | 500Hz 采样 | BLE NUS | TFLite Micro AI 推理**
 
 ## 目录
 
 1. [项目简介](#项目简介)
-2. [系统架构](#系统架构)
-3. [AI 异常检测概述](#ai-异常检测概述)
-4. [快速开始](#快速开始)
-5. [项目结构](#项目结构)
-6. [开发板说明](#开发板说明)
+2. [快速开始](#快速开始)
+3. [项目结构](#项目结构)
+4. [开发板说明](#开发板说明)
+5. [系统架构](#系统架构)
+6. [AI 异常检测](#ai-异常检测)
 7. [PC 端工具](#pc-端工具)
 8. [手机端 App](#手机端-app)
 9. [温度与功耗诊断](#温度与功耗诊断)
@@ -21,22 +21,88 @@
 ## 项目简介
 
 基于 ESP32-S3 的便携式心电采集系统，集成 **深度学习异常检测** 功能：
-- **实时采集**: 250Hz 三通道心电信号（clean / noisy / filtered）
+- **实时采集**: 500Hz 三通道心电信号（clean / noisy / filtered）
 - **双模输入**: 软件模拟发生器 或 真实 AFE 模拟前端采集
-- **AI 异常检测**: 1D-CNN 模型 (TFLite Micro)，ESP32-S3 Core 0 独立推理
+- **AI 异常检测**: ResNet-L 1D-CNN (TFLite Micro)，ESP32-S3 Core 0 独立推理
 - **BLE 透传**: Nordic UART Service，手机 App 实时波形显示
 - **PC 训练工具链**: 完整的 MIT-BIH 数据下载、预处理、训练、评估、导出流水线
 
 **硬件平台**：ESP32-S3-SUPERMINI (ESP32S3FH4R2)  
 **开发框架**：PlatformIO + Arduino  
-**采样率**：250Hz (每 4ms 一个样本)  
+**采样率**：500Hz (每 2ms 一个样本; 串口降频输出 25Hz)  
 **AI 框架**：TensorFlow 2.x (训练) + TFLite Micro (边缘推理)  
 **PC 工具**：Python (TensorFlow + matplotlib + pyserial)  
 **手机 App**：Flutter (flutter_blue_plus + provider)
 
 ---
 
+## 快速开始
+
+```bash
+# 编译固件（Windows: pio 命令已加入 PATH）
+pio run
+
+# 编译并上传（需硬件，当前开发阶段不涉及）
+pio run -t upload
+
+# 串口监视器（9 列 CSV @25Hz）
+pio device monitor -b 115200
+
+# PC 端实时绘图
+python pc_tools/ecg_plotter.py
+
+# 手机端 App（Flutter）
+cd ecg_app && flutter run
+```
+
+> 训练 AI 模型（GPU）需通过 WSL2，见下文 [GPU 训练 (WSL2)](#gpu-训练-wsl2)。
+
+---
+
+## 项目结构
+
+- `src/` — 固件源码
+  - `main.cpp` — 主程序入口
+  - `adc_afe/` — ADC/AFE 采集
+  - `ai_inference/` — TFLite Micro 推理
+  - `bluetooth/` — BLE 通信
+  - `filter/` — 数字滤波 (HP+LP)
+  - `heartrate/` — Pan-Tompkins 心率检测
+  - `signal_generator/` — 模拟信号发生器
+  - `thermal/` — 温度管理
+- `pc_tools/` — Python PC 工具 (训练/绘图/调试)
+- `ecg_app/` — Flutter 手机 App
+- `test/` — 测试代码
+- `include/` — 头文件
+- `lib/` — 库文件
+- `docs/` — 论文与结果文档（权威数字见 `docs/FINAL_RESULTS.md`）
+- `papers/` — 文献 PDF 与阅读笔记
+
+---
+
+## 开发板说明
+
+**ESP32-S3-SUPERMINI (ESP32S3FH4R2)**：双核 Xtensa LX7 @240MHz，512KB SRAM。
+
+- 双核分工：Core 1 承担采样/滤波/心率/BLE，Core 0 独立跑 AI 推理
+- 内置温度传感器（`src/thermal/`）：>65°C 自动降频保护
+- 双模型部署（P2A + KD a070_t1）在 512KB SRAM / 8MB PSRAM 下可行；当前 SUPERMINI 板（4MB Flash）单模型已占 93.9%，**换 ESP32-S3-WROOM-1-N16R8（16MB Flash / 8MB PSRAM，乐鑫官方模块）即无容量障碍**（双模型 327KB 仅占 2%）
+
+---
+
 ## 系统架构
+
+### 采集前端（模拟链路）
+
+```
+双导联电极 (贴片 ×2) ──► AD620 仪表放大器 (差分输入) ──► 单路心电信号 ──► ESP32 ADC1 (单通道)
+   导联A ─┐                                                           (12-bit, 500Hz)
+          ├── IN+ / IN- 差分 ──► 放大 ──► 1 路输出
+   导联B ─┘
+```
+
+- **导联**是贴在身上的**电极路数（2 路）**；AD620 把两路电极的差分信号放大合成 **1 路心电信号**，再进 **单个 ADC** 采样——所以是"双导联输入、单路信号"（等效标准 ECG 的 Lead I 接法，差分抑制共模干扰）
+- 真实采集与软件模拟发生器二选一作为信号源（`src/adc_afe/` vs `src/signal_generator/`）
 
 ```
 +----------------------------------------------------------+
@@ -84,20 +150,25 @@
 
 ## AI 异常检测
 
-### Phase 1 最佳模型
+**部署定稿（2026-08-03 决策，2026-08-05 T0-1 固件集成）**：单拍 250pt ResNet-L（~80K 参数，
+INT8 **实测 163.5 KB**）+ 0.5Hz 因果部署链 + SGD 优化器。板上模型 = **exp6-SGD 部署链定稿模型**
+（`best_resnet_large_exp6_sgd.h5` → `ecg_model_exp6_sgd_int8.tflite` → `include/ai_inference/ecg_model_data.h`，
+对应 `deploy_match/retrain_exp6_sgd_eval.json`）。最优操作点：beat 级 θ≈0.35 / patient 级 θ≈0.5。
+双专家 OR 部署（P2A + exp5）**严谨口径实测已否决**（TH §8.8：误报叠加 25~32%、PTB 召回仅 0.41，旧口径数字为泄漏版作废）；
+部署方案改为**分模型 + 前置关卡**：心律失常交给 P2A（θ=0.5），心梗筛查交给 KD a070_t1（θ=0.35 + 时序确认，TH §8.9.5/8.9.6）。
+固件侧双模型受当前 SUPERMINI 板（4MB Flash）限制（单模型已占 93.9%），**换 ESP32-S3-WROOM-1-N16R8
+（16MB Flash / 8MB PSRAM，乐鑫官方模块）即无容量障碍**。
 
-| 指标 | 数值 |
-|------|------|
-| 数据 | MIT-BIH (87K) + INCART (176K) = 263K beat级心拍 |
-| 模型 | CNN v2, 15K 参数, INT8 ~15KB |
-| Loss | FocalLoss (γ=1.0, α=0.75, bug已修复) |
-| Acc | **93.98%** |
-| AUC | **0.9716** |
-| Abnormal Recall | 72% |
-| 部署 | `models/ecg_model.tflite` (24.8 KB) |
+### 关键指标速览
 
-Phase 2 计划: 自监督预训练 + 600K 模型, 目标 Recall ≥88%.
-详见 [ROADMAP.md](ROADMAP.md)
+| 口径 | 模型 | MIT-AUC | MIT-R@0.5 | PTB-AUC | PTB-R@0.5 | 说明 |
+|------|------|:---:|:---:|:---:|:---:|------|
+| 论文主结果 (患者级清洁, 未增强测试) | exp5 / exp6 | 0.9295 / 0.8942 | 0.926 / 0.919 | 0.7845 / **0.8232** | 0.628 / 0.702 | 训练链 (filtfilt) 口径; MIT 测试未增强 (T1-2) |
+| 部署链试点 (D3) | exp6-SGD | **0.9122** | 0.910 | 0.7697 | 0.707 | 0.5Hz 因果链 + SGD |
+| 跨域参考 | P2A (ResNet-L) | 0.9878 | 0.931 | 0.7502 | 0.255 | 无 PTB 训练; MIT 未增强测试 |
+
+**核心结论**：数据量 > 模型架构 > 训练技巧。单域 recall 天花板 ~0.82；SVEB/F 类为单拍信息固有瓶颈（非模型缺陷）。
+完整实验证据见 [TUNING_HISTORY.md](TUNING_HISTORY.md)，决策路线见 [ROADMAP.md](ROADMAP.md)，权威数字见 `docs/FINAL_RESULTS.md`。
 
 ---
 
@@ -159,7 +230,7 @@ echo 'export LD_LIBRARY_PATH=/usr/local/lib/python3.12/dist-packages/nvidia/cuda
 source ~/.bashrc
 
 # 训练
-cd /mnt/c/Users/cai/OneDrive/Desktop/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl
+cd /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl
 python3 train.py --epochs 200 --batch-size 128
 ```
 
@@ -227,7 +298,8 @@ python3 train.py --epochs 200 --batch-size 128
 ### 心率检测 (`src/heartrate/heartrate.cpp`)
 
 - 简化 Pan-Tompkins QRS 检测算法
-- 固定阈值 0.3V + 最小间隔 200ms (50点)
+- **自适应阈值**（噪声峰 + 0.30×(信号峰−噪声峰)，非绝对 0.3V）+ 最小间隔 200ms (50点)
+- LUDB 验证（v4.2）：mV 级标注信号 ×1000 缩放模拟 AFE 增益——Se 72.9% / PPV 82.6% / F1 0.774 / BPM MAE 3.2
 - 心率滑动平均 alpha=0.7
 - 信号质量指数 (SQI) + 运动检测
 
@@ -271,19 +343,20 @@ Core 1 (main.cpp loop)              Core 0 (inference_task)
 
 | 参数 | 值 | 说明 |
 |------|-----|------|
-| 采样率 | 250 Hz | 每样本间隔 4ms (原 500Hz 降为 250Hz) |
+| 采样率 | 500 Hz | 每样本间隔 2ms (SAMPLE_INTERVAL_MS=2); 串口每20帧输出1次=25Hz |
 | CPU 频率 | 240 MHz | 性能模式 |
 | BLE TX 功率 | +9 dBm | 原始最高功率 |
-| 串口波特率 | 115200 | 数据输出频率 25Hz |
+| 串口波特率 | 115200 | 数据输出频率 25Hz (500Hz/20) |
 | BLE 设备名 | ESP32-ECG | - |
-| 滤波器类型 | IIR Biquad + 梳状 | HP 0.5 -> LP 40 -> Notch 50 + Comb 50/100 |
-| 心率算法 | Pan-Tompkins | 阈值 0.3V, 间隔 200ms |
-| 缓冲区大小 | 1500 点 | 6 秒数据 |
-| AI 模型 | 1D-CNN (1,082 参数) | TFLite Micro INT8 量化 |
-| AI 输入窗口 | 250 样本 | 1 秒 @250Hz |
-| AI 推理间隔 | 125 样本 | 0.5 秒一次 |
-| AI 模型大小 | 11.8 KB | .tflite 文件 |
-| AI Tensor Arena | 32 KB | SRAM 分配 |
+| 滤波器类型 | IIR Biquad + 梳状 | HP 0.5 -> LP 40 -> Notch 50 + Comb 50/100 (10抽头@500Hz) |
+| 心率算法 | Pan-Tompkins v4.2 | 自适应阈值（噪声峰 + 0.30×(信号峰−噪声峰)）, 间隔 200ms (FS=500); LUDB 验证 F1 0.774 / BPM MAE 3.2 |
+| 缓冲区大小 | 1500 点 | 3 秒数据 @500Hz |
+| AI 模型 | ResNet-L (80K 参数) = **exp6-SGD 部署链定稿** | TFLite Micro INT8 量化 (输入/输出均 INT8) |
+| AI 输入窗口 | 250 样本 | 1.0 秒 (@500Hz 经固件 2:1 抽取为 250Hz, 与训练一致, 方案A 已修复) |
+| AI 推理间隔 | 125 样本 | 0.5 秒一次 (抽取后 250Hz) |
+| AI 模型大小 | **163.5 KB** (实测) | `ecg_model_exp6_sgd_int8.tflite` (167,376 B); SUPERMINI 板 (4MB Flash) 编译后占用 93.9% (T0-1 实测), 换 N16R8 (16MB Flash) 后双模型无容量障碍 |
+| AI Tensor Arena | 32 KB | SRAM 分配; 双模型需 2×32KB |
+| AI 优化器 | SGD (lr 0.01, Nesterov 0.9) | 部署链重训定稿, 优于 AdamW |
 | AI 核心 | Core 0 | 与采样/滤波/BLE (Core 1) 解耦 |
 | 温度过热阈值 | 65C | 自动降频至 60MHz |
 | 温度恢复阈值 | 55C | 自动恢复 240MHz |

@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+  \centering
+  \caption{ECG Arrhythmia Detection — Model Performance Comparison}
+  \label{tab:model_comparison}
+  \begin{tabular}{lcccccc}
+    \toprule
+    Model & Params & Acc & AUC & Prec & Recall & F1 \\
+    \midrule
+    ResNet-L & 63K & 96.0% & 0.9669 & 89.2% & 82.4% & 0.86 \\
+    Ensemble×3 & 240K & 96.5% & 0.9665 & 95.6% & 79.3% & 0.87 \\
+    ResNet-M & 55K & 95.9% & 0.9636 & 89.5% & 81.5% & 0.85 \\
+    ResNet-MT-FG & 68K & 95.7% & 0.9577 & 89.0% & 80.3% & 0.84 \\
+    CNN-M & 140K & 92.4% & 0.9427 & 77.2% & 67.4% & 0.72 \\
+    CNN-v2 & 15K & 92.2% & 0.9102 & 75.0% & 69.2% & 0.72 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

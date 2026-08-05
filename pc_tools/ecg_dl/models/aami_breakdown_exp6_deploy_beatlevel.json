@@ -1,0 +1,133 @@
+{
+  "meta": {
+    "model": "best_resnet_large_exp6_deploy.h5",
+    "tag": "exp6_deploy_beatlevel",
+    "split": "beat-level (all beats, no split)",
+    "n_test": 834741,
+    "n_incart_unknown": 173756,
+    "note": "per-class table covers beats with recovered AAMI symbols (MIT full + INCART I01,I10-I15); INCART beats without .atr marked 'U' and excluded from per-class but included in aggregate"
+  },
+  "per_class": {
+    "N": {
+      "n": 545579,
+      "n_abn": 0,
+      "auc": null,
+      "thr": {
+        "thr_0.35": {
+          "recall": 0.0,
+          "precision": 0.0,
+          "f1": 0.0
+        },
+        "thr_0.5": {
+          "recall": 0.0,
+          "precision": 0.0,
+          "f1": 0.0
+        },
+        "thr_0.65": {
+          "recall": 0.0,
+          "precision": 0.0,
+          "f1": 0.0
+        }
+      }
+    },
+    "S": {
+      "n": 16686,
+      "n_abn": 16686,
+      "auc": null,
+      "thr": {
+        "thr_0.35": {
+          "recall": 0.45289464221503056,
+          "precision": 1.0,
+          "f1": 0.6234376933547828
+        },
+        "thr_0.5": {
+          "recall": 0.44168764233489155,
+          "precision": 1.0,
+          "f1": 0.6127369471233788
+        },
+        "thr_0.65": {
+          "recall": 0.4289224499580487,
+          "precision": 1.0,
+          "f1": 0.6003439164534664
+        }
+      }
+    },
+    "V": {
+      "n": 45842,
+      "n_abn": 45842,
+      "auc": null,
+      "thr": {
+        "thr_0.35": {
+          "recall": 0.9839448540639588,
+          "precision": 1.0,
+          "f1": 0.9919074636055768
+        },
+        "thr_0.5": {
+          "recall": 0.9802800924916016,
+          "precision": 1.0,
+          "f1": 0.9900418594404053
+        },
+        "thr_0.65": {
+          "recall": 0.9759827232668732,
+          "precision": 1.0,
+          "f1": 0.9878454014550192
+        }
+      }
+    },
+    "F": {
+      "n": 10710,
+      "n_abn": 10710,
+      "auc": null,
+      "thr": {
+        "thr_0.35": {
+          "recall": 0.7565826330532213,
+          "precision": 1.0,
+          "f1": 0.861425609950566
+        },
+        "thr_0.5": {
+          "recall": 0.7276377217553688,
+          "precision": 1.0,
+          "f1": 0.8423498892071556
+        },
+        "thr_0.65": {
+          "recall": 0.7014005602240896,
+          "precision": 1.0,
+          "f1": 0.8244978597299967
+        }
+      }
+    },
+    "Q": {
+      "n": 42168,
+      "n_abn": 42168,
+      "auc": null,
+      "thr": {
+        "thr_0.35": {
+          "recall": 0.9972016695124265,
+          "precision": 1.0,
+          "f1": 0.9985988743499015
+        },
+        "thr_0.5": {
+          "recall": 0.996395370897363,
+          "precision": 1.0,
+          "f1": 0.9981944312458424
+        },
+        "thr_0.65": {
+          "recall": 0.9955416429520015,
+          "precision": 1.0,
+          "f1": 0.9977658411370443
+        }
+      }
+    }
+  },
+  "aggregate_recall": {
+    "thr_0.35": {
+      "recall": 0.8944517650827394
+    },
+    "thr_0.5": {
+      "recall": 0.8879214321595236
+    },
+    "thr_0.65": {
+      "recall": 0.8812163746095997
+    }
+  }
+}

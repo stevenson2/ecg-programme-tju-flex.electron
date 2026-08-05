@@ -171,8 +171,12 @@ def build_ecg_resnet_lite_large(input_shape=None):
 # Compile & Callbacks (aligned with cnn_1d.py API)
 # ===========================================================================
 
-def compile_model(model, learning_rate=0.001, loss=None):
-    """Compile with AdamW. Default: FocalLoss if enabled, else categorical_crossentropy."""
+def compile_model(model, learning_rate=0.001, loss=None, optimizer="adamw"):
+    """Compile with AdamW (default) or SGD+Nesterov (泛化更强, Wilson et al. 2017).
+
+    optimizer='sgd': SGD(momentum=0.9, nesterov=True, weight_decay=1e-4),
+      SGD 需要 ~10-20× 更高的 LR (adamw 5e-4 → sgd 1e-2 量级)。
+    """
     if loss is None:
         from config import TRAIN_CONFIG
         fl_cfg = TRAIN_CONFIG.get('focal_loss', {})
@@ -189,8 +193,13 @@ def compile_model(model, learning_rate=0.001, loss=None):
         else:
             loss = 'categorical_crossentropy'
             print("[编译] 使用 CategoricalCrossentropy")
-    opt = tf.keras.optimizers.AdamW(learning_rate=learning_rate,
-                                    weight_decay=1e-4)
+    if optimizer == "sgd":
+        opt = tf.keras.optimizers.SGD(learning_rate=learning_rate, momentum=0.9,
+                                      nesterov=True, weight_decay=1e-4)
+        print(f"[编译] SGD+Nesterov (lr={learning_rate}, momentum=0.9, wd=1e-4)")
+    else:
+        opt = tf.keras.optimizers.AdamW(learning_rate=learning_rate,
+                                        weight_decay=1e-4)
     model.compile(optimizer=opt, loss=loss, metrics=[
         'accuracy', tf.keras.metrics.Precision(name='precision'),
         tf.keras.metrics.Recall(name='recall'), tf.keras.metrics.AUC(name='auc'),

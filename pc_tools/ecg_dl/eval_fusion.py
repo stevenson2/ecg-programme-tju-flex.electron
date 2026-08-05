@@ -24,8 +24,8 @@ x_mit, y_mit = splits["test"]
 # ---- PTB 独立测试集 (患者级留出 20%) ----
 PTB_NPZ = Path(__file__).resolve().parent / "data" / "processed" / "ptb_processed.npz"
 RECORDS = next((Path(c) for c in [
-    r"C:\Users\cai\OneDrive\Desktop\ecg-programme-tju-flex.electron-master\ECG-Database\RECORDS",
-    "/mnt/c/Users/cai/OneDrive/Desktop/ecg-programme-tju-flex.electron-master/ECG-Database/RECORDS",
+    r"C:\Users\cai\OneDrive\Desktop\Fe programme 25261\ecg-programme-tju-flex.electron-master\ECG-Database\RECORDS",
+    "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/ECG-Database/RECORDS",
 ] if Path(c).exists()), None)
 recs = [l.strip() for l in open(RECORDS) if l.strip()]
 d = np.load(PTB_NPZ)
@@ -45,7 +45,8 @@ x_ptb, y_ptb = x_ptb[test_mask], y_ptb[test_mask]
 
 # ---- 加载模型 ----
 m_p2a = tf.keras.models.load_model(str(MODELS / "archived" / "final_resnet_l_p2a_backup.h5"), compile=False)
-m_exp5 = tf.keras.models.load_model(str(MODELS / "best_resnet_large.h5"), compile=False)
+# 注意: 通用名 best_resnet_large.h5 现为 exp6 权重 (4.4-4 权重对比证实), 改用 exp5 实名
+m_exp5 = tf.keras.models.load_model(str(MODELS / "best_resnet_large_exp5_ptb_capped.h5"), compile=False)
 
 p2a_mit = m_p2a.predict(add_channel_dim(x_mit), verbose=0)[:, 1]
 exp5_mit = m_exp5.predict(add_channel_dim(x_mit), verbose=0)[:, 1]

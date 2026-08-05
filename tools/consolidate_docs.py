@@ -3,7 +3,7 @@
 import re
 from pathlib import Path
 
-ROOT = Path(r"C:\Users\cai\OneDrive\Desktop\ecg-programme-tju-flex.electron-master")
+ROOT = Path(r"C:\Users\cai\OneDrive\Desktop\Fe programme 25261\ecg-programme-tju-flex.electron-master")
 
 # ============================================================
 # 1. Fix README.md: replace old AI section with concise summary

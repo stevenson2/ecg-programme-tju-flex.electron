@@ -1,0 +1,42 @@
+{
+  "teacher_model": "final_ssl_finetuned.h5",
+  "eps": 1e-07,
+  "arrays": {
+    "a_train": {
+      "filename": "teacher_logits_ssl_a_train.npy",
+      "length": 512369,
+      "sha1": "4eb22607fbe1d05959851d43349451734e2c0b08",
+      "mean_z": -1.6374497413635254,
+      "std_z": 1.8718103170394897
+    },
+    "a_val": {
+      "filename": "teacher_logits_ssl_a_val.npy",
+      "length": 159294,
+      "sha1": "2f8ed79b7ee63f5d0b77c40eab9197e6225990b0",
+      "mean_z": -1.594305157661438,
+      "std_z": 1.825746774673462
+    },
+    "b_train": {
+      "filename": "teacher_logits_ssl_b_train.npy",
+      "length": 15159,
+      "sha1": "d4e9dd096d60df8e6b36fe743b36b741946029a1",
+      "mean_z": -1.9008008241653442,
+      "std_z": 2.1240758895874023
+    },
+    "a_train_labels": {
+      "filename": "teacher_logits_ssl_a_train_labels.npy",
+      "length": 512369,
+      "sha1": "d8fcf9ea5774304afac5549d6b2116e13de2ab7a"
+    },
+    "a_val_labels": {
+      "filename": "teacher_logits_ssl_a_val_labels.npy",
+      "length": 159294,
+      "sha1": "2aa2de12dea90e9eeb994279f40e604e4444913f"
+    },
+    "b_train_labels": {
+      "filename": "teacher_logits_ssl_b_train_labels.npy",
+      "length": 15159,
+      "sha1": "e80ac67cea1a59c8a1a0165b9bd4af3091f7559d"
+    }
+  }
+}

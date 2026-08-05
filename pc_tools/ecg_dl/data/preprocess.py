@@ -219,7 +219,11 @@ def augment_data(beats: np.ndarray, labels: np.ndarray, config: dict = None) -> 
     augmented_beats = [beats]
     augmented_labels = [labels]
     
-    for noise_std in config['noise_std']:
+    # 兼容: 历史配置 noise_std 为列表 [0.02], 9777076 起改为 float 0.015
+    noise_stds = config['noise_std']
+    if not isinstance(noise_stds, (list, tuple)):
+        noise_stds = [noise_stds]
+    for noise_std in noise_stds:
         noisy = beats + np.random.randn(*beats.shape) * noise_std
         augmented_beats.append(noisy)
         augmented_labels.append(labels)

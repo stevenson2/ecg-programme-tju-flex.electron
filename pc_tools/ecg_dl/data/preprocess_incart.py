@@ -30,7 +30,7 @@ from scipy import signal as scipy_signal
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from config import PROCESSED_DIR, TARGET_FS, BEAT_WINDOW_SAMPLES, AAMI_CLASSES
 
-INCART_DIR = Path(r"C:\Users\cai\OneDrive\Desktop\ecg-programme-tju-flex.electron-master\st-petersburg-incart-12-lead-arrhythmia-database-1.0.0\files")
+INCART_DIR = Path(r"C:\Users\cai\OneDrive\Desktop\Fe programme 25261\ecg-programme-tju-flex.electron-master\st-petersburg-incart-12-lead-arrhythmia-database-1.0.0\files")
 INCART_RECORDS = [f"I{i:02d}" for i in range(1, 76)]
 
 
