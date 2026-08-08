@@ -1,9 +1,21 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+
 import 'providers/ecg_provider.dart';
+import 'providers/settings_provider.dart';
+import 'services/alarm_sound_service.dart';
+import 'services/alarm_history_store.dart';
+import 'models/alarm_event.dart';
 import 'widgets/ecg_waveform.dart';
 import 'widgets/info_panel.dart';
+import 'widgets/alarm_dialog.dart';
+import 'widgets/history_sheet.dart';
+import 'widgets/settings_sheet.dart';
+import 'services/record_api.dart';
+import 'pages/record_list_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,8 +23,11 @@ void main() {
     DeviceOrientation.portraitUp,
   ]);
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => ECGProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ECGProvider()),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()),
+      ],
       child: const ECGApp(),
     ),
   );
@@ -37,32 +52,106 @@ class ECGApp extends StatelessWidget {
   }
 }
 
-class ECGMonitorScreen extends StatelessWidget {
-  const ECGMonitorScreen({super.key});
+class ECGMonitorScreen extends StatefulWidget {
+  /// 可注入的提示音服务（测试用；null 时创建真实 AlarmSoundService）
+  final AlarmSoundService? soundService;
+
+  const ECGMonitorScreen({super.key, this.soundService});
+
+  @override
+  State<ECGMonitorScreen> createState() => _ECGMonitorScreenState();
+}
+
+class _ECGMonitorScreenState extends State<ECGMonitorScreen> {
+  late final SettingsProvider _settings;
+  late final ECGProvider _ecgProvider;
+  late final AlarmSoundService _soundService;
+  late final AlarmHistoryStore _historyStore;
+  List<AlarmEvent> _alarmHistory = [];
+  AlarmState _prevAlarmState = AlarmState.idle;
+
+  @override
+  void initState() {
+    super.initState();
+    _ecgProvider = context.read<ECGProvider>();
+    _settings = context.read<SettingsProvider>();
+    _settings.load().then((_) {
+      if (mounted) setState(() {});
+    });
+    _soundService =
+        widget.soundService ?? AlarmSoundService(settings: _settings);
+    _historyStore = AlarmHistoryStore();
+    _historyStore.load().then((events) {
+      if (mounted) setState(() => _alarmHistory = events);
+    });
+    _ecgProvider.addListener(_onEcgChange);
+  }
+
+  @override
+  void dispose() {
+    _ecgProvider.removeListener(_onEcgChange);
+    _soundService.dispose();
+    super.dispose();
+  }
+
+  /// 告警管线：监听 ECGProvider 状态变更，控制弹窗 / 提示音 / 历史记录
+  void _onEcgChange() {
+    final now = _ecgProvider.alarmState;
+    final prev = _prevAlarmState;
+
+    /// Rising edge: idle → alarming（每周期仅触发一次）
+    if (prev == AlarmState.idle && now == AlarmState.alarming) {
+      if (!_settings.dndEnabled) {
+        if (mounted) {
+          showAlarmDialog(context, _ecgProvider, _settings);
+        }
+        unawaited(_soundService.startAlarmLoop());
+      }
+      // DND 抑制弹窗与提示音，历史在 episode 完成时写入
+    }
+    /// Episode 完成：arming/alarming → idle（signal_normal 或 user_confirm）
+    else if (now == AlarmState.idle && prev != AlarmState.idle) {
+      unawaited(_soundService.stopAlarmLoop());
+      final event = _ecgProvider.lastCompletedAlarm;
+      if (event != null) {
+        _alarmHistory = [event, ..._alarmHistory];
+        unawaited(_historyStore.add(event));
+        if (mounted) setState(() {});
+      }
+    }
+    /// 断开重置（lastCompletedAlarm==null 时 idle 不变）—— 不做操作
+
+    _prevAlarmState = now;
+  }
+
+  /// 告警总次数（已完成的 + 当前活跃的）
+  int get _totalAlarmCount =>
+      _alarmHistory.length +
+      (_ecgProvider.alarmState != AlarmState.idle ? 1 : 0);
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: _buildAppBar(context),
-        body: const Column(
+        body: Column(
           children: [
-            // 波形显示区
-            Expanded(
+            /// 波形显示区
+            const Expanded(
               flex: 4,
               child: Padding(
                 padding: EdgeInsets.all(8.0),
                 child: _WaveformArea(),
               ),
             ),
-            // 信息面板
+            /// 信息面板
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
-              child: _InfoArea(),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: _InfoArea(alarmCount: _totalAlarmCount),
             ),
-            // 底部控制区
-            _ControlPanel(),
-            SizedBox(height: 8),
+            /// 底部控制区
+            const _ControlPanel(),
+            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -79,6 +168,42 @@ class ECGMonitorScreen extends StatelessWidget {
       backgroundColor: const Color(0xFF1A1A2E),
       elevation: 0,
       actions: [
+        /// 记录管理
+        IconButton(
+          icon: const Icon(Icons.cloud_download),
+          tooltip: '记录管理',
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => RecordListPage(api: RecordApi()),
+            ),
+          ),
+        ),
+        /// 告警设置
+        IconButton(
+          icon: const Icon(Icons.settings),
+          tooltip: '告警设置',
+          onPressed: () => showAlarmSettingsSheet(context, _settings),
+        ),
+        /// 告警历史（含计数徽章）
+        IconButton(
+          icon: _alarmHistory.isEmpty
+              ? const Icon(Icons.history)
+              : Badge(
+                  label: Text('${_alarmHistory.length}'),
+                  child: const Icon(Icons.history),
+                ),
+          tooltip: '告警历史',
+          onPressed: () => showHistorySheet(
+            context,
+            _alarmHistory,
+            () async {
+              await _historyStore.clear();
+              if (mounted) setState(() => _alarmHistory = []);
+            },
+          ),
+        ),
+        /// 关于
         IconButton(
           icon: const Icon(Icons.info_outline),
           onPressed: () => _showAbout(context),
@@ -129,13 +254,14 @@ class _WaveformArea extends StatelessWidget {
 }
 
 class _InfoArea extends StatelessWidget {
-  const _InfoArea();
+  final int alarmCount;
+  const _InfoArea({required this.alarmCount});
 
   @override
   Widget build(BuildContext context) {
     return Consumer<ECGProvider>(
       builder: (context, provider, _) {
-        return InfoPanel(provider: provider);
+        return InfoPanel(provider: provider, alarmCount: alarmCount);
       },
     );
   }

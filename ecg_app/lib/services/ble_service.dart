@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../models/ecg_data.dart';
+import 'csv_parser.dart';
 
 /**
  * @file ble_service.dart
@@ -18,6 +19,7 @@ class BLEService {
   // NUS UUID
   static const String _nusServiceUuid = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
   static const String _nusTxUuid = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+  static const String _nusRxUuid = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
 
   // ESP32 广播名称
   static const String _deviceName = 'ESP32-ECG';
@@ -27,6 +29,16 @@ class BLEService {
 
   BluetoothDevice? _device;
   BluetoothCharacteristic? _txChar;
+  BluetoothCharacteristic? _rxChar;
+
+  /**
+   * @brief 测试接缝：注入写回调替代真实 BLE write
+   *
+   * 非 null 时，sendCommand() 优先使用此回调而非 _rxChar.write()，
+   * 便于在不依赖 flutter_blue_plus 的单元测试中验证命令发送行为。
+   */
+  @visibleForTesting
+  Future<void> Function(List<int> data)? commandWriteCallback;
 
   final StreamController<ECGSample> _dataController =
       StreamController<ECGSample>.broadcast();
@@ -115,7 +127,8 @@ class BLEService {
               // 监听 Notify
               await chr.setNotifyValue(true);
               chr.onValueReceived.listen(_onDataReceived);
-              break;
+            } else if (chr.uuid.toString().toLowerCase() == _nusRxUuid) {
+              _rxChar = chr;
             }
           }
         }
@@ -126,6 +139,7 @@ class BLEService {
         if (state == BluetoothConnectionState.disconnected) {
           _device = null;
           _txChar = null;
+          _rxChar = null;
           onDisconnected?.call();
         }
       });
@@ -142,37 +156,31 @@ class BLEService {
     final str = utf8.decode(value).trim();
     if (str.isEmpty) return;
 
-    final parts = str.split(',');
-    if (parts.length < 3) return;
+    // 解析逻辑抽离至 csv_parser.dart 的纯函数（行为与原内联解析一致）
+    final sample = parseEcgCsvLine(str);
+    if (sample == null) return;
 
-    try {
-      final clean = double.parse(parts[0].trim());
-      final noisy = double.parse(parts[1].trim());
-      final filtered = double.parse(parts[2].trim());
-      
-      // 第 4 列：ESP32 板上心率 (可选)
-      int bpm = 0;
-      if (parts.length >= 4) {
-        bpm = int.tryParse(parts[3].trim()) ?? 0;
-      }
+    _dataController.add(sample);
+  }
 
-      // 第 8 列：AI 异常标志 (可选, 0=正常 1=异常)
-      int abnormal = 0;
-      if (parts.length >= 8) {
-        abnormal = int.tryParse(parts[7].trim()) ?? 0;
-      }
-
-      // 第 9 列：AI 异常置信度 (可选, 0~1)
-      double confidence = 0.0;
-      if (parts.length >= 9) {
-        confidence = double.tryParse(parts[8].trim()) ?? 0.0;
-      }
-
-      _dataController.add(ECGSample(clean, noisy, filtered,
-          bpm: bpm, abnormal: abnormal, confidence: confidence));
-    } catch (_) {
-      // 解析失败，跳过
+  /**
+   * @brief 发送命令到 ESP32 NUS RX 特征值
+   *
+   * 通过 NUS RX Characteristic (6E400003-...) 以 Write Without Response
+   * 方式发送字符串命令。测试模式下优先使用 commandWriteCallback。
+   *
+   * @param cmd 待发送的命令字符串（如 "RECORDS:LIST"）
+   */
+  Future<void> sendCommand(String cmd) async {
+    final writer = commandWriteCallback;
+    if (writer != null) {
+      await writer(cmd.codeUnits);
+      return;
     }
+    if (_rxChar == null) {
+      return;
+    }
+    await _rxChar!.write(cmd.codeUnits, withoutResponse: true);
   }
 
   /// 断开连接
@@ -180,6 +188,7 @@ class BLEService {
     await _device?.disconnect();
     _device = null;
     _txChar = null;
+    _rxChar = null;
   }
 
   /// 释放资源
