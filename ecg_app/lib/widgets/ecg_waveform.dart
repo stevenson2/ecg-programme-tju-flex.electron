@@ -1,8 +1,17 @@
 ﻿import 'package:flutter/material.dart';
-import '../providers/ecg_provider.dart';
+import '../models/waveform_data_source.dart';
+
+/**
+ * @file ecg_waveform.dart
+ * @brief 心电波形绘制组件
+ *
+ * 波形绘制仅依赖数据源的 5 个只读属性（WaveformDataSource，见
+ * models/waveform_data_source.dart）：实时模式由 ECGProvider 实现，
+ * 记录回放由 playback_page.dart 的 PlaybackProvider 实现。
+ */
 
 class ECGWaveform extends StatelessWidget {
-  final ECGProvider provider;
+  final WaveformDataSource provider;
 
   const ECGWaveform({super.key, required this.provider});
 

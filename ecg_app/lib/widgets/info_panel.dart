@@ -4,8 +4,9 @@ import '../providers/ecg_provider.dart';
 
 class InfoPanel extends StatelessWidget {
   final ECGProvider provider;
+  final int alarmCount;
 
-  const InfoPanel({super.key, required this.provider});
+  const InfoPanel({super.key, required this.provider, this.alarmCount = 0});
 
   @override
   Widget build(BuildContext context) {
@@ -121,13 +122,19 @@ class InfoPanel extends StatelessWidget {
   }
 
   /// AI 异常状态指示（ESP32 板上 TFLite Micro 推理结果）
-  /// 异常：红色警告 + 置信度百分比；正常：绿色；未连接：灰色
+  /// 异常：红色警告呼吸动画 + 置信度百分比 + 报警计数；正常：绿色；未连接：灰色
   Widget _aiStatusWidget() {
     final alert = provider.hasAbnormalAlert;
     final hasData = provider.lastSample != null;
-    final color = alert
-        ? Colors.red
-        : (hasData ? Colors.green : Colors.grey);
+
+    if (alert) {
+      return _BreathingWarningChip(
+        confidence: provider.abnormalConfidence,
+        alarmCount: alarmCount,
+      );
+    }
+
+    final color = hasData ? Colors.green : Colors.grey;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -138,22 +145,97 @@ class InfoPanel extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            alert ? Icons.warning_amber : Icons.check_circle,
+            Icons.check_circle,
             size: 14,
             color: color,
           ),
           const SizedBox(width: 4),
           Text(
-            alert
-                ? 'AI 异常 ${(provider.abnormalConfidence * 100).toStringAsFixed(0)}%'
-                : 'AI 正常',
+            'AI 正常',
             style: TextStyle(
               color: color,
               fontSize: 12,
-              fontWeight: alert ? FontWeight.bold : FontWeight.normal,
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// 异常告警呼吸动画芯片（红色脉冲 + 置信度 + 报警次数）
+class _BreathingWarningChip extends StatefulWidget {
+  final double confidence;
+  final int alarmCount;
+
+  const _BreathingWarningChip({
+    required this.confidence,
+    required this.alarmCount,
+  });
+
+  @override
+  State<_BreathingWarningChip> createState() => _BreathingWarningChipState();
+}
+
+class _BreathingWarningChipState extends State<_BreathingWarningChip>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _breathController;
+
+  @override
+  void initState() {
+    super.initState();
+    _breathController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _breathController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final confPct = (widget.confidence * 100).toStringAsFixed(0);
+    final countSuffix =
+        widget.alarmCount > 0 ? ' · 第 ${widget.alarmCount} 次' : '';
+
+    return AnimatedBuilder(
+      animation: _breathController,
+      builder: (context, child) {
+        final opacity = 0.55 + 0.45 * _breathController.value;
+        final scale = 1.0 + 0.04 * _breathController.value;
+        return Transform.scale(
+          scale: scale,
+          child: Opacity(
+            opacity: opacity,
+            child: child,
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.red.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.warning_amber, size: 14, color: Colors.red),
+            const SizedBox(width: 4),
+            Text(
+              'AI 异常 $confPct%$countSuffix',
+              style: const TextStyle(
+                color: Colors.red,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

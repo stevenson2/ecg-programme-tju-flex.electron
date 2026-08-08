@@ -1,30 +1,34 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:ecg_app/main.dart';
+import 'package:ecg_app/providers/ecg_provider.dart';
+import 'package:ecg_app/providers/settings_provider.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const ECGApp());
+  SharedPreferences.setMockInitialValues({});
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+  testWidgets('App 冒烟测试：主界面正常渲染（无 BLE 连接）', (WidgetTester tester) async {
+    // 与 main() 相同的 MultiProvider 注入方式；测试环境不触发 BLE 扫描/连接
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => ECGProvider()),
+          ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        ],
+        child: const ECGApp(),
+      ),
+    );
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // 标题栏
+    expect(find.text('ESP32-ECG 心电监测'), findsOneWidget);
+    // 连接按钮（未连接状态）
+    expect(find.text('连接'), findsOneWidget);
+    // 速度 / 幅度控制
+    expect(find.text('2s'), findsOneWidget);
+    expect(find.text('1.0x'), findsOneWidget);
   });
 }
