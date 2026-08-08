@@ -17,6 +17,7 @@ class ECGWaveform extends StatelessWidget {
             maxVal: provider.maxValue,
             minVal: provider.minValue,
             timeWindow: provider.timeWindow,
+            alert: provider.hasAbnormalAlert,
           ),
         );
       },
@@ -29,12 +30,14 @@ class _ECGWaveformPainter extends CustomPainter {
   final double maxVal;
   final double minVal;
   final int timeWindow;
+  final bool alert; // AI 异常告警：波形变红 + 红色背景光晕
 
   _ECGWaveformPainter({
     required this.data,
     required this.maxVal,
     required this.minVal,
     required this.timeWindow,
+    required this.alert,
   });
 
   @override
@@ -45,6 +48,13 @@ class _ECGWaveformPainter extends CustomPainter {
     final dx = visibleCount > 0 ? size.width / visibleCount : 1.0;
 
     _drawBackground(canvas, size, range);
+
+    // AI 异常告警：叠加红色背景光晕，波形整体变红提示
+    if (alert) {
+      final alertPaint = Paint()
+        ..color = const Color(0xFFFF5252).withValues(alpha: 0.07);
+      canvas.drawRect(Offset.zero & size, alertPaint);
+    }
 
     if (data.isNotEmpty) {
       _drawWaveform(canvas, size, data, dx, scaleY);
@@ -103,15 +113,16 @@ class _ECGWaveformPainter extends CustomPainter {
 
     if (data.length < 2) return;
 
-    // 主波形
+    // 主波形（异常告警时切换为红色）
+    final waveColor = alert ? const Color(0xFFFF5252) : const Color(0xFF00E5FF);
     final paint = Paint()
-      ..color = const Color(0xFF00E5FF)
+      ..color = waveColor
       ..strokeWidth = 2.0
       ..style = PaintingStyle.stroke;
 
     // 光晕
     final glowPaint = Paint()
-      ..color = const Color(0xFF00E5FF).withValues(alpha: 0.15)
+      ..color = waveColor.withValues(alpha: 0.15)
       ..strokeWidth = 4.0
       ..style = PaintingStyle.stroke;
 

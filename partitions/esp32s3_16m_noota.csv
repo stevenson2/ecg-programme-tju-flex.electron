@@ -1,0 +1,13 @@
+# ESP-IDF Partition Table - ESP32-S3 16MB Flash, no OTA (N16R8 board)
+# 2026-08-08, N16R8 (ESP32-S3-WROOM-1-N16R8: 16MB Flash / 8MB PSRAM)
+# vs esp32s3_4m_noota.csv: removed uf2 (TinyUF2 bootloader only, N16R8 uses
+#   standard ESP-IDF bootloader) and ffat (firmware uses no filesystem);
+#   ota_0 enlarged to 15MB (0x10000..0xF10000); dual models (2x163.5KB) ~10%
+#   USB upload (usb_cdc_on_boot=1) only in dev; OTA can be restored if needed
+# Name,   Type, SubType, Offset,  Size, Flags
+# bootloader.bin,,          0x1000, 32K
+# partition table,          0x8000, 4K
+
+nvs,      data, nvs,     0x9000,  20K,
+otadata,  data, ota,     0xe000,  8K,
+ota_0,    app,  ota_0,   0x10000, 15M,

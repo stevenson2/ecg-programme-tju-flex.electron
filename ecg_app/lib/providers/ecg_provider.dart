@@ -26,6 +26,10 @@ class ECGProvider extends ChangeNotifier {
   // ── 心率 (来自 ESP32 板上算法) ──
   double _heartRate = 0;
 
+  // ── AI 异常检测 (来自 ESP32 板上 TFLite Micro 推理) ──
+  static const int kAbnormalWindow = 10; // 防闪烁窗口：最近 10 样本内任一异常即告警
+  double _abnormalConfidence = 0.0;      // 最近一次异常样本的置信度
+
   // ── 状态 ──
   bool _isConnected = false;
   bool _isScanning = false;
@@ -50,6 +54,20 @@ class ECGProvider extends ChangeNotifier {
   int get bufferSize => _samples.length;
   BLEService get bleService => _bleService;
   ECGSample? get lastSample => _samples.isEmpty ? null : _samples.last;
+
+  /// 最近 kAbnormalWindow 个样本内是否存在 AI 异常（防单样本闪烁）
+  bool get hasAbnormalAlert {
+    final start = _samples.length > kAbnormalWindow
+        ? _samples.length - kAbnormalWindow
+        : 0;
+    for (int i = start; i < _samples.length; i++) {
+      if (_samples[i].abnormal == 1) return true;
+    }
+    return false;
+  }
+
+  /// 最近一次异常样本的置信度 (0~1)
+  double get abnormalConfidence => _abnormalConfidence;
 
   // ── 显示控制 Getter/Setter ──
 
@@ -135,6 +153,11 @@ class ECGProvider extends ChangeNotifier {
       _heartRate = sample.bpm.toDouble();
     }
 
+    // 记录 AI 异常置信度 (来自 CSV 第9列)，供 UI 显示
+    if (sample.abnormal == 1) {
+      _abnormalConfidence = sample.confidence;
+    }
+
     // 每 15 个样本通知一次 UI 刷新
     if (_samples.length % 15 == 0 || _samples.length < 15) {
       notifyListeners();
@@ -208,6 +231,7 @@ class ECGProvider extends ChangeNotifier {
   void clear() {
     _samples.clear();
     _heartRate = 0;
+    _abnormalConfidence = 0.0;
     notifyListeners();
   }
 

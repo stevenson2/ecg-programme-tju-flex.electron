@@ -44,7 +44,8 @@ def main():
 
     models = {}
     for name, rel in [("exp6-SGD(基线,无相位增强)", "best_resnet_large_exp6_sgd.h5"),
-                      ("exp6-phase(±10相位增强)", "best_resnet_large_exp6_phase.h5")]:
+                      ("exp6-phase(±10)", "best_resnet_large_exp6_phase_p10.h5"),
+                      ("exp6-phase(±5)", "best_resnet_large_exp6_phase_p5.h5")]:
         p = MODELS_DIR / rel
         if p.exists():
             models[name] = tf.keras.models.load_model(str(p), compile=False)

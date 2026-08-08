@@ -1,0 +1,15 @@
+# ESP-IDF Partition Table - ESP32-S3 4MB Flash, no OTA (dual-model budget plan A)
+# 2026-08-06, see docs/flash_budget_dual_model.md
+# vs partitions-4MB-tinyuf2.csv: removed ota_1 (1408K), ota_0 enlarged to 2816K
+#   -> app 0x10000..0x2D0000 (2.75MB); dual models (2x163.5KB) = 52.9%, 1.35MB free
+#   USB upload (usb_cdc_on_boot=1) only in dev; uf2/ffat layout kept
+#   (uf2 256K required by TinyUF2 bootloader on QTPY board)
+# Name,   Type, SubType, Offset,  Size, Flags
+# bootloader.bin,,          0x1000, 32K
+# partition table,          0x8000, 4K
+
+nvs,      data, nvs,      0x9000,  20K,
+otadata,  data, ota,      0xe000,  8K,
+ota_0,    app,  ota_0,   0x10000,  2816K,
+uf2,      app,  factory,0x2d0000,  256K,
+ffat,     data, fat,    0x310000,  960K,

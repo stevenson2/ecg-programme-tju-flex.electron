@@ -99,22 +99,20 @@ static void fill_input_tensor(const float* buffer) {
     }
 }
 
-/** 从输出解析异常置信度 (Softmax) */
+/** 从输出解析异常置信度 (模型输出层自带 softmax, 反量化后直接取概率) */
 static float parse_output_confidence(void) {
-    float val_n, val_a;
+    float val_a;
     if (g_output->type == kTfLiteInt8) {
         float scale = g_output->params.scale;
         int32_t zp = g_output->params.zero_point;
-        val_n = (g_output->data.int8[0] - zp) * scale;
         val_a = (g_output->data.int8[1] - zp) * scale;
     } else {
-        val_n = g_output->data.f[0];
         val_a = g_output->data.f[1];
     }
-    float max_val = max(val_n, val_a);
-    float exp_n = expf(val_n - max_val);
-    float exp_a = expf(val_a - max_val);
-    return exp_a / (exp_n + exp_a);
+    /* M3 验证 (2026-08-05): 模型输出层自带 softmax, TFLite INT8 输出 = 概率量化。
+     * 二次 softmax 把概率动态范围压缩至 [0.270, 0.730] (T0-1 发现), 导致阈值语义
+     * 漂移; 反量化后直接取异常类概率 = FP32 语义, INFERENCE_THRESHOLD 直接生效。 */
+    return val_a;
 }
 
 /** 执行单次推理 (含多拍确认滤波) */
@@ -179,6 +177,11 @@ static void inference_task(void* pvParameters) {
                 g_total_latency_us += result.latency_us;
                 xQueueSend(g_result_queue, &result, 0);
             }
+            /* 2026-08-08: 板上实测单次推理 ~910ms (ResNet-L INT8 参考实现),
+             * 推理间隔 1s (AI_STRIDE=250)。推理后主动让出 CPU:
+             * ① IDLE0 有运行机会, 避免 Task WDT 触发 (IDLE0 饿死 abort);
+             * ② Core 0 上 BLE 协议栈任务可抢占/运行, 避免 BLE 饿死。 */
+            vTaskDelay(pdMS_TO_TICKS(50));
         }
     }
 }
@@ -191,13 +194,21 @@ bool ai_inference_init(void) {
     g_data_ready_sem = xSemaphoreCreateBinary();
     g_result_queue = xQueueCreate(AI_MAX_RESULTS, sizeof(ai_result_t));
     if (!g_mutex || !g_data_ready_sem || !g_result_queue) {
+        Serial.println("[AI] init fail: sem/queue create");
         return false;
     }
 
     tflite::InitializeTarget();
 
     g_model = tflite::GetModel(ecg_model_data);
+    Serial.print("[AI] model bytes: ");
+    Serial.println((int)sizeof(ecg_model_data));
+    Serial.print("[AI] model schema ver: ");
+    Serial.print((int)g_model->version());
+    Serial.print(" vs lib TFLITE_SCHEMA_VERSION: ");
+    Serial.println((int)TFLITE_SCHEMA_VERSION);
     if (g_model->version() != TFLITE_SCHEMA_VERSION) {
+        Serial.println("[AI] init fail: schema version mismatch");
         return false;
     }
 
@@ -209,8 +220,11 @@ bool ai_inference_init(void) {
     g_interpreter = &static_interp;
 
     if (g_interpreter->AllocateTensors() != kTfLiteOk) {
+        Serial.println("[AI] init fail: AllocateTensors (arena maybe too small)");
         return false;
     }
+    Serial.print("[AI] arena used: ");
+    Serial.println((int)g_interpreter->arena_used_bytes());
 
     g_input  = g_interpreter->input(0);
     g_output = g_interpreter->output(0);
@@ -219,9 +233,11 @@ bool ai_inference_init(void) {
             inference_task, "ai_inference", AI_STACK_SIZE,
             nullptr, AI_TASK_PRIO, &g_inference_task, AI_CORE_ID
         ) != pdPASS) {
+        Serial.println("[AI] init fail: task create");
         return false;
     }
 
+    Serial.println("[AI] init OK: task created");
     return true;
 }
 
@@ -238,7 +254,12 @@ void ai_inference_push(float value) {
         g_sample_buffer[g_buffer_idx % AI_WINDOW_SIZE] = value;
         g_buffer_idx++;
 
-        if ((g_buffer_idx % AI_STRIDE) == 0 && g_buffer_idx >= AI_WINDOW_SIZE) {
+        /* 群延迟补偿 (T1-3 P0, 2026-08-06): 因果部署链 (梳状+HP0.5+LP40+2:1抽取)
+         * 群延迟 ~6 样本 @250Hz (24ms), 使 R 峰在窗口内滞后 6 样本。触发时刻后移
+         * AI_TRIGGER_OFFSET 样本 (idx%125==6, 等效评估侧 δ=+6 窗口重提取语义),
+         * 令 R 峰回到训练窗口位置, 零成本抵消群延迟错位 (FINAL_RESULTS 表5)。 */
+        if ((g_buffer_idx % AI_STRIDE) == AI_TRIGGER_OFFSET
+            && g_buffer_idx >= AI_WINDOW_SIZE) {
             xSemaphoreGive(g_data_ready_sem);
         }
         xSemaphoreGive(g_mutex);

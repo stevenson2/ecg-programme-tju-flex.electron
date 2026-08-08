@@ -34,9 +34,14 @@ class InfoPanel extends StatelessWidget {
                     ? last.clean : provider.displayChannel == 'noisy'
                     ? last.noisy : last.filtered, Colors.cyan),
               const SizedBox(width: 8),
-              Text(
-                '${provider.timeWindow}s  |  ${(provider.amplitudeScale * 100).toStringAsFixed(0)}%',
-                style: const TextStyle(color: Colors.grey, fontSize: 12),
+              _aiStatusWidget(),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  '${provider.timeWindow}s  |  ${(provider.amplitudeScale * 100).toStringAsFixed(0)}%',
+                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
               const Spacer(),
               Text(
@@ -111,6 +116,44 @@ class InfoPanel extends StatelessWidget {
           fontSize: 12,
           fontFamily: 'monospace',
         ),
+      ),
+    );
+  }
+
+  /// AI 异常状态指示（ESP32 板上 TFLite Micro 推理结果）
+  /// 异常：红色警告 + 置信度百分比；正常：绿色；未连接：灰色
+  Widget _aiStatusWidget() {
+    final alert = provider.hasAbnormalAlert;
+    final hasData = provider.lastSample != null;
+    final color = alert
+        ? Colors.red
+        : (hasData ? Colors.green : Colors.grey);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            alert ? Icons.warning_amber : Icons.check_circle,
+            size: 14,
+            color: color,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            alert
+                ? 'AI 异常 ${(provider.abnormalConfidence * 100).toStringAsFixed(0)}%'
+                : 'AI 正常',
+            style: TextStyle(
+              color: color,
+              fontSize: 12,
+              fontWeight: alert ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ],
       ),
     );
   }

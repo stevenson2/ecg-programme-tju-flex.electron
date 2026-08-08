@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "date": "2026-08-06",
+    "task": "T3-6/M6 S 类构成分析",
+    "model": "exp6-SGD (best_resnet_large_exp6_sgd.h5)",
+    "data": "未增强测试拍 (T1-2 口径) + 患者级划分 seed42",
+    "method": "AAMI 符号逐拍对齐 (n_aug=1); S 拍 = 符号 S; 召回 = 判异常比例 (θ=0.5); 构成效应 = 拍级加权召回 − 患者级平均召回"
+  },
+  "result": {
+    "n_s_beats": 304,
+    "n_records_with_s": 8,
+    "n_patients_with_s": 7,
+    "s_recall_beat_level": 0.625,
+    "s_recall_patient_mean": 0.2656,
+    "composition_effect": 0.3594,
+    "low_recall_high_sample_records": [
+      [
+        207,
+        107,
+        0.5981
+      ],
+      [
+        202,
+        55,
+        0.5636
+      ]
+    ],
+    "note": "构成效应 >0 表示低召回记录含大量 S 拍, 拉低拍级加权召回 (患者级平均回避样本量加权)"
+  }
+}

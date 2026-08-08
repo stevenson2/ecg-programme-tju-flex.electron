@@ -28,8 +28,11 @@
  *   - TFLite 元数据: ~4KB
  *   - 预留余量: 2.75KB
  *   - 总计: 32 * 1024 = 32768 B
+ * ⚠️ 2026-08-08 N16R8 板上实测: 32KB 不够, AllocateTensors 失败
+ *    (TFLite Micro 需额外算子临时缓冲, 如权重重排副本) → 扩至 64KB
+ *    (SRAM 余量: 编译 92KB/320KB, 64KB arena 后仍充足; 双模型需 2x64KB)
  */
-#define TENSOR_ARENA_SIZE    (32 * 1024)   /* 32KB */
+#define TENSOR_ARENA_SIZE    (64 * 1024)   /* 64KB */
 
 /* ======================== 推理配置 ======================== */
 #define INFERENCE_THRESHOLD  0.35f   /* 异常判定阈值 (P0优化: 0.50→0.35, 提升召回率) */
@@ -40,22 +43,34 @@
  *   - 抽取前: caller 按 500Hz 推送 (每 2ms 1 样本, main.cpp 已做)
  *   - 抽取后: AI 环形缓冲有效采样率 250Hz (仅保留偶数序号样本)
  *   - 窗口    AI_WINDOW_SIZE=250 样本 = 1.0s   (与训练一致)
- *   - 步进    AI_STRIDE=125       样本 = 0.5s   (50% 重叠)
- *   - 首次推理: 上电后约 1.0s (原为 0.5s)
- *   - 多拍确认: MULTI_BEAT_CONFIRM=2 拍异常时, 时间跨度 >= 1.0s
+ *   - 步进    AI_STRIDE=250       样本 = 1.0s   (⚠️ 2026-08-08: 原 125/0.5s,
+ *             板上实测单次推理 ~910ms > 500ms 触发间隔 → 任务占满 Core 0,
+ *             IDLE0 饿死触发 Task WDT 崩溃重启; 改 1s 间隔 + 推理后让出 CPU)
+ *   - 首次推理: 上电后约 1.0s
+ *   - 多拍确认: MULTI_BEAT_CONFIRM=2 拍异常时, 时间跨度 >= 2.0s
  *   - 反混叠: LP40 (cutoff 40Hz << Nyquist 125Hz) 已由 filter.cpp 提供
  *   - 关闭: 改为 1 即回到 500Hz 路径 (窗口退化为 0.5s, 恢复旧行为)
  */
 #define AI_INPUT_DECIMATION  2   /* 输入抽取: 500Hz->250Hz, 窗口恢复1.0s (方案A, 修复4.4-4蹊跷点6) */
 
+/* 推理步进: 250 个抽取样本 = 1.0s (见 AI_INPUT_DECIMATION 注释, 2026-08-08 从 125 调大) */
+#define AI_STRIDE           250
+
+/* 群延迟补偿 (T1-3 P0, 2026-08-06): 因果部署链 (梳状+HP0.5+LP40+2:1抽取) 群延迟
+ * ~6 样本 @250Hz (24ms), R 峰在推理窗口内滞后 6 样本 (错位 ~0.035 AUC, corr 0.44)。
+ * 触发时刻后移 6 样本 (idx%AI_STRIDE==AI_TRIGGER_OFFSET), 等效评估侧 δ=+6 窗口
+ * 重提取语义, 令 R 峰回到训练窗口位置 (125), 零成本抵消群延迟 (FINAL_RESULTS 表5)。
+ * 约束: 0 < AI_TRIGGER_OFFSET < AI_STRIDE。 */
+#define AI_TRIGGER_OFFSET    6
+
 /* ======================== 性能配置 ======================== */
 #define AI_CORE_ID          0       /* 推理任务绑定核心 (Core 0) */
-#define AI_STACK_SIZE       8192    /* 任务栈 (8KB) */
+#define AI_STACK_SIZE       16384   /* 任务栈 (16KB; 8KB 曾致 Invoke 栈溢出疑 WDT 卡死, 2026-08-08) */
 #define AI_TASK_PRIO        1       /* 优先级 (低于主循环的2) */
 #define AI_QUEUE_LENGTH     8       /* 结果队列深度 */
 
 /* ======================== 调试选项 ======================== */
 // #define AI_DEBUG_OUTPUT            /* 取消注释以启用串口调试输出 */
-// #define AI_PROFILE_LATENCY          /* 取消注释以记录每次推理耗时 */
+// #define AI_PROFILE_LATENCY          /* 基准测试用: 每拍打印 LAT,<count>,<us> (见 docs/hardware/ondevice_bench_protocol.md §7.1) */
 
 #endif /* TFLITE_SETTINGS_H */

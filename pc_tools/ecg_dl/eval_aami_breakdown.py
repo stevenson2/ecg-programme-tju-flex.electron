@@ -214,6 +214,8 @@ def main():
             pred = (p_c >= t).astype(int)
             prec, rec, f1, _ = precision_recall_fscore_support(
                 y_c, pred, average="binary", zero_division=0)
+            # ⚠️ 2026-08-06 (TH §三十): 类内精确率在异常类内无负样本时为恒等式 1.000,
+            # 无统计意义 (正常类误报不计入) —— 仅保留 recall 供逐类报告, precision 不作数。
             row += f"  {rec:>7.3f}  {prec:>7.3f}"
             vals[f"thr_{t}"] = {"recall": float(rec), "precision": float(prec),
                                 "f1": float(f1)}
@@ -224,15 +226,18 @@ def main():
             from sklearn.metrics import roc_auc_score
             per_class[c]["auc"] = float(roc_auc_score(y_c, p_c))
 
-    # Aggregate (all abnormal beats regardless of class)
+    # Aggregate (all abnormal beats regardless of class) — 全局精确率 (有效口径)
     print("-" * 78)
     row = f"{'ALL':<6}{len(y_te):>8}{y_te.sum()/len(y_te)*100:>7.1f}"
+    agg = {}
     for t in thresholds:
         pred = (prob >= t).astype(int)
         prec, rec, f1, _ = precision_recall_fscore_support(
             y_te, pred, average="binary", zero_division=0)
         row += f"  {rec:>7.3f}  {prec:>7.3f}"
-    print(row)
+        agg[f"thr_{t}"] = {"recall": float(rec), "precision": float(prec),
+                           "f1": float(f1)}
+    print(row + "   <- 全局 P 在此列 (有效口径)")
 
     split_desc = ("beat-level (all beats, no split)" if args.beat_level
                   else "patient-level 60/20/20 seed42 (MIT+INCART)")
@@ -252,6 +257,12 @@ def main():
                     y_te, (prob >= t).astype(int), average="binary",
                     zero_division=0)[1])
             } for t in thresholds},
+        "aggregate_precision": {
+            f"thr_{t}": {
+                "precision": float(precision_recall_fscore_support(
+                    y_te, (prob >= t).astype(int), average="binary",
+                    zero_division=0)[0])
+            } for t in thresholds},   # 2026-08-06 (TH §三十): 全局精确率 (有效口径)
     }
     out_path = Path(__file__).resolve().parent / "models" / f"aami_breakdown_{args.tag}.json"
     with open(out_path, "w", encoding="utf-8") as f:

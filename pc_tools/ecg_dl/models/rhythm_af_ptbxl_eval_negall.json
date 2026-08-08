@@ -1,0 +1,36 @@
+{
+  "replay": null,
+  "ptbxl": {
+    "n_af": 994,
+    "n_neg": 15056,
+    "n_valid": 15607,
+    "auc_cv": 0.9405862866304616,
+    "auc_entropy": 0.9424216681738246,
+    "auc_combo": 0.9433151704597684,
+    "fixed_thr_se": 0.05327413984461709,
+    "fixed_thr_sp": 0.9984360125119,
+    "best_thr_cv": 0.08,
+    "best_thr_ent": 1.2,
+    "best_se": 0.8446170921198668,
+    "best_sp": 0.9249966000271997,
+    "median_r_peaks": 12.0,
+    "q25_r_peaks": 10.0,
+    "q75_r_peaks": 13.0,
+    "n_undetermined": 443,
+    "elapsed_s": 93.1
+  },
+  "config": {
+    "n_max": 0,
+    "lead": 1,
+    "ent_bins": 16,
+    "neg": "all",
+    "tag": "negall",
+    "replay_only": false
+  },
+  "rule_params": {
+    "AF_CV": 0.1,
+    "AF_ENTROPY": 1.9,
+    "AF_MIN_RR": 6,
+    "win_s": 10.0
+  }
+}

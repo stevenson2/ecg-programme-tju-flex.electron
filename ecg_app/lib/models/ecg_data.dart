@@ -8,12 +8,16 @@ class ECGSample {
   final double noisy;
   final double filtered;
   final int bpm;           /**< ESP32 板上心率检测值 */
+  final int abnormal;      /**< AI 异常标志 (0=正常, 1=异常) */
+  final double confidence; /**< AI 异常置信度 (0~1) */
 
-  const ECGSample(this.clean, this.noisy, this.filtered, {this.bpm = 0});
+  const ECGSample(this.clean, this.noisy, this.filtered,
+      {this.bpm = 0, this.abnormal = 0, this.confidence = 0.0});
 
   @override
   String toString() =>
-      'ECGSample(clean=$clean, noisy=$noisy, filtered=$filtered, bpm=$bpm)';
+      'ECGSample(clean=$clean, noisy=$noisy, filtered=$filtered, bpm=$bpm, '
+      'abnormal=$abnormal, confidence=$confidence)';
 }
 
 /**

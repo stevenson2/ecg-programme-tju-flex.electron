@@ -79,11 +79,24 @@ def main():
     x_ptb, y_ptb, r_ptb = d_ptb["beats"][te2], d_ptb["labels"][te2], d_ptb["record_ids"][te2]
     print(f"test: MIT+INCART {len(x_mit)} 拍 / PTB {len(x_ptb)} 拍")
 
-    # ---- 模型清单 (patient_split_eval.json 主结果条目) ----
+    # ---- 模型清单 (patient_split_eval.json 主结果条目, 250 点) ----
     eval_data = json.load(open(MODELS / "patient_split_eval.json", encoding="utf-8"))
-    cands = [(r["name"], MODELS / r["file"]) for r in eval_data["results"]
-             if r.get("file") and (MODELS / r["file"]).exists()]
-    print(f"模型数: {len(cands)}")
+    cands = []
+    seen = set()
+    for r in eval_data["results"]:
+        if r.get("input_len", 250) != 250 or not r.get("file"):
+            continue
+        base = r["file"].split("/")[-1]
+        if base in seen:
+            continue  # 去重 (患者级清洁 vs 未增强测试条目同权重)
+        seen.add(base)
+        cand = MODELS / r["file"]
+        if not cand.exists():
+            hits = list(MODELS.glob(f"**/{base}"))
+            cand = hits[0] if hits else None
+        if cand is not None and cand.exists():
+            cands.append((r["name"], cand))
+    print(f"模型数 (250点, 去重): {len(cands)}")
 
     results = {}
     for name, path in cands:

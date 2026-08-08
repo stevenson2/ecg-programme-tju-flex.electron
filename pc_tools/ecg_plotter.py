@@ -14,6 +14,7 @@ import time
 
 
 DEFAULT_BAUD = 115200
+DATA_RATE = 100  # 串口 CSV 输出率 (Hz), 2026-08-08: 固件 25Hz→100Hz, 时间轴标定 250→100
 WINDOW_SIZE = 500
 MAX_DATA_POINTS = 2000
 UPDATE_INTERVAL_MS = 40
@@ -82,17 +83,18 @@ def serial_reader(port, baud):
                     except ValueError:
                         pass
 
-                # 第6列: AI 异常标志 (可选)
-                if len(parts) >= 6:
+                # 第8列: AI 异常标志 (9列格式: clean,noisy,filtered,bpm,true_bpm,sqi,motion,abnormal_flag,confidence)
+                # ⚠️ 2026-08-08 修正: 原读 parts[5]/[6] (第6/7列=motion/abnormal_flag) 错位
+                if len(parts) >= 8:
                     try:
-                        current_abnormal = int(parts[5].strip())
+                        current_abnormal = int(parts[7].strip())
                     except ValueError:
                         pass
 
-                # 第7列: AI 异常置信度 (可选)
-                if len(parts) >= 7:
+                # 第9列: AI 异常置信度
+                if len(parts) >= 9:
                     try:
-                        current_abnormal_conf = float(parts[6].strip())
+                        current_abnormal_conf = float(parts[8].strip())
                     except ValueError:
                         pass
         except ValueError:
@@ -111,7 +113,7 @@ def update_plot(frame):
     clean = list(data_clean)[start:]
     noisy = list(data_noisy)[start:]
     filtered = list(data_filtered)[start:]
-    t_sec = [x / 250.0 for x in t]
+    t_sec = [x / DATA_RATE for x in t]
     line_clean.set_data(t_sec, clean)
     line_noisy.set_data(t_sec, noisy)
     line_filtered.set_data(t_sec, filtered)
@@ -125,40 +127,55 @@ def update_plot(frame):
         ax.set_ylim(y_min - 0.15 * y_range, y_max + 0.15 * y_range)
     if t_sec:
         current_end = t_sec[-1]
-        current_start = max(0, current_end - WINDOW_SIZE / 250.0)
+        current_start = max(0, current_end - WINDOW_SIZE / DATA_RATE)
         ax.set_xlim(current_start, current_end + 0.1)
 
     # BPM 显示 (左上角白底文本框)
+    # 2026-08-08: 去 ♥/⚠ 特殊符号 (Microsoft YaHei 缺 glyph 显示豆腐块)
     if current_bpm > 0 and bpm_confidence >= 0.3:
         if current_true_bpm > 0:
-            bpm_str = "♥ %d BPM  (真实 %d BPM)" % (current_bpm, current_true_bpm)
+            bpm_str = "BPM %d  (真实 %d)" % (current_bpm, current_true_bpm)
         else:
-            bpm_str = "♥ %d BPM" % current_bpm
+            bpm_str = "BPM %d" % current_bpm
     else:
-        bpm_str = "♥ -- BPM"
+        bpm_str = "BPM --"
     bpm_text.set_text(bpm_str)
 
     txt = "Samples: %d | Window: %.1fs | Rate: %dms" % (
-        sample_count, WINDOW_SIZE/250.0, UPDATE_INTERVAL_MS)
+        sample_count, WINDOW_SIZE/DATA_RATE, UPDATE_INTERVAL_MS)
     status_text.set_text(txt)
 
-    # AI 异常检测指示
+    # AI 异常检测指示 (2026-08-08: 加 confidence 显示)
     if current_abnormal == 1:
         bpm_text.set_color('red')
         bpm_text.set_fontweight('bold')
+        bpm_text.set_text("%s  <异常 %.0f%%>" % (bpm_str, current_abnormal_conf * 100))
     else:
         bpm_text.set_color('green')
+        bpm_text.set_text(bpm_str)
     return line_clean, line_noisy, line_filtered, status_text, bpm_text
 
 
 def on_key(event):
-    global WINDOW_SIZE, running, ani
+    global WINDOW_SIZE, running, ani, serial_port
+
+    # 固件命令透传 (2026-08-08): m=切换输入源(模拟/回放/真实AFE) n=回放正常段 e=回放异常段
+    if event.key in ("m", "M", "n", "N", "e", "E"):
+        if serial_port is not None:
+            cmd = event.key.lower()
+            try:
+                serial_port.write(cmd.encode())
+                print("FW cmd -> %s" % cmd)
+            except Exception:
+                print("FW cmd failed (serial closed?)")
+        return
+
     if event.key == "right":
         WINDOW_SIZE = min(MAX_DATA_POINTS, WINDOW_SIZE + 100)
-        print("Window: %.1fs (%d pts)" % (WINDOW_SIZE/250.0, WINDOW_SIZE))
+        print("Window: %.1fs (%d pts)" % (WINDOW_SIZE/DATA_RATE, WINDOW_SIZE))
     elif event.key == "left":
         WINDOW_SIZE = max(50, WINDOW_SIZE - 100)
-        print("Window: %.1fs (%d pts)" % (WINDOW_SIZE/250.0, WINDOW_SIZE))
+        print("Window: %.1fs (%d pts)" % (WINDOW_SIZE/DATA_RATE, WINDOW_SIZE))
     elif event.key == "up":
         ymin, ymax = ax.get_ylim()
         center = (ymin + ymax) / 2
@@ -186,7 +203,11 @@ def on_key(event):
         ax.relim()
         print("View reset")
     elif event.key == " ":
-        if ani.event_source.running:
+        try:
+            running_anim = ani.event_source.running
+        except AttributeError:
+            running_anim = ani.event_source.active  # matplotlib>=3.11 Tk 后端
+        if running_anim:
             ani.event_source.stop()
             print("Paused")
         else:
@@ -248,7 +269,7 @@ if __name__ == "__main__":
     ax.legend(loc="upper right")
 
     # BPM 显示: 图内左上角 + 白底不挡波形
-    bpm_text = ax.text(0.02, 0.95, "♥ -- BPM",
+    bpm_text = ax.text(0.02, 0.95, "BPM --",
                        transform=ax.transAxes, fontsize=20, color="red",
                        ha="left", va="top", fontweight="bold",
                        bbox=dict(boxstyle="round,pad=0.3", facecolor="white",
@@ -267,6 +288,7 @@ if __name__ == "__main__":
     print("  ->/<- : Time axis   up/down : Y axis")
     print("  1/2/3 : Toggle curves      R : Reset")
     print("  Space : Pause/Resume       Q : Quit")
+    print("  m : 切换输入源   n : 回放正常段   e : 回放异常段")
     print("="*50)
 
     plt.tight_layout()

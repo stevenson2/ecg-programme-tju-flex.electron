@@ -1,4 +1,4 @@
-﻿# ESP32-ECG 心电采集与 AI 异常检测系统
+# ESP32-ECG 心电采集与 AI 异常检测系统
 
 > **ESP32-S3-SUPERMINI (ESP32S3FH4R2) | PlatformIO + Arduino | 500Hz 采样 | BLE NUS | TFLite Micro AI 推理**
 
@@ -29,7 +29,7 @@
 
 **硬件平台**：ESP32-S3-SUPERMINI (ESP32S3FH4R2)  
 **开发框架**：PlatformIO + Arduino  
-**采样率**：500Hz (每 2ms 一个样本; 串口降频输出 25Hz)  
+**采样率**：500Hz (每 2ms 一个样本; 串口降频输出 100Hz)  
 **AI 框架**：TensorFlow 2.x (训练) + TFLite Micro (边缘推理)  
 **PC 工具**：Python (TensorFlow + matplotlib + pyserial)  
 **手机 App**：Flutter (flutter_blue_plus + provider)
@@ -45,7 +45,7 @@ pio run
 # 编译并上传（需硬件，当前开发阶段不涉及）
 pio run -t upload
 
-# 串口监视器（9 列 CSV @25Hz）
+# 串口监视器（9 列 CSV @100Hz）
 pio device monitor -b 115200
 
 # PC 端实时绘图
@@ -86,7 +86,7 @@ cd ecg_app && flutter run
 
 - 双核分工：Core 1 承担采样/滤波/心率/BLE，Core 0 独立跑 AI 推理
 - 内置温度传感器（`src/thermal/`）：>65°C 自动降频保护
-- 双模型部署（P2A + KD a070_t1）在 512KB SRAM / 8MB PSRAM 下可行；当前 SUPERMINI 板（4MB Flash）单模型已占 93.9%，**换 ESP32-S3-WROOM-1-N16R8（16MB Flash / 8MB PSRAM，乐鑫官方模块）即无容量障碍**（双模型 327KB 仅占 2%）
+ - 双模型部署（P2A + KD a070_t1）在 512KB SRAM / 8MB PSRAM 下可行；当前 SUPERMINI 板（4MB Flash）经去 OTA 分区调整（`partitions/esp32s3_4m_noota.csv`）单模型仅占 47.1%、双模型链接实测 52.9%（TH §二十七），**换 ESP32-S3-WROOM-1-N16R8（16MB Flash / 8MB PSRAM，乐鑫官方模块）则彻底无容量障碍**（双模型 327KB 仅占 2%）
 
 ---
 
@@ -95,13 +95,17 @@ cd ecg_app && flutter run
 ### 采集前端（模拟链路）
 
 ```
-双导联电极 (贴片 ×2) ──► AD620 仪表放大器 (差分输入) ──► 单路心电信号 ──► ESP32 ADC1 (单通道)
-   导联A ─┐                                                           (12-bit, 500Hz)
-          ├── IN+ / IN- 差分 ──► 放大 ──► 1 路输出
-   导联B ─┘
+单导联电极 (RA/LA, 贴片 ×2) ──► AD8232 单导联 AFE (差分输入) ──► 单路心电信号 ──► ESP32 ADC1 (单通道)
+   电极A ─┐                                                            (12-bit, 500Hz)
+          ├── IN+ / IN- 差分 ──► 放大+滤波 ──► 1 路输出 (RL 电极接 RLD)
+   电极B ─┘
 ```
 
-- **导联**是贴在身上的**电极路数（2 路）**；AD620 把两路电极的差分信号放大合成 **1 路心电信号**，再进 **单个 ADC** 采样——所以是"双导联输入、单路信号"（等效标准 ECG 的 Lead I 接法，差分抑制共模干扰）
+- **导联**是贴在身上的**电极对构成的电学测量向量**；AD8232（单导联 AFE）把
+  两路电极（RA/LA）的差分信号放大合成 **1 路心电信号**，再进 **单个 ADC** 采样
+  ——所以是"3 电极（RA/LA/RL）、单通道、导联 II 接法"（等效标准 ECG 的 Lead II，
+  差分抑制共模干扰；RL 为右腿驱动）。⚠️ 历史文档"AD620/双导联"为错误表述，
+  已更正（见 `docs/hardware/afe_selection_notes.md`）
 - 真实采集与软件模拟发生器二选一作为信号源（`src/adc_afe/` vs `src/signal_generator/`）
 
 ```
@@ -156,8 +160,8 @@ INT8 **实测 163.5 KB**）+ 0.5Hz 因果部署链 + SGD 优化器。板上模�
 对应 `deploy_match/retrain_exp6_sgd_eval.json`）。最优操作点：beat 级 θ≈0.35 / patient 级 θ≈0.5。
 双专家 OR 部署（P2A + exp5）**严谨口径实测已否决**（TH §8.8：误报叠加 25~32%、PTB 召回仅 0.41，旧口径数字为泄漏版作废）；
 部署方案改为**分模型 + 前置关卡**：心律失常交给 P2A（θ=0.5），心梗筛查交给 KD a070_t1（θ=0.35 + 时序确认，TH §8.9.5/8.9.6）。
-固件侧双模型受当前 SUPERMINI 板（4MB Flash）限制（单模型已占 93.9%），**换 ESP32-S3-WROOM-1-N16R8
-（16MB Flash / 8MB PSRAM，乐鑫官方模块）即无容量障碍**。
+固件侧双模型已无容量障碍：SUPERMINI 板（4MB Flash）经去 OTA 分区调整（`partitions/esp32s3_4m_noota.csv`，app 1.375MB→2.75MB）单模型占 47.1%、双模型链接实测 52.9%（TH §二十七）；**换 ESP32-S3-WROOM-1-N16R8
+（16MB Flash / 8MB PSRAM，乐鑫官方模块）则彻底无容量障碍**。
 
 ### 关键指标速览
 
@@ -316,7 +320,7 @@ Core 1 (main.cpp loop)              Core 0 (inference_task)
   | -> 每 125 样本触发                     | -> Z-score 归一化
   |    xSemaphoreGive()                   | -> 量化 INT8
   |                                       | -> TFLite Micro Invoke()
-  |                                       | -> 反量化 -> Softmax
+  |                                       | -> 反量化 (输出已含 softmax, 直接取概率)
   |                                       | -> xQueueSend(result)
   |                                       |
   | ai_inference_pop_result()             |
@@ -329,8 +333,14 @@ Core 1 (main.cpp loop)              Core 0 (inference_task)
 1. **归一化**：Z-score (x - mu) / sigma
 2. **INT8 量化**：x_int8 = round(x_fp32 / scale + zero_point)
 3. **TFLite Micro 推理**：1D-CNN 前向传播
-4. **反量化 + Softmax**：y_fp32 = (y_int8 - zero_point) * scale -> Softmax
-5. **判定**：P(Abnormal) > 0.5 -> 异常
+4. **反量化**：y_fp32 = (y_int8 - zero_point) * scale（模型输出层自带 softmax，直接取异常类概率；
+   不再二次 softmax —— 二次 softmax 会把概率动态范围压缩至 [0.270, 0.730]，导致阈值语义漂移）
+5. **判定**：P(Abnormal) > 0.35 -> 异常（θ=0.35 为 T1-4 拍级推荐操作点）
+
+**群延迟补偿（T1-3 P0）**：因果部署链（梳状 + HP0.5 + LP40 + 2:1 抽取）群延迟 ~6 样本 @250Hz
+（24ms），会使 R 峰在推理窗口内滞后 6 样本。固件将推理触发时刻后移 6 样本
+（`AI_TRIGGER_OFFSET=6`，触发条件 `idx % 125 == 6`），等效评估侧 δ=+6 窗口重提取语义，
+令 R 峰回到训练窗口位置，零成本抵消错位（详见 `docs/FINAL_RESULTS.md` 表5）。
 
 **FreeRTOS 同步**：
 - `g_data_ready_sem`：二进制信号量，推理任务等待数据就绪
@@ -343,10 +353,10 @@ Core 1 (main.cpp loop)              Core 0 (inference_task)
 
 | 参数 | 值 | 说明 |
 |------|-----|------|
-| 采样率 | 500 Hz | 每样本间隔 2ms (SAMPLE_INTERVAL_MS=2); 串口每20帧输出1次=25Hz |
+| 采样率 | 500 Hz | 每样本间隔 2ms (SAMPLE_INTERVAL_MS=2); 串口每5帧输出1次=100Hz |
 | CPU 频率 | 240 MHz | 性能模式 |
 | BLE TX 功率 | +9 dBm | 原始最高功率 |
-| 串口波特率 | 115200 | 数据输出频率 25Hz (500Hz/20) |
+| 串口波特率 | 115200 | 数据输出频率 100Hz (500Hz/5) |
 | BLE 设备名 | ESP32-ECG | - |
 | 滤波器类型 | IIR Biquad + 梳状 | HP 0.5 -> LP 40 -> Notch 50 + Comb 50/100 (10抽头@500Hz) |
 | 心率算法 | Pan-Tompkins v4.2 | 自适应阈值（噪声峰 + 0.30×(信号峰−噪声峰)）, 间隔 200ms (FS=500); LUDB 验证 F1 0.774 / BPM MAE 3.2 |
@@ -354,7 +364,8 @@ Core 1 (main.cpp loop)              Core 0 (inference_task)
 | AI 模型 | ResNet-L (80K 参数) = **exp6-SGD 部署链定稿** | TFLite Micro INT8 量化 (输入/输出均 INT8) |
 | AI 输入窗口 | 250 样本 | 1.0 秒 (@500Hz 经固件 2:1 抽取为 250Hz, 与训练一致, 方案A 已修复) |
 | AI 推理间隔 | 125 样本 | 0.5 秒一次 (抽取后 250Hz) |
-| AI 模型大小 | **163.5 KB** (实测) | `ecg_model_exp6_sgd_int8.tflite` (167,376 B); SUPERMINI 板 (4MB Flash) 编译后占用 93.9% (T0-1 实测), 换 N16R8 (16MB Flash) 后双模型无容量障碍 |
+| AI 窗口偏移补偿 | 6 样本 (24ms) | 因果链群延迟补偿 (T1-3 P0): 触发时刻后移 6 样本, 等效 δ=+6 语义 |
+| AI 模型大小 | **163.5 KB** (实测) | `ecg_model_exp6_sgd_int8.tflite` (167,376 B); SUPERMINI 板 (4MB Flash) 去 OTA 分区后占用 47.1%, 双模型链接实测 52.9% (TH §二十七); 换 N16R8 (16MB Flash) 后双模型仅 2% |
 | AI Tensor Arena | 32 KB | SRAM 分配; 双模型需 2×32KB |
 | AI 优化器 | SGD (lr 0.01, Nesterov 0.9) | 部署链重训定稿, 优于 AdamW |
 | AI 核心 | Core 0 | 与采样/滤波/BLE (Core 1) 解耦 |

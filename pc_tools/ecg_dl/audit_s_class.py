@@ -4,123 +4,137 @@
 audit_s_class.py — T3-6/M6: S 类 (SVEB) 构成分析 (拍级 vs 患者级召回差异归因)
 ======================================================================
 任务: 必做清单 T3-6 ④ / solutions.md M6
-目标: 验证"测试构成效应" — 拍级 S 召回 0.453 vs 患者级 S 召回 0.902 的差异
-      是否由少数记录/患者含大量 S 拍且召回低所致 (构成效应)
+目标: 验证"测试构成效应" — 拍级 S 召回 vs 患者级平均 S 召回之差是否由
+      少数记录/患者含大量 S 拍且召回低所致
 方法:
-  1. 复用 eval_aami_breakdown 的 AAMI 符号恢复逻辑 (逐拍符号 + 患者级 test mask)
-  2. 按记录聚合: 每记录 S 拍数 + S 召回 → 找低召回高样本记录
-  3. 按患者聚合: 每患者 S 拍数 + 召回 → 构成效应验证
-  4. 输出: 拍级 S 召回 vs 患者级平均 S 召回 + 构成效应量化 (加权 vs 平均)
+  1. 未增强测试拍 (T1-2 口径, n_aug_mit=1) + 患者级 test mask (seed 42)
+  2. AAMI 符号恢复 + 逐拍对齐 (复用 eval_aami_breakdown)
+  3. exp6-SGD 概率 → S 类拍级召回 (θ=0.5)
+  4. 按记录/患者聚合: S 拍数 + 召回 → 低召回高样本识别 → 构成效应量化
+     (拍级加权召回 vs 患者级平均召回)
 输出: models/s_class_audit.json
-用法 (WSL): export ECG_PROCESSED_DIR=$HOME/ecg_data; python3 audit_s_class.py --model <h5>
+用法 (WSL): export ECG_PROCESSED_DIR=$HOME/ecg_data; python3 audit_s_class.py
 """
-import argparse
-import json
 import sys
+import json
 from pathlib import Path
+from collections import defaultdict
 import numpy as np
 import tensorflow as tf
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from config import (PROCESSED_DIR, MIT_BIH_LOCAL_DIR, MIT_BIH_RECORDS,
-                    AAMI_CLASSES)
-from data.dataset import set_npz_suffix, add_channel_dim
+from config import PROCESSED_DIR, AAMI_CLASSES
+from data.dataset import load_incart_data, add_channel_dim
 from data.patient_split import (build_mit_patient_map, build_incart_patient_map,
                                 patient_level_split)
+from eval_aami_breakdown import (recover_mit_symbols_per_record,
+                                 recover_incart_symbols_per_record,
+                                 align_symbols_to_npz)
+import data.preprocess_incart as _inc
+from pathlib import Path as _P
 
-MODELS_DIR = Path(__file__).resolve().parent / "models"
-OUT_JSON = MODELS_DIR / "s_class_audit.json"
-S_SYMBOLS = {s for s, name in AAMI_CLASSES.items() if name == "S"}
-
-
-def recover_symbols_per_record():
-    """逐记录恢复 AAMI 符号 (与 eval_aami_breakdown 同序). 返回 {rid: (labels_s, n_beats)}"""
-    import wfdb
-    result = {}
-    for rid in MIT_BIH_RECORDS:
-        try:
-            rec = wfdb.rdrecord(str(MIT_BIH_LOCAL_DIR / str(rid)))
-            ann = wfdb.rdann(str(MIT_BIH_LOCAL_DIR / str(rid)), "atr")
-            fs = rec.fs
-            ann_idx = ann.sample[ann.symbol != "+"]
-            ann_sym = [s for s in ann.symbol if s != "+"]
-            # 与 preprocess.extract_beats 相同的窗口保留规则 (简化: 拍数按 record_ids 统计)
-            syms = [s for s in ann_sym if s in AAMI_CLASSES]
-            n_s = sum(1 for s in syms if s in S_SYMBOLS)
-            result[int(rid)] = {"n_s": n_s, "n_total": len(syms)}
-        except Exception as e:
-            print(f"  {rid}: 读取失败 {e}")
-    return result
+MODELS = Path(__file__).resolve().parent / "models"
+OUT_JSON = MODELS / "s_class_audit.json"
+S_SYMS = {s for s, name in AAMI_CLASSES.items() if name == "S"}
+INCART_DIR = _P("/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/"
+                "ecg-programme-tju-flex.electron-master/"
+                "st-petersburg-incart-12-lead-arrhythmia-database-1.0.0/files")
 
 
 def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default="best_resnet_large_exp6_sgd.h5")
-    ap.add_argument("--tag", default="exp6_sgd")
-    args = ap.parse_args()
+    print("=" * 70)
+    print("T3-6/M6 S 类构成分析 (未增强测试口径)")
+    print("=" * 70)
 
-    set_npz_suffix("_deploy")
-    # 加载 MIT+INCART 测试拍 (患者级 mask)
-    from data.dataset import load_mit_incart_merged
-    mit_inc = load_mit_incart_merged()
+    # ---- 数据: 未增强 MIT + INCART ----
+    d_mit = np.load(PROCESSED_DIR / "mit_bih_processed_noaug.npz")
+    inc = load_incart_data()
+    beats = np.concatenate([d_mit["beats"], inc["beats"]], axis=0)
+    labels = np.concatenate([d_mit["labels"], inc["labels"]], axis=0)
+    rids = np.concatenate([d_mit["record_ids"], inc["record_ids"] + 100000], axis=0)
     pmap = {}
     pmap.update(build_mit_patient_map())
     pmap.update({rid + 100000: "inc_" + pat
                  for rid, pat in build_incart_patient_map().items()})
-    tr, va, te, stats = patient_level_split(mit_inc["record_ids"], pmap)
-    x_test, y_test = mit_inc["beats"][te], mit_inc["labels"][te]
-    rids_test = mit_inc["record_ids"][te]
-    print(f"MIT+INCART 患者级 test: {len(x_test)} 拍")
+    tr, va, te, stats = patient_level_split(rids, pmap)
+    x_test, y_test, r_test = beats[te], labels[te], rids[te]
+    print(f"患者级 test: {len(x_test)} 拍")
 
-    model = tf.keras.models.load_model(str(MODELS_DIR / args.model), compile=False)
+    # ---- S 符号逐拍对齐 (未增强, n_aug=1) ----
+    per_rec = recover_mit_symbols_per_record()
+    per_rec.update(recover_incart_symbols_per_record(INCART_DIR))
+    sym_full, n_unk = align_symbols_to_npz(per_rec, rids, n_aug_mit=1)
+    if sym_full is None:
+        raise SystemExit("符号对齐失败")
+    sym_test = sym_full[te]
+    n_s = int((sym_test == "S").sum())
+    print(f"测试拍中 S 类: {n_s} 拍 ({n_s/len(sym_test)*100:.1f}%), "
+          f"未知符号(INCART): {n_unk}")
+
+    # ---- 模型概率 ----
+    model = tf.keras.models.load_model(
+        str(MODELS / "best_resnet_large_exp6_sgd.h5"), compile=False)
     prob = model.predict(add_channel_dim(x_test), batch_size=512, verbose=0)[:, 1]
 
-    # S 符号恢复 (仅 MIT 记录; INCART 无 S 类区分, 用标签近似)
-    sym_map = recover_symbols_per_record()
-    # 测试拍中每拍是否为 S (仅 MIT 域有符号; INCART 拍标 None)
-    is_s = np.zeros(len(x_test), dtype=bool)
-    is_s_known = np.zeros(len(x_test), dtype=bool)
-    for i, rid in enumerate(rids_test):
-        rid_int = int(rid)
-        if rid_int in sym_map and rid_int < 100000:
-            # 拍级 S 对齐: 近似 — 用记录内 S 拍比例无法逐拍; 用标签+符号数近似:
-            # 简化: 逐拍符号需与 beat 窗口一一对应, 此处用"记录内异常拍中 S 比例"
-            pass
+    # ---- 拍级 S 召回 (θ=0.5) ----
+    is_s = sym_test == "S"
+    pred = prob >= 0.5
+    s_rec_beat = float((pred[is_s] & y_test[is_s] == 1).mean()) if is_s.sum() else None
+    # 注意: S 拍在二分类任务中标签为 1 (异常); 召回 = S 拍中被判异常比例
+    s_rec_beat = float(pred[is_s].mean()) if is_s.sum() else None
+    print(f"拍级 S 召回 (θ=0.5): {s_rec_beat:.4f}")
 
-    # 逐拍 S 符号: 直接读 beat 窗口与标注对齐 (简化版 — 用 AAMI 符号全量)
-    # 由于逐拍对齐复杂, 采用 eval_aami_breakdown 的既有产物:
-    # aami_breakdown_exp6_deploy_beatlevel.json 已有 S@θ 数据, 本脚本做记录/患者聚合
-    from collections import defaultdict
-    rec_s = defaultdict(lambda: {"n": 0, "tp": 0, "n_abn": 0})
-    pat_s = defaultdict(lambda: {"n": 0, "tp": 0})
-    # 拍级 S 标签: 用符号恢复的拍级数组 (简化: 记录内 S 拍顺序与 beats 顺序一致,
-    # 从 sym_map 重建每记录的 S 拍索引)
-    # —— 此处用标签代理: 报告限制注明逐拍符号依赖 eval_aami_breakdown 产物
+    # ---- 按记录聚合 ----
+    rec_stat = defaultdict(lambda: {"n_s": 0, "tp_s": 0})
+    for i in np.where(is_s)[0]:
+        rec_stat[int(r_test[i])]["n_s"] += 1
+        rec_stat[int(r_test[i])]["tp_s"] += int(pred[i])
+    rec_rows = [(rid, st["n_s"], st["tp_s"] / st["n_s"]) for rid, st in rec_stat.items()]
+    rec_rows.sort(key=lambda r: -r[1])
+    # 低召回高样本记录 (样本 > 中位数 且 召回 < 总体)
+    n_s_all = sum(r[1] for r in rec_rows)
+    tp_all = sum(r[2] * r[1] for r in rec_rows)
+    overall = tp_all / n_s_all
+    bad_recs = [(rid, n, round(rec, 4)) for rid, n, rec in rec_rows
+                if n > max(1, n_s_all / max(1, len(rec_rows))) and rec < overall]
 
-    print("注意: 逐拍 S 符号恢复需完整 AAMI 对齐 (见 eval_aami_breakdown.py);")
-    print("本脚本从 aami_breakdown JSON 读取拍级 S 标签以完成记录/患者聚合。")
-
-    # 从既有 breakdown 产物读取 (beatlevel json 有 per-beat 数据?)
-    legacy = MODELS_DIR / f"aami_breakdown_{args.tag}_beatlevel.json"
-    if not legacy.exists():
-        legacy = MODELS_DIR / "aami_breakdown_exp6_deploy_beatlevel.json"
-    print(f"使用 breakdown 产物: {legacy.name if legacy.exists() else '缺失'}")
-    if legacy.exists():
-        d = json.load(open(legacy, encoding="utf-8"))
-        print("  keys:", list(d.keys())[:10])
+    # ---- 按患者聚合 ----
+    pat_of_rec = {rid: pmap.get(rid, f"unknown_{rid}") for rid in set(int(r) for r in r_test)}
+    pat_stat = defaultdict(lambda: {"n_s": 0, "tp_s": 0})
+    for rid, n, rec in rec_rows:
+        p = pat_of_rec.get(rid, "?")
+        pat_stat[p]["n_s"] += n
+        pat_stat[p]["tp_s"] += int(round(rec * n))
+    # 患者级平均召回 (每个患者等权)
+    pat_vals = [st["tp_s"] / st["n_s"] for st in pat_stat.values() if st["n_s"] > 0]
+    s_rec_patient = float(np.mean(pat_vals))
+    print(f"患者级平均 S 召回: {s_rec_patient:.4f} (患者数 {len(pat_vals)})")
+    print(f"构成效应: 拍级 {s_rec_beat:.4f} vs 患者级平均 {s_rec_patient:.4f} "
+          f"(差 {s_rec_beat - s_rec_patient:+.4f})")
+    print(f"低召回高样本记录: {bad_recs[:8]}")
 
     output = {
         "meta": {
-            "date": "2026-08-05", "task": "T3-6/M6 S 类构成分析",
-            "model": args.model,
-            "note": "逐拍 S 符号与 beat 窗口对齐依赖 eval_aami_breakdown.py 产物; "
-                    "构成效应 = 拍级加权召回 vs 患者级平均召回之差",
+            "date": "2026-08-06", "task": "T3-6/M6 S 类构成分析",
+            "model": "exp6-SGD (best_resnet_large_exp6_sgd.h5)",
+            "data": "未增强测试拍 (T1-2 口径) + 患者级划分 seed42",
+            "method": "AAMI 符号逐拍对齐 (n_aug=1); S 拍 = 符号 S; 召回 = 判异常比例 (θ=0.5); "
+                      "构成效应 = 拍级加权召回 − 患者级平均召回",
         },
-        "result": {},
+        "result": {
+            "n_s_beats": int(n_s), "n_records_with_s": len(rec_rows),
+            "n_patients_with_s": len(pat_vals),
+            "s_recall_beat_level": s_rec_beat,
+            "s_recall_patient_mean": round(s_rec_patient, 4),
+            "composition_effect": round(s_rec_beat - s_rec_patient, 4),
+            "low_recall_high_sample_records": bad_recs[:10],
+            "note": "构成效应 >0 表示低召回记录含大量 S 拍, 拉低拍级加权召回 "
+                    "(患者级平均回避样本量加权)",
+        },
     }
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
-    print(f"✅ 骨架已保存: {OUT_JSON} (完整分析待逐拍符号对齐)")
+    print(f"\n✅ 已保存: {OUT_JSON}")
 
 
 if __name__ == "__main__":

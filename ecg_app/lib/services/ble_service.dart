@@ -137,7 +137,7 @@ class BLEService {
   }
 
   /// 收到 CSV 数据：解析为 ECGSample
-  /// CSV 格式: clean,noisy,filtered,bpm
+  /// CSV 格式: clean,noisy,filtered,bpm,true_bpm,sqi,motion,abnormal_flag,confidence
   void _onDataReceived(List<int> value) {
     final str = utf8.decode(value).trim();
     if (str.isEmpty) return;
@@ -156,7 +156,20 @@ class BLEService {
         bpm = int.tryParse(parts[3].trim()) ?? 0;
       }
 
-      _dataController.add(ECGSample(clean, noisy, filtered, bpm: bpm));
+      // 第 8 列：AI 异常标志 (可选, 0=正常 1=异常)
+      int abnormal = 0;
+      if (parts.length >= 8) {
+        abnormal = int.tryParse(parts[7].trim()) ?? 0;
+      }
+
+      // 第 9 列：AI 异常置信度 (可选, 0~1)
+      double confidence = 0.0;
+      if (parts.length >= 9) {
+        confidence = double.tryParse(parts[8].trim()) ?? 0.0;
+      }
+
+      _dataController.add(ECGSample(clean, noisy, filtered,
+          bpm: bpm, abnormal: abnormal, confidence: confidence));
     } catch (_) {
       // 解析失败，跳过
     }

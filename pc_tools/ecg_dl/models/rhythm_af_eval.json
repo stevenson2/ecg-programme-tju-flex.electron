@@ -1,0 +1,123 @@
+{
+  "replay": {
+    "正常窦性 (70bpm)": {
+      "safety_events": [],
+      "af_label": 0,
+      "n_af_windows": 7,
+      "pass": true
+    },
+    "停搏 (2×4.5s)": {
+      "safety_events": [
+        {
+          "type": "asystole",
+          "idx": 70,
+          "rr_s": 4.5,
+          "time_s": 60.1
+        },
+        {
+          "type": "asystole",
+          "idx": 71,
+          "rr_s": 4.8,
+          "time_s": 64.6
+        }
+      ],
+      "af_label": 0,
+      "n_af_windows": 5,
+      "pass": true
+    },
+    "重度过缓 (35bpm)": {
+      "safety_events": [
+        {
+          "type": "bradycardia",
+          "time_s": 0.0,
+          "hr_bpm": 36.0
+        },
+        {
+          "type": "bradycardia",
+          "time_s": 15.0,
+          "hr_bpm": 38.0
+        },
+        {
+          "type": "bradycardia",
+          "time_s": 30.0,
+          "hr_bpm": 36.0
+        },
+        {
+          "type": "bradycardia",
+          "time_s": 45.0,
+          "hr_bpm": 36.0
+        },
+        {
+          "type": "bradycardia",
+          "time_s": 60.0,
+          "hr_bpm": 38.0
+        },
+        {
+          "type": "bradycardia",
+          "time_s": 75.0,
+          "hr_bpm": 38.0
+        }
+      ],
+      "af_label": 2,
+      "n_af_windows": 19,
+      "pass": true
+    },
+    "过速 (190bpm)": {
+      "safety_events": [
+        {
+          "type": "tachycardia",
+          "time_s": 0.0,
+          "hr_bpm": 192.0
+        },
+        {
+          "type": "tachycardia",
+          "time_s": 15.0,
+          "hr_bpm": 192.0
+        },
+        {
+          "type": "tachycardia",
+          "time_s": 30.0,
+          "hr_bpm": 190.0
+        },
+        {
+          "type": "tachycardia",
+          "time_s": 45.0,
+          "hr_bpm": 192.0
+        },
+        {
+          "type": "tachycardia",
+          "time_s": 60.0,
+          "hr_bpm": 192.0
+        },
+        {
+          "type": "tachycardia",
+          "time_s": 75.0,
+          "hr_bpm": 190.0
+        }
+      ],
+      "af_label": 0,
+      "n_af_windows": 6,
+      "pass": true
+    },
+    "AF (随机 RR)": {
+      "safety_events": [],
+      "af_label": 1,
+      "n_af_windows": 7,
+      "pass": true
+    }
+  },
+  "afdb": {
+    "n_windows": 27454,
+    "n_af_windows": 11147,
+    "auc_cv": 0.922549297430549,
+    "auc_entropy": 0.9637809129592914,
+    "auc_combo": 0.9353310393251837,
+    "detector_se": 0.4105140396519243,
+    "detector_sp": 0.9911081130802722,
+    "best_thr_cv": 0.12000000000000001,
+    "best_thr_ent": 1.5,
+    "best_se": 0.8141203911366287,
+    "best_sp": 0.9538235113754829,
+    "n_records": 23
+  }
+}

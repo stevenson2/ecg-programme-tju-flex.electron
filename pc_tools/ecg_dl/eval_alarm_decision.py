@@ -171,12 +171,14 @@ def evaluate_policy(prob, labels, rids, mode, theta, N=None, M=None, K=None, min
         af0 = (p >= theta) & valid
         evs0 = events_from_alarm_flags(af0, rids, y, gap=GAP)
         af = np.zeros(len(p), dtype=bool)
-        for rid in np.unique(rids):
-            mask = rids == rid
-            local = np.where(mask)[0]
-            for e in evs0:
-                if e["n_alarm"] >= K and e["n_beats"] >= min_len:
-                    af[local[e["start"]:e["end"] + 1]] = True
+        # FIX (2026-08-06): 原实现按记录循环 + 用全部事件的局部索引切片 → 跨记录
+        # 污染 (越界截断使每条记录被大面积标记, 聚类成少数巨型事件, Se 虚高至 1.0)。
+        # 修正: 按事件所属记录索引 (e["rid"])。
+        for e in evs0:
+            if e["n_alarm"] >= K and e["n_beats"] >= min_len:
+                mask = rids == e["rid"]
+                local = np.where(mask)[0]
+                af[local[e["start"]:e["end"] + 1]] = True
         lat = K
     else:
         raise ValueError(mode)

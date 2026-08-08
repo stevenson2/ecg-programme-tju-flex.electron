@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
@@ -85,11 +86,13 @@ static float qrs_bpf_hp_w2 = 0.0f;
 
 #define RR_BUFFER_SIZE  8           /**< BPM 中位数缓冲区容量 */
 
-#define THRESHOLD_INIT  0.002f      /**< 初始阈值 */
+#define THRESHOLD_INIT  0.0002f     /**< 初始阈值 (MWI域, 2026-08-08: 原0.002 按1V信号标定,
+                                         模拟器/AFE 小信号 ~0.15V 时 mwi 峰值 ~2e-4 < 0.002 检不出) */
 /* v4.2: THRESHOLD_RATIO 0.40→0.30, SIGNAL_WEIGHT 0.125→0.0625 (LUDB 参数扫描) */
 #define THRESHOLD_RATIO 0.30f       /**< 阈值 = 噪声 + 0.30×(信号−噪声) */
 #define SIGNAL_WEIGHT   0.0625f     /**< 信号峰值更新因子 (EMA) */
-#define NOISE_WEIGHT    0.0625f     /**< 噪声峰值更新因子 (EMA) */
+#define NOISE_WEIGHT   0.03f       /**< 噪声峰值更新因子 (EMA, 2026-08-08: 原0.0625 使
+                                         T波/次峰快速抬升 np 至≈sp, QRS 被 MIN_PEAK_RATIO 拒绝) */
 #define SIGNAL_WEIGHT_FAST 0.25f    /**< 运动恢复期快速收敛信号峰值 */
 #define SIGNAL_WEIGHT_MOT  0.02f    /**< 运动期极慢更新 signalPeak */
 
@@ -102,8 +105,9 @@ static float qrs_bpf_hp_w2 = 0.0f;
 #define MIN_CONF_BEATS  5           /**< 至少 5 拍才开始输出 BPM */
 #define MIN_CONF_FEAT   8           /**< 至少 8 拍才开启特征验证 */
 /* v4.2: MIN_PEAK_RATIO 2.0→1.5 (LUDB 参数扫描: 修复A后 np 不再暴涨, 2.0 过严) */
-#define MIN_PEAK_RATIO  1.5f        /**< 峰/噪比门限 (静止) */
-#define MIN_PEAK_RATIO_MOT 1.5f     /**< 运动期峰噪比 (降低, 易检测) */
+/* 2026-08-08: 1.5→1.2 (模拟器小信号下 np 仍被次峰抬升, QRS/噪声比 ~1.26 被误拒) */
+#define MIN_PEAK_RATIO  1.2f        /**< 峰/噪比门限 (静止) */
+#define MIN_PEAK_RATIO_MOT 1.2f     /**< 运动期峰噪比 (降低, 易检测) */
 
 /* ======== 信号活动检测 ======== */
 #define ACT_WIN_SAMP    500         /**< 活动检测窗口: 1秒 @500Hz */
@@ -112,13 +116,17 @@ static float qrs_bpf_hp_w2 = 0.0f;
 
 /* ======== 自适应初始阈值 ======== */
 #define ADAPT_INIT_SAMP 100         /**< 自适应学习采样数 (200ms @500Hz) */
-#define ADAPT_INIT_FACTOR 2.0f      /**< 阈值 = 基线噪声 RMS × 2.0 */
+#define ADAPT_INIT_FACTOR 0.5f      /**< 阈值 = 学习窗 MWI RMS × 0.5 (2026-08-08:
+                                         原 2.0 按1V信号标定, 学习窗含 QRS 时 RMS≈峰值,
+                                         ×2 后阈值必超峰值 → QRS 永不检出) */
 
 /* ======== SQI 与运动检测 ======== */
 #define SQI_EMA_WEIGHT  0.05f       /**< SQI 指数平滑因子 (慢) */
 #define SQI_MOTION_ENTER 0.35f      /**< SQI 低于此值 → 进入运动状态 */
 #define SQI_MOTION_EXIT  0.55f      /**< SQI 高于此值 → 退出运动状态 */
-#define SQI_SNR_FLOOR    0.001f     /**< SNR 最小值, 防止除零 */
+#define SQI_SNR_FLOOR    0.0001f    /**< SNR 最小值防除零 (2026-08-08: 原0.001 按1V信号
+                                         标定, 小信号 sp~2e-4 时 SQI 恒压至 0.17 → motion
+                                         永久锁定 → BPM 走 EMA 输出 → 65→74 爬升循环) */
 #define MOTION_BPM_HOLD  1500       /**< 运动结束后保持峰值冻结的帧数 (3秒) */
 
 /* ======== 运动检测滞回 ======== */
@@ -267,7 +275,9 @@ static void updateThreshold(float peakVal, bool isSignal)
     }
 
     float delta = s_signalPeak - s_noisePeak;
-    if (delta < 0.001f) delta = 0.001f;
+    /* 2026-08-08: delta 下限 0.001f 按 1V 信号标定, 模拟器/AFE 小信号
+     * (MWI 峰值 ~2e-4) 下会抬死阈值 → 改 0.0001f (与 THRESHOLD_INIT 同量级) */
+    if (delta < 0.0001f) delta = 0.0001f;
 
     s_threshold = s_noisePeak + THRESHOLD_RATIO * delta;
     if (s_threshold < THRESHOLD_INIT) {
@@ -576,8 +586,12 @@ static bool isQRSValid(float peakVal, float rrSec)
             if (!isAmplitudeConsistent(peakVal)) return false;
             int width = getQRSWidth();
             if (width < MIN_QRS_WIDTH || width > MAX_QRS_WIDTH) return false;
-            float ratio = getRiseFallRatio();
-            if (ratio < RISE_FALL_MIN || ratio > RISE_FALL_MAX) return false;
+            /* 2026-08-08: 禁用 rise/fall 检查 — 模拟器窄 QRS + 75 样本 MWI 窗
+             * 使 mwi 峰严重不对称 (实测 rf≈41), 真实 ECG 标定上限 2.0 误杀全部
+             * QRS (N16R8 板上: b 卡 8 后 3s 超时复位循环)。width + 振幅一致 +
+             * RR 一致已足够过滤伪峰。 */
+            // float ratio = getRiseFallRatio();
+            // if (ratio < RISE_FALL_MIN || ratio > RISE_FALL_MAX) return false;
             if (!isRRConsistent(rrSec)) return false;
         }
     }
@@ -687,9 +701,16 @@ HR_Result hrProcess(float filteredSample)
 
     float qrsSignal = applyQRSBandpass(filteredSample);
 
+    float diff = qrsSignal - s_prevSample;
+    s_prevSample = qrsSignal;
+    float squared = diff * diff;
+    float mwi = computeMWI(squared);
+
+    /* 自适应初始阈值 (MWI 域学习, 2026-08-08 修复: 原 qrsSignal 信号域 RMS×2
+     * 与 MWI 峰值跨域失配, 小信号下阈值比峰值大 50-800 倍, QRS 永不检出) */
     if (!s_adaptInitDone && s_beatCount == 0) {
         s_adaptInitCount++;
-        s_adaptInitSumSq += qrsSignal * qrsSignal;
+        s_adaptInitSumSq += mwi * mwi;
         if (s_adaptInitCount >= ADAPT_INIT_SAMP) {
             float baselineRMS = sqrtf(s_adaptInitSumSq / (float)ADAPT_INIT_SAMP);
             float adaptiveThreshold = baselineRMS * ADAPT_INIT_FACTOR;
@@ -701,11 +722,6 @@ HR_Result hrProcess(float filteredSample)
             s_adaptInitDone = true;
         }
     }
-
-    float diff = qrsSignal - s_prevSample;
-    s_prevSample = qrsSignal;
-    float squared = diff * diff;
-    float mwi = computeMWI(squared);
 
     s_mwiHistory[s_mwiHistIdx] = mwi;
     s_mwiHistIdx = (s_mwiHistIdx + 1) % MWI_HIST_LEN;
@@ -754,9 +770,14 @@ HR_Result hrProcess(float filteredSample)
             /* 修复A (v4.1): 不应期内 QRS 次级峰不更新噪声峰值。
              * 固件 v4.0 在 REFRACTORY 状态仍把拍后 200ms 内的次级峰
              * 喂给 noisePeak, 使其暴涨到拍幅量级, 阈值被抬至 ~0.9×拍幅,
-             * 后续真实 QRS 被 MIN_PEAK_RATIO 检查误杀 (LUDB 验证: Se +7pp)。 */
+             * 后续真实 QRS 被 MIN_PEAK_RATIO 检查误杀 (LUDB 验证: Se +7pp)。
+             * 2026-08-08 收紧: 噪声峰更新条件从 peakVal > np*0.5 改为
+             * peakVal < s_threshold — 只有低于当前阈值的峰才是噪声峰。
+             * 原条件让运动伪影/EMG 突发等大幅峰 (高于阈值) 也喂给 np,
+             * np 暴涨至 sp 的 5.9 倍 → SQI 0.15 < 0.35 → 误判运动 → BPM
+             * 改用 EMA 输出 → 65→74 指数爬升循环 (N16R8 板上实测)。 */
             if (s_state != HR_REFRACTORY
-                && s_signalPresent && peakVal > s_noisePeak * 0.5f) {
+                && s_signalPresent && peakVal < s_threshold) {
                 updateThreshold(peakVal, false);
             }
         }

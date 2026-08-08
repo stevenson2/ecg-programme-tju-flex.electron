@@ -2,8 +2,12 @@
 #include "filter/filter.h"
 #include "bluetooth/ble.h"
 #include "signal_generator/ecg_simulator.h"
+#include "signal_generator/ecg_replay.h"
 #include "adc_afe/afe_hal.h"
 #include "heartrate/heartrate.h"
+#include "rhythm_safety/rhythm_safety.h"
+#include "af_detect/af_detect.h"
+#include "vf_detect/vf_detect.h"
 #include "thermal/thermal.h"
 #include "ai_inference/ai_inference.h"
 
@@ -69,7 +73,8 @@
 /* ======================== 输入模式枚举 ======================== */
 typedef enum {
     SOURCE_SIMULATOR = 0,    /**< 模拟发生器模式 (默认, 无硬件也可运行) */
-    SOURCE_AFE_REAL  = 1     /**< 真实 AFE 采集模式 */
+    SOURCE_REPLAY    = 1,    /**< 数据库回放模式 (MIT-BIH 正常/异常段, 2026-08-08) */
+    SOURCE_AFE_REAL  = 2     /**< 真实 AFE 采集模式 */
 } InputSource;
 
 /* ======================== BLE 批量打包 ======================== */
@@ -81,6 +86,12 @@ static int  s_bleBufLen = 0;
 /* ======================== 全局变量 ======================== */
 static unsigned long lastSampleTime = 0;
 static unsigned long frameCount = 0;
+
+/* 报警锁存 (2026-08-08): AI 报警触发后 abnormal 列持续 5 秒, 防止一闪而过
+ * s_alarmHold: 剩余输出周期数 (@100Hz 串口输出), 500 = 5 秒 */
+#define ALARM_HOLD_OUTS  500
+static int32_t s_alarmHold = 0;
+static float  s_alarmHoldConf = 0.0f;
 
 /* 输入模式与按键状态 */
 static InputSource  s_inputMode     = SOURCE_SIMULATOR;
@@ -165,6 +176,7 @@ void setup()
     /* 初始化各模块 */
     ecgSimulatorInit();
     Serial.println("[系统] 心电信号生成器已初始化");
+    ecgReplayInit();   /* 数据库回放模式 (MIT-BIH) */
 
     /* 初始化真实 AFE 模块 (即使当前是模拟模式, 也准备好) */
     AFE_HAL_Config afeCfg = {
@@ -182,6 +194,11 @@ void setup()
 
     hrInit();
     Serial.println("[系统] 心率监测器已启动");
+
+    rsInit();   /* T4-8 模块1: 心律安全逻辑 */
+    afInit();   /* T4-8 模块3: AF RR 不规则度检测 */
+    vfInit();   /* T4-9 模块2: VF/VT 检测 */
+    Serial.println("[系统] T4-8/T4-9 心律安全 + AF + VF 检测已初始化");
     Serial.print("[系统] 模拟器真实心率: ");
     Serial.print(ecgSimulatorGetTrueBPM());
     Serial.println(" BPM");
@@ -255,6 +272,11 @@ static bool isButtonPressed(void)
 static void toggleInputMode(void)
 {
     if (s_inputMode == SOURCE_SIMULATOR) {
+        s_inputMode = SOURCE_REPLAY;
+        ecgReplayInit();
+        Serial.println("\n>>> 切换至: 数据库回放模式 (MIT-BIH) <<<");
+        Serial.println("    'n'=正常段(100)  'a'=异常段(106)");
+    } else if (s_inputMode == SOURCE_REPLAY) {
         s_inputMode = SOURCE_AFE_REAL;
         Serial.println("\n>>> 切换至: 真实 AFE 采集模式 <<<");
     } else {
@@ -287,7 +309,15 @@ static void toggleInputMode(void)
     }
 
     Serial.print("[系统] 当前输入模式: ");
-    Serial.println(s_inputMode == SOURCE_SIMULATOR ? "模拟" : "真实AFE");
+    if (s_inputMode == SOURCE_SIMULATOR) {
+        Serial.println("模拟");
+    } else if (s_inputMode == SOURCE_REPLAY) {
+        Serial.print("回放 (");
+        Serial.print(ecgReplayGetSegment() == 0 ? "正常段 100" : "异常段 106");
+        Serial.println(")");
+    } else {
+        Serial.println("真实AFE");
+    }
     Serial.println("---");
 }
 
@@ -327,6 +357,10 @@ void loop()
             /* 模拟模式: ecg_simulator 生成 */
             noisySample = generateECGSample();     /* 含 1.65V DC */
             cleanSample = getCleanECGValue();      /* 无偏置, ±1.2V */
+        } else if (s_inputMode == SOURCE_REPLAY) {
+            /* 回放模式: MIT-BIH 数据库段 (2026-08-08) */
+            noisySample = ecgReplayNextSample();   /* 真实心电, ±2V */
+            cleanSample = noisySample;
         } else {
             /* 真实模式: ADC 采集 */
             noisySample = afeHalReadSample();       /* 含 dcBias */
@@ -348,6 +382,29 @@ void loop()
         /* ======== 步骤3.5：心率检测 ======== */
         HR_Result hr = hrProcess(filteredSample);
 
+        /* ======== T4-8 模块1+3: 心律安全 + AF 检测 (每帧, 消费 hr.rrInterval) ======== */
+        /* 编译级集成; 报警通过调试串口输出, 不改变既有 CSV 格式 (输出集成待硬件阶段) */
+        RS_Result rs = rsProcess(&hr);
+        AF_Result af = afProcess(&hr);
+        if (rs.asystole) {
+            Serial.println("[SAFETY] ASYSTOLE detected (RR >= 4s)");
+        }
+        if (rs.bradycardia) {
+            Serial.println("[SAFETY] BRADYCARDIA (30s HR < 40bpm)");
+        }
+        if (rs.tachycardia) {
+            Serial.println("[SAFETY] TACHYCARDIA (30s HR > 180bpm)");
+        }
+        if (af.windowReady && af.label == 1) {
+            Serial.println("[AF] AF suspected (CV/entropy window)");
+        }
+
+        /* T4-9 模块2: VF/VT 检测 (每帧喂 250Hz 样本) */
+        VF_Result vf = vfProcess(filteredSample);
+        if (vf.vfAlarm) {
+            Serial.println("[VF] VF/VT ALARM (2-window confirmed)");
+        }
+
         /* ======== 步骤3.6：AI 异常检测推理 (推送样本到 Core 0) ======== */
         ai_inference_push(filteredSample);
 
@@ -368,13 +425,14 @@ void loop()
         }
 
         /* ======== 步骤5：串口输出（PC 绘图仪使用） ======== */
-        /* 降频: 每 20 帧输出一次 (500Hz -> 25Hz) 以降低 USB PHY 功耗 */
+        /* 2026-08-08: 输出率 25Hz→100Hz (每 5 帧) — 提升波形分辨率
+         * (25Hz 下 QRS 峰仅 2 采样点, 锯齿感强)。带宽: 55B×100Hz = 44kbps
+         * < 115200 ✅。原 25Hz 注释: 降低 USB PHY 功耗 (100Hz 仍远低于上限) */
         /* 格式: clean,noisy,filtered,bpm,true_bpm,sqi,motion,abnormal_flag,confidence */
-        if (frameCount % 20 == 0)
+        if (frameCount % 5 == 0)
         {
             uint8_t trueBPM = (s_inputMode == SOURCE_SIMULATOR)
                               ? ecgSimulatorGetTrueBPM() : 0;
-
             /* 检查 AI 推理结果 */
             uint8_t abnormFlag = 0;
             float abnormConf = 0.0f;
@@ -382,6 +440,17 @@ void loop()
             if (ai_inference_pop_result(&aiResult)) {
                 abnormFlag = aiResult.is_abnormal;
                 abnormConf = aiResult.confidence;
+            }
+
+            /* 报警锁存: 触发后 abnormal 列保持 1 共 5 秒 (防一闪而过, 2026-08-08) */
+            if (abnormFlag) {
+                s_alarmHold = ALARM_HOLD_OUTS;
+                s_alarmHoldConf = abnormConf;
+            }
+            if (s_alarmHold > 0) {
+                abnormFlag = 1;
+                abnormConf = s_alarmHoldConf;
+                s_alarmHold--;
             }
 
             Serial.print(cleanSample, 4);
@@ -511,6 +580,26 @@ void loop()
                 case 'm':
                 case 'M':
                     toggleInputMode();
+                    break;
+
+                case 'n':
+                case 'N':
+                    if (s_inputMode == SOURCE_REPLAY) {
+                        ecgReplaySetSegment(0);
+                        Serial.println(">>> 回放: 正常段 (MIT-BIH 100) <<<");
+                    } else {
+                        Serial.println("[提示] 当前非回放模式 ('m' 切换)");
+                    }
+                    break;
+
+                case 'e':
+                case 'E':
+                    if (s_inputMode == SOURCE_REPLAY) {
+                        ecgReplaySetSegment(1);
+                        Serial.println(">>> 回放: 异常段 (MIT-BIH 106, VEB) <<<");
+                    } else {
+                        Serial.println("[提示] 当前非回放模式 ('m' 切换)");
+                    }
                     break;
 
                 case 't':

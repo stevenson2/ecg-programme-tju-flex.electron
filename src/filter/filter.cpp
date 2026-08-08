@@ -30,46 +30,52 @@
  * K = tan(pi*0.05/500) = 0.0003142 */
 /* b0 = 1/(1+K√2+K²), b1 = -2*b0, b2 = b0 */
 /* a1 = 2*(K²-1)*b0, a2 = (1-K√2+K²)*b0 */
-#define HP_A1  -1.99911f
-#define HP_A2   0.99911f
-#define HP_B0   0.99956f
-#define HP_B1  -1.99911f
-#define HP_B2   0.99956f
+/* ⚠️ 2026-08-08 N16R8 板上实测: ① 5 位小数量化系数使分子 b0+b1+b2 残留
+ * 1e-5 而分母 1+a1+a2 舍入归零 → DC 增益病态 (输出 9V→28V 爬升 + 心率失效);
+ * ② 0.05Hz 极点模 0.99955 极近单位圆, float32 灾难性抵消加剧。修复:
+ * 完整精度 double 系数 (b0+b1+b2≡0, DC 增益严格 0) + double 状态变量。
+ * 系数由 Python 计算: K=tan(pi*0.05/500), 见下方定义。 */
+#define HP_A1  -1.9991114234707954
+#define HP_A2   0.9991118180796384
+#define HP_B0   0.9995558103876084
+#define HP_B1  -1.9991116207752169
+#define HP_B2   0.9995558103876084
 
 /* ======================== 第2级：低通 40Hz (fs=500Hz 重算) ======================== */
 /* K = tan(pi*40/500) = 0.2568 */
 /* b0 = K²/(1+K√2+K²), b1 = 2*b0, b2 = b0 */
 /* a1 = 2*(K²-1)/(1+K√2+K²), a2 = (1-K√2+K²)/(1+K√2+K²) */
-#define LP_A1  -1.30720f
-#define LP_A2   0.49170f
-#define LP_B0   0.04615f
-#define LP_B1   0.09230f
-#define LP_B2   0.04615f
+/* 2026-08-08: 与 HP 同步改为完整精度 double 系数 (原 5 位小数量化) */
+#define LP_A1  -1.3072850288493234
+#define LP_A2   0.4918122372225752
+#define LP_B0   0.046131802093312926
+#define LP_B1   0.09226360418662585
+#define LP_B2   0.046131802093312926
 
 /* ======================== 预热样本数 ======================== */
 #define WARMUP_SAMPLES  240  /* 约 0.48s @500Hz */
 
-/* ======================== 状态变量 ======================== */
+/* ======================== 状态变量 (double: 0.05Hz HP float32 灾难性抵消, 2026-08-08) ======================== */
 /* 第1级：高通 */
-static float hp_w1 = 0.0f;
-static float hp_w2 = 0.0f;
+static double hp_w1 = 0.0;
+static double hp_w2 = 0.0;
 /* 第2级：低通 */
-static float lp_w1 = 0.0f;
-static float lp_w2 = 0.0f;
+static double lp_w1 = 0.0;
+static double lp_w2 = 0.0;
 
 /**
- * @brief 单级直接II型转置结构双二阶滤波器
+ * @brief 单级直接II型转置结构双二阶滤波器 (double 精度)
  */
 static float applyBiquad(float x,
-                         float b0, float b1, float b2,
-                         float a1, float a2,
-                         float *w1, float *w2)
+                         double b0, double b1, double b2,
+                         double a1, double a2,
+                         double *w1, double *w2)
 {
-    float w = x - a1 * (*w1) - a2 * (*w2);
-    float y = b0 * w + b1 * (*w1) + b2 * (*w2);
+    double w = (double)x - a1 * (*w1) - a2 * (*w2);
+    double y = b0 * w + b1 * (*w1) + b2 * (*w2);
     *w2 = *w1;
     *w1 = w;
-    return y;
+    return (float)y;
 }
 
 static float highpassFilter(float x)
