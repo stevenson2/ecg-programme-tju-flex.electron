@@ -191,7 +191,7 @@ class SlidingWindowBuffer:
 
 # ======================== Data Sources ========================
 
-def serial_source(port: str, baud: int = 115200, timeout: float = 1.0):
+def serial_source(port: str, baud: int = 460800, timeout: float = 1.0):
     """Serial data source: parse ESP32 ECG data"""
     import serial
     try:
@@ -329,7 +329,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="ECG Real-time Inference")
     parser.add_argument("--source", choices=["serial", "file"], default="serial")
     parser.add_argument("--port", type=str, default=None)
-    parser.add_argument("--baud", type=int, default=115200)
+    parser.add_argument("--baud", type=int, default=460800)
     parser.add_argument("--input", type=str, default=None)
     parser.add_argument("--model", type=str, default=None)
     parser.add_argument("--benchmark", action="store_true")

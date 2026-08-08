@@ -13,7 +13,7 @@ import argparse
 import time
 
 
-DEFAULT_BAUD = 115200
+DEFAULT_BAUD = 460800
 DATA_RATE = 100  # 串口 CSV 输出率 (Hz), 2026-08-08: 固件 25Hz→100Hz, 时间轴标定 250→100
 WINDOW_SIZE = 500
 MAX_DATA_POINTS = 2000

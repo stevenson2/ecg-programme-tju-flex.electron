@@ -177,7 +177,7 @@
 
 □ 4.4  志愿者静坐，手臂放松于桌面
 
-□ 4.5  ESP32 上电 → PC 串口连接 (115200 bps)
+□ 4.5  ESP32 上电 → PC 串口连接 (460800 bps)
 
 □ 4.6  适应 2 min → 开始 60 s 连续记录
         → 保存: electrode_char_ecg_ppt_rest_trial1.csv

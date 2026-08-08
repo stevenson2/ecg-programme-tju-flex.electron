@@ -21,9 +21,9 @@ def find_esp32_port():
 
 def main():
     port = find_esp32_port()
-    print(f"[Capture] Opening {port} @ 115200...")
+    print(f"[Capture] Opening {port} @ 460800...")
     
-    ser = serial.Serial(port, 115200, timeout=1)
+    ser = serial.Serial(port, 460800, timeout=1)
     time.sleep(1)  # Wait for ESP32 to settle
     
     # Flush startup messages

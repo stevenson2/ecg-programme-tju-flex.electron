@@ -125,7 +125,7 @@ void runPhase(uint8_t phase)
 
 void setup()
 {
-    Serial.begin(115200);
+    Serial.begin(460800);
     delay(2000);  /* 等待串口就绪 */
     Serial.println();
     Serial.println("============================================");

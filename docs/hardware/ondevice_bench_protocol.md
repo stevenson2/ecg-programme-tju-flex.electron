@@ -32,8 +32,8 @@
 
 ### 1.2 软件
 
-- **串口监视器**: PlatformIO `pio device monitor -b 115200` 或 Arduino IDE Serial Monitor
-- **日志捕获**: 推荐使用 `pio device monitor -b 115200 > output.csv` 或 PuTTY 日志保存
+- **串口监视器**: PlatformIO `pio device monitor -b 460800` 或 Arduino IDE Serial Monitor
+- **日志捕获**: 推荐使用 `pio device monitor -b 460800 > output.csv` 或 PuTTY 日志保存
 
 ### 1.3 板上串口命令参考
 
@@ -69,7 +69,7 @@
 2. **启动串口监视器**，捕获日志到文件：
    ```powershell
    # 当前终端 (端口号以实际为准, 如 COM3)
-   pio device monitor -b 115200 --port COM3 > ondevice_latency_20260803.csv
+   pio device monitor -b 460800 --port COM3 > ondevice_latency_20260803.csv
    ```
 3. **等待预热**: 上电后等待 5 秒，AI 推理稳定运行（观察串口 CSV 数据流）。
 4. **持续运行**: 保持设备运行 ≥1 分钟（≥120 个推理窗口；推理间隔 0.5s，100 次 ≈50 秒）。
@@ -336,7 +336,7 @@ beat_index,label,pc_prob_abnormal,esp32_prob_abnormal,abs_delta
 2. **固件准备**: 不需要修改；热敏模块已在 `main.cpp` 初始化并每 250 帧（≈1 秒）更新一次。
 3. **启动串口监视器**并记录日志（10 分钟）：
    ```powershell
-   pio device monitor -b 115200 --port COM3 > ondevice_thermal_20260803.csv
+   pio device monitor -b 460800 --port COM3 > ondevice_thermal_20260803.csv
    ```
 4. **启动计时器**（手机秒表即可），开始记录。
 5. **在 10 分钟内不做任何操作**：不按键、不拔插 USB、不连接 BLE。

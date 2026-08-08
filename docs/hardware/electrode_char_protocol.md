@@ -360,7 +360,7 @@ PPT 电极测试:
    2. 贴 PPT 电极于 RA、LA、RL 位置 (25×25 mm²)
    3. 用鳄鱼夹连接导线至电极的铜箔连接点
    4. AD8232 RA → 右臂电极, LA → 左臂电极, RL → 右腿驱动电极
-   5. ESP32 上电，PC 端打开串口监视器 (115200 bps)
+   5. ESP32 上电，PC 端打开串口监视器 (460800 bps)
    6. 志愿者静坐 2 min 适应，然后开始 60 s 连续记录
    7. 保存原始数据: electrode_char_ecg_ppt_rest_trialN.csv
 

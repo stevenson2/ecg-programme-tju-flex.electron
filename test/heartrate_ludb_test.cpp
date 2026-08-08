@@ -57,7 +57,7 @@ static uint16_t s_outOfRange = 0;
 
 void setup()
 {
-    Serial.begin(115200);
+    Serial.begin(460800);
     delay(100);
 
     Serial.println("\n===== heartrate v4.2 板上自测 =====");

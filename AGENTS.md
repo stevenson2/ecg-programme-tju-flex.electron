@@ -27,7 +27,7 @@
 ## 构建命令
 - `pio run` — 编译固件
 - `pio run -t upload` — 编译并上传
-- `pio device monitor -b 115200` — 串口监视器
+- `pio device monitor -b 460800` — 串口监视器
 - `pio test` — 运行测试
 
 ## 编码规范

@@ -7,7 +7,7 @@
 #include <Arduino.h>
 
 void setup() {
-    Serial.begin(115200);
+    Serial.begin(460800);
     delay(100);
     
     Serial.println("\n===== GPIO4 ADC 测试 =====");

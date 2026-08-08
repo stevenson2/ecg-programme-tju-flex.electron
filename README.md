@@ -46,7 +46,7 @@ pio run
 pio run -t upload
 
 # 串口监视器（9 列 CSV @100Hz）
-pio device monitor -b 115200
+pio device monitor -b 460800
 
 # PC 端实时绘图
 python pc_tools/ecg_plotter.py
@@ -356,7 +356,7 @@ Core 1 (main.cpp loop)              Core 0 (inference_task)
 | 采样率 | 500 Hz | 每样本间隔 2ms (SAMPLE_INTERVAL_MS=2); 串口每5帧输出1次=100Hz |
 | CPU 频率 | 240 MHz | 性能模式 |
 | BLE TX 功率 | +9 dBm | 原始最高功率 |
-| 串口波特率 | 115200 | 数据输出频率 100Hz (500Hz/5) |
+| 串口波特率 | 460800 | 数据输出频率 100Hz (500Hz/5) |
 | BLE 设备名 | ESP32-ECG | - |
 | 滤波器类型 | IIR Biquad + 梳状 | HP 0.5 -> LP 40 -> Notch 50 + Comb 50/100 (10抽头@500Hz) |
 | 心率算法 | Pan-Tompkins v4.2 | 自适应阈值（噪声峰 + 0.30×(信号峰−噪声峰)）, 间隔 200ms (FS=500); LUDB 验证 F1 0.774 / BPM MAE 3.2 |
