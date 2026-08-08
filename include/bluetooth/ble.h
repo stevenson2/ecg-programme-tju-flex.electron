@@ -41,6 +41,17 @@ void sendBLEMessage(const char* message);
  */
 bool isBLEConnected(void);
 
+/**
+ * @brief 从 BLE 命令队列中非阻塞取出一个命令行
+ *
+ * 用于 main.cpp 主循环轮询 BLE RX 回调投递的命令。
+ *
+ * @param out  输出缓冲区 (存放 null 结尾的命令串)
+ * @param len  缓冲区大小 (字节)
+ * @return     true 成功取出一条命令
+ */
+bool bleCommandQueueTake(char* out, size_t len);
+
 #ifdef __cplusplus
 }
 #endif

@@ -6,6 +6,8 @@
 #include <esp_bt.h>
 #include <esp_bt_main.h>
 #include <esp_gap_ble_api.h>
+#include <freertos/queue.h>
+#include <cstring>
 #include "bluetooth/ble.h"
 
 /**
@@ -35,6 +37,13 @@ static BLEServer            *pServer     = NULL;
 static BLECharacteristic    *pTxChar     = NULL;
 static bool                  connected   = false;
 
+/* BLE 命令队列: 深度 4, 每条最多 31 字节 (+ null) */
+static QueueHandle_t         s_cmdQueue  = NULL;
+
+/* RX 行缓冲: 累加字节直到 '\n' 或 '\0' */
+static char  s_rxLineBuf[64] = {0};
+static int   s_rxLineLen     = 0;
+
 /* ======================== 连接回调 ======================== */
 
 class ServerCallbacks : public BLEServerCallbacks
@@ -60,10 +69,25 @@ class RxCallbacks : public BLECharacteristicCallbacks
     void onWrite(BLECharacteristic* pChar) override
     {
         std::string rx = pChar->getValue();
-        if (rx.length() > 0)
-        {
-            Serial.print("[BLE] 收到指令: ");
-            Serial.println(rx.c_str());
+        if (rx.length() == 0) return;
+
+        if (!s_cmdQueue) return;   /* 队列未就绪 (initBLE 尚未完成) — 丢弃 */
+
+        /* 逐字节累加到行缓冲; 遇到 '\n' / '\r' / '\0' 视为命令结束,
+         * 将完整行 POST 到 FreeRTOS 队列供 main.cpp 主循环消费.
+         * 无 SPIFFS I/O、无 BLE send、无阻塞调用 — 仅在 Core 0 BLE 上下文。 */
+        for (size_t i = 0; i < rx.length(); i++) {
+            char c = rx[i];
+            if (c == '\n' || c == '\r' || c == '\0') {
+                if (s_rxLineLen > 0) {
+                    s_rxLineBuf[s_rxLineLen] = '\0';
+                    xQueueSend(s_cmdQueue, s_rxLineBuf, 0);  /* 非阻塞, 队列满则丢 */
+                    s_rxLineLen = 0;
+                }
+            } else if (s_rxLineLen < (int)(sizeof(s_rxLineBuf) - 1)) {
+                s_rxLineBuf[s_rxLineLen++] = c;
+            }
+            /* 缓冲区满 → 静默丢弃该字节 (防止溢出) */
         }
     }
 };
@@ -72,6 +96,10 @@ class RxCallbacks : public BLECharacteristicCallbacks
 
 void initBLE(void)
 {
+    /* 创建 BLE 命令队列 (深度 4, 每条 ≤31+null 字节)
+     * 必须在广播前创建, 确保 RxCallbacks::onWrite 可立即使用 */
+    s_cmdQueue = xQueueCreate(4, 32);
+
     /* 初始化 BLE 设备 */
     BLEDevice::init(DEVICE_NAME);
 
@@ -144,4 +172,16 @@ void sendBLEMessage(const char* message)
 bool isBLEConnected(void)
 {
     return connected;
+}
+
+bool bleCommandQueueTake(char* out, size_t len)
+{
+    if (!s_cmdQueue || !out || len == 0) return false;
+
+    char buf[32];
+    if (xQueueReceive(s_cmdQueue, buf, 0) != pdTRUE) return false;
+
+    strncpy(out, buf, len);
+    out[len - 1] = '\0';
+    return true;
 }

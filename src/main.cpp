@@ -10,6 +10,8 @@
 #include "vf_detect/vf_detect.h"
 #include "thermal/thermal.h"
 #include "ai_inference/ai_inference.h"
+#include "storage/ecg_recorder.h"
+#include "wifi/ecg_wifi.h"
 
 /**
  * @file main.cpp
@@ -93,6 +95,10 @@ static unsigned long frameCount = 0;
 static int32_t s_alarmHold = 0;
 static float  s_alarmHoldConf = 0.0f;
 
+/* 串口多字符命令行缓冲 (REC_* 指令) */
+static char s_serialLine[48] = {0};
+static int  s_serialLineLen     = 0;
+
 /* 输入模式与按键状态 */
 static InputSource  s_inputMode     = SOURCE_SIMULATOR;
 static unsigned long s_lastBtnPress = 0;
@@ -145,9 +151,78 @@ static inline float applyCombFilter(float x)
     return s_combSum2 / (float)COMB_TAPS;
 }
 
+/* ======================== 大小写无关字符串比较 ======================== */
+static bool strEqualsIgnoreCase(const char* a, const char* b)
+{
+    while (*a && *b) {
+        char ca = (*a >= 'a' && *a <= 'z') ? (*a - 'a' + 'A') : *a;
+        char cb = (*b >= 'a' && *b <= 'z') ? (*b - 'a' + 'A') : *b;
+        if (ca != cb) return false;
+        a++; b++;
+    }
+    return *a == *b;
+}
+
+/* ======================== 命令解析器 (BLE + Serial 共享) ======================== */
+/**
+ * @brief 解析 REC_* / WIFI_* 命令并填充回复字符串
+ * @param cmd      以 null 结尾的命令串
+ * @param reply    输出回复缓冲区
+ * @param replyLen 缓冲区大小
+ * @return true 命令已识别并处理
+ */
+static bool parseRecorderCommand(const char* cmd, char* reply, size_t replyLen)
+{
+    if (strEqualsIgnoreCase(cmd, "REC_START")) {
+        bool ok = ecgRecorderStart();
+        snprintf(reply, replyLen, "REC_START %s", ok ? "ok" : "fail");
+        return true;
+    }
+    if (strEqualsIgnoreCase(cmd, "REC_STOP")) {
+        uint32_t dur = ecgRecorderCurrentDurationSec();
+        bool ok = ecgRecorderStop();
+        snprintf(reply, replyLen, "REC_STOP %s %lus", ok ? "ok" : "fail",
+                 (unsigned long)dur);
+        return true;
+    }
+    if (strEqualsIgnoreCase(cmd, "REC_STATUS")) {
+        snprintf(reply, replyLen, "REC_STATUS rec=%d auto=%d count=%lu",
+                 ecgRecorderIsRecording() ? 1 : 0,
+                 ecgRecorderAutoRecordEnabled() ? 1 : 0,
+                 (unsigned long)ecgRecorderRecordCount());
+        return true;
+    }
+    if (strEqualsIgnoreCase(cmd, "REC_LIST")) {
+        /* 调用者负责处理多行输出: reply 仅返回标记 */
+        snprintf(reply, replyLen, "REC_LIST");
+        return true;
+    }
+    if (strEqualsIgnoreCase(cmd, "REC_AUTO 0")) {
+        ecgRecorderSetAutoRecord(false);
+        snprintf(reply, replyLen, "REC_AUTO 0 ok");
+        return true;
+    }
+    if (strEqualsIgnoreCase(cmd, "REC_AUTO 1")) {
+        ecgRecorderSetAutoRecord(true);
+        snprintf(reply, replyLen, "REC_AUTO 1 ok");
+        return true;
+    }
+    if (strEqualsIgnoreCase(cmd, "WIFI_ON")) {
+        bool ok = ecgWifiStart();
+        snprintf(reply, replyLen, "WIFI_ON %s", ok ? "ok" : "fail");
+        return true;
+    }
+    if (strEqualsIgnoreCase(cmd, "WIFI_OFF")) {
+        ecgWifiStop();
+        snprintf(reply, replyLen, "WIFI_OFF ok");
+        return true;
+    }
+    return false;
+}
+
 void setup()
 {
-    Serial.begin(115200);
+    Serial.begin(460800);
 #if ARDUINO_USB_CDC_ON_BOOT
     /* USB-Serial-JTAG 枚举较慢, 等待就绪 (最长 3 秒) */
     unsigned long usbStart = millis();
@@ -204,6 +279,17 @@ void setup()
     Serial.println(" BPM");
 
     initBLE();
+
+    /* 初始化 ECG 录制模块 (SPIFFS 挂载 + 扫描修复 + 索引重建) */
+    if (ecgRecorderInit()) {
+        Serial.println("[REC] 录制模块初始化完成");
+    } else {
+        Serial.println("[REC] 录制模块初始化失败 (SPIFFS?) — 继续运行");
+    }
+
+    /* 初始化 WiFi AP 传输模块 (注册路由, 不启动 AP)
+     * 必须在 SPIFFS 挂载后、loop() 前调用 */
+    ecgWifiInit();
 
     /* 初始化 AI 推理模块 (Core 0) */
     if (ai_inference_init()) {
@@ -408,6 +494,46 @@ void loop()
         /* ======== 步骤3.6：AI 异常检测推理 (推送样本到 Core 0) ======== */
         ai_inference_push(filteredSample);
 
+        /* ======== 步骤3.7：ECG 录制 — 2:1 抽取 (500Hz→250Hz) 喂入 int16 样本 ======== */
+        /* scale：±2V → ±16000 (int16 满量程 ±32767, 余量 ~2× headroom)
+         *   replay 片段 ±2V, 模拟器 ±1.2V, AFE ~2Vpp; 统一 scale=8000.0
+         *   例: 1.0V → 8000, -1.5V → -12000 */
+        #define REC_SCALE_V_TO_INT16  8000.0f
+        if ((frameCount % 2) == 0) {
+            ecgRecorderPushSample((int16_t)(filteredSample * REC_SCALE_V_TO_INT16));
+        }
+
+        /* ======== 步骤3.8：BLE 命令轮询 (消费 RxCallbacks 投递的队列, 非阻塞) ======== */
+        {
+            char bleCmd[32];
+            char reply[128];
+            while (bleCommandQueueTake(bleCmd, sizeof(bleCmd))) {
+                if (parseRecorderCommand(bleCmd, reply, sizeof(reply))) {
+                    if (strcmp(reply, "REC_LIST") == 0) {
+                        /* REC_LIST: 多行输出, BLE 逐行发送 (ESP32 BLE 栈自动分片) */
+                        char listBuf[512];
+                        int n = ecgRecorderList(listBuf, sizeof(listBuf));
+                        if (n > 0) {
+                            sendBLEMessage("REC_LIST ok");
+                            char* saveptr;
+                            char* line = strtok_r(listBuf, "\n", &saveptr);
+                            while (line) {
+                                if (strlen(line) > 0) sendBLEMessage(line);
+                                line = strtok_r(NULL, "\n", &saveptr);
+                            }
+                        } else {
+                            sendBLEMessage("REC_LIST empty");
+                        }
+                    } else {
+                        sendBLEMessage(reply);
+                    }
+                }
+            }
+        }
+
+        /* ======== 步骤3.9：WiFi HTTP 请求轮询 (handleClient 空闲时 μs 级, 每迭代调用) ======== */
+        ecgWifiProcess();
+
         /* ======== 步骤4：通过 BLE 发送 (4帧批量打包) ======== */
         /* 每帧格式: clean,noisy,filtered,bpm,sqi; */
         /* 满4帧或连接断开前统一 Notify，大幅降低 BLE 协议开销 */
@@ -483,6 +609,16 @@ void loop()
 
         /* ======== 步骤7：温度监测 + BPM 状态打印 (每250帧≈1秒) ======== */
         if (frameCount % 250 == 0) {
+            /* ---- ECG 录制: 标记当前秒异常状态 (CSV 同源锁存值)
+               注: frameCount%250 在 500Hz 主循环下为 2Hz, 用 millis 秒去重
+               保证真 1Hz, 否则 durationSec/位图 翻倍 ---- */
+            static uint32_t s_lastRecSec = 0;
+            uint32_t nowSec = (uint32_t)(millis() / 1000);
+            if (nowSec != s_lastRecSec) {
+                s_lastRecSec = nowSec;
+                ecgRecorderSetSecondAbnormal(s_alarmHold > 0);
+            }
+
             /* ---- 温度监测 ---- */
             ThermalState ts = thermalUpdate();
 
@@ -563,6 +699,33 @@ void loop()
         if (Serial.available() > 0)
         {
             char cmd = Serial.read();
+
+            /* ---- 多字符命令行累加器 (REC_* 指令, BLE 同解析器) ---- */
+            if (cmd == '\n' || cmd == '\r') {
+                if (s_serialLineLen > 1) {
+                    s_serialLine[s_serialLineLen] = '\0';
+                    char reply[128];
+                    if (parseRecorderCommand(s_serialLine, reply, sizeof(reply))) {
+                        if (strcmp(reply, "REC_LIST") == 0) {
+                            Serial.println("REC_LIST ok");
+                            char listBuf[512];
+                            int n = ecgRecorderList(listBuf, sizeof(listBuf));
+                            if (n > 0) {
+                                Serial.print(listBuf);
+                            } else {
+                                Serial.println("(empty)");
+                            }
+                        } else {
+                            Serial.println(reply);
+                        }
+                    }
+                }
+                s_serialLineLen = 0;
+            } else if (s_serialLineLen < (int)(sizeof(s_serialLine) - 1)) {
+                s_serialLine[s_serialLineLen++] = cmd;
+            }
+
+            /* ---- 单字符快捷指令 (原有, 保持不变) ---- */
             switch (cmd)
             {
                 case 'r':
