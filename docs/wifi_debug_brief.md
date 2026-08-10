@@ -118,11 +118,13 @@ PC 端: ESP32-ECG-3E8C profile 已建 (手动模式), netsh wlan connect name=ES
 | 783a8aa | 遗留A 候选修复: App 连接后 requestConnectionPriority(high) (flutter_blue_plus 1.36.8 命名参数 API) |
 | 53a5f8f | TH 三十九章补记 (遗留A/B 状态) |
 
+| 9021f93 + e7fcb76 | **遗留B已解决**: Gradle 补腾讯镜像 download.flutter.io 仓库 (引擎 Maven artifacts) + precache 补全 host 工具 → **APK 构建成功 47.9MB** |
+
+**APK 位置**: `ecg_app/build/app/outputs/flutter-apk/app-release.apk` (含全部修复: BLE 命令 \n + 连接优先级)。
 **设备当前状态**: USB 已断开 (未插回电脑)。固件已烧录最新版 (自动 AP + BLE 超时提交)。
 **设备回归后验证**: ① App 重连蓝牙 → 前台 2 分钟 → 查 REC_STATUS 确认 count≥1;
 ② 手机连 AP → http://192.168.4.1/api/records 确认记录; ③ 阶段B 全链路 (下载/测速)。
-**遗留**: A) 波形分辨率 (候选修复已落地 App 端, 待新版 App 验证); B) APK release 构建
-(Flutter 引擎缓存缺 libflutter.so, 替代: flutter run debug 或旧 App + 固件防御)。
+**遗留**: A) 波形分辨率 (候选修复已落地 App 端 + 新版 APK 已含, 待真机验证)。
 
 ## 约束
 - 不回退已完成功能(BLE 报警链路/存储/云端)
