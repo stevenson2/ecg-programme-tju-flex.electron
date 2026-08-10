@@ -99,6 +99,15 @@ static float  s_alarmHoldConf = 0.0f;
 static char s_serialLine[48] = {0};
 static int  s_serialLineLen     = 0;
 
+/* 定时录制调度 (REC_SCHEDULE, 2026-08-10)
+ * 基于上电秒数 (millis/1000), 不依赖 RTC/NTP —— 固件当前仅 AP 模式无外网,
+ * 真实时钟待 STA 阶段; 记录文件 startUnix 仍为上电秒数 (见 TH §33/§34) */
+static uint32_t s_schedInterval  = 0;  /* 0 = 调度关闭 */
+static uint32_t s_schedDuration  = 0;  /* 每次录制时长(秒) */
+static uint32_t s_schedNextStart = 0;  /* 下次开始的上电秒 */
+static uint32_t s_schedStartSec  = 0;  /* 本次调度录制开始的秒 */
+static bool     s_schedActiveRec = false; /* 当前录制是否由调度启动 */
+
 /* 输入模式与按键状态 */
 static InputSource  s_inputMode     = SOURCE_SIMULATOR;
 static unsigned long s_lastBtnPress = 0;
@@ -163,6 +172,18 @@ static bool strEqualsIgnoreCase(const char* a, const char* b)
     return *a == *b;
 }
 
+/** @brief 大小写无关前缀匹配 (供 REC_SCHEDULE <args> 类带参命令使用) */
+static bool strStartsWithIgnoreCase(const char* s, const char* prefix)
+{
+    while (*prefix) {
+        char cs = (*s >= 'a' && *s <= 'z') ? (*s - 'a' + 'A') : *s;
+        char cp = (*prefix >= 'a' && *prefix <= 'z') ? (*prefix - 'a' + 'A') : *prefix;
+        if (cs != cp) return false;
+        s++; prefix++;
+    }
+    return true;
+}
+
 /* ======================== 命令解析器 (BLE + Serial 共享) ======================== */
 /**
  * @brief 解析 REC_* / WIFI_* 命令并填充回复字符串
@@ -173,16 +194,23 @@ static bool strEqualsIgnoreCase(const char* a, const char* b)
  */
 static bool parseRecorderCommand(const char* cmd, char* reply, size_t replyLen)
 {
-    if (strEqualsIgnoreCase(cmd, "REC_START")) {
-        bool ok = ecgRecorderStart();
-        snprintf(reply, replyLen, "REC_START %s", ok ? "ok" : "fail");
-        return true;
-    }
     if (strEqualsIgnoreCase(cmd, "REC_STOP")) {
         uint32_t dur = ecgRecorderCurrentDurationSec();
         bool ok = ecgRecorderStop();
+        /* 手动停止: 调度接管标记清除 + 下一轮推迟, 避免立即重启 */
+        s_schedActiveRec = false;
+        if (s_schedInterval > 0) {
+            s_schedNextStart = (uint32_t)(millis() / 1000) + s_schedInterval;
+        }
         snprintf(reply, replyLen, "REC_STOP %s %lus", ok ? "ok" : "fail",
                  (unsigned long)dur);
+        return true;
+    }
+    if (strEqualsIgnoreCase(cmd, "REC_START")) {
+        bool ok = ecgRecorderStart();
+        /* 手动开始: 当前录制不受调度自动停止干预 */
+        s_schedActiveRec = false;
+        snprintf(reply, replyLen, "REC_START %s", ok ? "ok" : "fail");
         return true;
     }
     if (strEqualsIgnoreCase(cmd, "REC_STATUS")) {
@@ -205,6 +233,30 @@ static bool parseRecorderCommand(const char* cmd, char* reply, size_t replyLen)
     if (strEqualsIgnoreCase(cmd, "REC_AUTO 1")) {
         ecgRecorderSetAutoRecord(true);
         snprintf(reply, replyLen, "REC_AUTO 1 ok");
+        return true;
+    }
+    /* REC_SCHEDULE <间隔秒> <时长秒> | REC_SCHEDULE OFF
+     * 定时录制: 每隔 <间隔秒> 自动录 <时长秒>, 基于上电秒数 (无 RTC) */
+    if (strStartsWithIgnoreCase(cmd, "REC_SCHEDULE")) {
+        const char* arg = cmd + 12;  /* strlen("REC_SCHEDULE") */
+        while (*arg == ' ') arg++;
+        if (strEqualsIgnoreCase(arg, "OFF")) {
+            s_schedInterval = 0;
+            s_schedDuration = 0;
+            s_schedActiveRec = false;
+            snprintf(reply, replyLen, "REC_SCHEDULE OFF ok");
+            return true;
+        }
+        uint32_t iv = 0, dur = 0;
+        if (sscanf(arg, "%lu %lu", &iv, &dur) == 2 && iv >= 10 && dur >= 5) {
+            s_schedInterval = iv;
+            s_schedDuration = dur;
+            s_schedNextStart = (uint32_t)(millis() / 1000) + iv;
+            snprintf(reply, replyLen, "REC_SCHEDULE ok %lus %lus",
+                     (unsigned long)iv, (unsigned long)dur);
+            return true;
+        }
+        snprintf(reply, replyLen, "REC_SCHEDULE fail (用法: REC_SCHEDULE <间隔秒> <时长秒> | OFF)");
         return true;
     }
     if (strEqualsIgnoreCase(cmd, "WIFI_ON")) {
@@ -617,6 +669,25 @@ void loop()
             if (nowSec != s_lastRecSec) {
                 s_lastRecSec = nowSec;
                 ecgRecorderSetSecondAbnormal(s_alarmHold > 0);
+
+                /* ---- 定时录制调度 (REC_SCHEDULE) ----
+                 * 仅在调度激活且当前无录制时启动; 只自动停止调度自己启动的录制,
+                 * 手动 REC_START 的会话由手动 REC_STOP 结束 (s_schedActiveRec=false) */
+                if (s_schedInterval > 0) {
+                    if (!ecgRecorderIsRecording() && nowSec >= s_schedNextStart) {
+                        if (ecgRecorderStart()) {
+                            s_schedActiveRec = true;
+                            s_schedStartSec = nowSec;
+                            Serial.println("[SCHED] 定时录制开始");
+                        }
+                    } else if (ecgRecorderIsRecording() && s_schedActiveRec &&
+                               (nowSec - s_schedStartSec) >= s_schedDuration) {
+                        ecgRecorderStop();
+                        s_schedActiveRec = false;
+                        s_schedNextStart = nowSec + s_schedInterval;
+                        Serial.println("[SCHED] 定时录制结束");
+                    }
+                }
             }
 
             /* ---- 温度监测 ---- */
