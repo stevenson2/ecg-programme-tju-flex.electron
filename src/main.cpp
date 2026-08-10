@@ -243,7 +243,11 @@ static bool parseRecorderCommand(const char* cmd, char* reply, size_t replyLen)
         if (strEqualsIgnoreCase(arg, "OFF")) {
             s_schedInterval = 0;
             s_schedDuration = 0;
-            s_schedActiveRec = false;
+            /* 关闭时同时停止正在进行的调度录制 */
+            if (s_schedActiveRec) {
+                ecgRecorderStop();
+                s_schedActiveRec = false;
+            }
             snprintf(reply, replyLen, "REC_SCHEDULE OFF ok");
             return true;
         }
