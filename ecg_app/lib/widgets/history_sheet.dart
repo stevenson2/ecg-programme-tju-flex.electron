@@ -27,22 +27,25 @@ class HistorySheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // 底部弹窗背景色 — 与 App 暗色主题一致
-      decoration: const BoxDecoration(
-        color: Color(0xFF0D0D1A),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // ── 标题栏 ──
-          _buildHeader(),
-          // ── 列表内容 ──
-          Flexible(
-            child: events.isEmpty ? _buildEmpty() : _buildList(),
-          ),
-        ],
+    return SafeArea(
+      // 修复 2026-08-10: 缺 SafeArea 致标题顶到手机状态栏 (用户反馈)
+      child: Container(
+        // 底部弹窗背景色，与 App 暗色主题一致
+        decoration: const BoxDecoration(
+          color: Color(0xFF0D0D1A),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // ── 标题栏 ──
+            _buildHeader(),
+            // ── 列表内容 ──
+            Flexible(
+              child: events.isEmpty ? _buildEmpty() : _buildList(),
+            ),
+          ],
+        ),
       ),
     );
   }
