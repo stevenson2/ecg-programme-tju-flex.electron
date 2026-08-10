@@ -8,6 +8,7 @@ import 'providers/ecg_provider.dart';
 import 'providers/settings_provider.dart';
 import 'services/alarm_sound_service.dart';
 import 'services/alarm_history_store.dart';
+import 'services/record_schedule_service.dart';
 import 'models/alarm_event.dart';
 import 'widgets/ecg_waveform.dart';
 import 'widgets/info_panel.dart';
@@ -67,6 +68,7 @@ class _ECGMonitorScreenState extends State<ECGMonitorScreen> {
   late final ECGProvider _ecgProvider;
   late final AlarmSoundService _soundService;
   late final AlarmHistoryStore _historyStore;
+  late final RecordScheduleService _recordScheduleService;
   List<AlarmEvent> _alarmHistory = [];
   AlarmState _prevAlarmState = AlarmState.idle;
 
@@ -84,11 +86,18 @@ class _ECGMonitorScreenState extends State<ECGMonitorScreen> {
     _historyStore.load().then((events) {
       if (mounted) setState(() => _alarmHistory = events);
     });
+    _recordScheduleService = RecordScheduleService(
+      settings: _settings,
+      sendCommand: (cmd) => _ecgProvider.bleService.sendCommand(cmd),
+    );
+    _recordScheduleService.start();
     _ecgProvider.addListener(_onEcgChange);
   }
 
   @override
   void dispose() {
+    _recordScheduleService.stop();
+    _recordScheduleService.dispose();
     _ecgProvider.removeListener(_onEcgChange);
     _soundService.dispose();
     super.dispose();
