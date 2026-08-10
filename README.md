@@ -139,6 +139,15 @@ cd ecg_app && flutter run
 
 示例：`0.253,-0.187,0.241,75,75,0.87,0,0,0.012`
 
+> **BLE 帧格式（2026-08-10 修复）**：BLE NUS TX 每 4 帧批量 Notify，帧间以 `;` 拼接，
+> 每帧完整 9 列（与串口一致，含 abnormal_flag/confidence）。此前仅发 5 列
+> （clean/noisy/filtered/bpm/sqi），App 收不到 abnormal 导致报警功能在真实 BLE
+> 链路下无法触发（已修复，TH §三十六）。App 端按 `;` 分割后逐帧解析。
+>
+> **停搏/无信号报警（2026-08-10）**：AI 模型训练分布不含停搏场景，低电压直线不会
+> 触发 AI 报警。固件新增停搏检测：filtered 信号连续 3 秒峰峰值 < 20mV 判为
+> 无信号/停搏，abnormal_flag 强制置 1（confidence=0.99）。
+
 | 列 | 字段 | 说明 |
 |----|------|------|
 | 1 | clean | 纯净心电 / 去偏置 ADC 信号 (V) |
