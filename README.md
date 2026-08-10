@@ -443,16 +443,21 @@ python3 train.py --epochs 200 --batch-size 128
 | AI 核心 / 栈 | Core 0 / 16KB | 推理后 vTaskDelay(50ms) 让出 CPU 0；结果队列深度 8 |
 | 温度阈值 | 65°C 降频 / 55°C 恢复 | 8 点滑动平均，每秒采样 |
 | 报警锁存 | 5 秒 | s_alarmHold=500 @100Hz 输出；同步写入记录器异常位图 |
+| WiFi AP | **上电自动启动**；SSID `ESP32-ECG-<MAC后4位>`；密码 12345678；ch6 / 不隐藏 / maxconn 4 | 2026-08-10 从"WIFI_ON 命令启动"改为 boot 自动启动（串口开关/复位不再影响 AP，TH §39）；WebServer :80，4 端点 REST（records 列表/meta/data/删除） |
 | 分区表 | esp32s3_16m_noota_v2.csv | ota_0 11M + ecgdata 4M SPIFFS；编译 Flash 13.4% / RAM 40.9% |
 
 ---
 
 ## 开发状态与路线
 
-**当前阶段（2026-08-08）**：
+**当前阶段（2026-08-10）**：
 
 - ✅ **阶段 A（板上 ECG 记录存储）完成**：SPIFFS 记录器 + REC_* 命令落地，**硬件验收通过**（断电持久化验证成功，TH §三十二）；真机四连修完成（AI arena / Task WDT / 滤波器 double 精度 / 心率跨域标定，TH §三十一）
-- ⬜ **阶段 B（WiFi AP 传输 + 云端存储）待办**：`src/wifi/` 占位已接线，App 云端 API 客户端骨架已搭
+- 🔶 **阶段 B（WiFi AP 传输 + 云端存储）基本可用（2026-08-10）**：AP **上电自动启动**
+  （此前靠 WIFI_ON 命令启动，而串口打开/关闭会触发设备复位 → "串口关了 WiFi 就没"；
+  现 boot 自动 ecgWifiStart，串口/复位不再影响 AP，TH §三十九）；修复 **App BLE 命令缺
+  '\n' 结束符**根因（定时录制命令此前从未送达设备，TH §三十九）；WebServer 4 端点
+  REST API + App 记录管理/下载可用。**待全链路验证**（定时录制 → AP 下载 → 测速）后转 ✅
 - 📝 **论文写作修订进行中**：19 条审稿问题已全部有解（MODEL_GUIDE §6）；权威数字以 [docs/FINAL_RESULTS.md](docs/FINAL_RESULTS.md) 为准，稿件见 `docs/manuscript_sections_1_4.md`
 
 **模型侧（ROADMAP Phase 4）**：exp6-SGD 已上板（T0-1）；双模型部署（P2A + KD a070_t1）为 4.2 待办（N16R8 下 Flash 无容量障碍，需双 TFLite interpreter / 分时加载运行时实现）；4.3 全链路集成验证（PC-ESP32 一致性、真实采集链路、温度/功耗）待办；4.4 模型侧优化按需。
