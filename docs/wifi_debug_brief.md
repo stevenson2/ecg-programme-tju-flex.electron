@@ -109,6 +109,21 @@ PC 端"搜不到"可用 5G first 扫描盲区解释 (用户电脑同理)。
 **诊断工具 (保留在固件, 默认行为与原固件一致)**: DIAG TXP/CH/SEQ/NOTIFY/AI/STA/STAOFF。
 PC 端: ESP32-ECG-3E8C profile 已建 (手动模式), netsh wlan connect name=ESP32-ECG-3E8C 可直接连。
 
+## 更新日志 (2026-08-10 末段, 全部已提交推送 gitee)
+
+| 提交 | 内容 |
+|---|---|
+| c89418d + a2e1d05 | WiFi beacon 排查闭环: AP 完全正常 (主动连接验证), 不可见 = PC 5G-first 扫描盲区 + 串口复位假象 (TH §38) |
+| d9b9aa0 | **AP 上电自动启动** (串口关了 WiFi 也能用) + **根因: App BLE 命令缺 '\n'** (定时录制从未送达, 设备 count=0) — App sendCommand 追加 \n, 固件 100ms 超时提交防御 (TH §39) |
+| 783a8aa | 遗留A 候选修复: App 连接后 requestConnectionPriority(high) (flutter_blue_plus 1.36.8 命名参数 API) |
+| 53a5f8f | TH 三十九章补记 (遗留A/B 状态) |
+
+**设备当前状态**: USB 已断开 (未插回电脑)。固件已烧录最新版 (自动 AP + BLE 超时提交)。
+**设备回归后验证**: ① App 重连蓝牙 → 前台 2 分钟 → 查 REC_STATUS 确认 count≥1;
+② 手机连 AP → http://192.168.4.1/api/records 确认记录; ③ 阶段B 全链路 (下载/测速)。
+**遗留**: A) 波形分辨率 (候选修复已落地 App 端, 待新版 App 验证); B) APK release 构建
+(Flutter 引擎缓存缺 libflutter.so, 替代: flutter run debug 或旧 App + 固件防御)。
+
 ## 约束
 - 不回退已完成功能(BLE 报警链路/存储/云端)
 - 固件改动 pio run 必须通过;烧录/命令先告知用户
