@@ -108,6 +108,15 @@ static uint32_t s_schedNextStart = 0;  /* 下次开始的上电秒 */
 static uint32_t s_schedStartSec  = 0;  /* 本次调度录制开始的秒 */
 static bool     s_schedActiveRec = false; /* 当前录制是否由调度启动 */
 
+/* 停搏/无信号检测 (2026-08-10, 用户真机反馈: 低电压直线 AI 不报异常)
+ * 模型训练分布不含停搏场景; 临床监护停搏必须报警 →
+ * filtered 信号连续 3 秒峰峰值 < 20mV 判定无信号/停搏, abnormal_flag 合并置 1 */
+#define FLATLINE_SECS     3
+#define FLATLINE_PP_V     0.02f
+static float s_secMin = 1e9f, s_secMax = -1e9f;  /* 当前秒内 filtered 极值 */
+static int   s_flatCount = 0;   /* 连续平坦秒计数 */
+static bool  s_flatline = false; /* 停搏/无信号标志 */
+
 /* 输入模式与按键状态 */
 static InputSource  s_inputMode     = SOURCE_SIMULATOR;
 static unsigned long s_lastBtnPress = 0;
@@ -550,6 +559,10 @@ void loop()
         /* ======== 步骤3.6：AI 异常检测推理 (推送样本到 Core 0) ======== */
         ai_inference_push(filteredSample);
 
+        /* ---- 停搏/无信号检测: 当前秒内 filtered 极值跟踪 ---- */
+        if (filteredSample < s_secMin) s_secMin = filteredSample;
+        if (filteredSample > s_secMax) s_secMax = filteredSample;
+
         /* ======== 步骤3.7：ECG 录制 — 2:1 抽取 (500Hz→250Hz) 喂入 int16 样本 ======== */
         /* scale：±2V → ±16000 (int16 满量程 ±32767, 余量 ~2× headroom)
          *   replay 片段 ±2V, 模拟器 ±1.2V, AFE ~2Vpp; 统一 scale=8000.0
@@ -638,6 +651,15 @@ void loop()
                 s_alarmHold--;
             }
 
+            /* 停搏/无信号合并: AI 未报但低电压直线持续 3 秒 → 强制报警 (2026-08-10)
+             * 覆盖模型训练分布外的停搏/导联脱落场景 */
+            if (s_flatline) {
+                abnormFlag = 1;
+                abnormConf = 0.99f;
+                s_alarmHold = ALARM_HOLD_OUTS;   /* 维持锁存 (flatline 期间持续报警) */
+                s_alarmHoldConf = 0.99f;
+            }
+
             Serial.print(cleanSample, 4);
             Serial.print(",");
             Serial.print(noisyNoDC, 4);
@@ -676,6 +698,18 @@ void loop()
             if (nowSec != s_lastRecSec) {
                 s_lastRecSec = nowSec;
                 ecgRecorderSetSecondAbnormal(s_alarmHold > 0);
+
+                /* ---- 停搏/无信号判定: 本秒峰峰值 < 阈值 连续 3 秒 ---- */
+                float secPP = s_secMax - s_secMin;
+                s_secMin = 1e9f;
+                s_secMax = -1e9f;
+                if (secPP < FLATLINE_PP_V) {
+                    s_flatCount++;
+                    if (s_flatCount >= FLATLINE_SECS) s_flatline = true;
+                } else {
+                    s_flatCount = 0;
+                    s_flatline = false;
+                }
 
                 /* ---- 定时录制调度 (REC_SCHEDULE) ----
                  * 仅在调度激活且当前无录制时启动; 只自动停止调度自己启动的录制,
