@@ -87,6 +87,10 @@ typedef enum {
 static char s_bleBuf[BLE_BUF_SIZE];
 static int  s_bleBufLen = 0;
 
+/* BLE 通知分频 (DIAG NOTIFY 可调, 2026-08-10): 2=250Hz(原行为), 4=125Hz
+ * WiFi beacon 专项: 8 轮二分仅测过 125Hz notify, 正式固件为 250Hz → 密度差 2× 未测 */
+static int s_bleNotifyDivider = 2;
+
 /* ======================== 全局变量 ======================== */
 static unsigned long lastSampleTime = 0;
 static unsigned long frameCount = 0;
@@ -282,6 +286,94 @@ static bool parseRecorderCommand(const char* cmd, char* reply, size_t replyLen)
     if (strEqualsIgnoreCase(cmd, "WIFI_OFF")) {
         ecgWifiStop();
         snprintf(reply, replyLen, "WIFI_OFF ok");
+        return true;
+    }
+    /* DIAG 诊断命令 (WiFi beacon 专项, 2026-08-10) — 一次烧录, 运行时切换单变量:
+     *   DIAG              → 打印当前诊断配置
+     *   DIAG TXP <v>      → AP 发射功率 (0=跳过 setTxPower, 34=8.5dBm, 60=15dBm, 78=19.5dBm)
+     *   DIAG CH <1|6|11>  → AP 信道 (下次 WIFI_ON 生效)
+     *   DIAG SEQ <0|1>    → AP 启动序列 (1=PR#1865 式慢速 OFF→AP 切换 + setSleep(false))
+     *   DIAG NOTIFY <2|4> → BLE 通知分频 (2=250Hz, 4=125Hz)
+     *   DIAG AI <0|1>     → AI 推理开关
+     * 证据: WiFiManager PR#1865 (2.0.17 世代 S3 实测) / ESP-IDF#13508 / ESPHome#6456 */
+    if (strStartsWithIgnoreCase(cmd, "DIAG")) {
+        const char* arg = cmd + 4;
+        while (*arg == ' ') arg++;
+        int v = 0;
+        if (strEqualsIgnoreCase(arg, "") || strEqualsIgnoreCase(arg, "STATUS")) {
+            char ip[24];
+            ecgWifiDiagStaIp(ip, sizeof(ip));
+            snprintf(reply, replyLen, "DIAG txp=%d ch=%d seq=%d notify=%d ai=%d mode=%d sta=%d ip=%s",
+                     ecgWifiDiagGetTxPower(), ecgWifiDiagGetChannel(),
+                     ecgWifiDiagGetSeqSlow() ? 1 : 0, s_bleNotifyDivider,
+                     ai_inference_is_enabled() ? 1 : 0,
+                     ecgWifiDiagGetMode(), ecgWifiDiagStaStatus(), ip);
+            return true;
+        }
+        /* DIAG STA <ssid> <pass> — STA 连接测试 (候选D, 2026-08-10): AP_STA 共存,
+         * 不停止 AP; 状态由 DIAG (sta=/ip=) 查询 */
+        if (strStartsWithIgnoreCase(arg, "STA ") && strlen(arg) > 4) {
+            char ssid[33] = {0}, pass[65] = {0};
+            if (sscanf(arg + 4, "%32s %64s", ssid, pass) == 2) {
+                bool ok = ecgWifiDiagStaConnect(ssid, pass);
+                snprintf(reply, replyLen, "DIAG STA %s (ssid=%s, 状态用 DIAG 查询)",
+                         ok ? "connecting" : "fail", ssid);
+            } else {
+                snprintf(reply, replyLen, "DIAG STA fail (用法: DIAG STA <ssid> <pass>)");
+            }
+            return true;
+        }
+        if (strEqualsIgnoreCase(arg, "STAOFF")) {
+            ecgWifiDiagStaDisconnect();
+            snprintf(reply, replyLen, "DIAG STAOFF ok (回到纯 AP)");
+            return true;
+        }
+        if (strStartsWithIgnoreCase(arg, "TXP") && sscanf(arg + 3, "%d", &v) == 1) {
+            if (v == 0 || v == 34 || v == 60 || v == 78) {
+                ecgWifiDiagSetTxPower(v);
+                snprintf(reply, replyLen, "DIAG TXP %d ok (下次 WIFI_ON 生效)", v);
+            } else {
+                snprintf(reply, replyLen, "DIAG TXP fail (0|34|60|78)");
+            }
+            return true;
+        }
+        if (strStartsWithIgnoreCase(arg, "CH") && sscanf(arg + 2, "%d", &v) == 1) {
+            if (v == 1 || v == 6 || v == 11) {
+                ecgWifiDiagSetChannel(v);
+                snprintf(reply, replyLen, "DIAG CH %d ok (下次 WIFI_ON 生效)", v);
+            } else {
+                snprintf(reply, replyLen, "DIAG CH fail (1|6|11)");
+            }
+            return true;
+        }
+        if (strStartsWithIgnoreCase(arg, "SEQ") && sscanf(arg + 3, "%d", &v) == 1) {
+            if (v == 0 || v == 1) {
+                ecgWifiDiagSetSeqSlow(v == 1);
+                snprintf(reply, replyLen, "DIAG SEQ %d ok (下次 WIFI_ON 生效)", v);
+            } else {
+                snprintf(reply, replyLen, "DIAG SEQ fail (0|1)");
+            }
+            return true;
+        }
+        if (strStartsWithIgnoreCase(arg, "NOTIFY") && sscanf(arg + 6, "%d", &v) == 1) {
+            if (v == 2 || v == 4) {
+                s_bleNotifyDivider = v;
+                snprintf(reply, replyLen, "DIAG NOTIFY %d ok (%dHz)", v, 500 / v);
+            } else {
+                snprintf(reply, replyLen, "DIAG NOTIFY fail (2|4)");
+            }
+            return true;
+        }
+        if (strStartsWithIgnoreCase(arg, "AI") && sscanf(arg + 2, "%d", &v) == 1) {
+            if (v == 0 || v == 1) {
+                ai_inference_set_enabled(v == 1);
+                snprintf(reply, replyLen, "DIAG AI %d ok", v);
+            } else {
+                snprintf(reply, replyLen, "DIAG AI fail (0|1)");
+            }
+            return true;
+        }
+        snprintf(reply, replyLen, "DIAG fail (TXP|CH|SEQ|NOTIFY|AI)");
         return true;
     }
     return false;
@@ -605,14 +697,14 @@ void loop()
         /* ======== 步骤3.9：WiFi HTTP 请求轮询 (handleClient 空闲时 μs 级, 每迭代调用) ======== */
         ecgWifiProcess();
 
-        /* ======== 步骤4：通过 BLE 发送 (250Hz, 1帧/Notify) ======== */
+        /* ======== 步骤4：通过 BLE 发送 (默认 250Hz, 1帧/Notify; DIAG NOTIFY 可调) ======== */
         /* 每帧格式: clean,noisy,filtered,bpm,true_bpm,sqi,motion,abnormal,confidence;
          * 与串口 9 列一致 (2026-08-10 修复: 原仅 5 列, App 收不到 abnormal 致报警永不触发);
          * abnormal 取报警锁存值 (AI 新结果由 100Hz 块更新锁存), 锁存 5 秒与串口语义一致
          * 2026-08-10 修复2: 发送率 500Hz→250Hz (每 2 帧发 1 帧)。
          *   根因: 9 列解析修复后 App 每包解析全部帧, 数据率变 500Hz,
          *   而 App 缓冲/时间轴按 250Hz 设计 (timeWindow*250) → 速率错配致波形变形 */
-        if (frameCount % 2 == 0) {
+        if (frameCount % s_bleNotifyDivider == 0) {
             int len = snprintf(s_bleBuf, sizeof(s_bleBuf),
                                "%.3f,%.3f,%.3f,%u,%u,%.2f,%u,%u,%.2f;",
                                cleanSample, noisyNoDC, filteredSample,

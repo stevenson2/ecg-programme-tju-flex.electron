@@ -42,6 +42,15 @@ static WebServer* g_server = NULL;
 /** AP 是否已启动 */
 static bool g_wifiOn = false;
 
+/* ======================== 诊断配置 (DIAG 命令可调, 2026-08-10) ========================
+ * WiFi beacon 不可见专项: 8 轮最小二分全部通过, 正式固件全模块失败。
+ * 本组变量让"烧录一次, 运行时切换多变量"成为可能, 默认值 = 正式固件原行为。
+ * 证据来源: WiFiManager PR#1865 (2.0.17 世代 S3 实测)、ESP-IDF#13508 (RF 相关,
+ * TX power/信道/位置)、ESPHome#6456 + PlatformIO 社区 (N16R8 降 TX power 修复)。 */
+static int  s_diagTxPower = 78;    /* 0=跳过 setTxPower, 34=8.5dBm, 60=15dBm, 78=19.5dBm(原行为) */
+static int  s_diagChannel = 6;     /* AP 信道 (原行为=6) */
+static bool s_diagSeqSlow = false; /* true=PR#1865 式: WIFI_OFF→500ms→WIFI_AP→500ms→softAP→setSleep(false) */
+
 /* ======================== 内部辅助: 路径构建 ======================== */
 
 /** ECG 数据基础路径 (与 recorder 模块一致: ecg_recorder.cpp ECGR_BASE_PATH) */
@@ -539,20 +548,44 @@ bool ecgWifiStart(void)
     //  显式信道 6 / 广播不隐藏 / 最大连接 4)
     // 注: 已移除 STA 扫描诊断 (scanDelete 后切 AP 疑残留状态破坏 beacon)
     WiFi.mode(WIFI_AP);
+
+    /* 诊断序列 (DIAG SEQ 1, PR#1865 式): 先 WIFI_OFF 再 WIFI_AP, 带 500ms 延时。
+     * 证据: WiFiManager PR#1865 (2026-05, arduino 2.0.17 世代 S3 实测) 确认
+     * 快速模式切换会遗留不稳定状态致 S3/C3 softAP 不可见/不可连;
+     * esp-idf#17055 (N16R8, IDF5.5) 同样指向初始化顺序敏感。 */
+    if (s_diagSeqSlow) {
+        WiFi.mode(WIFI_OFF);
+        delay(500);
+        WiFi.mode(WIFI_AP);
+        delay(500);
+    }
+
     WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1),
                       IPAddress(255, 255, 255, 0));
-    bool apOk = WiFi.softAP(ssid.c_str(), ECG_WIFI_AP_PASSWORD, 6, 0, 4);
+    bool apOk = WiFi.softAP(ssid.c_str(), ECG_WIFI_AP_PASSWORD, s_diagChannel, 0, 4);
     if (!apOk) {
         Serial.println("[WiFi] ERROR: softAP failed");
         return false;
     }
     /* 最大发射功率须在 AP 启动后设置 (此前在 softAP 前调用触发
-     * 'Neither AP or STA has been started' 警告导致功率设置失败) */
-    WiFi.setTxPower(WIFI_POWER_19_5dBm);
-    Serial.printf("[WiFi] AP diag: mode=%d status=%d channel=%d mac=%s heap=%lu\n",
+     * 'Neither AP or STA has been started' 警告导致功率设置失败)
+     * 2026-08-10 诊断: 默认 19.5dBm (原行为)。DIAG TXP 0 跳过 / 34=8.5dBm / 60=15dBm。
+     * 证据: N16R8 上多例"降 TX power 修复" (ESPHome#6456 8.5dB, PlatformIO 社区
+     * esp_wifi_set_max_tx_power(40)=10dBm, arduino-esp32#6551 WIFI_POWER_8_5dBm);
+     * esp-idf#14008 提及 "S3 tx power 异常"。 */
+    if (s_diagTxPower > 0) {
+        WiFi.setTxPower((wifi_power_t)s_diagTxPower);
+    }
+    if (s_diagSeqSlow) {
+        /* 服务端模式关闭节能 (AP 模式本身不休眠, 双保险) */
+        WiFi.setSleep(false);
+        delay(500);
+    }
+    Serial.printf("[WiFi] AP diag: mode=%d status=%d channel=%d mac=%s heap=%lu txp=%d seq=%d\n",
                   (int)WiFi.getMode(), (int)WiFi.status(),
                   WiFi.channel(), WiFi.softAPmacAddress().c_str(),
-                  (unsigned long)ESP.getFreeHeap());
+                  (unsigned long)ESP.getFreeHeap(), s_diagTxPower,
+                  s_diagSeqSlow ? 1 : 0);
 
     // 启动 HTTP 服务器
     g_server->begin();
@@ -593,4 +626,48 @@ void ecgWifiProcess(void)
         // handleClient() 在空闲时极廉价 (微秒级), 每迭代调用一次即可
         g_server->handleClient();
     }
+}
+
+/* ======================== 诊断配置实现 (DIAG 命令, 2026-08-10) ======================== */
+
+void ecgWifiDiagSetTxPower(int v) { s_diagTxPower = v; }
+void ecgWifiDiagSetChannel(int v) { s_diagChannel = v; }
+void ecgWifiDiagSetSeqSlow(bool v) { s_diagSeqSlow = v; }
+int  ecgWifiDiagGetTxPower(void) { return s_diagTxPower; }
+int  ecgWifiDiagGetChannel(void) { return s_diagChannel; }
+bool ecgWifiDiagGetSeqSlow(void) { return s_diagSeqSlow; }
+
+/* ======================== STA 测试实现 (候选D, 2026-08-10) ======================== */
+
+bool ecgWifiDiagStaConnect(const char* ssid, const char* pass)
+{
+    if (!ssid || !pass || strlen(ssid) == 0) return false;
+    /* AP_STA 共存: 不停止 AP, 追加 STA 连接 (验证 WiFi TX/RX 全链路)。
+     * WiFi.begin 非阻塞, 状态由 ecgWifiDiagStaStatus / ecgWifiDiagStaIp 查询。 */
+    WiFi.mode(WIFI_AP_STA);
+    WiFi.begin(ssid, pass);
+    return true;
+}
+
+void ecgWifiDiagStaDisconnect(void)
+{
+    WiFi.disconnect();
+    WiFi.mode(WIFI_AP);
+}
+
+int ecgWifiDiagStaStatus(void)
+{
+    return (int)WiFi.status();
+}
+
+void ecgWifiDiagStaIp(char* buf, size_t len)
+{
+    if (!buf || len == 0) return;
+    IPAddress ip = WiFi.localIP();
+    snprintf(buf, len, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
+}
+
+int ecgWifiDiagGetMode(void)
+{
+    return (int)WiFi.getMode();
 }

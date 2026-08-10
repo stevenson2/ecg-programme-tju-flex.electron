@@ -68,6 +68,47 @@
 - 烧录:pio run -t upload(设备 COM4 在线);串口命令 WIFI_ON/WIFI_OFF/REC_STATUS
 - git:主线 88e1854,全部推送 gitee;TH 至三十七章
 
+## 研究结论更新 (2026-08-10 第二轮, 详见 TUNING_HISTORY.md 三十八章)
+
+**社区证据修正**: #13508 本身就是"SoftAP 在 S3 不可见"同症状 open issue (In Progress, 无官方修复);
+LEDC 40MHz 案例是其 comment 13 (GPIO21/XTAL_CLK, 禁用即恢复, 无官方解释); comment 14 = 天线焊接修复。
+最强软件路径证据 = WiFiManager PR#1865 (2026-05, arduino 2.0.17 世代 S3 实测): 快速模式切换/预加载扫描/
+STA disable 时序/channel 1 负载不稳 → 修复序列 WIFI_OFF→500ms→WIFI_AP→500ms→softAP(ch6)→500ms。
+官方共存文档建议 WiFi 任务与 BT 任务分核 (本站全绑 Core 0); 分核可行: platformio.ini 加
+build_flags `-DCONFIG_ESP32_WIFI_TASK_PINNED_TO_CORE_1=1` 即可 (wifi_task_core_id 是运行时 init 字段)。
+
+**源码审计新差异 (8 轮二分未覆盖)**:
+1. `WiFi.setTxPower(WIFI_POWER_19_5dBm)` (softAP 后) — 唯一未单独测试的 WiFi 配置调用;
+2. BLE notify 实际 250Hz, 二分仅测过 125Hz;
+3. 固件无 LEDC/PSRAM/ADC2 使用 → 候选 E/F/ADC 论排除;
+4. NVS 擦除 (pio run -t erase, README 分区 v2 后本就要求) 是零代码高价值第一步。
+
+**诊断固件已就绪 (pio run 通过)**: 新增 DIAG 命令 (串口+BLE 双通道):
+`DIAG TXP <0|34|60|78>` / `DIAG CH <1|6|11>` / `DIAG SEQ <0|1>` / `DIAG NOTIFY <2|4>` / `DIAG AI <0|1>` / `DIAG`(状态)。
+默认值 = 正式固件原行为。实验矩阵 0-10 步见 TH 三十八章 §2。
+
+## 执行结果 (2026-08-10 第三轮→结论反转, 详见 TUNING_HISTORY.md 三十八章 §3)
+
+**🎯 结论反转: AP 功能完全正常, 此前全部"不可见"判定为测量假象** (2026-08-10 末轮)
+
+主动连接测试 (netsh wlan connect + profile) 证明:
+- PC 网卡成功关联 ESP32-ECG-3E8C (BSSID 匹配, WPA2, ch6), 信号 96% / RSSI -17dBm
+- DHCP 正常 (PC 获 192.168.4.2), HTTP GET /api/records → **200 OK**
+- 网卡连接 2.4GHz 后扫描恢复: 42 网络, **ESP32-ECG 立即可见**
+
+**两层测量假象**:
+1. **PC 网卡扫描盲区**: Realtek 8852CE "Preferred Band=5G first" — 连接 5GHz 时不报告
+   2.4GHz 网络 → 所有 netsh HIDDEN (矩阵/minap/分核) 均为假象
+2. **串口复位**: "打开-关闭"串口触发 USB-Serial-JTAG 复位 → 命令设置丢失、AP 状态不确定
+   → 早期矩阵无效
+
+**用户症状的可能解释**: 关闭串口/monitor 会复位设备, AP (命令启动) 随之停止 → 手机搜不到。
+**请按正确流程复测**: 保持 pio device monitor 打开 → 发 WIFI_ON → 手机看 WiFi 列表。
+PC 端"搜不到"可用 5G first 扫描盲区解释 (用户电脑同理)。
+
+**诊断工具 (保留在固件, 默认行为与原固件一致)**: DIAG TXP/CH/SEQ/NOTIFY/AI/STA/STAOFF。
+PC 端: ESP32-ECG-3E8C profile 已建 (手动模式), netsh wlan connect name=ESP32-ECG-3E8C 可直接连。
+
 ## 约束
 - 不回退已完成功能(BLE 报警链路/存储/云端)
 - 固件改动 pio run 必须通过;烧录/命令先告知用户

@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>   /* size_t (ecgWifiDiagStaIp) */
 
 #ifdef __cplusplus
 extern "C" {
@@ -86,6 +87,43 @@ bool ecgWifiIsOn(void);
  * 空闲时极廉价 (微秒级), 建议每迭代调用一次。
  */
 void ecgWifiProcess(void);
+
+/* ======================== 诊断配置 API (WiFi beacon 专项, 2026-08-10) ========================
+ * 由 main.cpp 的 DIAG 命令 (串口+BLE 双通道) 调用。
+ * 所有设置仅影响下一次 ecgWifiStart(), 默认值与正式固件行为完全一致。
+ */
+
+/** @brief 设置下次 WIFI_ON 的 AP 发射功率策略 (0=跳过 setTxPower, 34=8.5dBm, 78=19.5dBm) */
+void ecgWifiDiagSetTxPower(int v);
+
+/** @brief 设置下次 WIFI_ON 的 AP 信道 (合法值 1/6/11) */
+void ecgWifiDiagSetChannel(int v);
+
+/** @brief 设置 AP 启动序列 (false=当前快速序列, true=PR#1865 式慢速 OFF→AP 切换 + setSleep(false)) */
+void ecgWifiDiagSetSeqSlow(bool v);
+
+int  ecgWifiDiagGetTxPower(void);
+int  ecgWifiDiagGetChannel(void);
+bool ecgWifiDiagGetSeqSlow(void);
+
+/* ======================== STA 测试 API (候选D, 2026-08-10) ========================
+ * DIAG STA <ssid> <pass> 使用: 以 AP_STA 共存模式连接真实路由器,
+ * 验证 WiFi TX/RX 全链路 (对照 AP beacon 不可见问题)。不停止 AP。 */
+
+/** @brief 发起 STA 连接 (AP 保持运行, AP_STA 共存), 非阻塞 */
+bool ecgWifiDiagStaConnect(const char* ssid, const char* pass);
+
+/** @brief 断开 STA, 回到纯 AP 模式 */
+void ecgWifiDiagStaDisconnect(void);
+
+/** @brief 当前 STA 状态 (arduino wl_status_t 数值: 0=IDLE, 3=CONNECTED 等) */
+int ecgWifiDiagStaStatus(void);
+
+/** @brief STA 获取的 IP 字符串 (未连接为 "0.0.0.0") */
+void ecgWifiDiagStaIp(char* buf, size_t len);
+
+/** @brief 当前 WiFi 模式 (arduino wifi_mode_t 数值: 1=STA, 2=AP, 3=AP_STA) */
+int ecgWifiDiagGetMode(void);
 
 #ifdef __cplusplus
 }
