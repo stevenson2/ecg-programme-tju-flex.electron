@@ -152,15 +152,16 @@ class BLEService {
 
   /// 收到 CSV 数据：解析为 ECGSample
   /// CSV 格式: clean,noisy,filtered,bpm,true_bpm,sqi,motion,abnormal_flag,confidence
+  /// 固件 4 帧以 ';' 批量拼接，按帧分割解析（2026-08-10 修复多帧错位）
   void _onDataReceived(List<int> value) {
     final str = utf8.decode(value).trim();
     if (str.isEmpty) return;
 
-    // 解析逻辑抽离至 csv_parser.dart 的纯函数（行为与原内联解析一致）
-    final sample = parseEcgCsvLine(str);
-    if (sample == null) return;
-
-    _dataController.add(sample);
+    // 按 ';' 分割批量帧，逐帧解析（parseBleFrames 内跳过无效帧）
+    final samples = parseBleFrames(str);
+    for (final sample in samples) {
+      _dataController.add(sample);
+    }
   }
 
   /**

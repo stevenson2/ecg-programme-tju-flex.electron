@@ -52,3 +52,22 @@ ECGSample? parseEcgCsvLine(String line) {
     return null;
   }
 }
+
+/**
+ * 解析一次 BLE Notify 收到的批量帧数据（固件 4 帧以 ';' 拼接，每帧 9 列）。
+ * 2026-08-10 修复：原实现把整串当一行解析，多帧拼接导致 abnormal 列错位，
+ * App 报警状态机在真实 BLE 链路下无法触发。
+ *
+ * 返回非 null 的样本列表（无效帧自动跳过）。
+ */
+List<ECGSample> parseBleFrames(String raw) {
+  final result = <ECGSample>[];
+  final frames = raw.split(';');
+  for (final frame in frames) {
+    final sample = parseEcgCsvLine(frame);
+    if (sample != null) {
+      result.add(sample);
+    }
+  }
+  return result;
+}

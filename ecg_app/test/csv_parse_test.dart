@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ecg_app/services/csv_parser.dart';
 
@@ -73,6 +73,38 @@ void main() {
       expect(sample, isNotNull);
       expect(sample!.clean, closeTo(0.1, 1e-9));
       expect(sample.bpm, 70);
+    });
+  });
+
+  group('parseBleFrames 批量帧分割 (2026-08-10 BLE 9 列修复)', () {
+    test('4 帧拼接解析为 4 个样本, abnormal/confidence 正确', () {
+      final raw = '0.1,0.2,0.3,75,75,0.66,0,1,0.870;'
+          '0.2,0.3,0.4,76,75,0.66,0,0,0.010;'
+          '0.3,0.4,0.5,77,75,0.66,0,1,0.930;'
+          '0.4,0.5,0.6,78,75,0.66,0,0,0.020;';
+      final samples = parseBleFrames(raw);
+      expect(samples.length, 4);
+      expect(samples[0].abnormal, 1);
+      expect(samples[0].confidence, closeTo(0.870, 1e-9));
+      expect(samples[1].abnormal, 0);
+      expect(samples[2].abnormal, 1);
+      expect(samples[2].confidence, closeTo(0.930, 1e-9));
+      expect(samples[3].bpm, 78);
+    });
+
+    test('无效帧(空段/截断)自动跳过', () {
+      final raw = '0.1,0.2,0.3,75,75,0.66,0,1,0.870;;'
+          'abc,def;;0.2,0.3;';
+      final samples = parseBleFrames(raw);
+      expect(samples.length, 1);
+      expect(samples[0].abnormal, 1);
+    });
+
+    test('单帧(无分号)也能解析', () {
+      final samples = parseBleFrames('0.1,0.2,0.3,70,75,0.66,0,1,0.5');
+      expect(samples.length, 1);
+      expect(samples[0].abnormal, 1);
+      expect(samples[0].confidence, closeTo(0.5, 1e-9));
     });
   });
 }

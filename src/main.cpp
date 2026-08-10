@@ -591,13 +591,16 @@ void loop()
         ecgWifiProcess();
 
         /* ======== 步骤4：通过 BLE 发送 (4帧批量打包) ======== */
-        /* 每帧格式: clean,noisy,filtered,bpm,sqi; */
+        /* 每帧格式: clean,noisy,filtered,bpm,true_bpm,sqi,motion,abnormal,confidence;
+         * 与串口 9 列一致 (2026-08-10 修复: 原仅 5 列, App 收不到 abnormal 致报警永不触发);
+         * abnormal 取报警锁存值 (AI 新结果由 100Hz 块更新锁存), 锁存 5 秒与串口语义一致 */
         /* 满4帧或连接断开前统一 Notify，大幅降低 BLE 协议开销 */
-        int len = snprintf(s_bleBuf + s_bleBufLen, 
+        int len = snprintf(s_bleBuf + s_bleBufLen,
                            sizeof(s_bleBuf) - s_bleBufLen,
-                           "%.3f,%.3f,%.3f,%u,%.2f;",
+                           "%.3f,%.3f,%.3f,%u,%u,%.2f,%u,%u,%.2f;",
                            cleanSample, noisyNoDC, filteredSample,
-                           hr.bpm, hr.sqi);
+                           hr.bpm, 0u, hr.sqi, 0u,
+                           (s_alarmHold > 0) ? 1u : 0u, s_alarmHoldConf);
         if (len > 0) s_bleBufLen += len;
         
         if (frameCount % BLE_BATCH_SIZE == 0 && s_bleBufLen > 0) {
