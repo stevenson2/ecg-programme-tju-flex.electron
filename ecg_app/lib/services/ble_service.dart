@@ -144,6 +144,21 @@ class BLEService {
         }
       });
 
+      // ★ 2026-08-10 候选修复 (遗留A: 重连后波形分辨率低):
+      // 连接成功后请求高优先级连接参数 (Android), 收紧连接间隔,
+      // 提升 notify 实际数据率 (固件广播建议 7.5-22.5ms, 但 Android
+      // 重连时常忽略建议用默认大间隔 → 数据率下降 → App 按固定 250Hz
+      // 绘制导致时间轴压缩/波形变糊)。失败无副作用, 静默忽略。
+      // 注意: flutter_blue_plus 1.36.x API 为命名参数
+      // requestConnectionPriority({required connectionPriorityRequest})
+      try {
+        await device.requestConnectionPriority(
+          connectionPriorityRequest: ConnectionPriority.high,
+        );
+      } catch (_) {
+        // 平台不支持 (iOS) 或协商失败 → 保持系统默认
+      }
+
       return _txChar != null;
     } catch (e) {
       return false;
