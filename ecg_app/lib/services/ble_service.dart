@@ -170,18 +170,25 @@ class BLEService {
    * 通过 NUS RX Characteristic (6E400003-...) 以 Write Without Response
    * 方式发送字符串命令。测试模式下优先使用 commandWriteCallback。
    *
-   * @param cmd 待发送的命令字符串（如 "RECORDS:LIST"）
+   * ★ 2026-08-10 修复: 命令追加 '\n' 结束符。
+   * 固件 BLE 命令解析器 (ble.cpp RxCallbacks) 仅收到 '\n'/'\r'/'\0' 时才提交
+   * 命令——此前 App 发送裸字节 (无结束符), 命令永久卡在固件行缓冲,
+   * 定时录制等 BLE 命令从未送达设备 (真机 count=0, 仅单元测试 mock 通过)。
+   *
+   * @param cmd 待发送的命令字符串（如 "REC_START"）
    */
   Future<void> sendCommand(String cmd) async {
     final writer = commandWriteCallback;
+    // 统一追加 '\n' (0x0A) 命令结束符, 真实 BLE 与测试接缝行为一致
+    final payload = <int>[...cmd.codeUnits, 0x0A];
     if (writer != null) {
-      await writer(cmd.codeUnits);
+      await writer(payload);
       return;
     }
     if (_rxChar == null) {
       return;
     }
-    await _rxChar!.write(cmd.codeUnits, withoutResponse: true);
+    await _rxChar!.write(payload, withoutResponse: true);
   }
 
   /// 断开连接

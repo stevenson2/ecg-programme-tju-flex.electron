@@ -450,6 +450,16 @@ void setup()
      * 必须在 SPIFFS 挂载后、loop() 前调用 */
     ecgWifiInit();
 
+    /* 2026-08-10 修复: 上电自动启动 AP (阶段B 产品行为)。
+     * 背景: 串口打开/关闭触发 USB-Serial-JTAG 复位 (arduino-esp32 USB CDC
+     * DTR 传统行为), 而 AP 为命令启动 → 串口一关设备即复位、AP 消失,
+     * 手机/电脑无法连接 (用户实测"只有串口开着 WiFi 才能用")。
+     * 改为 boot 自动启动后, 串口开关/设备重启均不影响 AP 可用性。
+     * 保留 WIFI_OFF 命令可手动关闭 (省电场景)。 */
+    if (!ecgWifiStart()) {
+        Serial.println("[WiFi] 自动启动 AP 失败, 可用 WIFI_ON 手动启动");
+    }
+
     /* 初始化 AI 推理模块 (Core 0) */
     if (ai_inference_init()) {
         Serial.println("[AI] 异常检测推理引擎已启动 (Core 0)");

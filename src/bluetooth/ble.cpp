@@ -43,6 +43,8 @@ static QueueHandle_t         s_cmdQueue  = NULL;
 /* RX 行缓冲: 累加字节直到 '\n' 或 '\0' */
 static char  s_rxLineBuf[64] = {0};
 static int   s_rxLineLen     = 0;
+/* 最后接收字节时间 (防御: 兼容无 '\n' 结束符的命令, 2026-08-10) */
+static unsigned long s_lastRxMs = 0;
 
 /* ======================== 连接回调 ======================== */
 
@@ -86,6 +88,7 @@ class RxCallbacks : public BLECharacteristicCallbacks
                 }
             } else if (s_rxLineLen < (int)(sizeof(s_rxLineBuf) - 1)) {
                 s_rxLineBuf[s_rxLineLen++] = c;
+                s_lastRxMs = millis();   /* 记录最后接收时刻 (超时提交用) */
             }
             /* 缓冲区满 → 静默丢弃该字节 (防止溢出) */
         }
@@ -177,6 +180,16 @@ bool isBLEConnected(void)
 bool bleCommandQueueTake(char* out, size_t len)
 {
     if (!s_cmdQueue || !out || len == 0) return false;
+
+    /* 2026-08-10 防御: BLE 命令超时提交 — 兼容不带 '\n' 结束符的客户端
+     * (App 旧版 sendCommand 未追加换行, 命令永久卡在行缓冲, 定时录制
+     * 等 BLE 命令从未送达)。距最后接收 >100ms 且行缓冲非空 → 视为
+     * 命令结束并提交。带 '\n' 的客户端不受影响 (收到结束符即提交)。 */
+    if (s_rxLineLen > 0 && (millis() - s_lastRxMs) > 100) {
+        s_rxLineBuf[s_rxLineLen] = '\0';
+        xQueueSend(s_cmdQueue, s_rxLineBuf, 0);
+        s_rxLineLen = 0;
+    }
 
     char buf[32];
     if (xQueueReceive(s_cmdQueue, buf, 0) != pdTRUE) return false;
