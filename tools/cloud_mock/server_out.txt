@@ -1,0 +1,18 @@
+ECG Cloud Mock Server 启动于 http://127.0.0.1:8000
+数据目录: C:\Users\cai\OneDrive\Desktop\Fe programme 25261\ecg-programme-tju-flex.electron-master\tools\cloud_mock\data
+认证 token: dev-token
+按 Ctrl+C 停止服务
+[SERVER] "POST /v1/records HTTP/1.1" 400 -
+[SERVER] "POST /v1/records//analyze HTTP/1.1" 404 -
+[SERVER] "GET /v1/records//report HTTP/1.1" 404 -
+[SERVER] "GET /v1/users/u1/records HTTP/1.1" 200 -
+[SERVER] "GET /v1/records//report HTTP/1.1" 404 -
+[SERVER] "POST /v1/records HTTP/1.1" 400 -
+[SERVER] "POST /v1/records HTTP/1.1" 400 -
+[SERVER] "POST /v1/records HTTP/1.1" 400 -
+[SERVER] "POST /v1/records//analyze HTTP/1.1" 404 -
+[SERVER] "GET /v1/records//report HTTP/1.1" 404 -
+[SERVER] "GET /v1/users/u1/records HTTP/1.1" 200 -
+[SERVER] "GET /v1/records//report HTTP/1.1" 404 -
+[SERVER] "POST /v1/records HTTP/1.1" 400 -
+[SERVER] "POST /v1/records HTTP/1.1" 400 -

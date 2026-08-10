@@ -4,21 +4,26 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../services/record_api.dart';
+import '../services/ecg_record_codec.dart';
+import '../services/upload_service.dart';
+import '../services/upload_queue.dart';
 
 /**
  * @file record_list_page.dart
- * @brief 记录列表页面：AP 连接引导 + 记录下载与管理
+ * @brief 记录列表页面：AP 连接引导 + 记录下载/上传/管理
  *
  * 功能：
  *   1. AP 连接引导横幅（中文，含热点名与密码）
- *   2. 记录列表（ID / 时长 / 大小 / 异常徽章）
- *   3. 逐条下载（保存至 downloadDir/ecg_records/<id>.ecgr）
- *   4. 逐条删除（调用 DELETE API 后刷新列表）
- *   5. 空状态提示
+ *   2. 队列状态栏（待上传计数 + 一键处理）
+ *   3. 记录列表（ID / 时长 / 大小 / 异常徽章 + 上传状态）
+ *   4. 逐条下载（保存至 downloadDir/ecg_records/<id>.ecgr）
+ *   5. 逐条删除（调用 DELETE API 后刷新列表）
+ *   6. 逐条上传（云端 upload → analyze → report）
+ *   7. 空状态提示
  *
- * 可注入 RecordApi + Directory downloadDir 以支持测试。
+ * 可注入 RecordApi / CloudUploadService / UploadQueue / Directory downloadDir
+ * 以支持测试。
  */
-
 class RecordListPage extends StatefulWidget {
   /** HTTP 客户端（测试中可注入 MockClient 构造的 RecordApi） */
   final RecordApi api;
@@ -26,7 +31,19 @@ class RecordListPage extends StatefulWidget {
   /** 下载目标目录（测试中可注入临时目录；null 时使用应用文档目录） */
   final Directory? downloadDir;
 
-  const RecordListPage({super.key, required this.api, this.downloadDir});
+  /** 云端上传服务（null 时创建默认实例） */
+  final CloudUploadService? uploadService;
+
+  /** 上传队列（null 时从 downloadDir 自动创建） */
+  final UploadQueue? uploadQueue;
+
+  const RecordListPage({
+    super.key,
+    required this.api,
+    this.downloadDir,
+    this.uploadService,
+    this.uploadQueue,
+  });
 
   @override
   State<RecordListPage> createState() => _RecordListPageState();
@@ -37,11 +54,50 @@ class _RecordListPageState extends State<RecordListPage> {
   bool _loading = false;
   String? _error;
   final Set<int> _downloadingIds = {};
+  final Set<int> _uploadingIds = {};
+
+  late final CloudUploadService _uploadService;
+  late final UploadQueue _uploadQueue;
+  bool _queueReady = false;
+  String _downloadDirPath = '';
 
   @override
   void initState() {
     super.initState();
+    _initQueue();
     _refresh();
+  }
+
+  /** 初始化上传队列（注入或创建默认） */
+  Future<void> _initQueue() async {
+    _uploadService = widget.uploadService ?? CloudUploadService();
+
+    final dir = await _getDownloadDir();
+    _downloadDirPath = dir.path;
+
+    if (widget.uploadQueue != null) {
+      _uploadQueue = widget.uploadQueue!;
+    } else {
+      _uploadQueue = UploadQueue(
+        service: _uploadService,
+        pendingDir: dir,
+      );
+    }
+
+    await _uploadQueue.load();
+    if (mounted) {
+      setState(() => _queueReady = true);
+      // 自动处理队列中 pending 项
+      _processQueue();
+    }
+  }
+
+  /** 处理上传队列 */
+  Future<void> _processQueue() async {
+    await _uploadQueue.processAll();
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   /** 刷新记录列表 */
@@ -80,6 +136,11 @@ class _RecordListPageState extends State<RecordListPage> {
       await dir.create(recursive: true);
     }
     return dir;
+  }
+
+  /** 获取已下载记录的文件路径（同步，依赖 _downloadDirPath 已初始化） */
+  String _getEcgrPathSync(int id) {
+    return '$_downloadDirPath/$id.ecgr';
   }
 
   /** 删除记录 */
@@ -135,6 +196,69 @@ class _RecordListPageState extends State<RecordListPage> {
     }
   }
 
+  /** 上传记录到云端 */
+  Future<void> _uploadRecord(RecordInfo info) async {
+    if (_uploadingIds.contains(info.id)) return;
+
+    final ecgrPath = _getEcgrPathSync(info.id);
+    final file = File(ecgrPath);
+
+    if (!await file.exists()) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('请先下载记录文件再上传'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return;
+    }
+
+    setState(() => _uploadingIds.add(info.id));
+
+    try {
+      final bytes = await file.readAsBytes();
+      final record = EcgRecordCodec.decode(bytes);
+      if (record == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('文件解码失败，无法上传'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
+
+      await _uploadQueue.enqueue(ecgrPath, record);
+      await _processQueue();
+
+      if (mounted) {
+        final status = _uploadQueue.statusOf(ecgrPath);
+        final msg = status == QueueStatus.done ? '上传成功' : '上传失败，已加入队列';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(msg),
+            duration: const Duration(seconds: 2),
+            backgroundColor: status == QueueStatus.done ? Colors.green : null,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('上传失败: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _uploadingIds.remove(info.id));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -147,6 +271,7 @@ class _RecordListPageState extends State<RecordListPage> {
       body: Column(
         children: [
           _buildApGuideBanner(),
+          if (_queueReady) _buildQueueBar(),
           Expanded(child: _buildBody()),
         ],
       ),
@@ -157,7 +282,7 @@ class _RecordListPageState extends State<RecordListPage> {
   Widget _buildApGuideBanner() {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.all(8),
+      margin: const EdgeInsets.fromLTRB(8, 8, 8, 4),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: const Color(0xFF1A1A2E),
@@ -201,6 +326,67 @@ class _RecordListPageState extends State<RecordListPage> {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  /** 上传队列状态栏 */
+  Widget _buildQueueBar() {
+    final pendingCount = _uploadQueue.pendingCount;
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A1A2E),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: pendingCount > 0
+              ? Colors.orange.withValues(alpha: 0.4)
+              : const Color(0xFF00BFFF).withValues(alpha: 0.2),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.cloud_upload,
+            color: pendingCount > 0 ? Colors.orange : const Color(0xFF00BFFF),
+            size: 18,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            pendingCount > 0 ? '上传队列: $pendingCount 条待处理' : '上传队列: 已全部完成',
+            style: TextStyle(
+              color: pendingCount > 0 ? Colors.orange : Colors.white54,
+              fontSize: 13,
+            ),
+          ),
+          const Spacer(),
+          if (pendingCount > 0)
+            GestureDetector(
+              onTap: () {
+                _processQueue().then((_) {
+                  if (mounted) setState(() {});
+                });
+              },
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '立即上传',
+                    style: TextStyle(
+                      color: Color(0xFF00BFFF),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(width: 2),
+                  Icon(Icons.arrow_forward, color: Color(0xFF00BFFF), size: 14),
+                ],
+              ),
+            ),
         ],
       ),
     );
@@ -259,6 +445,7 @@ class _RecordListPageState extends State<RecordListPage> {
   /** 单条记录卡片 */
   Widget _buildRecordCard(RecordInfo info) {
     final isDownloading = _downloadingIds.contains(info.id);
+    final isUploading = _uploadingIds.contains(info.id);
     final sizeKB = (info.size / 1024).toStringAsFixed(1);
 
     return Card(
@@ -298,6 +485,9 @@ class _RecordListPageState extends State<RecordListPage> {
                                 color: Colors.redAccent, fontSize: 11),
                           ),
                         ),
+                      const SizedBox(width: 6),
+                      // 上传状态标识
+                      if (_queueReady) _buildUploadStatus(info.id),
                     ],
                   ),
                   const SizedBox(height: 4),
@@ -310,6 +500,15 @@ class _RecordListPageState extends State<RecordListPage> {
               ),
             ),
             // 右侧操作按钮
+            if (isUploading)
+              const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                    strokeWidth: 2, color: Color(0xFF00BFFF)),
+              )
+            else
+              _buildUploadButton(info),
             isDownloading
                 ? const SizedBox(
                     width: 24,
@@ -340,4 +539,44 @@ class _RecordListPageState extends State<RecordListPage> {
       ),
     );
   }
+
+  /** 上传状态标识（inline 小图标 + 文字） */
+  Widget _buildUploadStatus(int recordId) {
+    final ecgrPath = _getEcgrPathSync(recordId);
+    final status = _uploadQueue.statusOf(ecgrPath);
+
+    switch (status) {
+      case QueueStatus.pending:
+        return const Icon(Icons.hourglass_empty, size: 14, color: Colors.grey);
+      case QueueStatus.done:
+        return const Icon(Icons.check_circle, size: 14, color: Colors.green);
+      case QueueStatus.failed:
+        return const Icon(Icons.error, size: 14, color: Colors.redAccent);
+      case QueueStatus.uploading:
+        return const SizedBox(
+          width: 14,
+          height: 14,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        );
+      case QueueStatus.unknown:
+        return const SizedBox.shrink(); // 未入队，不显示
+    }
+  }
+
+  /** 上传按钮（仅在队列就绪后显示） */
+  Widget _buildUploadButton(RecordInfo info) {
+    if (!_queueReady) {
+      return const SizedBox(width: 36, height: 36);
+    }
+
+    return IconButton(
+      icon: const Icon(Icons.cloud_upload, size: 20),
+      color: const Color(0xFF00BFFF),
+      tooltip: '上传到云端',
+      onPressed: () => _uploadRecord(info),
+      constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+      padding: EdgeInsets.zero,
+    );
+  }
+
 }
