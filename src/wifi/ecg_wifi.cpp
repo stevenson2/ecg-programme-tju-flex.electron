@@ -534,12 +534,25 @@ bool ecgWifiStart(void)
     }
 
     // 启动 SoftAP
-    // WiFi.softAPConfig 可选, 默认 IP 192.168.4.1
-    bool apOk = WiFi.softAP(ssid.c_str(), ECG_WIFI_AP_PASSWORD);
+    // 2026-08-10 排查: 手机/电脑均搜不到 beacon → 显式 AP 模式 + 显式配置
+    // (softAP 前先 WiFi.mode(WIFI_AP), 避免 macAddress() 残留 STA 模式状态;
+    //  显式信道 6 / 广播不隐藏 / 最大连接 4)
+    // 注: 已移除 STA 扫描诊断 (scanDelete 后切 AP 疑残留状态破坏 beacon)
+    WiFi.mode(WIFI_AP);
+    WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1),
+                      IPAddress(255, 255, 255, 0));
+    bool apOk = WiFi.softAP(ssid.c_str(), ECG_WIFI_AP_PASSWORD, 6, 0, 4);
     if (!apOk) {
         Serial.println("[WiFi] ERROR: softAP failed");
         return false;
     }
+    /* 最大发射功率须在 AP 启动后设置 (此前在 softAP 前调用触发
+     * 'Neither AP or STA has been started' 警告导致功率设置失败) */
+    WiFi.setTxPower(WIFI_POWER_19_5dBm);
+    Serial.printf("[WiFi] AP diag: mode=%d status=%d channel=%d mac=%s heap=%lu\n",
+                  (int)WiFi.getMode(), (int)WiFi.status(),
+                  WiFi.channel(), WiFi.softAPmacAddress().c_str(),
+                  (unsigned long)ESP.getFreeHeap());
 
     // 启动 HTTP 服务器
     g_server->begin();

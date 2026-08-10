@@ -80,8 +80,10 @@ typedef enum {
 } InputSource;
 
 /* ======================== BLE 批量打包 ======================== */
-#define BLE_BATCH_SIZE   4            /* 每4帧合包一次 */
-#define BLE_BUF_SIZE     (64 * BLE_BATCH_SIZE + 4)  /* 约 260 字节 buffer */
+/* 2026-08-10: 9 列帧后 4 帧/包达 25KB/s 超 BLE 4.2 实际吞吐 → 波形错乱;
+ * 改为 2 帧/包 (12.5KB/s 安全区), 保留 9 列报警链路 */
+#define BLE_BATCH_SIZE   2            /* 每2帧合包一次 */
+#define BLE_BUF_SIZE     (64 * BLE_BATCH_SIZE + 4)  /* 约 132 字节 buffer */
 static char s_bleBuf[BLE_BUF_SIZE];
 static int  s_bleBufLen = 0;
 
@@ -603,23 +605,22 @@ void loop()
         /* ======== 步骤3.9：WiFi HTTP 请求轮询 (handleClient 空闲时 μs 级, 每迭代调用) ======== */
         ecgWifiProcess();
 
-        /* ======== 步骤4：通过 BLE 发送 (4帧批量打包) ======== */
+        /* ======== 步骤4：通过 BLE 发送 (250Hz, 1帧/Notify) ======== */
         /* 每帧格式: clean,noisy,filtered,bpm,true_bpm,sqi,motion,abnormal,confidence;
          * 与串口 9 列一致 (2026-08-10 修复: 原仅 5 列, App 收不到 abnormal 致报警永不触发);
-         * abnormal 取报警锁存值 (AI 新结果由 100Hz 块更新锁存), 锁存 5 秒与串口语义一致 */
-        /* 满4帧或连接断开前统一 Notify，大幅降低 BLE 协议开销 */
-        int len = snprintf(s_bleBuf + s_bleBufLen,
-                           sizeof(s_bleBuf) - s_bleBufLen,
-                           "%.3f,%.3f,%.3f,%u,%u,%.2f,%u,%u,%.2f;",
-                           cleanSample, noisyNoDC, filteredSample,
-                           hr.bpm, 0u, hr.sqi, 0u,
-                           (s_alarmHold > 0) ? 1u : 0u, s_alarmHoldConf);
-        if (len > 0) s_bleBufLen += len;
-        
-        if (frameCount % BLE_BATCH_SIZE == 0 && s_bleBufLen > 0) {
-            sendBLEMessage(s_bleBuf);
-            s_bleBuf[0] = '\0';
-            s_bleBufLen = 0;
+         * abnormal 取报警锁存值 (AI 新结果由 100Hz 块更新锁存), 锁存 5 秒与串口语义一致
+         * 2026-08-10 修复2: 发送率 500Hz→250Hz (每 2 帧发 1 帧)。
+         *   根因: 9 列解析修复后 App 每包解析全部帧, 数据率变 500Hz,
+         *   而 App 缓冲/时间轴按 250Hz 设计 (timeWindow*250) → 速率错配致波形变形 */
+        if (frameCount % 2 == 0) {
+            int len = snprintf(s_bleBuf, sizeof(s_bleBuf),
+                               "%.3f,%.3f,%.3f,%u,%u,%.2f,%u,%u,%.2f;",
+                               cleanSample, noisyNoDC, filteredSample,
+                               hr.bpm, 0u, hr.sqi, 0u,
+                               (s_alarmHold > 0) ? 1u : 0u, s_alarmHoldConf);
+            if (len > 0) {
+                sendBLEMessage(s_bleBuf);
+            }
         }
 
         /* ======== 步骤5：串口输出（PC 绘图仪使用） ======== */
