@@ -16,6 +16,7 @@
 
 #include "ai_inference/ai_inference.h"
 #include "ai_inference/tflite_settings.h"
+#include "filter/filter.h"   /* aiApplyFilterWindow (零相位 0.5Hz, 2026-08-10) */
 
 /* TFLite Micro */
 #include <tensorflow/lite/micro/all_ops_resolver.h>
@@ -122,6 +123,10 @@ static ai_result_t run_single_inference(const float* samples, uint32_t sample_in
 
     float local_buf[AI_WINDOW_SIZE];
     memcpy(local_buf, samples, sizeof(float) * AI_WINDOW_SIZE);
+    /* 2026-08-10: 窗口级零相位 0.5Hz 高通 (训练链 filtfilt 一致)。
+     * 因果 IIR 实测扭曲 QRS 形态 (峰度 0.80→-1.21) 致高置信度误报 (TH §40)。
+     * 零相位处理后再 Z-score, 与训练链输入分布对齐。 */
+    aiApplyFilterWindow(local_buf, AI_WINDOW_SIZE);
     preprocess_samples(local_buf, AI_WINDOW_SIZE);
     fill_input_tensor(local_buf);
 

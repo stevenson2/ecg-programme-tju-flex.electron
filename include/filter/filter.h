@@ -62,6 +62,9 @@ void aiFilterInit(void);
 /** @brief AI 输入链高通滤波 (0.5Hz, 匹配训练分布) */
 float aiApplyFilter(float inputSample);
 
+/** @brief AI 输入窗口零相位 0.5Hz 高通 (训练链 filtfilt 一致, 2026-08-10) */
+void aiApplyFilterWindow(float* buf, int len);
+
 /** @brief 重置 AI 输入链高通状态 (输入源切换时调用) */
 void aiFilterReset(void);
 

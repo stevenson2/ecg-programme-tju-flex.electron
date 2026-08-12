@@ -151,16 +151,52 @@ float aiApplyFilter(float inputSample)
                        AI_HP_A1, AI_HP_A2, &ai_hp_w1, &ai_hp_w2);
 }
 
+/* 窗口级零相位滤波状态 (正反各一组, 2026-08-10) */
+static double ai_zp_w1 = 0.0, ai_zp_w2 = 0.0;
+static double ai_zp_r1 = 0.0, ai_zp_r2 = 0.0;
+
+/**
+ * @brief 窗口级零相位 0.5Hz 高通 (AI 输入链, 2026-08-10)
+ *
+ * 训练链 (filtfilt) 为零相位 0.5Hz HP; 因果 IIR 实测严重扭曲 QRS 形态
+ * (局部峰度 0.80→-1.21, 波形 RMS 差 34% → AI 高置信度误报, TH §40)。
+ * 实现: 窗口内正向 biquad + 反向 biquad = 零相位 (与训练链一致)。
+ * 计算量: 2×len 次 biquad ≈ len×12 乘加, 相对 910ms 推理可忽略。
+ *
+ * @param buf  250 点窗口数据 (就地修改)
+ * @param len  窗口长度
+ */
+void aiApplyFilterWindow(float* buf, int len)
+{
+    if (!buf || len <= 0) return;
+    /* 正向 */
+    ai_zp_w1 = 0.0; ai_zp_w2 = 0.0;
+    for (int i = 0; i < len; i++) {
+        buf[i] = applyBiquad(buf[i], AI_HP_B0, AI_HP_B1, AI_HP_B2,
+                             AI_HP_A1, AI_HP_A2, &ai_zp_w1, &ai_zp_w2);
+    }
+    /* 反向 (零相位) */
+    ai_zp_r1 = 0.0; ai_zp_r2 = 0.0;
+    for (int i = len - 1; i >= 0; i--) {
+        buf[i] = applyBiquad(buf[i], AI_HP_B0, AI_HP_B1, AI_HP_B2,
+                             AI_HP_A1, AI_HP_A2, &ai_zp_r1, &ai_zp_r2);
+    }
+}
+
 void aiFilterInit(void)
 {
     ai_hp_w1 = 0.0;
     ai_hp_w2 = 0.0;
+    ai_zp_w1 = 0.0; ai_zp_w2 = 0.0;
+    ai_zp_r1 = 0.0; ai_zp_r2 = 0.0;
 }
 
 void aiFilterReset(void)
 {
     ai_hp_w1 = 0.0;
     ai_hp_w2 = 0.0;
+    ai_zp_w1 = 0.0; ai_zp_w2 = 0.0;
+    ai_zp_r1 = 0.0; ai_zp_r2 = 0.0;
 }
 
 void filterReset(void)
