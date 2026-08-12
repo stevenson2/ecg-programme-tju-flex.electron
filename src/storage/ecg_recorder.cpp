@@ -94,6 +94,26 @@ static void pushSampleToBatch(int16_t sample) {
 }
 
 /**
+ * @brief 删除记录文件 (修复 f.name() 返回纯文件名导致的 remove 失败, 2026-08-12)
+ *
+ * SPIFFS 文件实际存储路径含虚拟目录前缀 ("/ecgdata/xxx"), 而 f.name() 返回
+ * 纯文件名 ("ecg_rec_N.ecgr")。此前 deleteOldestRecord/scanAndCleanInvalid 直接
+ * SPIFFS.remove(name) 在根目录找不到文件 → 删除静默失败 → 保留策略失效
+ * (实测: "deleting oldest record" 连续 5 次删同一文件, 记录堆积, TH §40)。
+ */
+static void removeRecordFile(const char* name)
+{
+    if (!name || name[0] == '\0') return;
+    char fullPath[80];
+    if (name[0] == '/') {
+        snprintf(fullPath, sizeof(fullPath), "%s", name);
+    } else {
+        snprintf(fullPath, sizeof(fullPath), ECGR_BASE_PATH "/%s", name);
+    }
+    SPIFFS.remove(fullPath);
+}
+
+/**
  * @brief 删除最旧记录 (按 startUnixTime 排序)
  *
  * 扫描 /ecgdata/*.ecgr, 解析头部取 startUnixTime,
@@ -130,7 +150,7 @@ static void deleteOldestRecord(void) {
 
     if (oldestPath[0] != '\0') {
         Serial.printf("[ECGR] deleting oldest record: %s\n", oldestPath);
-        SPIFFS.remove(oldestPath);
+        removeRecordFile(oldestPath);
         if (g_recordCount > 0) g_recordCount--;
     }
 }
@@ -293,7 +313,7 @@ static void scanAndCleanInvalid(void) {
             if (invalid) {
                 Serial.printf("[ECGR] removing invalid record: %s (size=%u)\n",
                               name, (unsigned)fileSize);
-                SPIFFS.remove(name);
+                removeRecordFile(name);
             }
         } else {
             f.close();
