@@ -49,6 +49,22 @@ void filterReset(void);
  */
 void filterWarmup(float firstSample);
 
+/* ======================== AI 输入链独立高通 (2026-08-10) ========================
+ * 训练链 (filtfilt) 为 0.5Hz HP, 部署链为 0.05Hz HP (ST 段决策) → 呼吸/电极
+ * 漂移 (0.2~0.5Hz) 进入 AI 输入窗口, Z-score 归一化后形态畸变 → 真实 ECG
+ * 高置信度误报 (TH §40 实测: 正常信号 11.4% 异常率, conf 0.86~0.98)。
+ * 修复: AI 输入前追加 0.5Hz 二阶 HP (显示/记录链不变, ST 段功能不受影响)。
+ */
+
+/** @brief 初始化 AI 输入链高通 (重置状态) */
+void aiFilterInit(void);
+
+/** @brief AI 输入链高通滤波 (0.5Hz, 匹配训练分布) */
+float aiApplyFilter(float inputSample);
+
+/** @brief 重置 AI 输入链高通状态 (输入源切换时调用) */
+void aiFilterReset(void);
+
 #ifdef __cplusplus
 }
 #endif

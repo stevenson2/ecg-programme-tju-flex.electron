@@ -52,6 +52,16 @@
 #define LP_B1   0.09226360418662585
 #define LP_B2   0.046131802093312926
 
+/* ======================== AI 输入链: 二阶高通 0.5Hz (fs=500Hz, 2026-08-10) ========================
+ * 匹配训练链 (0.5Hz) — 消除呼吸/电极漂移 (0.2~0.5Hz) 对 AI 输入窗口的形态畸变。
+ * 系数由 Python 计算: K = tan(pi*0.5/500) = 0.0031416030
+ * (与显示链 0.05Hz HP 级联后等效于 0.5Hz HP, 0.05Hz 对 >0.5Hz 信号近透明) */
+#define AI_HP_A1  -1.9911142922016536
+#define AI_HP_A2   0.99115359586893537
+#define AI_HP_B0   0.99556697201764721
+#define AI_HP_B1  -1.9911339440352944
+#define AI_HP_B2   0.99556697201764721
+
 /* ======================== 预热样本数 ======================== */
 #define WARMUP_SAMPLES  240  /* 约 0.48s @500Hz */
 
@@ -62,6 +72,9 @@ static double hp_w2 = 0.0;
 /* 第2级：低通 */
 static double lp_w1 = 0.0;
 static double lp_w2 = 0.0;
+/* AI 输入链高通 (0.5Hz, 2026-08-10) */
+static double ai_hp_w1 = 0.0;
+static double ai_hp_w2 = 0.0;
 
 /**
  * @brief 单级直接II型转置结构双二阶滤波器 (double 精度)
@@ -127,6 +140,27 @@ float applyFilter(float inputSample)
     temp = highpassFilter(inputSample);
     temp = lowpassFilter(temp);
     return temp;
+}
+
+/* ======================== AI 输入链高通实现 (0.5Hz, 2026-08-10) ======================== */
+
+float aiApplyFilter(float inputSample)
+{
+    /* 仅 0.5Hz 高通 (训练链匹配), 不含 LP (已由显示链 LP40 处理) */
+    return applyBiquad(inputSample, AI_HP_B0, AI_HP_B1, AI_HP_B2,
+                       AI_HP_A1, AI_HP_A2, &ai_hp_w1, &ai_hp_w2);
+}
+
+void aiFilterInit(void)
+{
+    ai_hp_w1 = 0.0;
+    ai_hp_w2 = 0.0;
+}
+
+void aiFilterReset(void)
+{
+    ai_hp_w1 = 0.0;
+    ai_hp_w2 = 0.0;
 }
 
 void filterReset(void)

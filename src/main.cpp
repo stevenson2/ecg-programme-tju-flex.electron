@@ -424,6 +424,7 @@ void setup()
 
     filterInit();
     filterWarmup(0.0f);  /* 预热滤波器，消除启动瞬态 */
+    aiFilterInit();      /* AI 输入链 0.5Hz 高通 (2026-08-10, 匹配训练分布) */
     Serial.println("[系统] 数字滤波器已初始化");
 
     hrInit();
@@ -542,6 +543,7 @@ static void toggleInputMode(void)
 
     /* 切换后复位滤波器与心率检测器, 消除瞬态 */
     filterReset();
+    aiFilterReset();   /* AI 输入链 0.5Hz 高通同步重置 (2026-08-10) */
     hrFullReset();
     ai_inference_reset();  /* 重置 AI 推理缓冲 */
     
@@ -661,7 +663,10 @@ void loop()
         }
 
         /* ======== 步骤3.6：AI 异常检测推理 (推送样本到 Core 0) ======== */
-        ai_inference_push(filteredSample);
+        /* 2026-08-10: AI 输入先过独立 0.5Hz 高通 (匹配训练链), 消除呼吸/电极
+         * 漂移对窗口形态的畸变 (真实 ECG 高置信度误报根因, TH §40)。
+         * 显示/记录链仍用 0.05Hz (ST 段决策不受影响)。 */
+        ai_inference_push(aiApplyFilter(filteredSample));
 
         /* ---- 停搏/无信号检测: 当前秒内 filtered 极值跟踪 ---- */
         if (filteredSample < s_secMin) s_secMin = filteredSample;
