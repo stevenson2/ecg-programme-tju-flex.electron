@@ -35,8 +35,12 @@
 #define TENSOR_ARENA_SIZE    (64 * 1024)   /* 64KB */
 
 /* ======================== 推理配置 ======================== */
-#define INFERENCE_THRESHOLD  0.35f   /* 异常判定阈值 (P0优化: 0.50→0.35, 提升召回率) */
-#define MULTI_BEAT_CONFIRM   2       /* 多拍确认: 连续N拍异常才报警 */
+/* 2026-08-10 (TH §40): 真实 ECG 验证发现模型分布偏移 (正常 QRS 形态与 MIT-BIH
+ * 训练分布差异, 误报置信度中位 0.93) → 调高阈值 + 多拍确认抑制误报。
+ * 论文最优操作点 beat θ=0.35 / patient θ=0.5; 监护场景取更保守的 0.60。
+ * 代价: 对真异常敏感性下降 (多拍确认 5 拍 = 5s 确认延迟), 模型微调后可回退。 */
+#define INFERENCE_THRESHOLD  0.60f   /* 异常判定阈值 (0.35→0.60, TH §40) */
+#define MULTI_BEAT_CONFIRM   5       /* 多拍确认: 连续N拍异常才报警 (2→5, TH §40) */
 #define INFERENCE_ENABLED    1       /* 默认启用 */
 
 /* 输入抽取 (方案A, 修复 4.4-4 蹊跷点6: 训练窗口1.0s vs 部署0.5s 不匹配)

@@ -50,10 +50,24 @@ static unsigned long s_lastRxMs = 0;
 
 class ServerCallbacks : public BLEServerCallbacks
 {
-    void onConnect(BLEServer* srv) override
+    void onConnect(BLEServer* srv, esp_ble_gatts_cb_param_t* param) override
     {
         connected = true;
         Serial.println("[BLE] 手机已连接");
+
+        /* 2026-08-12 (TH §40): 主动请求连接参数更新 — 解决手机 App 波形阶梯感。
+         * 根因: Android 常忽略广播中的首选连接参数, 实际连接间隔 30ms+,
+         * 250Hz notify 批量到达 → App 波形呈阶梯状 (实测截图)。
+         * 外设侧主动发起连接参数更新请求; App 端 requestConnectionPriority 双保险。
+         * ⚠️ WiFi 共存权衡: 连接间隔过小 (7.5ms) 会压缩 WiFi 时隙, 降低 AP
+         * 下载吞吐 (共存矩阵 C1); beacon 可见性不受影响 (Y)。取 15~22.5ms 折中。 */
+        esp_ble_conn_update_params_t connParams = {0};
+        memcpy(connParams.bda, param->connect.remote_bda, 6);
+        connParams.latency = 0;
+        connParams.min_int = 0x0C;   /* 15ms (折中: 平滑度 vs WiFi 余量) */
+        connParams.max_int = 0x12;   /* 22.5ms */
+        connParams.timeout = 400;    /* 4s */
+        esp_ble_gap_update_conn_params(&connParams);
     }
 
     void onDisconnect(BLEServer* srv) override
