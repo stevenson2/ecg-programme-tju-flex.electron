@@ -109,6 +109,19 @@ class RxCallbacks : public BLECharacteristicCallbacks
     }
 };
 
+/* ======================== GAP 回调 (连接参数诊断, 2026-08-12) ========================
+ * 打印连接参数协商结果 — 验证手机是否接受外设的连接参数更新请求
+ * (Android 常忽略, 若日志显示 status=0 且 min/max≈0x0C-0x12 则生效) */
+
+static void gapCallback(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t* param)
+{
+    if (event == ESP_GAP_BLE_UPDATE_CONN_PARAMS_EVT) {
+        auto* p = &param->update_conn_params;
+        Serial.printf("[BLE] conn params evt: status=%d min=%d max=%d latency=%d conn_int=%d timeout=%d\n",
+                      p->status, p->min_int, p->max_int, p->latency, p->conn_int, p->timeout);
+    }
+}
+
 /* ======================== 公共接口 ======================== */
 
 void initBLE(void)
@@ -119,6 +132,9 @@ void initBLE(void)
 
     /* 初始化 BLE 设备 */
     BLEDevice::init(DEVICE_NAME);
+
+    /* 注册 GAP 回调 (连接参数协商诊断, 2026-08-12) */
+    esp_ble_gap_register_callback(gapCallback);
 
     /* 设置 BLE 发射功率（原始 +9dBm，确保连接稳定性）*/
     esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_ADV, ESP_PWR_LVL_P9);   /* +9dBm */

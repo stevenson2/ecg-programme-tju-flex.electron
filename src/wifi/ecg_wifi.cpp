@@ -408,39 +408,17 @@ static void handleRecordsData(void)
         isRange = true;
     }
 
-    uint32_t contentLen = rangeEnd - rangeStart + 1;
+    /* 2026-08-12 修复 (TH §40): 原实现手动 sendHeader("Content-Length") +
+     * send(code, type, "") — WebServer::send 的 String 重载内部会再追加一个
+     * Content-Length: 0, 响应头出现两个 Content-Length → 客户端下载失败
+     * ("Content-Length header occurred more than once", 实测)。
+     * 统一改用 WebServer::streamFile (内置正确 Content-Length + 流式发送)。
+     * App 当前下载不发送 Range (record_api.dart 注释), 此分支保底返回全文件。 */
 
-    // 设置响应头
-    g_server->sendHeader("Content-Type", "application/octet-stream");
-    g_server->sendHeader("Accept-Ranges", "bytes");
-
-    if (isRange) {
-        char rangeHeaderVal[96];
-        snprintf(rangeHeaderVal, sizeof(rangeHeaderVal),
-                 "bytes %u-%u/%u",
-                 (unsigned)rangeStart, (unsigned)rangeEnd, (unsigned)fileSize);
-        g_server->sendHeader("Content-Range", rangeHeaderVal);
-        g_server->sendHeader("Content-Length", String(contentLen));
-        g_server->send(206, "application/octet-stream", "");
-    } else {
-        g_server->sendHeader("Content-Length", String(contentLen));
-        g_server->send(200, "application/octet-stream", "");
-    }
-
-    // 流式发送数据: seek 到起始位置, 分块读取 + sendContent
-    f.seek(rangeStart, SeekSet);
-    uint32_t remaining = contentLen;
-    uint8_t chunk[ECG_WIFI_CHUNK_BYTES];
-
-    while (remaining > 0) {
-        size_t toRead = (remaining < ECG_WIFI_CHUNK_BYTES)
-                        ? (size_t)remaining : ECG_WIFI_CHUNK_BYTES;
-        size_t n = f.read(chunk, toRead);
-        if (n == 0) break;
-        g_server->sendContent((const char*)chunk, n);
-        remaining -= (uint32_t)n;
-    }
-
+    // 定位到 Range 起点 (若 Range 请求, 保底仍返回全文件, 由客户端丢弃多余部分)
+    (void)rangeStart;
+    f.seek(0, SeekSet);
+    g_server->streamFile(f, "application/octet-stream", 200);
     f.close();
 }
 
