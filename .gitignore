@@ -49,5 +49,13 @@ pc_tools/ecg_dl/audit_manuscript.py
 pc_tools/ecg_dl/gen_paper_figures_task10.py
 pc_tools/ecg_dl/gen_paper_figures_task12.py
 
-# 内部工具状态
-.omo/
+node_modules
+
+# 构建产物/截图/大文件/个人数据 (2026-08-14, 提交时排除)
+ECG-Plotter.exe
+ECG-figs/
+papers/
+pc_tools/ecg_dl/data/real/
+pc_tools/serial/*.csv
+pc_tools/serial/*.txt
+pc_tools/serial/*.id

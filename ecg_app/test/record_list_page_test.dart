@@ -8,14 +8,52 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
 import 'package:ecg_app/services/record_api.dart';
+import 'package:ecg_app/services/ecg_record_codec.dart';
 import 'package:ecg_app/pages/record_list_page.dart';
 
 /**
  * @file record_list_page_test.dart
  * @brief RecordListPage 组件测试（注入假 RecordApi + 临时目录）
  *
- * 覆盖：AP 引导横幅、记录列表渲染、下载写文件、删除刷新、空状态。
+ * 覆盖：AP 引导横幅、记录列表渲染、下载写文件、删除刷新、空状态、本地回放跳转。
  */
+
+// ─────────────────────────── 测试内 fixture 构建 ───────────────────────────
+// 与 ecg_record_codec_test.dart 同构：按 Contract C5 合成 .ecgr 字节（小端）。
+
+void _putU32LE(Uint8List b, int off, int v) {
+  b[off] = v & 0xFF;
+  b[off + 1] = (v >> 8) & 0xFF;
+  b[off + 2] = (v >> 16) & 0xFF;
+  b[off + 3] = (v >> 24) & 0xFF;
+}
+
+void _putI16LE(Uint8List b, int off, int v) {
+  b[off] = v & 0xFF;
+  b[off + 1] = (v >> 8) & 0xFF;
+}
+
+/// 合成最小合法 .ecgr（1 秒 / 250 样本，无异常位图）
+Uint8List _buildFixture({int durationSec = 1}) {
+  final totalSamples = 250 * durationSec;
+  final bytes = Uint8List(32 + totalSamples * 2);
+  bytes[0] = 0x45; // 'E'
+  bytes[1] = 0x43; // 'C'
+  bytes[2] = 0x47; // 'G'
+  bytes[3] = 0x52; // 'R'
+  bytes[4] = 1; // version
+  bytes[5] = 0; // flags: 无异常位图
+  _putU32LE(bytes, 6, 250); // sampleRate
+  _putU32LE(bytes, 10, 1700000000); // startUnixTime
+  _putU32LE(bytes, 14, durationSec);
+  _putU32LE(bytes, 18, totalSamples);
+  _putU32LE(bytes, 22, 0); // abnormalSeconds
+  for (int i = 0; i < totalSamples; i++) {
+    _putI16LE(bytes, 32 + i * 2, i % 7 == 0 ? 0 : 1000);
+  }
+  return bytes;
+}
+
 void main() {
   /// 构造标准列表数据
   List<RecordInfo> _sampleRecords() => [
@@ -191,6 +229,135 @@ void main() {
 
       // 应显示删除成功提示
       expect(find.textContaining('已删除'), findsOneWidget);
+    });
+  });
+
+  group('loadEcgrFile（默认加载器，真实文件 IO）', () {
+    test('文件不存在 → null', () async {
+      final tmpDir = Directory.systemTemp.createTempSync('ecg_test_');
+      addTearDown(() {
+        try {
+          tmpDir.deleteSync(recursive: true);
+        } catch (_) {}
+      });
+
+      expect(await loadEcgrFile('${tmpDir.path}/missing.ecgr'), isNull);
+    });
+
+    test('合法 .ecgr → 解码成功', () async {
+      final tmpDir = Directory.systemTemp.createTempSync('ecg_test_');
+      addTearDown(() {
+        try {
+          tmpDir.deleteSync(recursive: true);
+        } catch (_) {}
+      });
+
+      final path = '${tmpDir.path}/1.ecgr';
+      File(path).writeAsBytesSync(_buildFixture());
+
+      final record = await loadEcgrFile(path);
+      expect(record, isNotNull);
+      expect(record!.sampleRate, 250);
+      expect(record.totalSamples, 250);
+    });
+
+    test('损坏 .ecgr（坏魔数）→ null', () async {
+      final tmpDir = Directory.systemTemp.createTempSync('ecg_test_');
+      addTearDown(() {
+        try {
+          tmpDir.deleteSync(recursive: true);
+        } catch (_) {}
+      });
+
+      final corrupt = _buildFixture();
+      corrupt[0] = 0x58; // 'X'
+      final path = '${tmpDir.path}/bad.ecgr';
+      File(path).writeAsBytesSync(corrupt);
+
+      expect(await loadEcgrFile(path), isNull);
+    });
+  });
+
+  group('本地回放', () {
+    // 回放路径统一注入假加载器（真实文件 IO 在 FakeAsync 区域无法完成，
+    // 已由 loadEcgrFile 普通 test 覆盖）。
+    Future<EcgRecord?> Function(int) _fakeLoader() {
+      final record = EcgRecordCodec.decode(_buildFixture());
+      return (_) async => record;
+    }
+
+    Future<void> _settleRoute(WidgetTester tester) async {
+      // 路由转场动画用固定时长推进
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pump(const Duration(milliseconds: 400));
+    }
+
+    /// 下载含真实文件写入：Windows 文件 IO 分多步送达事件循环，
+    /// 交替 runAsync（放行真实事件循环）/ pump（冲刷 fake 微任务）3 跳。
+    Future<void> _completeDownload(WidgetTester tester) async {
+      for (var i = 0; i < 3; i++) {
+        await tester.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 50)));
+        await tester.pump();
+      }
+    }
+
+    testWidgets('加载器返回 null 时提示先下载', (tester) async {
+      final api = _fakeApi();
+      await tester.pumpWidget(MaterialApp(
+          home: RecordListPage(api: api, ecgrLoader: (_) async => null)));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.play_circle_outline).first);
+      await tester.pumpAndSettle();
+
+      expect(find.text('无法回放（请先下载记录文件）'), findsOneWidget);
+    });
+
+    testWidgets('下载成功后 SnackBar 动作「回放」跳转回放页', (tester) async {
+      final api = _fakeApi(downloadBytes: _buildFixture());
+      final tmpDir = Directory.systemTemp.createTempSync('ecg_test_');
+      addTearDown(() {
+        try {
+          tmpDir.deleteSync(recursive: true);
+        } catch (_) {}
+      });
+
+      await tester.pumpWidget(MaterialApp(
+          home: RecordListPage(
+              api: api, downloadDir: tmpDir, ecgrLoader: _fakeLoader())));
+      await tester.pumpAndSettle();
+
+      // 下载第一条记录（含真实文件写入）
+      await tester.tap(find.byIcon(Icons.cloud_download).first);
+      await _completeDownload(tester);
+      await tester.pumpAndSettle();
+
+      // 下载成功提示 + 回放动作
+      expect(find.textContaining('下载成功'), findsOneWidget);
+      expect(find.text('回放'), findsOneWidget);
+
+      // 点动作跳转回放页（假加载器 → PlaybackPage）
+      await tester.tap(find.text('回放'));
+      await tester.pump();
+      await _settleRoute(tester);
+
+      expect(find.text('记录回放'), findsOneWidget);
+      expect(find.byType(Slider), findsOneWidget);
+    });
+
+    testWidgets('回放按钮直接跳转回放页', (tester) async {
+      final api = _fakeApi();
+      await tester.pumpWidget(MaterialApp(
+          home: RecordListPage(api: api, ecgrLoader: _fakeLoader())));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.play_circle_outline).first);
+      await tester.pump();
+      await _settleRoute(tester);
+
+      expect(find.text('记录回放'), findsOneWidget);
+      expect(find.byType(Slider), findsOneWidget);
     });
   });
 }

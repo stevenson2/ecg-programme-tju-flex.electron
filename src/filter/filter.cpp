@@ -1,4 +1,5 @@
-﻿#include <math.h>
+#include <math.h>
+#include <string.h>
 #include "filter/filter.h"
 
 /**
@@ -22,24 +23,19 @@
  * 级联总通带增益 ≈ 1.0（在5~30Hz范围内），无需额外补偿
  */
 
-/* ======================== 第1级：高通 0.05Hz (fs=500Hz 重算) ======================== */
-/* TUNING_HISTORY 十三章 §8.3.1: 0.5Hz 因果 HP 在 ST 带引入 1.5-9mm 伪 ST 偏移
- * (Buendía-Funetes 2012), 是 PTB 部署链 AUC 缺口主因。降截止至 0.05Hz
- * (AHA 2007 诊断标准) 后 0.5Hz 处相位失真 +8.1° (原 +90°), ST 带近乎无失真。
- * 代价: 基线漂移抑制减弱 (z-score 归一化兜底), warmup 需 ~16s (τ=3.18s)。
- * K = tan(pi*0.05/500) = 0.0003142 */
-/* b0 = 1/(1+K√2+K²), b1 = -2*b0, b2 = b0 */
-/* a1 = 2*(K²-1)*b0, a2 = (1-K√2+K²)*b0 */
-/* ⚠️ 2026-08-08 N16R8 板上实测: ① 5 位小数量化系数使分子 b0+b1+b2 残留
- * 1e-5 而分母 1+a1+a2 舍入归零 → DC 增益病态 (输出 9V→28V 爬升 + 心率失效);
- * ② 0.05Hz 极点模 0.99955 极近单位圆, float32 灾难性抵消加剧。修复:
- * 完整精度 double 系数 (b0+b1+b2≡0, DC 增益严格 0) + double 状态变量。
- * 系数由 Python 计算: K=tan(pi*0.05/500), 见下方定义。 */
-#define HP_A1  -1.9991114234707954
-#define HP_A2   0.9991118180796384
-#define HP_B0   0.9995558103876084
-#define HP_B1  -1.9991116207752169
-#define HP_B2   0.9995558103876084
+/* ======================== 第1级：高通 0.5Hz (fs=500Hz) ======================== */
+/* 2026-08-13 决策 (TH §44, 产品需求): 显示链 HP 由 0.05Hz 提高到 0.5Hz。
+ * 背景: 0.05Hz 保 ST 段形态但滤不净呼吸漂移 (0.2~0.5Hz), 真机实测基线漂移
+ * ±100mV 严重。产品定位 = 心律失常检测 + 显示 (非 ST 诊断), 基线稳定优先 →
+ * 改用 0.5Hz (消费级 ECG 标准, Kardia/Apple Watch 同款)。
+ * 权衡: ST 段引入伪偏移 (Buendía-Fuentes 2012: 1.5-9mm), 但 AI 链独立 0.5Hz
+ * 不受影响; ST 测量将来用单独 0.05Hz 链。LP 40Hz 不变。
+ * 系数由 Python 计算: scipy butter(2, 0.5, 'high', fs=500), 完整 double 精度。 */
+#define HP_A1  -1.9911142922016536
+#define HP_A2   0.9911535958689355
+#define HP_B0   0.9955669720176472
+#define HP_B1  -1.9911339440352944
+#define HP_B2   0.9955669720176472
 
 /* ======================== 第2级：低通 40Hz (fs=500Hz 重算) ======================== */
 /* K = tan(pi*40/500) = 0.2568 */
@@ -52,15 +48,30 @@
 #define LP_B1   0.09226360418662585
 #define LP_B2   0.046131802093312926
 
-/* ======================== AI 输入链: 二阶高通 0.5Hz (fs=500Hz, 2026-08-10) ========================
- * 匹配训练链 (0.5Hz) — 消除呼吸/电极漂移 (0.2~0.5Hz) 对 AI 输入窗口的形态畸变。
- * 系数由 Python 计算: K = tan(pi*0.5/500) = 0.0031416030
- * (与显示链 0.05Hz HP 级联后等效于 0.5Hz HP, 0.05Hz 对 >0.5Hz 信号近透明) */
-#define AI_HP_A1  -1.9911142922016536
-#define AI_HP_A2   0.99115359586893537
-#define AI_HP_B0   0.99556697201764721
-#define AI_HP_B1  -1.9911339440352944
-#define AI_HP_B2   0.99556697201764721
+/* ======================== AI 输入链: 二阶因果高通 0.5Hz (fs=250Hz, 2026-08-13 修正) ================
+ * P0-2 训练-部署失配修正 (TH §42/§43): 原系数为 butter(2,0.5,fs=500) 设计, 但 AI 链
+ * 经 2:1 抽取后实际 250Hz → 有效截止 0.25Hz (bug)。改用 butter(2,0.5,fs=250) 修正
+ * 系数 (ai_hp_coeffs_fs250.txt), 在 250Hz 链上真正实现 0.5Hz 截止。
+ * 同时 AI 链由"窗口级零相位"(aiApplyFilterWindow) 改回"因果 streaming"(aiApplyFilter,
+ * 状态 ai_hp_w1/w2 跨窗口持续), 与训练侧重训链 causal_hp_05_fs250 (data/preprocess.py)
+ * 位级一致 (零初始状态 streaming)。
+ * 系数: K = tan(pi*0.5/250), 由 compute_ai_hp_coeffs.py 生成。 */
+#define AI_HP_A1  -1.9822289297925284
+#define AI_HP_A2   0.98238545061412508
+#define AI_HP_B0   0.99115359510166301
+#define AI_HP_B1  -1.982307190203326
+#define AI_HP_B2   0.99115359510166301
+
+/* ======================== AI 输入链独立 0.05Hz HP 系数 (fs=500Hz, 2026-08-13 解耦) ================
+ * 显示链 HP 0.5Hz (基线稳定) 与 AI 链解耦后, AI 输入链在 2:1 抽取前需独立做
+ * HP 0.05Hz + LP 40Hz, 与训练侧 exp7 复刻链"梳状→HP0.05+LP40→2:1抽取→因果0.5Hz"
+ * 位级一致。此处恢复原 0.05Hz HP 系数 (scipy butter(2,0.05,'high',fs=500),
+ * 与改显示链前的 HP_* 宏相同), 供 applyFilterAI 独立使用。 */
+#define AI_CHAIN_HP_A1  -1.9991114234707954
+#define AI_CHAIN_HP_A2   0.9991118180796384
+#define AI_CHAIN_HP_B0   0.9995558103876084
+#define AI_CHAIN_HP_B1  -1.9991116207752169
+#define AI_CHAIN_HP_B2   0.9995558103876084
 
 /* ======================== 预热样本数 ======================== */
 #define WARMUP_SAMPLES  240  /* 约 0.48s @500Hz */
@@ -72,9 +83,41 @@ static double hp_w2 = 0.0;
 /* 第2级：低通 */
 static double lp_w1 = 0.0;
 static double lp_w2 = 0.0;
-/* AI 输入链高通 (0.5Hz, 2026-08-10) */
+/* AI 输入链高通 (0.5Hz @250Hz 因果, 2026-08-13 修正) */
 static double ai_hp_w1 = 0.0;
 static double ai_hp_w2 = 0.0;
+/* AI 输入链独立滤波 (HP 0.05 + LP 40, 与显示链解耦, 2026-08-13) */
+static double ai_chain_hp_w1 = 0.0;
+static double ai_chain_hp_w2 = 0.0;
+static double ai_chain_lp_w1 = 0.0;
+static double ai_chain_lp_w2 = 0.0;
+
+/* ======================== 显示链状态 (2026-08-14) ======================== */
+/* 用户按 ADI 视频要求: 显示链 = 高通 4Hz + 低通 (默认 40Hz, 可切 4Hz)。
+ * HP 4Hz 将基线漂移/呼吸 (0.2-0.5Hz) 衰减 -45dB, 同时滤除 P/T/ST (4Hz 以下)
+ * — 显示为 ADI 演示风格 "QRS 尖峰骑平线" (仅显示; 心率/VF/AI 链不受影响)。 */
+static double disp_hp_w1 = 0.0;
+static double disp_hp_w2 = 0.0;
+static double disp_lp_w1 = 0.0;
+static double disp_lp_w2 = 0.0;
+
+/* 显示链 LP 截止频率选择: 0 = 40Hz (默认形态保真), 1 = 4Hz (试验)。
+ * DIAG LPF <4|40> 运行时切换。 */
+static int g_dispLpSel = 0;   /* 默认 40Hz */
+
+/* 4Hz 高通 Butterworth 2阶 (fs=500, scipy 生成): 0.3Hz -45dB / 4Hz -3dB / 10Hz -0.1dB */
+#define DISP_HP4_A1  -1.9289422632520332
+#define DISP_HP4_A2  0.9313816821269024
+#define DISP_HP4_B0  0.9650809863447340
+#define DISP_HP4_B1  -1.9301619726894681
+#define DISP_HP4_B2  0.9650809863447340
+
+/* 4Hz 低通 Butterworth 2阶 (fs=500, 试验档): 10Hz -16dB 压扁 QRS */
+#define DISP_LP4_A1  -1.9289422632520332
+#define DISP_LP4_A2  0.9313816821269024
+#define DISP_LP4_B0  0.0006098547187173
+#define DISP_LP4_B1  0.0012197094374346
+#define DISP_LP4_B2  0.0006098547187173
 
 /**
  * @brief 单级直接II型转置结构双二阶滤波器 (double 精度)
@@ -142,61 +185,57 @@ float applyFilter(float inputSample)
     return temp;
 }
 
-/* ======================== AI 输入链高通实现 (0.5Hz, 2026-08-10) ======================== */
+/* ======================== AI 输入链高通实现 (0.5Hz @250Hz 因果, 2026-08-13 修正) ======================== */
 
 float aiApplyFilter(float inputSample)
 {
-    /* 仅 0.5Hz 高通 (训练链匹配), 不含 LP (已由显示链 LP40 处理) */
+    /* 仅 0.5Hz 因果高通 (fs=250 修正系数, 训练链匹配), 不含 LP (已由 AI 链 LP40 处理)。
+     * 状态 ai_hp_w1/w2 跨窗口持续 (零初始, 由 aiFilterInit/aiFilterReset 复位),
+     * 逐样本 streaming — 与训练侧 causal_hp_05_fs250 (DF2T, 零初始状态) 语义一致。 */
     return applyBiquad(inputSample, AI_HP_B0, AI_HP_B1, AI_HP_B2,
                        AI_HP_A1, AI_HP_A2, &ai_hp_w1, &ai_hp_w2);
 }
 
-/* 窗口级零相位滤波状态 (正反各一组, 2026-08-10) */
-static double ai_zp_w1 = 0.0, ai_zp_w2 = 0.0;
-static double ai_zp_r1 = 0.0, ai_zp_r2 = 0.0;
+/* ======================== AI 输入链独立滤波 (HP 0.05 + LP 40, 2026-08-13 解耦) ======================== */
 
-/**
- * @brief 窗口级零相位 0.5Hz 高通 (AI 输入链, 2026-08-10)
- *
- * 训练链 (filtfilt) 为零相位 0.5Hz HP; 因果 IIR 实测严重扭曲 QRS 形态
- * (局部峰度 0.80→-1.21, 波形 RMS 差 34% → AI 高置信度误报, TH §40)。
- * 实现: 窗口内正向 biquad + 反向 biquad = 零相位 (与训练链一致)。
- * 计算量: 2×len 次 biquad ≈ len×12 乘加, 相对 910ms 推理可忽略。
- *
- * @param buf  250 点窗口数据 (就地修改)
- * @param len  窗口长度
- */
-void aiApplyFilterWindow(float* buf, int len)
+float applyFilterAI(float inputSample)
 {
-    if (!buf || len <= 0) return;
-    /* 正向 */
-    ai_zp_w1 = 0.0; ai_zp_w2 = 0.0;
-    for (int i = 0; i < len; i++) {
-        buf[i] = applyBiquad(buf[i], AI_HP_B0, AI_HP_B1, AI_HP_B2,
-                             AI_HP_A1, AI_HP_A2, &ai_zp_w1, &ai_zp_w2);
-    }
-    /* 反向 (零相位) */
-    ai_zp_r1 = 0.0; ai_zp_r2 = 0.0;
-    for (int i = len - 1; i >= 0; i--) {
-        buf[i] = applyBiquad(buf[i], AI_HP_B0, AI_HP_B1, AI_HP_B2,
-                             AI_HP_A1, AI_HP_A2, &ai_zp_r1, &ai_zp_r2);
-    }
+    /* AI 输入链在 2:1 抽取前的独立滤波: HP 0.05Hz + LP 40Hz, 与训练侧 exp7 复刻链
+     * "梳状→HP0.05+LP40→2:1抽取→因果0.5Hz" 位级一致。
+     * 显示链 HP 0.5Hz (基线稳定) 与 AI 链 HP 0.05Hz (ST 保真/训练一致) 解耦 —
+     * 改显示链 HP 不再影响 AI 输入, 避免 train/deploy 失配。 */
+    float temp = applyBiquad(inputSample, AI_CHAIN_HP_B0, AI_CHAIN_HP_B1, AI_CHAIN_HP_B2,
+                             AI_CHAIN_HP_A1, AI_CHAIN_HP_A2, &ai_chain_hp_w1, &ai_chain_hp_w2);
+    temp = applyBiquad(temp, LP_B0, LP_B1, LP_B2, LP_A1, LP_A2, &ai_chain_lp_w1, &ai_chain_lp_w2);
+    return temp;
+}
+
+void aiChainFilterReset(void)
+{
+    ai_chain_hp_w1 = 0.0;
+    ai_chain_hp_w2 = 0.0;
+    ai_chain_lp_w1 = 0.0;
+    ai_chain_lp_w2 = 0.0;
 }
 
 void aiFilterInit(void)
 {
     ai_hp_w1 = 0.0;
     ai_hp_w2 = 0.0;
-    ai_zp_w1 = 0.0; ai_zp_w2 = 0.0;
-    ai_zp_r1 = 0.0; ai_zp_r2 = 0.0;
+    ai_chain_hp_w1 = 0.0;
+    ai_chain_hp_w2 = 0.0;
+    ai_chain_lp_w1 = 0.0;
+    ai_chain_lp_w2 = 0.0;
 }
 
 void aiFilterReset(void)
 {
     ai_hp_w1 = 0.0;
     ai_hp_w2 = 0.0;
-    ai_zp_w1 = 0.0; ai_zp_w2 = 0.0;
-    ai_zp_r1 = 0.0; ai_zp_r2 = 0.0;
+    ai_chain_hp_w1 = 0.0;
+    ai_chain_hp_w2 = 0.0;
+    ai_chain_lp_w1 = 0.0;
+    ai_chain_lp_w2 = 0.0;
 }
 
 void filterReset(void)
@@ -205,4 +244,34 @@ void filterReset(void)
     hp_w2 = 0.0f;
     lp_w1 = 0.0f;
     lp_w2 = 0.0f;
+    displayFilterReset();
+}
+
+/* ======================== 显示链实现 (2026-08-14) ======================== */
+
+void displayFilterReset(void)
+{
+    disp_hp_w1 = 0.0;
+    disp_hp_w2 = 0.0;
+    disp_lp_w1 = 0.0;
+    disp_lp_w2 = 0.0;
+}
+
+float applyDisplayFilter(float inputSample)
+{
+    /* 高通 4Hz (ADI 视频风格: 基线/P/T/ST 全滤除, 仅 QRS 骑平线) */
+    float hped = applyBiquad(inputSample, DISP_HP4_B0, DISP_HP4_B1, DISP_HP4_B2,
+                             DISP_HP4_A1, DISP_HP4_A2, &disp_hp_w1, &disp_hp_w2);
+    /* LP 平滑 (默认 40Hz 形态保真; DIAG LPF 4 切试验档) */
+    if (g_dispLpSel == 1) {
+        return applyBiquad(hped, DISP_LP4_B0, DISP_LP4_B1, DISP_LP4_B2,
+                           DISP_LP4_A1, DISP_LP4_A2, &disp_lp_w1, &disp_lp_w2);
+    }
+    return applyBiquad(hped, LP_B0, LP_B1, LP_B2, LP_A1, LP_A2,
+                       &disp_lp_w1, &disp_lp_w2);
+}
+
+void displaySetLpCutoff(int hz)
+{
+    g_dispLpSel = (hz == 40) ? 0 : 1;
 }

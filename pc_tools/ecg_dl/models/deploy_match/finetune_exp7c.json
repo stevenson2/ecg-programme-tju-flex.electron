@@ -1,0 +1,39 @@
+{
+  "date": "2026-08-14 01:11:04",
+  "purpose": "exp7b 真实数据域微调 (TH §40 B) → exp7c",
+  "data": {
+    "real_normal_beats": 210,
+    "mix_abn": 2000,
+    "mix_norm": 600,
+    "held_out_real": 30
+  },
+  "config": {
+    "freeze": "backbone except fc1/out",
+    "lr": 1e-05,
+    "optimizer": "adam",
+    "loss": "sparse CE",
+    "class_weight": {
+      "0": 4.0,
+      "1": 1.0
+    },
+    "epochs": 60
+  },
+  "confidence_real_normal": {
+    "before_exp7b": {
+      "mean": 0.7317891716957092,
+      "median": 0.7930878400802612,
+      "frac_gt_0.5": 0.8142857142857143,
+      "frac_gt_0.8": 0.48095238095238096
+    },
+    "after_exp7c_all": {
+      "mean": 0.4165819585323334,
+      "median": 0.37481677532196045,
+      "frac_gt_0.5": 0.1523809523809524,
+      "frac_gt_0.8": 0.01904761904761905
+    },
+    "after_exp7c_heldout30": {
+      "mean": 0.4208892583847046,
+      "frac_gt_0.5": 0.2
+    }
+  }
+}

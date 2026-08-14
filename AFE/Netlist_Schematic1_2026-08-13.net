@@ -1,0 +1,1545 @@
+PROTEL NETLIST 2.0
+[
+DESIGNATOR
+U1
+FOOTPRINT
+TQFP-32_L5.0-W5.0-P0.50-LS7.0-TL
+PARTTYPE
+ADS1292RIPBSR
+DESCRIPTION
+ADS1292R 具有集成呼吸阻抗 ECG 前端的 2 通道 24 位模数转换器
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Symbol
+ADS1292RIPBSR
+Designator
+U1
+Name
+ADS1292RIPBSR
+Device
+ADS1292RIPBSR
+Unique ID
+gge1
+LCSC Part Name
+ADS1292RIPBSR
+Supplier Part
+C528635
+Manufacturer
+TI(德州仪器)
+Manufacturer Part
+ADS1292RIPBSR
+Supplier Footprint
+TQFP-32(5x5)
+JLCPCB Part Class
+扩展库
+Datasheet
+https://atta.szlcsc.com/upload/public/pdf/source/20200508/C528635_A324A59B84C849EE62A1779512061B69.pdf
+Supplier
+LCSC
+3D Model Title
+TQFP-32_L5.0-W5.0-H1.2-LS7.0-P0.50
+Description
+ADS1292R 具有集成呼吸阻抗 ECG 前端的 2 通道 24 位模数转换器
+
+*
+]
+[
+DESIGNATOR
+C8
+FOOTPRINT
+C0603
+PARTTYPE
+CAP_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+C8
+Symbol
+CapAcitance
+Value
+47nF
+Name
+47nF
+Device
+CAP_0603
+Unique ID
+gge2
+Supplier Part
+
+Supplier Footprint
+0603
+3D Model Title
+C0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+C11
+FOOTPRINT
+C0603
+PARTTYPE
+CAP_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+C11
+Symbol
+CapAcitance
+Value
+47nF
+Name
+47nF
+Device
+CAP_0603
+Unique ID
+gge3
+Supplier Part
+
+Supplier Footprint
+0603
+3D Model Title
+C0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+C17
+FOOTPRINT
+C0603
+PARTTYPE
+CAP_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+C17
+Symbol
+CapAcitance
+Name
+100nF
+Device
+CAP_0603
+Unique ID
+gge4
+Supplier Footprint
+0603
+3D Model Title
+C0603_L1.6-W0.8-H0.8
+Value
+100nF
+Description
+
+
+*
+]
+[
+DESIGNATOR
+C16
+FOOTPRINT
+C0603
+PARTTYPE
+CAP_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+C16
+Symbol
+CapAcitance
+Value
+1uF
+Name
+1uF
+Device
+CAP_0603
+Unique ID
+gge5
+Supplier Footprint
+0603
+3D Model Title
+C0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+C13
+FOOTPRINT
+C0603
+PARTTYPE
+CAP_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+C13
+Symbol
+CapAcitance
+Name
+100nF
+Device
+CAP_0603
+Unique ID
+gge6
+Supplier Footprint
+0603
+3D Model Title
+C0603_L1.6-W0.8-H0.8
+Value
+100nF
+Description
+
+
+*
+]
+[
+DESIGNATOR
+C14
+FOOTPRINT
+C0603
+PARTTYPE
+CAP_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+C14
+Symbol
+CapAcitance
+Value
+1uF
+Name
+1uF
+Device
+CAP_0603
+Unique ID
+gge7
+Supplier Footprint
+0603
+3D Model Title
+C0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+C15
+FOOTPRINT
+C0603
+PARTTYPE
+CAP_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+C15
+Symbol
+CapAcitance
+Value
+1uF
+Name
+1uF
+Device
+CAP_0603
+Unique ID
+gge8
+Supplier Footprint
+0603
+3D Model Title
+C0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+C12
+FOOTPRINT
+C0603
+PARTTYPE
+CAP_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+C12
+Symbol
+CapAcitance
+Value
+1uF
+Name
+1uF
+Device
+CAP_0603
+Unique ID
+gge9
+Supplier Footprint
+0603
+3D Model Title
+C0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+C10
+FOOTPRINT
+C0603
+PARTTYPE
+CAP_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+C10
+Symbol
+CapAcitance
+Name
+100nF
+Device
+CAP_0603
+Unique ID
+gge10
+Supplier Footprint
+0603
+3D Model Title
+C0603_L1.6-W0.8-H0.8
+Value
+100nF
+Description
+
+
+*
+]
+[
+DESIGNATOR
+C9
+FOOTPRINT
+C0603
+PARTTYPE
+CAP_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+C9
+Symbol
+CapAcitance
+Value
+10uF
+Name
+10uF
+Device
+CAP_0603
+Unique ID
+gge11
+Supplier Footprint
+0603
+3D Model Title
+C0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+R13
+FOOTPRINT
+R0603
+PARTTYPE
+Res_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+R13
+Device
+Res_0603
+Symbol
+电阻
+Value
+4.7k
+Name
+4.7k
+Unique ID
+gge12
+Supplier Footprint
+0603
+3D Model Title
+R0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+C5
+FOOTPRINT
+C0603
+PARTTYPE
+CAP_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+C5
+Symbol
+CapAcitance
+Name
+100nF
+Device
+CAP_0603
+Unique ID
+gge13
+Supplier Footprint
+0603
+3D Model Title
+C0603_L1.6-W0.8-H0.8
+Value
+100nF
+Description
+
+
+*
+]
+[
+DESIGNATOR
+C6
+FOOTPRINT
+C0603
+PARTTYPE
+CAP_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+C6
+Symbol
+CapAcitance
+Value
+2.2nF
+Name
+2.2nF
+Device
+CAP_0603
+Unique ID
+gge14
+Supplier Footprint
+0603
+3D Model Title
+C0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+C7
+FOOTPRINT
+C0603
+PARTTYPE
+CAP_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+C7
+Symbol
+CapAcitance
+Value
+2.2nF
+Name
+2.2nF
+Device
+CAP_0603
+Unique ID
+gge15
+Supplier Footprint
+0603
+3D Model Title
+C0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+R8
+FOOTPRINT
+R0603
+PARTTYPE
+Res_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+R8
+Device
+Res_0603
+Symbol
+电阻
+Value
+40.2k
+Name
+40.2k
+Unique ID
+gge16
+Supplier Part
+
+Supplier Footprint
+0603
+3D Model Title
+R0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+C2
+FOOTPRINT
+C0603
+PARTTYPE
+CAP_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+C2
+Symbol
+CapAcitance
+Name
+100nF
+Device
+CAP_0603
+Unique ID
+gge17
+Supplier Footprint
+0603
+3D Model Title
+C0603_L1.6-W0.8-H0.8
+Value
+100nF
+Description
+
+
+*
+]
+[
+DESIGNATOR
+C3
+FOOTPRINT
+C0603
+PARTTYPE
+CAP_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+C3
+Symbol
+CapAcitance
+Value
+2.2nF
+Name
+2.2nF
+Device
+CAP_0603
+Unique ID
+gge18
+Supplier Footprint
+0603
+3D Model Title
+C0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+C4
+FOOTPRINT
+C0603
+PARTTYPE
+CAP_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+C4
+Symbol
+CapAcitance
+Value
+2.2nF
+Name
+2.2nF
+Device
+CAP_0603
+Unique ID
+gge19
+Supplier Footprint
+0603
+3D Model Title
+C0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+R5
+FOOTPRINT
+R0603
+PARTTYPE
+Res_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+R5
+Device
+Res_0603
+Symbol
+电阻
+Value
+40.2k
+Name
+40.2k
+Unique ID
+gge20
+Supplier Part
+
+Supplier Footprint
+0603
+3D Model Title
+R0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+R7
+FOOTPRINT
+R0603
+PARTTYPE
+Res_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+R7
+Device
+Res_0603
+Symbol
+电阻
+Value
+0
+Name
+0
+Unique ID
+gge21
+Supplier Part
+
+Supplier Footprint
+0603
+3D Model Title
+R0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+R9
+FOOTPRINT
+R0603
+PARTTYPE
+Res_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+R9
+Device
+Res_0603
+Symbol
+电阻
+Value
+0
+Name
+0
+Unique ID
+gge22
+Supplier Part
+
+Supplier Footprint
+0603
+3D Model Title
+R0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+R1
+FOOTPRINT
+R0603
+PARTTYPE
+Res_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+R1
+Device
+Res_0603
+Symbol
+电阻
+Value
+1M
+Name
+1M
+Unique ID
+gge23
+Supplier Footprint
+0603
+3D Model Title
+R0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+C1
+FOOTPRINT
+C0603
+PARTTYPE
+CAP_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+C1
+Symbol
+CapAcitance
+Value
+1.5nF
+Name
+1.5nF
+Device
+CAP_0603
+Unique ID
+gge24
+Supplier Footprint
+0603
+3D Model Title
+C0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+R10
+FOOTPRINT
+R0603
+PARTTYPE
+Res_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+R10
+Device
+Res_0603
+Symbol
+电阻
+Value
+10M
+Name
+10M
+Unique ID
+gge25
+Supplier Part
+
+Supplier Footprint
+0603
+3D Model Title
+R0603
+Description
+
+
+*
+]
+[
+DESIGNATOR
+R11
+FOOTPRINT
+R0603
+PARTTYPE
+Res_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+R11
+Device
+Res_0603
+Symbol
+电阻
+Value
+10M
+Name
+10M
+Unique ID
+gge26
+Supplier Part
+
+Supplier Footprint
+0603
+3D Model Title
+R0603
+Description
+
+
+*
+]
+[
+DESIGNATOR
+R12
+FOOTPRINT
+R0603
+PARTTYPE
+Res_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+R12
+Device
+Res_0603
+Symbol
+电阻
+Value
+10M
+Name
+10M
+Unique ID
+gge27
+Supplier Part
+
+Supplier Footprint
+0603
+3D Model Title
+R0603
+Description
+
+
+*
+]
+[
+DESIGNATOR
+R14
+FOOTPRINT
+R0603
+PARTTYPE
+Res_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+R14
+Device
+Res_0603
+Symbol
+电阻
+Value
+10M
+Name
+10M
+Unique ID
+gge28
+Supplier Part
+
+Supplier Footprint
+0603
+3D Model Title
+R0603
+Description
+
+
+*
+]
+[
+DESIGNATOR
+R15
+FOOTPRINT
+R0603
+PARTTYPE
+Res_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+R15
+Device
+Res_0603
+Symbol
+电阻
+Value
+NC
+Name
+NC
+Unique ID
+gge29
+Supplier Part
+
+Supplier Footprint
+0603
+3D Model Title
+R0603
+Description
+
+
+*
+]
+[
+DESIGNATOR
+R16
+FOOTPRINT
+R0603
+PARTTYPE
+Res_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+R16
+Device
+Res_0603
+Symbol
+电阻
+Value
+NC
+Name
+NC
+Unique ID
+gge30
+Supplier Part
+
+Supplier Footprint
+0603
+3D Model Title
+R0603
+Description
+
+
+*
+]
+[
+DESIGNATOR
+R17
+FOOTPRINT
+R0603
+PARTTYPE
+Res_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+R17
+Device
+Res_0603
+Symbol
+电阻
+Value
+NC
+Name
+NC
+Unique ID
+gge31
+Supplier Part
+
+Supplier Footprint
+0603
+3D Model Title
+R0603
+Description
+
+
+*
+]
+[
+DESIGNATOR
+R18
+FOOTPRINT
+R0603
+PARTTYPE
+Res_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+R18
+Device
+Res_0603
+Symbol
+电阻
+Value
+NC
+Name
+NC
+Unique ID
+gge32
+Supplier Part
+
+Supplier Footprint
+0603
+3D Model Title
+R0603
+Description
+
+
+*
+]
+[
+DESIGNATOR
+R6
+FOOTPRINT
+R0603
+PARTTYPE
+Res_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+R6
+Device
+Res_0603
+Symbol
+电阻
+Value
+0
+Name
+0
+Unique ID
+gge33
+Supplier Part
+
+Supplier Footprint
+0603
+3D Model Title
+R0603
+Description
+
+
+*
+]
+[
+DESIGNATOR
+R3
+FOOTPRINT
+R0603
+PARTTYPE
+Res_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+R3
+Device
+Res_0603
+Symbol
+电阻
+Value
+100K
+Name
+100K
+Unique ID
+gge35
+Supplier Footprint
+0603
+3D Model Title
+R0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+R4
+FOOTPRINT
+R0603
+PARTTYPE
+Res_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+R4
+Device
+Res_0603
+Symbol
+电阻
+Value
+0
+Name
+0
+Unique ID
+gge36
+Supplier Part
+
+Supplier Footprint
+0603
+3D Model Title
+R0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+[
+DESIGNATOR
+R2
+FOOTPRINT
+R0603
+PARTTYPE
+Res_0603
+DESCRIPTION
+
+Component Kind
+Standard
+Add into BOM
+yes
+Convert to PCB
+yes
+Designator
+R2
+Device
+Res_0603
+Symbol
+电阻
+Value
+100K
+Name
+100K
+Unique ID
+gge37
+Supplier Footprint
+0603
+3D Model Title
+R0603_L1.6-W0.8-H0.8
+Description
+
+
+*
+]
+(
+$1N1189 
+U1-1 ADS1292RIPBSR-PGA1N Input   
+C8-1 CAP_0603-1 Input   
+)
+(
+$1N1190 
+U1-2 ADS1292RIPBSR-PGA1P Input   
+C8-2 CAP_0603-2 Input   
+)
+(
+1N1N 
+U1-3 ADS1292RIPBSR-IN1N Input   
+C3-2 CAP_0603-2 Input   
+R10-2 Res_0603-2 Input   
+R11-2 Res_0603-2 Input   
+)
+(
+1N1P 
+U1-4 ADS1292RIPBSR-IN1P Input   
+C6-2 CAP_0603-2 Input   
+R12-2 Res_0603-2 Input   
+R14-2 Res_0603-2 Input   
+)
+(
+1N2N 
+U1-5 ADS1292RIPBSR-IN2N Input   
+R7-2 Res_0603-2 Input   
+R15-2 Res_0603-2 Input   
+R16-2 Res_0603-2 Input   
+)
+(
+1N2P 
+U1-6 ADS1292RIPBSR-IN2P Input   
+R9-2 Res_0603-2 Input   
+R17-2 Res_0603-2 Input   
+R18-2 Res_0603-2 Input   
+)
+(
+$1N1191 
+U1-7 ADS1292RIPBSR-PGA2N Input   
+C11-1 CAP_0603-1 Input   
+)
+(
+$1N1192 
+U1-8 ADS1292RIPBSR-PGA2P Input   
+C11-2 CAP_0603-2 Input   
+)
+(
+$1N1198 
+U1-9 ADS1292RIPBSR-VREFP Input   
+C10-1 CAP_0603-1 Input   
+C9-1 CAP_0603-1 Input   
+)
+(
+AGND 
+U1-10 ADS1292RIPBSR-VREFN Input   
+U1-13 ADS1292RIPBSR-AVSS Input   
+C17-1 CAP_0603-1 Input   
+C16-1 CAP_0603-1 Input   
+C15-2 CAP_0603-2 Input   
+C12-1 CAP_0603-1 Input   
+C10-2 CAP_0603-2 Input   
+C9-2 CAP_0603-2 Input   
+R11-1 Res_0603-1 Input   
+R14-1 Res_0603-1 Input   
+R16-1 Res_0603-1 Input   
+R18-1 Res_0603-1 Input   
+R6-1 Res_0603-1 Input   
+)
+(
+$1N1195 
+U1-11 ADS1292RIPBSR-VCAP1 Input   
+C15-1 CAP_0603-1 Input   
+)
+(
+3.3V 
+U1-12 ADS1292RIPBSR-AVDD Input   
+U1-23 ADS1292RIPBSR-DVDD Input   
+C17-2 CAP_0603-2 Input   
+C16-2 CAP_0603-2 Input   
+C13-2 CAP_0603-2 Input   
+C14-2 CAP_0603-2 Input   
+R13-1 Res_0603-1 Input   
+R10-1 Res_0603-1 Input   
+R12-1 Res_0603-1 Input   
+R15-1 Res_0603-1 Input   
+R17-1 Res_0603-1 Input   
+)
+(
+$1N1199 
+U1-14 ADS1292RIPBSR-CLKSEL Input   
+R13-2 Res_0603-2 Input   
+)
+(
+ADS_RST 
+U1-15 ADS1292RIPBSR-PWDN#/RESET# Input   
+)
+(
+ADS_START 
+U1-16 ADS1292RIPBSR-START Input   
+)
+(
+SPI_CS 
+U1-18 ADS1292RIPBSR-CS# Input   
+)
+(
+SPI_MOSI 
+U1-19 ADS1292RIPBSR-DIN Input   
+)
+(
+SPI_SCLK 
+U1-20 ADS1292RIPBSR-SCLK Input   
+)
+(
+SPI_MISO 
+U1-21 ADS1292RIPBSR-DOUT Input   
+)
+(
+ADS_DRDY 
+U1-22 ADS1292RIPBSR-DRDY# Input   
+)
+(
+GND 
+U1-24 ADS1292RIPBSR-DGND Input   
+C13-1 CAP_0603-1 Input   
+C14-1 CAP_0603-1 Input   
+R6-2 Res_0603-2 Input   
+)
+(
+$1N1196 
+U1-27 ADS1292RIPBSR-VCAP2 Input   
+C12-2 CAP_0603-2 Input   
+)
+(
+RLDINV 
+U1-28 ADS1292RIPBSR-RLDINV Input   
+R1-1 Res_0603-1 Input   
+C1-1 CAP_0603-1 Input   
+)
+(
+RLDIN 
+U1-29 ADS1292RIPBSR-RLDIN/RLDREF Input   
+R2-2 Res_0603-2 Input   
+)
+(
+RLDOUT 
+U1-30 ADS1292RIPBSR-RLDOUT Input   
+R4-2 Res_0603-2 Input   
+)
+(
+RESP_MODP 
+U1-31 ADS1292RIPBSR-RESP_MODP/IN3P Input   
+R8-2 Res_0603-2 Input   
+)
+(
+RESP_MODN 
+U1-32 ADS1292RIPBSR-RESP_MODN/IN3N Input   
+R5-2 Res_0603-2 Input   
+)
+(
+RA 
+C5-1 CAP_0603-1 Input   
+R9-1 Res_0603-1 Input   
+)
+(
+$1N1217 
+C5-2 CAP_0603-2 Input   
+C6-1 CAP_0603-1 Input   
+C7-2 CAP_0603-2 Input   
+)
+(
+$1N1216 
+C7-1 CAP_0603-1 Input   
+R8-1 Res_0603-1 Input   
+)
+(
+LA 
+C2-1 CAP_0603-1 Input   
+R7-1 Res_0603-1 Input   
+)
+(
+$1N1222 
+C2-2 CAP_0603-2 Input   
+C3-1 CAP_0603-1 Input   
+C4-2 CAP_0603-2 Input   
+)
+(
+$1N1221 
+C4-1 CAP_0603-1 Input   
+R5-1 Res_0603-1 Input   
+)
+(
+$1N3006 
+R1-2 Res_0603-2 Input   
+C1-2 CAP_0603-2 Input   
+R3-2 Res_0603-2 Input   
+R4-1 Res_0603-1 Input   
+R2-1 Res_0603-1 Input   
+)
+(
+RL 
+R3-1 Res_0603-1 Input   
+)

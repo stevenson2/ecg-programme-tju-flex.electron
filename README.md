@@ -1,4 +1,4 @@
-# ESP32-ECG 心电采集与 AI 异常检测系统
+﻿# ESP32-ECG 心电采集与 AI 异常检测系统
 
 > **ESP32-S3-WROOM-1-N16R8 (16MB Flash / 8MB Octal PSRAM) | PlatformIO + Arduino | 500Hz 采样 | BLE NUS | TFLite Micro AI 推理 | Flutter App**
 
@@ -86,13 +86,13 @@ cd ecg_app && flutter run
 ### 采集前端（模拟链路）
 
 ```
-单导联电极 (RA/LA, 贴片 ×2) ──► AD8232 单导联 AFE (差分输入) ──► 单路心电信号 ──► ESP32 ADC (单通道)
+单导联电极 (RA/LA, 贴片 ×2) ──► AD8232/自制AFE 单导联 AFE (差分输入) ──► 单路心电信号 ──► ESP32 ADC (单通道)
    电极A ─┐                                                          (12-bit, 500Hz)
           ├── IN+ / IN- 差分 ──► 放大 + 滤波 ──► 1 路输出 (RL 电极接 RLD)
    电极B ─┘
 ```
 
-- **导联**是贴在身上的**电极对构成的电学测量向量**；AD8232（单导联 AFE）把两路电极（RA/LA）的差分信号放大合成 **1 路心电信号**，再进 **单个 ADC** 采样。所以是 **3 电极（RA/LA/RL）、单通道、导联 II 接法**（等效标准 ECG 的 Lead II，差分抑制共模干扰；RL 为右腿驱动）。⚠️ 历史文档"AD620 / 双导联"为错误表述，已更正（见 [docs/hardware/afe_selection_notes.md](docs/hardware/afe_selection_notes.md)，含多导联备选评估）
+- **导联**是贴在身上的**电极对构成的电学测量向量**；AD8232（单导联 AFE）把两路电极（RA/LA）的差分信号放大合成 **1 路心电信号**，再进 **单个 ADC** 采样。所以是 **3 电极（RA/LA/RL）、单通道、导联 II 接法**（等效标准 ECG 的 Lead II，差分抑制共模干扰；RL 为右腿驱动）。（见 [docs/hardware/afe_selection_notes.md](docs/hardware/afe_selection_notes.md)，含多导联备选评估）
 - 信号源三选一：真实 AFE 采集（`src/adc_afe/`）、软件模拟发生器（`src/signal_generator/ecg_simulator.cpp`）、MIT-BIH 回放（`src/signal_generator/ecg_replay.cpp`）
 
 ### 数字滤波链
@@ -138,17 +138,6 @@ cd ecg_app && flutter run
 ```
 
 示例：`0.253,-0.187,0.241,75,75,0.87,0,0,0.012`
-
-> **BLE 帧格式（2026-08-10 修复）**：BLE NUS TX 每 2 帧(4ms)发 1 帧 = **250Hz 单帧
-> Notify**，帧以 `;` 结尾，每帧完整 9 列（与串口一致，含 abnormal_flag/confidence）。
-> 此前仅发 5 列（clean/noisy/filtered/bpm/sqi），App 收不到 abnormal 导致报警功能在
-> 真实 BLE 链路下无法触发（已修复，TH §三十六）；随后因 9 列解析后数据率 500Hz 与
-> App 250Hz 显示假设错配致波形变形，改为 250Hz 单帧（TH §三十七）。App 端按 `;`
-> 分割后逐帧解析。
->
-> **停搏/无信号报警（2026-08-10）**：AI 模型训练分布不含停搏场景，低电压直线不会
-> 触发 AI 报警。固件新增停搏检测：filtered 信号连续 3 秒峰峰值 < 20mV 判为
-> 无信号/停搏，abnormal_flag 强制置 1（confidence=0.99）。
 
 | 列 | 字段 | 说明 |
 |----|------|------|
@@ -213,7 +202,7 @@ cd ecg_app && flutter run
 | ecgdata | data/spiffs | 0xb10000 | **4M**（ECG 记录存储，250Hz int16 三通道原始数据约 43 分钟容量） |
 
 - **资源占用**：阶段 A 后编译 Flash **13.4%**（1,542,233 / 11,534,336 B，按 ota_0 11M 分区计，余 ~9.6MB）/ RAM **40.9%**（TH §三十二）；真机烧录验收时（15M app 分区口径）Flash 8.4% / RAM 38.3%，`Embedded PSRAM 8MB` 确认（TH §三十一）
-- **容量历史**：SUPERMINI 板（4MB Flash）时代曾需去 OTA 分区调整，单模型 47.1%、双模型链接实测 52.9%（TH §二十七）；N16R8 下双模型（327KB）仅占 16MB 的 2%，**Flash 不再是瓶颈**（ROADMAP §4.2）
+- **容量相关**：本项目也可以采用ESP32-S3-SUPERMINI 板（4MB Flash）以达到极致微小体积，但需去 OTA 分区调整，占用为单模型 47.1%、双模型链接实测 52.9% ；N16R8 下双模型（327KB）仅占 16MB 的 2%。
 
 ---
 
@@ -443,28 +432,23 @@ python3 train.py --epochs 200 --batch-size 128
 | AI 核心 / 栈 | Core 0 / 16KB | 推理后 vTaskDelay(50ms) 让出 CPU 0；结果队列深度 8 |
 | 温度阈值 | 65°C 降频 / 55°C 恢复 | 8 点滑动平均，每秒采样 |
 | 报警锁存 | 5 秒 | s_alarmHold=500 @100Hz 输出；同步写入记录器异常位图 |
-| WiFi AP | **上电自动启动**；SSID `ESP32-ECG-<MAC后4位>`；密码 12345678；ch6 / 不隐藏 / maxconn 4 | 2026-08-10 从"WIFI_ON 命令启动"改为 boot 自动启动（串口开关/复位不再影响 AP，TH §39）；WebServer :80，4 端点 REST（records 列表/meta/data/删除） |
 | 分区表 | esp32s3_16m_noota_v2.csv | ota_0 11M + ecgdata 4M SPIFFS；编译 Flash 13.4% / RAM 40.9% |
 
 ---
 
 ## 开发状态与路线
 
-**当前阶段（2026-08-10）**：
+**当前阶段（2026-08-08）**：
 
 - ✅ **阶段 A（板上 ECG 记录存储）完成**：SPIFFS 记录器 + REC_* 命令落地，**硬件验收通过**（断电持久化验证成功，TH §三十二）；真机四连修完成（AI arena / Task WDT / 滤波器 double 精度 / 心率跨域标定，TH §三十一）
-- 🔶 **阶段 B（WiFi AP 传输 + 云端存储）基本可用（2026-08-10）**：AP **上电自动启动**
-  （此前靠 WIFI_ON 命令启动，而串口打开/关闭会触发设备复位 → "串口关了 WiFi 就没"；
-  现 boot 自动 ecgWifiStart，串口/复位不再影响 AP，TH §三十九）；修复 **App BLE 命令缺
-  '\n' 结束符**根因（定时录制命令此前从未送达设备，TH §三十九）；WebServer 4 端点
-  REST API + App 记录管理/下载可用。**待全链路验证**（定时录制 → AP 下载 → 测速）后转 ✅
+- ⬜ **阶段 B（WiFi AP 传输 + 云端存储）待办**：`src/wifi/` 占位已接线，App 云端 API 客户端骨架已搭
 - 📝 **论文写作修订进行中**：19 条审稿问题已全部有解（MODEL_GUIDE §6）；权威数字以 [docs/FINAL_RESULTS.md](docs/FINAL_RESULTS.md) 为准，稿件见 `docs/manuscript_sections_1_4.md`
 
 **模型侧（ROADMAP Phase 4）**：exp6-SGD 已上板（T0-1）；双模型部署（P2A + KD a070_t1）为 4.2 待办（N16R8 下 Flash 无容量障碍，需双 TFLite interpreter / 分时加载运行时实现）；4.3 全链路集成验证（PC-ESP32 一致性、真实采集链路、温度/功耗）待办；4.4 模型侧优化按需。
 
 **已关闭路线（避免重复踩坑）**：双专家 OR（TH §8.8 否决）、3-beat 输入（D5）、SSL 预训练（D6）、平衡混合单模型（TH §8.9.6）、拍级 RR 上下文融合器（TH §二十八 负面结果）、全类相位扰动增强（TH §十八 负面结果）。
 
-**已知遗留**：回放 100 段 bpm 偏低（心率参数按模拟器标定，真实信号需再标定）；VF/VT 检测器在模拟器/回放段有误报（阈值 / SQI 门控待调）；LED 引脚 GPIO48 假设待实物确认（TH §三十一）。
+**已知遗留**：回放 100 段 bpm 偏低（心率参数按模拟器标定，真实信号需再标定）；VF/VT 检测器在模拟器/回放段有误报（阈值 / SQI 门控待调）。
 
 ---
 

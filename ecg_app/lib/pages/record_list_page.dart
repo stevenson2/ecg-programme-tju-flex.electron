@@ -7,6 +7,22 @@ import '../services/record_api.dart';
 import '../services/ecg_record_codec.dart';
 import '../services/upload_service.dart';
 import '../services/upload_queue.dart';
+import 'playback_page.dart';
+
+/**
+ * @brief 默认 .ecgr 加载器：读取文件并解码（顶层函数，可独立单测）
+ *
+ * 返回 null 表示文件不存在或解码失败（不抛异常，文档化约定与
+ * EcgRecordCodec.decode 一致）。真实文件 IO 在 widget 测试的
+ * FakeAsync 区域无法完成，故页面提供 ecgrLoader 注入点，
+ * 本函数用普通 test() 覆盖。
+ */
+Future<EcgRecord?> loadEcgrFile(String path) async {
+  final file = File(path);
+  if (!await file.exists()) return null;
+  final bytes = await file.readAsBytes();
+  return EcgRecordCodec.decode(bytes);
+}
 
 /**
  * @file record_list_page.dart
@@ -17,12 +33,13 @@ import '../services/upload_queue.dart';
  *   2. 队列状态栏（待上传计数 + 一键处理）
  *   3. 记录列表（ID / 时长 / 大小 / 异常徽章 + 上传状态）
  *   4. 逐条下载（保存至 downloadDir/ecg_records/<id>.ecgr）
- *   5. 逐条删除（调用 DELETE API 后刷新列表）
- *   6. 逐条上传（云端 upload → analyze → report）
- *   7. 空状态提示
+ *   5. 本地回放（卡片回放按钮 / 下载成功 SnackBar 动作 → PlaybackPage）
+ *   6. 逐条删除（调用 DELETE API 后刷新列表）
+ *   7. 逐条上传（云端 upload → analyze → report）
+ *   8. 空状态提示
  *
- * 可注入 RecordApi / CloudUploadService / UploadQueue / Directory downloadDir
- * 以支持测试。
+ * 可注入 RecordApi / CloudUploadService / UploadQueue / Directory downloadDir /
+ * ecgrLoader（回放加载器，默认 loadEcgrFile 真实文件 IO）以支持测试。
  */
 class RecordListPage extends StatefulWidget {
   /** HTTP 客户端（测试中可注入 MockClient 构造的 RecordApi） */
@@ -37,12 +54,16 @@ class RecordListPage extends StatefulWidget {
   /** 上传队列（null 时从 downloadDir 自动创建） */
   final UploadQueue? uploadQueue;
 
+  /** 本地回放加载器（null 时用 loadEcgrFile 真实文件 IO；测试注入假实现） */
+  final Future<EcgRecord?> Function(int id)? ecgrLoader;
+
   const RecordListPage({
     super.key,
     required this.api,
     this.downloadDir,
     this.uploadService,
     this.uploadQueue,
+    this.ecgrLoader,
   });
 
   @override
@@ -180,6 +201,7 @@ class _RecordListPageState extends State<RecordListPage> {
           SnackBar(
             content: Text('下载成功: ${file.path}'),
             duration: const Duration(seconds: 3),
+            action: SnackBarAction(label: '回放', onPressed: () => _openPlayback(info)),
           ),
         );
       }
@@ -194,6 +216,30 @@ class _RecordListPageState extends State<RecordListPage> {
         setState(() => _downloadingIds.remove(info.id));
       }
     }
+  }
+
+  /** 本地回放：经加载器取 .ecgr 解码结果并跳转回放页 */
+  Future<void> _openPlayback(RecordInfo info) async {
+    final loader = widget.ecgrLoader ??
+        (int id) => loadEcgrFile(_getEcgrPathSync(id));
+    final record = await loader(info.id);
+    if (!mounted) return;
+
+    if (record == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('无法回放（请先下载记录文件）'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => PlaybackPage(record: record),
+      ),
+    );
   }
 
   /** 上传记录到云端 */
@@ -525,6 +571,15 @@ class _RecordListPageState extends State<RecordListPage> {
                         minWidth: 36, minHeight: 36),
                     padding: EdgeInsets.zero,
                   ),
+            IconButton(
+              icon: const Icon(Icons.play_circle_outline, size: 20),
+              color: const Color(0xFF00BFFF),
+              tooltip: '本地回放',
+              onPressed: () => _openPlayback(info),
+              constraints:
+                  const BoxConstraints(minWidth: 36, minHeight: 36),
+              padding: EdgeInsets.zero,
+            ),
             IconButton(
               icon: const Icon(Icons.delete_outline, size: 20),
               color: Colors.redAccent,

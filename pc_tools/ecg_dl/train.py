@@ -83,7 +83,9 @@ def train(
     patient_split: bool = False,     # 4.4-4: 患者级划分训练 (消除记录级泄漏, 发表级严谨)
     early_patience: int = 20,        # EarlyStopping patience (val_loss), 部署链试点用 40
     optimizer: str = "adamw",        # adamw (默认) 或 sgd (Nesterov, 泛化更强, Wilson 2017)
-    lr: Optional[float] = None       # 覆盖 TRAIN_CONFIG learning_rate (sgd 需 ~1e-2)
+    lr: Optional[float] = None,      # 覆盖 TRAIN_CONFIG learning_rate (sgd 需 ~1e-2)
+    warmup_epochs: int = 0,          # lr warmup 轮数 (0=关闭): 前 N epoch lr 从 start 线性爬到 base
+    warmup_start_lr: float = 1e-6    # warmup 起始 lr (P0-2 exp7b: 消除 epoch-0 val_auc 尖峰假象)
 ) -> tf.keras.Model:
     """
     完整训练流程 (支持多模型 + 多数据集).
@@ -289,6 +291,24 @@ def train(
     # FocalLoss handles class imbalance internally via alpha parameter.
     # See ModelPlan §11.2 for details.
 
+    # LR warmup (P0-2 exp7b, 2026-08-13): 前 warmup_epochs 轮 lr 从 warmup_start_lr
+    # 线性爬到 base_lr, 之后 pass-through 交还 ReduceLROnPlateau。目的: 消除 epoch-0
+    # val_auc 孤立尖峰 (SGD lr=0.01 首轮 lucky pass) 被 ModelCheckpoint(monitor=val_auc)
+    # + EarlyStopping(restore_best_weights) 捕获为欠训练权重的假象 (TH §42 Step3)。
+    if warmup_epochs > 0:
+        base_lr = lr if lr is not None else TRAIN_CONFIG['learning_rate']
+
+        def _warmup_schedule(epoch, current_lr):
+            if epoch < warmup_epochs:
+                frac = float(epoch + 1) / float(warmup_epochs)
+                return warmup_start_lr + (base_lr - warmup_start_lr) * frac
+            return current_lr  # warmup 结束后交还 ReduceLROnPlateau 管理
+
+        callbacks = [tf.keras.callbacks.LearningRateScheduler(
+            _warmup_schedule, verbose=1)] + callbacks
+        print(f"[训练] LR warmup: {warmup_start_lr} → {base_lr} "
+              f"({warmup_epochs} epochs 线性爬升)")
+
     # Loss 可视化支持: 追加 CSVLogger (配合 plot_history.py --watch)
     from tensorflow.keras.callbacks import CSVLogger
     history_csv_path = str(MODELS_DIR / "train_history.csv")
@@ -473,6 +493,8 @@ if __name__ == "__main__":
                         help="4.4-4 患者级划分训练 (消除记录级泄漏, 发表级严谨)")
     parser.add_argument("--deploy-chain", action="store_true",
                         help="阶段1.5: 使用部署链重建数据 (*_deploy.npz) 训练 (TUNING_HISTORY 十三章)")
+    parser.add_argument("--deploy-causal", action="store_true",
+                        help="P0-2: 使用修正后因果链重建数据 (*_deploy_causal.npz) 训练 (exp7)")
     parser.add_argument("--patience", type=int, default=20,
                         help="EarlyStopping patience (val_loss), 部署链延长跑用 40")
     parser.add_argument("--optimizer", type=str, default="adamw",
@@ -480,6 +502,11 @@ if __name__ == "__main__":
                         help="adamw (默认) 或 sgd (Nesterov, 泛化更强, Wilson 2017)")
     parser.add_argument("--lr", type=float, default=None,
                         help="覆盖学习率 (sgd 建议 1e-2 量级)")
+    parser.add_argument("--lr-warmup-epochs", type=int, default=0,
+                        help="lr warmup 轮数 (0=关闭; P0-2 exp7b 用 5, 消除 epoch-0 "
+                             "val_auc 尖峰假象)")
+    parser.add_argument("--lr-warmup-start", type=float, default=1e-6,
+                        help="lr warmup 起始学习率 (默认 1e-6)")
     parser.add_argument("--phase-shift", type=int, default=0,
                         help="T2-5: 全类相位扰动最大样本数 (batch 统一 roll, 两类一起; "
                              "0=关闭; 10=±10 样本 @250Hz)")
@@ -489,6 +516,10 @@ if __name__ == "__main__":
     if args.deploy_chain:
         import data.dataset as _ds
         _ds.set_npz_suffix("_deploy")
+
+    if args.deploy_causal:
+        import data.dataset as _ds
+        _ds.set_npz_suffix("_deploy_causal")
 
     if args.phase_shift and args.phase_shift > 0:
         from config import TRAIN_CONFIG
@@ -531,5 +562,7 @@ if __name__ == "__main__":
             patient_split=args.patient_split,
             early_patience=args.patience,
             optimizer=args.optimizer,
-            lr=args.lr
+            lr=args.lr,
+            warmup_epochs=args.lr_warmup_epochs,
+            warmup_start_lr=args.lr_warmup_start
         )

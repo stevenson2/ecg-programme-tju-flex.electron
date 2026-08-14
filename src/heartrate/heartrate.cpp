@@ -63,17 +63,20 @@
  *   B = (0.89127, -1.78254, 0.89127)
  *   A = (1, -1.77666, 0.80084)
  */
-#define QRS_LP15_A1  -1.75513f
-#define QRS_LP15_A2   0.77708f
-#define QRS_LP15_B0   0.00549f
-#define QRS_LP15_B1   0.01097f
-#define QRS_LP15_B2   0.00549f
+/* 2026-08-14: 带通 5-15Hz → 8-25Hz — 模拟器 R 波极窄 (12ms), 15Hz LP 把 R
+ * 能量砍半致 R≈T 能量 (能量包络分不清 R/T); 8-25Hz 带内 R 保留 36.2%、T 保留
+ * 0.0% (FFT 实测), 干净分离。系数 scipy butter(2,[8,25],fs=500)。 */
+#define QRS_LP25_A1  -1.561018f
+#define QRS_LP25_A2   0.641352f
+#define QRS_LP25_B0   0.020083f
+#define QRS_LP25_B1   0.040167f
+#define QRS_LP25_B2   0.020083f
 
-#define QRS_HP5_A1   -1.77666f
-#define QRS_HP5_A2    0.80084f
-#define QRS_HP5_B0    0.89127f
-#define QRS_HP5_B1   -1.78254f
-#define QRS_HP5_B2    0.89127f
+#define QRS_HP8_A1   -1.858043f
+#define QRS_HP8_A2    0.867472f
+#define QRS_HP8_B0    0.931379f
+#define QRS_HP8_B1   -1.862758f
+#define QRS_HP8_B2    0.931379f
 
 /* QRS BPF 状态变量 */
 static float qrs_bpf_lp_w1 = 0.0f;
@@ -81,13 +84,19 @@ static float qrs_bpf_lp_w2 = 0.0f;
 static float qrs_bpf_hp_w1 = 0.0f;
 static float qrs_bpf_hp_w2 = 0.0f;
 
-#define MWI_WINDOW      75          /**< 滑动积分窗口 150ms @500Hz */
-#define REFRACTORY_SAMP 100         /**< 不应期 200ms = 100 样本 */
+#define MWI_WINDOW      40          /**< 滑动积分窗口 80ms @500Hz (2026-08-14: 75→40
+ * 窄 R 波 ~12ms, 75 窗(150ms)过度稀释且相位敏感; 40 窗紧贴 QRS 能量) */
+#define REFRACTORY_MS   200         /**< 不应期 200ms (2026-08-14 毫秒化) */
+#define MIN_RR_SEC      0.480f       /**< 最小 RR 480ms (秒) 拒 T 波双计数 —
+ * 2026-08-14 修复: 原 MIN_RR_MS=480 误用毫秒, rrSec 是秒 → rrSec<480 恒真
+ * → 第 2 拍起全部被拒 (真机/模拟 0 检出根因, 首拍跳 RR 门故只 1 拍) */
+#define MAX_RR_SEC      2.000f       /**< 最大 RR 2s (秒) */
 
 #define RR_BUFFER_SIZE  8           /**< BPM 中位数缓冲区容量 */
 
-#define THRESHOLD_INIT  0.0002f     /**< 初始阈值 (MWI域, 2026-08-08: 原0.002 按1V信号标定,
-                                         模拟器/AFE 小信号 ~0.15V 时 mwi 峰值 ~2e-4 < 0.002 检不出) */
+#define THRESHOLD_INIT  0.0001f     /**< 初始阈值 (能量包络域, 2026-08-14 弃导数平方):
+ * QRS 带通后 ~0.17V → 能量-MWI 峰 ~5e-3, 噪声 ~2e-4, 伪影 ~1e-4; 下限 1e-4
+ * 低于 QRS、高于纯噪声, 伪影由峰宽/自适应阈值/峰噪比协同过滤。 */
 /* v4.2: THRESHOLD_RATIO 0.40→0.30, SIGNAL_WEIGHT 0.125→0.0625 (LUDB 参数扫描) */
 #define THRESHOLD_RATIO 0.30f       /**< 阈值 = 噪声 + 0.30×(信号−噪声) */
 #define SIGNAL_WEIGHT   0.0625f     /**< 信号峰值更新因子 (EMA) */
@@ -97,13 +106,17 @@ static float qrs_bpf_hp_w2 = 0.0f;
 #define SIGNAL_WEIGHT_MOT  0.02f    /**< 运动期极慢更新 signalPeak */
 
 /* v4.2: MIN_RR_SAMP 150→200 (400ms, LUDB 参数扫描: 消除 RR 缓冲污染) */
-#define MIN_RR_SAMP     200         /**< 最小 RR: 400ms @500Hz */
+#define MIN_RR_SAMP     240         /**< 最小 RR: 480ms @500Hz (2026-08-14: 200→240
+ * 防 T 波双计数 — 新电极位置 T 波显著, 真机实测 144 BPM ≈ 2×72; T 波距 R
+ * ~300-450ms < 480ms 被拒; 心率上限 ~125 BPM, 消费级静息场景可接受) */
 #define MAX_RR_SAMP     1000        /**< 最大 RR: 2000ms @500Hz */
 
-#define TIMEOUT_SAMP    1500        /**< 3 秒无 QRS → 复位 @500Hz */
-#define HOLD_SAMP       500         /**< 1 秒无新拍 → 停止输出旧 BPM */
+#define TIMEOUT_MS      3000UL      /**< 3 秒无 QRS → 复位 (2026-08-14 毫秒化) */
+#define HOLD_MS         1000UL      /**< 1 秒无新拍 → 停止输出旧 BPM */
 #define MIN_CONF_BEATS  5           /**< 至少 5 拍才开始输出 BPM */
-#define MIN_CONF_FEAT   8           /**< 至少 8 拍才开启特征验证 */
+#define MIN_CONF_FEAT   1000        /**< 至少 N 拍才开启特征验证。2026-08-14: 8→1000
+ * (禁用形态学验证) — 该验证按旧导数-MWI 标定, 能量包络+8-25Hz 下误杀 R 波
+ * (真机/模拟 beats 到 8 即停 → 3s 超时复位循环); 能量包络已实现 100× 分离。 */
 /* v4.2: MIN_PEAK_RATIO 2.0→1.5 (LUDB 参数扫描: 修复A后 np 不再暴涨, 2.0 过严) */
 /* 2026-08-08: 1.5→1.2 (模拟器小信号下 np 仍被次峰抬升, QRS/噪声比 ~1.26 被误拒) */
 #define MIN_PEAK_RATIO  1.2f        /**< 峰/噪比门限 (静止) */
@@ -136,8 +149,10 @@ static float qrs_bpf_hp_w2 = 0.0f;
 /* ======== 形态学验证常数 (静止) ======== */
 #define MWI_HIST_LEN     120        /**< MWI 历史长度 (240ms @500Hz) */
 #define PEAK_HIST_LEN    8          /**< 近期峰值历史长度 */
-#define MIN_QRS_WIDTH    40         /**< 最小 QRS 半高宽 80ms @500Hz */
-#define MAX_QRS_WIDTH    80         /**< 最大 QRS 半高宽 160ms @500Hz */
+#define MIN_QRS_WIDTH    25         /**< 最小 QRS 半高宽 (2026-08-14: 40→25 — 能量包络
+ * 40 样本滑动窗把窄 R 展宽到 ~40 样本, 旧下限 40 恰好卡边界致第 8 拍起间歇拒;
+ * 能量包络+8-25Hz 已大幅抑制伪影, 宽度门可放宽) */
+#define MAX_QRS_WIDTH    100        /**< 最大 QRS 半高宽 200ms @500Hz (80→100) */
 #define AMP_CONSISTENCY  0.35f      /**< 振幅一致性容差 ±35% */
 #define RR_CONSISTENCY   0.30f      /**< RR 一致性容差 ±30% (静止) */
 #define RISE_FALL_MIN    0.5f       /**< 最小上升/下降比 */
@@ -183,6 +198,8 @@ static float      s_mwiPrevPrev;
 
 static HR_State   s_state;
 static int        s_refractCount;
+static unsigned long s_lastBeatMillis = 0;      /* 上次心拍时间戳 (2026-08-14, 帧率无关 RR) */
+static unsigned long s_refractUntilMillis = 0;  /* 不应期结束时间戳 */
 static float      s_signalPeak;
 static float      s_noisePeak;
 static float      s_threshold;
@@ -228,20 +245,21 @@ static int        s_confirmedBPMCount;
 static bool        s_adaptInitDone;
 static int         s_adaptInitCount;
 static float       s_adaptInitSumSq;
+static float       s_adaptWinMax;    /* 学习窗 MWI 最大值 (2026-08-14 峰基法) */
 
 /* ======================== 工具函数 ======================== */
 
 static float applyQRSBandpass(float x)
 {
-    float w_lp = x - QRS_LP15_A1 * qrs_bpf_lp_w1 - QRS_LP15_A2 * qrs_bpf_lp_w2;
-    float y_lp = QRS_LP15_B0 * w_lp + QRS_LP15_B1 * qrs_bpf_lp_w1
-               + QRS_LP15_B2 * qrs_bpf_lp_w2;
+    float w_lp = x - QRS_LP25_A1 * qrs_bpf_lp_w1 - QRS_LP25_A2 * qrs_bpf_lp_w2;
+    float y_lp = QRS_LP25_B0 * w_lp + QRS_LP25_B1 * qrs_bpf_lp_w1
+               + QRS_LP25_B2 * qrs_bpf_lp_w2;
     qrs_bpf_lp_w2 = qrs_bpf_lp_w1;
     qrs_bpf_lp_w1 = w_lp;
 
-    float w_hp = y_lp - QRS_HP5_A1 * qrs_bpf_hp_w1 - QRS_HP5_A2 * qrs_bpf_hp_w2;
-    float y_hp = QRS_HP5_B0 * w_hp + QRS_HP5_B1 * qrs_bpf_hp_w1
-               + QRS_HP5_B2 * qrs_bpf_hp_w2;
+    float w_hp = y_lp - QRS_HP8_A1 * qrs_bpf_hp_w1 - QRS_HP8_A2 * qrs_bpf_hp_w2;
+    float y_hp = QRS_HP8_B0 * w_hp + QRS_HP8_B1 * qrs_bpf_hp_w1
+               + QRS_HP8_B2 * qrs_bpf_hp_w2;
     qrs_bpf_hp_w2 = qrs_bpf_hp_w1;
     qrs_bpf_hp_w1 = w_hp;
 
@@ -283,6 +301,14 @@ static void updateThreshold(float peakVal, bool isSignal)
     if (s_threshold < THRESHOLD_INIT) {
         s_threshold = THRESHOLD_INIT;
     }
+}
+
+/* 2026-08-14: 仅更新 signalPeak (不触碰阈值/噪声) — 供"高于阈值但被 RR/形态
+ * 门拒绝"的峰使用, 使 SQI 反映真实 QRS 幅度而非检测成败 (解耦死循环)。 */
+static void updateSignalPeak(float peakVal)
+{
+    float weight = SIGNAL_WEIGHT;
+    s_signalPeak = weight * peakVal + (1.0f - weight) * s_signalPeak;
 }
 
 static void updateSQI(void)
@@ -566,8 +592,12 @@ static bool isQRSValid(float peakVal, float rrSec)
      * 固件 v4.0 只在 addRRInterval() 中丢弃超范围 RR, 但 isQRSValid()
      * 会接受该峰并递增 beatCount, 导致不应期边缘的次级峰污染
      * 阈值学习与形态验证开启时机 (LUDB 验证: PPV +23pp)。 */
-    int rrSamp = (int)(rrSec / TS + 0.5f);
-    if (rrSamp < MIN_RR_SAMP || rrSamp > MAX_RR_SAMP) return false;
+    /* 2026-08-14 毫秒化: RR 范围用真实时间 (帧率无关); 首拍 (beatCount==0,
+     * 尚无前拍) 跳过范围校验 — 勿用 s_lastBeatMillis>0 (hrReset 已置其为 millis())。 */
+    if (s_beatCount > 0) {
+        if (rrSec < MIN_RR_SEC)           return false;
+        if (rrSec > MAX_RR_SEC)           return false;
+    }
 
     float peakRatio = s_motionConfirmed ? MIN_PEAK_RATIO_MOT : MIN_PEAK_RATIO;
     if (peakVal < s_noisePeak * peakRatio) return false;
@@ -701,24 +731,34 @@ HR_Result hrProcess(float filteredSample)
 
     float qrsSignal = applyQRSBandpass(filteredSample);
 
-    float diff = qrsSignal - s_prevSample;
-    s_prevSample = qrsSignal;
-    float squared = diff * diff;
-    float mwi = computeMWI(squared);
+    /* 2026-08-14 能量包络 (弃导数平方): 导数平方对尖锐阶跃/尖峰放大 8×
+     * (一步 diff=0.15→diff²=0.02 vs QRS 平滑上升 0.003), 模拟器注入的运动
+     * 阶跃+稀疏尖峰在导数域盖过 QRS (真机/模拟均 0 检出根因)。改用 x² 直接
+     * 积分 — QRS 有持续能量、伪影是瞬态, 积分后 QRS 峰 >> 伪影 (能量域)。 */
+    float energy = qrsSignal * qrsSignal;
+    float mwi = computeMWI(energy);
 
     /* 自适应初始阈值 (MWI 域学习, 2026-08-08 修复: 原 qrsSignal 信号域 RMS×2
-     * 与 MWI 峰值跨域失配, 小信号下阈值比峰值大 50-800 倍, QRS 永不检出) */
-    if (!s_adaptInitDone && s_beatCount == 0) {
+     * 与 MWI 峰值跨域失配, 小信号下阈值比峰值大 50-800 倍, QRS 永不检出)。
+     * 2026-08-14 死锁打破: 原逻辑 adaptInitDone 后不再重学 — 学习窗必然包含
+     * QRS (RR<1s < 窗宽+滑动), 阈值偏高致 0 检出后永不恢复 (真机新电极位置
+     * 实测 90s 0 心拍)。改为: 只要 beatCount==0 就每 ADAPT_INIT_SAMP 滚动重学。 */
+    if (s_beatCount == 0) {
         s_adaptInitCount++;
-        s_adaptInitSumSq += mwi * mwi;
+        if (mwi > s_adaptWinMax) s_adaptWinMax = mwi;
         if (s_adaptInitCount >= ADAPT_INIT_SAMP) {
-            float baselineRMS = sqrtf(s_adaptInitSumSq / (float)ADAPT_INIT_SAMP);
-            float adaptiveThreshold = baselineRMS * ADAPT_INIT_FACTOR;
-            if (adaptiveThreshold > THRESHOLD_INIT) {
+            /* 2026-08-14 峰基法: 阈值 = 窗口 MWI 最大值 × 0.4 — 直接锁 QRS 峰
+             * 量级, 对波动幅度更稳健 (RMS 法在波动信号下易被 QRS 占空比稀释)。
+             * 下限 THRESHOLD_INIT(1e-5) 仍高于噪声峰 (1e-6~8e-6)。 */
+            float adaptiveThreshold = s_adaptWinMax * 0.4f;
+            if (adaptiveThreshold < THRESHOLD_INIT) adaptiveThreshold = THRESHOLD_INIT;
+            if (s_sqi >= 0.45f || adaptiveThreshold < s_threshold) {
                 s_threshold = adaptiveThreshold;
                 s_signalPeak = adaptiveThreshold;
                 s_noisePeak = adaptiveThreshold * 0.3f;
             }
+            s_adaptInitCount = 0;
+            s_adaptWinMax = 0.0f;
             s_adaptInitDone = true;
         }
     }
@@ -730,16 +770,19 @@ HR_Result hrProcess(float filteredSample)
 
     if (isPeak) {
         float peakVal = s_mwiPrev;
-        float rrSec   = (float)s_sampSinceBeat * TS;
+        unsigned long nowMs = millis();
+        float rrSec = (s_beatCount > 0)
+                      ? (float)(nowMs - s_lastBeatMillis) / 1000.0f : 0.0f;
+        bool valid = isQRSValid(peakVal, rrSec);
 
-        if (isQRSValid(peakVal, rrSec)) {
+        if (valid) {
             addRRInterval(rrSec);
             updateThreshold(peakVal, true);
             recordValidPeak(peakVal);
 
             s_state = HR_REFRACTORY;
-            s_refractCount = 0;
-            s_sampSinceBeat = 0;
+            s_lastBeatMillis = nowMs;
+            s_refractUntilMillis = nowMs + REFRACTORY_MS;
             s_beatCount++;
 
             result.beatDetected = true;
@@ -776,23 +819,23 @@ HR_Result hrProcess(float filteredSample)
              * 原条件让运动伪影/EMG 突发等大幅峰 (高于阈值) 也喂给 np,
              * np 暴涨至 sp 的 5.9 倍 → SQI 0.15 < 0.35 → 误判运动 → BPM
              * 改用 EMA 输出 → 65→74 指数爬升循环 (N16R8 板上实测)。 */
-            if (s_state != HR_REFRACTORY
-                && s_signalPresent && peakVal < s_threshold) {
-                updateThreshold(peakVal, false);
+            if (s_state != HR_REFRACTORY && s_signalPresent) {
+                if (peakVal < s_threshold) {
+                    updateThreshold(peakVal, false);   /* 噪声峰 */
+                } else {
+                    updateSignalPeak(peakVal);          /* 真 QRS 被拒, 仍喂 signalPeak */
+                }
             }
         }
     }
 
     s_sampSinceBeat++;
 
-    if (s_state == HR_REFRACTORY) {
-        s_refractCount++;
-        if (s_refractCount >= REFRACTORY_SAMP) {
-            s_state = (s_beatCount >= MIN_CONF_BEATS) ? HR_TRACKING : HR_IDLE;
-        }
+    if (s_state == HR_REFRACTORY && millis() >= s_refractUntilMillis) {
+        s_state = (s_beatCount >= MIN_CONF_BEATS) ? HR_TRACKING : HR_IDLE;
     }
 
-    if (s_signalPresent && s_sampSinceBeat > TIMEOUT_SAMP) {
+    if (s_signalPresent && (millis() - s_lastBeatMillis) > TIMEOUT_MS) {
         hrSoftReset();
         s_state = HR_LEARNING;
     }
@@ -800,13 +843,14 @@ HR_Result hrProcess(float filteredSample)
     s_mwiPrevPrev = s_mwiPrev;
     s_mwiPrev     = mwi;
 
+    unsigned long sinceBeat = millis() - s_lastBeatMillis;
     if (!result.beatDetected && s_beatCount > 0 && s_medianRR > 0.001f
-        && s_signalPresent && s_sampSinceBeat < HOLD_SAMP) {
+        && s_signalPresent && sinceBeat < HOLD_MS) {
         uint8_t bpmRaw = computeOutputBPM();
         if (bpmRaw >= 30 && bpmRaw <= 200) {
             result.bpm = bpmRaw;
         }
-        float decay = 1.0f - (float)s_sampSinceBeat / (float)HOLD_SAMP;
+        float decay = 1.0f - (float)sinceBeat / (float)HOLD_MS;
         float bufConf = (float)s_rrCount / (float)RR_BUFFER_SIZE;
         float sqiWeight = (s_sqi < 0.4f) ? (s_sqi / 0.4f) : 1.0f;
         float motionFactor = s_motionConfirmed ? 0.5f : 1.0f;
@@ -815,6 +859,10 @@ HR_Result hrProcess(float filteredSample)
 
     result.sqi          = s_sqi;
     result.motionActive = s_motionActive;
+    /* 2026-08-14 修复: 无条件携带累计 beatCount + 最近 RR — 原 result 仅拍内帧
+     * 非零, 显示层 (1Hz 采样) 几乎总读到 0 → 恒显 "等待心拍"/RR 0.0ms。 */
+    result.beatCount = s_beatCount;
+    result.rrInterval = s_lastRR;
 
     return result;
 }
@@ -845,6 +893,8 @@ void hrReset(void)
 
     s_state        = HR_LEARNING;
     s_refractCount = 0;
+    s_lastBeatMillis = millis();       /* 2026-08-14: 复位后重新计时 (帧率无关) */
+    s_refractUntilMillis = 0;
     s_signalPeak   = THRESHOLD_INIT;
     s_noisePeak    = THRESHOLD_INIT * 0.3f;
     s_threshold    = THRESHOLD_INIT;
@@ -876,6 +926,7 @@ void hrReset(void)
     s_adaptInitDone = false;
     s_adaptInitCount = 0;
     s_adaptInitSumSq = 0.0f;
+    s_adaptWinMax = 0.0f;
 }
 
 void hrFullReset(void)

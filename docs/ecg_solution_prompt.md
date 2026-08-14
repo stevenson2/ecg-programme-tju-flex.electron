@@ -38,10 +38,11 @@
   d. 若 conn_int=30+(Android 拒绝外设请求)→ App 端 requestConnectionPriority 是唯一途径, 需新版 APK + 验证调用成功(可加日志/或 flutter_blue_plus 的 connectionState 显示)
   e. 备选: MTU 检查(帧 ~50B, 默认 MTU 23 分 3 包/帧, 250Hz=750 包/s; 大 MTU 一帧一包更稳)——App 可 requestMtu(247)
 
-### 2. 本地 App 查看心电图功能(用户新需求)
+### 2. 本地 App 查看心电图功能(用户新需求) ✅ 已完成 (2026-08-12, TH §41)
 - **现状**: `ecg_app/lib/pages/playback_page.dart` **已存在**(回放 250Hz 波形, PlaybackProvider); `record_list_page.dart` 下载成功(存到 `downloadDir/ecg_records/<id>.ecgr`)但**只提示文件路径, 未跳转回放**
-- **方案**: record_list_page 下载成功后跳转 PlaybackPage(传 .ecgr 文件路径); 或记录列表加"本地回放"按钮; 用 `ecg_app/lib/services/ecg_record_codec.dart` 解码 .ecgr(三端共用格式)
-- 需跑 `flutter test`(现有 164 测试)后构建 APK(注意: APK 构建需 `flutter precache --android` 已补齐引擎; Gradle 腾讯镜像已配置)
+- **已实现**: ①下载成功 SnackBar 加「回放」动作按钮 ②记录卡片加「本地回放」按钮 → `_openPlayback` 跳转 PlaybackPage; 新增顶层 `loadEcgrFile(path)` 默认加载器 + `ecgrLoader` 注入点(测试缝)
+- **验证**: `flutter test` 170 全过(原 164 + 新 6); APK 已构建 **app-release.apk 48.0MB**(16:45)
+- **待办**: 用户安装新 APK 真机验证(下载 → 回放); 代码未提交(工作区 2 文件: record_list_page.dart + record_list_page_test.dart)
 
 ### 3. 定时录制链路验证(用户反馈"尚未录制")
 - **步骤**: 用户 App 重连蓝牙 → 前台等 2 分钟(App 调度 1min 间隔/20s 时长, 发 REC_START/REC_STOP)→ 串口查 `REC_STATUS` 确认 count 增加 → 手机连 AP 看 `http://192.168.4.1/api/records` 出现新记录
@@ -59,7 +60,7 @@
 
 - 固件: `src/main.cpp`(AI 输入/模式切换/AP 自动启动), `src/bluetooth/ble.cpp`(GAP 日志/连接参数/命令 \n 超时), `src/wifi/ecg_wifi.cpp`(streamFile 下载), `src/ai_inference/ai_inference.cpp`(窗口零相位), `src/storage/ecg_recorder.cpp`(removeRecordFile), `include/ai_inference/tflite_settings.h`(A 方案参数), `src/filter/filter.cpp`(aiApplyFilterWindow)
 - App: `ecg_app/lib/services/ble_service.dart`(sendCommand \n / requestConnectionPriority), `record_api.dart`(下载, baseUrl=192.168.4.1), `record_list_page.dart`(下载→回放对接点), `playback_page.dart`(回放, 已存在), `ecg_record_codec.dart`(ecgr 解码)
-- 文档: `TUNING_HISTORY.md` §38-40(完整证据链), `docs/wifi_debug_brief.md`
+- 文档: `TUNING_HISTORY.md` §38-40(完整证据链)
 
 ## 五、验证与操作约束
 
@@ -73,6 +74,6 @@
 
 1. BLE 阶梯: 过滤串口看 conn_int + 确认 App 版本 → 定位协商是否成功
 2. 定时录制验证(用户配合 2 分钟)
-3. 本地回放对接(playback_page 接入下载流程)+ flutter test + 构建 APK
+3. ~~本地回放对接~~ ✅ 已完成(TH §41); 待用户装 48.0MB 新 APK 真机验证下载→回放
 4. 心率数据观察
 5. 模型微调 B(用户决定时机)

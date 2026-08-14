@@ -1,4 +1,5 @@
-﻿#include <Arduino.h>
+#include <Arduino.h>
+#include <esp_task_wdt.h>
 #include "filter/filter.h"
 #include "bluetooth/ble.h"
 #include "signal_generator/ecg_simulator.h"
@@ -72,6 +73,13 @@
 #define AFE_VREF            3.3f         /* ESP32 ADC 参考电压 */
 #define AFE_OVERSAMPLE      4            /* 过采样次数 (500Hz下降为4x以节省时间) */
 
+/* ======================== AFE 导联脱落检测引脚 ======================== */
+/* AD8232 LOD+/LOD- 为推挽输出 (VOH≈2.9V/VOL≈0.05V, 无需上拉):
+ *   高 = 对应导联脱落, 低 = 连接正常 (DC 模式, 三电极)
+ * LO+ 接 IO5 (检测 +IN 脱落), LO- 接 IO6 (检测 -IN 脱落) */
+#define AFE_LOD_P_PIN       GPIO_NUM_5   /* LOD+ (+IN 导联脱落检测) */
+#define AFE_LOD_N_PIN       GPIO_NUM_6   /* LOD- (-IN 导联脱落检测) */
+
 /* ======================== 输入模式枚举 ======================== */
 typedef enum {
     SOURCE_SIMULATOR = 0,    /**< 模拟发生器模式 (默认, 无硬件也可运行) */
@@ -100,6 +108,11 @@ static unsigned long frameCount = 0;
 #define ALARM_HOLD_OUTS  500
 static int32_t s_alarmHold = 0;
 static float  s_alarmHoldConf = 0.0f;
+
+/* 最近一次 AI 原始置信度 (诊断用, 2026-08-13): 独立于 LOD/flatline 强制报警,
+ * 用于判断 AI 模型在真实 ECG 上的真实输出 (是否误报/漏报)。 */
+static float  s_lastAiConf = 0.0f;
+static uint8_t s_lastAiAbn  = 0;
 
 /* 串口多字符命令行缓冲 (REC_* 指令) */
 static char s_serialLine[48] = {0};
@@ -207,11 +220,23 @@ static bool strStartsWithIgnoreCase(const char* s, const char* prefix)
  * @param replyLen 缓冲区大小
  * @return true 命令已识别并处理
  */
-static bool parseRecorderCommand(const char* cmd, char* reply, size_t replyLen)
+/* 串口发起的录制占用标记 (2026-08-13): 手机 App 定时录制经 BLE 周期性下发
+ * REC_START/REC_STOP, 会与串口发起的微调数据录制互相打架 (实测 180s 录制 59s 即被
+ * App 的 REC_STOP 掐断)。串口 REC_START 置位后, BLE 的 REC_START/REC_STOP 一律拒绝,
+ * 直到串口 REC_STOP 清除。 */
+static bool s_serialRecOwned = false;
+
+static bool parseRecorderCommand(const char* cmd, char* reply, size_t replyLen,
+                                 bool fromSerial)
 {
     if (strEqualsIgnoreCase(cmd, "REC_STOP")) {
+        if (!fromSerial && s_serialRecOwned && ecgRecorderIsRecording()) {
+            snprintf(reply, replyLen, "REC_STOP busy (serial-owned)");
+            return true;
+        }
         uint32_t dur = ecgRecorderCurrentDurationSec();
         bool ok = ecgRecorderStop();
+        if (fromSerial) s_serialRecOwned = false;
         /* 手动停止: 调度接管标记清除 + 下一轮推迟, 避免立即重启 */
         s_schedActiveRec = false;
         if (s_schedInterval > 0) {
@@ -222,7 +247,12 @@ static bool parseRecorderCommand(const char* cmd, char* reply, size_t replyLen)
         return true;
     }
     if (strEqualsIgnoreCase(cmd, "REC_START")) {
+        if (!fromSerial && s_serialRecOwned) {
+            snprintf(reply, replyLen, "REC_START busy (serial-owned)");
+            return true;
+        }
         bool ok = ecgRecorderStart();
+        if (ok && fromSerial) s_serialRecOwned = true;
         /* 手动开始: 当前录制不受调度自动停止干预 */
         s_schedActiveRec = false;
         snprintf(reply, replyLen, "REC_START %s", ok ? "ok" : "fail");
@@ -373,7 +403,18 @@ static bool parseRecorderCommand(const char* cmd, char* reply, size_t replyLen)
             }
             return true;
         }
-        snprintf(reply, replyLen, "DIAG fail (TXP|CH|SEQ|NOTIFY|AI)");
+        /* DIAG LPF <4|40> — 显示链低通截止频率切换 (2026-08-14,
+         * 用户按 ADI 视频要求试验 4Hz 镜面平滑; 40Hz 恢复形态保真) */
+        if (strStartsWithIgnoreCase(arg, "LPF") && sscanf(arg + 3, "%d", &v) == 1) {
+            if (v == 4 || v == 40) {
+                displaySetLpCutoff(v);
+                snprintf(reply, replyLen, "DIAG LPF %d ok", v);
+            } else {
+                snprintf(reply, replyLen, "DIAG LPF fail (4|40)");
+            }
+            return true;
+        }
+        snprintf(reply, replyLen, "DIAG fail (TXP|CH|SEQ|NOTIFY|AI|LPF)");
         return true;
     }
     return false;
@@ -422,6 +463,10 @@ void setup()
     };
     afeHalInit(&afeCfg);
 
+    /* AD8232 导联脱落检测引脚 (LOD+/LOD- 推挽输出, 无需上拉) */
+    pinMode(AFE_LOD_P_PIN, INPUT);
+    pinMode(AFE_LOD_N_PIN, INPUT);
+
     filterInit();
     filterWarmup(0.0f);  /* 预热滤波器，消除启动瞬态 */
     aiFilterInit();      /* AI 输入链 0.5Hz 高通 (2026-08-10, 匹配训练分布) */
@@ -467,6 +512,13 @@ void setup()
     } else {
         Serial.println("[AI] 推理引擎初始化失败, 继续运行");
     }
+
+    /* 任务看门狗诊断 (2026-08-14): 设备偶发卡死时主循环静默挂起 (无 panic —
+     * 默认 TWDT 只监控 CPU0 idle, loopTask 在 CPU1 不受监控, 见 sdkconfig)。
+     * 把 loopTask 挂进 TWDT (10s 超时): 卡死即 panic + 回溯 (USB-JTAG 控制台
+     * 可读, 定位卡死点后按需移除本段); 同时让设备从"静默死"变为自愈重启。 */
+    esp_task_wdt_init(10, true);
+    esp_task_wdt_add(NULL);
 
     /* 性能模式: 240MHz 确保 4ms 帧内完成所有处理和 BLE 通知 */
     setCpuFrequencyMhz(240);
@@ -580,6 +632,7 @@ static void toggleInputMode(void)
 
 void loop()
 {
+    esp_task_wdt_reset();   /* 喂狗: 主循环卡死 >10s 触发 panic 回溯 (诊断) */
     unsigned long currentTime = millis();
 
     /* 精确定时 4ms 采样间隔 */
@@ -633,6 +686,12 @@ void loop()
         /* 注意: 只能在此处调一次! 不在 afe_hal 里调是因每帧调两次ADC */
         noisyNoDC = applyCombFilter(noisyNoDC);
 
+        /* ======== 步骤2.6: 显示链 (2026-08-14) ======== */
+        /* 用户验收反馈基线"斜+毛糙": 显示列改为中值基线去除 (0.2s/0.6s,
+         * de Chazal 2004, 无高通相位失真) + LP40 平滑。仅供显示, 不影响
+         * 心率/VF 链 (filteredSample) 与 AI 链 (applyFilterAI)。 */
+        float displaySample = applyDisplayFilter(noisyNoDC);
+
         /* ======== 步骤3：数字滤波 ======== */
         float filteredSample = applyFilter(noisyNoDC);
 
@@ -656,17 +715,22 @@ void loop()
             Serial.println("[AF] AF suspected (CV/entropy window)");
         }
 
-        /* T4-9 模块2: VF/VT 检测 (每帧喂 250Hz 样本) */
-        VF_Result vf = vfProcess(filteredSample);
-        if (vf.vfAlarm) {
-            Serial.println("[VF] VF/VT ALARM (2-window confirmed)");
+        /* T4-9 模块2: VF/VT 检测 — 特征链按 250Hz 标定 (5s 窗 1250 点)
+         * 2026-08-14 修复: 原每帧 (~500Hz) 喂入致采样率错配 (5s 窗实为 ~2.8s,
+         * 带通 8-20Hz 标定漂移, PROJECT_SUMMARY 已识别问题); 与 AI 链一致
+         * 2:1 抽取后喂入 (250Hz 设计速率)。 */
+        if ((frameCount % 2) == 0) {
+            VF_Result vf = vfProcess(filteredSample);
+            if (vf.vfAlarm) {
+                Serial.println("[VF] VF/VT ALARM (2-window confirmed)");
+            }
         }
 
         /* ======== 步骤3.6：AI 异常检测推理 (推送样本到 Core 0) ======== */
-        /* 2026-08-10: AI 输入链零相位 0.5Hz 高通在推理窗口内执行
-         * (aiApplyFilterWindow, 与训练链 filtfilt 一致; 因果 IIR 会扭曲 QRS
-         * 形态致高置信度误报, TH §40)。此处推送显示链 filtered 原值。 */
-        ai_inference_push(filteredSample);
+        /* 2026-08-13 (P0-2 解耦): AI 输入链独立于显示链 — AI 用 applyFilterAI
+         * (HP 0.05 + LP 40, 与训练侧 exp7 复刻链一致), 显示链 filtered 用 HP 0.5
+         * (基线稳定)。改显示链 HP 不再影响 AI 输入, 避免 train/deploy 失配。 */
+        ai_inference_push(applyFilterAI(noisyNoDC));
 
         /* ---- 停搏/无信号检测: 当前秒内 filtered 极值跟踪 ---- */
         if (filteredSample < s_secMin) s_secMin = filteredSample;
@@ -678,7 +742,10 @@ void loop()
          *   例: 1.0V → 8000, -1.5V → -12000 */
         #define REC_SCALE_V_TO_INT16  8000.0f
         if ((frameCount % 2) == 0) {
-            ecgRecorderPushSample((int16_t)(filteredSample * REC_SCALE_V_TO_INT16));
+            /* 2026-08-13 微调准备 (TH §40 B): 记录源 filteredSample → cleanSample
+             * (去偏置原始), PC 侧按训练链 (梳状5抽头+HP0.05+LP40+因果0.5Hz@250Hz)
+             * 预处理后用于 exp7c 真实数据微调, 消除域迁移误报 */
+            ecgRecorderPushSample((int16_t)(cleanSample * REC_SCALE_V_TO_INT16));
         }
 
         /* ======== 步骤3.8：BLE 命令轮询 (消费 RxCallbacks 投递的队列, 非阻塞) ======== */
@@ -686,7 +753,7 @@ void loop()
             char bleCmd[32];
             char reply[128];
             while (bleCommandQueueTake(bleCmd, sizeof(bleCmd))) {
-                if (parseRecorderCommand(bleCmd, reply, sizeof(reply))) {
+                if (parseRecorderCommand(bleCmd, reply, sizeof(reply), false)) {
                     if (strcmp(reply, "REC_LIST") == 0) {
                         /* REC_LIST: 多行输出, BLE 逐行发送 (ESP32 BLE 栈自动分片) */
                         char listBuf[512];
@@ -720,10 +787,15 @@ void loop()
          *   根因: 9 列解析修复后 App 每包解析全部帧, 数据率变 500Hz,
          *   而 App 缓冲/时间轴按 250Hz 设计 (timeWindow*250) → 速率错配致波形变形 */
         if (frameCount % s_bleNotifyDivider == 0) {
+            /* 2026-08-14 修复: true_bpm/motion 原硬编码 0 (串口路径正确, BLE 未同步)
+             * → 与串口 9 列语义一致 */
+            uint8_t trueBPM = (s_inputMode == SOURCE_SIMULATOR)
+                              ? ecgSimulatorGetTrueBPM() : 0;
             int len = snprintf(s_bleBuf, sizeof(s_bleBuf),
                                "%.3f,%.3f,%.3f,%u,%u,%.2f,%u,%u,%.2f;",
-                               cleanSample, noisyNoDC, filteredSample,
-                               hr.bpm, 0u, hr.sqi, 0u,
+                               cleanSample, noisyNoDC, displaySample,
+                               hr.bpm, (unsigned)trueBPM, hr.sqi,
+                               hr.motionActive ? 1u : 0u,
                                (s_alarmHold > 0) ? 1u : 0u, s_alarmHoldConf);
             if (len > 0) {
                 sendBLEMessage(s_bleBuf);
@@ -746,6 +818,8 @@ void loop()
             if (ai_inference_pop_result(&aiResult)) {
                 abnormFlag = aiResult.is_abnormal;
                 abnormConf = aiResult.confidence;
+                s_lastAiConf = aiResult.confidence;   /* 记录原始置信度 (诊断) */
+                s_lastAiAbn  = aiResult.is_abnormal;
             }
 
             /* 报警锁存: 触发后 abnormal 列保持 1 共 5 秒 (防一闪而过, 2026-08-08) */
@@ -768,11 +842,25 @@ void loop()
                 s_alarmHoldConf = 0.99f;
             }
 
+            /* 导联脱落检测 (AD8232 LOD+/LOD-, 2026-08-13): 已禁用。
+             * 用户硬件未接 LO+/LO- 线 (IO5/IO6 浮空), 浮空引脚随机读 HIGH 导致
+             * 正常心电被随机强制 abnormal=1/conf=0.99 (污染 CSV 与录制位图)。
+             * 导联脱落由 flatline 软件检测兜底; 将来接好 LOD 线后重新启用即可。
+            if (digitalRead(AFE_LOD_P_PIN) == HIGH
+                || digitalRead(AFE_LOD_N_PIN) == HIGH) {
+                abnormFlag = 1;
+                abnormConf = 0.99f;
+                s_alarmHold = ALARM_HOLD_OUTS;
+                s_alarmHoldConf = 0.99f;
+            }
+            */
+
             Serial.print(cleanSample, 4);
             Serial.print(",");
             Serial.print(noisyNoDC, 4);
             Serial.print(",");
-            Serial.print(filteredSample, 4);
+            Serial.print(displaySample, 4);   /* 显示链: 中值基线去除+LP40 (2026-08-14,
+                                                基线平直无相位失真; AI 链独立不受影响) */
             Serial.print(",");
             Serial.print(hr.bpm);
             Serial.print(",");
@@ -881,7 +969,9 @@ void loop()
 
             if (hr.beatCount > 0) {
                 Serial.print("[心率] ");
-                if (hr.confidence >= 0.3f) {
+                /* 2026-08-14: 按 bpm 判定显示 (原按 confidence≥0.3 因 HOLD 衰减
+                 * 在 1Hz 采样下闪烁 "检测/学习中", 且 "需 5" 文案在 beats>5 时误导) */
+                if (hr.bpm > 0) {
                     Serial.print("检测 ");
                     Serial.print(hr.bpm);
                     Serial.print(" BPM");
@@ -925,7 +1015,7 @@ void loop()
                 if (s_serialLineLen > 1) {
                     s_serialLine[s_serialLineLen] = '\0';
                     char reply[128];
-                    if (parseRecorderCommand(s_serialLine, reply, sizeof(reply))) {
+                    if (parseRecorderCommand(s_serialLine, reply, sizeof(reply), true)) {
                         if (strcmp(reply, "REC_LIST") == 0) {
                             Serial.println("REC_LIST ok");
                             char listBuf[512];
@@ -995,13 +1085,19 @@ void loop()
                     {
                         uint32_t ti, ta, al;
                         ai_inference_stats(&ti, &ta, &al);
-                        Serial.print("[AI] 推理统计 | 总次数: ");
+                        Serial.print("[AI] 统计 | 总次数: ");
                         Serial.print(ti);
                         Serial.print(" | 异常: ");
                         Serial.print(ta);
                         Serial.print(" | 平均延迟: ");
                         Serial.print(al);
-                        Serial.println(" us");
+                        Serial.print(" us | 开关: ");
+                        Serial.print(ai_inference_is_enabled() ? "开" : "关");
+                        Serial.print(" | 最近置信度: ");
+                        Serial.print(s_lastAiConf, 3);
+                        Serial.print(" (判异常=");
+                        Serial.print(s_lastAiAbn);
+                        Serial.println(")");
                     }
                     break;
 
@@ -1010,6 +1106,18 @@ void loop()
                     Serial.print("[系统] CPU 当前频率: ");
                     Serial.print(getCpuFrequencyMhz());
                     Serial.println(" MHz");
+                    break;
+
+                case 'l':
+                case 'L':
+                    {
+                        int lop = digitalRead(AFE_LOD_P_PIN);
+                        int lon = digitalRead(AFE_LOD_N_PIN);
+                        Serial.print("[LOD] IO5(LO+)=");
+                        Serial.print(lop == HIGH ? "HIGH(脱落)" : "LOW(连接)");
+                        Serial.print("  IO6(LO-)=");
+                        Serial.println(lon == HIGH ? "HIGH(脱落)" : "LOW(连接)");
+                    }
                     break;
 
                 default:

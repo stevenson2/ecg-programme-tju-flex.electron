@@ -50,6 +50,54 @@ def apply_esp32_filters(signal, fs):
     return sig.astype(np.float32)
 
 
+# ===========================================================================
+# P0-2 修正后因果链: AI 输入链 HP 0.5Hz @250Hz (修正系数, 因果 IIR, 非 filtfilt)
+# ===========================================================================
+# 背景 (P0-2, 训练-部署失配修正):
+#   固件 src/filter/filter.cpp 的 AI_HP_* 系数原为 butter(2, 0.5, 'high', fs=500)
+#   设计, 但 AI 链经 2:1 抽取后实际为 250Hz → 有效截止 0.25Hz (非设计 0.5Hz)。
+#   修正: 用 butter(2, 0.5, 'high', fs=250) 设计 (compute_ai_hp_coeffs.py)。
+#   部署只能因果滤波 (非 filtfilt 零相位), 决策为因果重训 (train==deploy 一致)。
+#   系数与 ai_hp_coeffs_fs250.txt / filter.cpp 修正宏一致 (完整 double 精度)。
+
+# 修正系数 (fs=250) — 由 compute_ai_hp_coeffs.py 生成
+AI_HP_FS250_B0 = 0.99115359510166301
+AI_HP_FS250_B1 = -1.982307190203326
+AI_HP_FS250_B2 = 0.99115359510166301
+AI_HP_FS250_A1 = -1.9822289297925284
+AI_HP_FS250_A2 = 0.98238545061412508
+
+
+def apply_biquad_df2t(signal, b0, b1, b2, a1, a2):
+    """单级直接 II 型转置 (DF2T) 双二阶, 零初始状态, 与固件 applyBiquad 同构。
+
+    固件 filter.cpp applyBiquad (double 状态, 逐样本):
+        double w = (double)x - a1*(*w1) - a2*(*w2);
+        double y = b0*w + b1*(*w1) + b2*(*w2);
+        *w2 = *w1; *w1 = w;
+    scipy.signal.lfilter 内部采用等价结构 (transposed direct form II), 零初始
+    条件下逐样本数值与固件 DF2T 一致 (double 精度, 误差 ~1e-15)。
+
+    返回 float64 数组 (下游再统一转 float32, 与既有 HP0.05/LP40 口径一致)。
+    """
+    b = np.array([b0, b1, b2], dtype=np.float64)
+    a = np.array([1.0, a1, a2], dtype=np.float64)
+    return scipy_signal.lfilter(b, a, signal.astype(np.float64))
+
+
+def causal_hp_05_fs250(signal):
+    """因果 HP 0.5Hz @250Hz (修正系数), 零初始状态 streaming。
+
+    复刻固件修正后的 AI 输入链最后一档: 2:1 抽取后的 250Hz 流上做因果 0.5Hz 高通
+    (替代原零相位 aiApplyFilterWindow)。状态跨整条流持久 (非逐窗重置), 与固件
+    因果 biquad (aiApplyFilter, ai_hp_w1/w2 零初始化) 一致。
+    """
+    return apply_biquad_df2t(
+        signal, AI_HP_FS250_B0, AI_HP_FS250_B1, AI_HP_FS250_B2,
+        AI_HP_FS250_A1, AI_HP_FS250_A2,
+    )
+
+
 
 
 def find_record_path(record_name: str) -> Path:

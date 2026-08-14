@@ -21,13 +21,13 @@
  */
 
 /* ======================== 静态配置与状态 ======================== */
-static AFE_HAL_Config            s_config;
-static int                       s_adcChannel = -1;
-static uint16_t                  s_rawCode = 0;
-static uint64_t                  s_acc = 0;
-static AFE_HAL_Status            s_status = AFE_HAL_OK;
-static esp_adc_cal_characteristics_t s_calChars;
-static bool                          s_calValid = false;
+static AFE_HAL_Config                  s_config;
+static int                             s_adcChannel = -1;
+static uint16_t                        s_rawCode = 0;
+static uint64_t                        s_acc = 0;
+static AFE_HAL_Status                  s_status = AFE_HAL_OK;
+static esp_adc_cal_characteristics_t   s_calChars;
+static bool                            s_calValid = false;
 
 /* ======================== GPIO → ADC1 通道 ======================== */
 static int gpioToAdc1Channel(uint8_t gpio)

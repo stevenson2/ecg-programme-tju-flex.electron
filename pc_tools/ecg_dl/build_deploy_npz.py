@@ -46,6 +46,7 @@ from data.preprocess_ptb import (
 # 复用 harness 已验证链函数 (import 即完成 INCART_DIR WSL 补丁, main() 有守护)
 from eval_deploy_match import (
     deployment_chain,
+    corrected_deployment_chain,
     align_stream_lengths,
     extract_beats_deploy,
     baseline_chain_ptb,
@@ -53,6 +54,30 @@ from eval_deploy_match import (
 
 CACHE_DIR = Path(__file__).resolve().parent / "models" / "deploy_match"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+# P0-2: 链与输出后缀 (默认 D3 部署链; --causal 切修正后因果链 exp7 用)
+CHAIN_FUNC = deployment_chain
+NPZ_SUFFIX = "_deploy"
+CHAIN_LABEL = "部署链 (D3)"
+
+
+def set_causal_mode():
+    global CHAIN_FUNC, NPZ_SUFFIX, CHAIN_LABEL
+    CHAIN_FUNC = corrected_deployment_chain
+    NPZ_SUFFIX = "_deploy_causal"
+    CHAIN_LABEL = "修正后因果链 (D3 + 因果 HP 0.5Hz@250Hz)"
+
+
+def _save_npz_and_npy(out, beats, labels, rec_ids):
+    """保存压缩 npz + mmap 友好独立 .npy (dataset._load_arrays 优先读 .npy, 降 RSS).
+
+    numpy≥2.0 的 npz 不支持 mmap (TUNING_HISTORY 十三章), 训练期若走 npz 全量加载
+    RSS ~900MB; 独立 .npy 可 mmap 只按页加载。
+    """
+    np.savez_compressed(out, beats=beats, labels=labels, record_ids=rec_ids)
+    np.save(out.parent / f"{out.stem}_beats.npy", beats)
+    np.save(out.parent / f"{out.stem}_labels.npy", labels)
+    np.save(out.parent / f"{out.stem}_record_ids.npy", rec_ids)
 
 
 def _aami_r_idx(ann_idx, ann_sym, fs):
@@ -96,7 +121,7 @@ def build_mit():
             orig_fs=fs, target_fs=TARGET_FS, dual_lead=False)
 
         r_idx_250 = _aami_r_idx(ann_idx, ann_sym, fs)
-        deploy_250 = deployment_chain(signal[:, 0].astype(np.float64), fs)
+        deploy_250 = CHAIN_FUNC(signal[:, 0].astype(np.float64), fs)
         base_250 = resample_ecg(signal[:, :1], fs, TARGET_FS).flatten()
         deploy_250 = align_stream_lengths(base_250, deploy_250)
 
@@ -116,8 +141,8 @@ def build_mit():
     beats = np.concatenate(all_beats).astype(np.float32)
     labels = np.concatenate(all_labels).astype(np.int32)
     rec_ids = np.concatenate(all_rec_ids).astype(np.int32)
-    out = PROCESSED_DIR / "mit_bih_processed_deploy.npz"
-    np.savez_compressed(out, beats=beats, labels=labels, record_ids=rec_ids)
+    out = PROCESSED_DIR / f"mit_bih_processed{NPZ_SUFFIX}.npz"
+    _save_npz_and_npy(out, beats, labels, rec_ids)
     print(f"  => {out.name}: {len(beats)} beats "
           f"(N={int((labels==0).sum())}, A={int((labels==1).sum())}), "
           f"{out.stat().st_size/1024/1024:.1f} MB")
@@ -149,7 +174,7 @@ def build_incart():
             continue
 
         r_idx_250 = _aami_r_idx(ann_idx, ann_sym, fs)
-        deploy_250 = deployment_chain(sig.astype(np.float64), fs)
+        deploy_250 = CHAIN_FUNC(sig.astype(np.float64), fs)
         base_250 = resample_ecg(sig, fs, TARGET_FS)
         deploy_250 = align_stream_lengths(base_250, deploy_250)
 
@@ -165,8 +190,8 @@ def build_incart():
     beats = np.concatenate(all_beats).astype(np.float32)
     labels = np.concatenate(all_labels).astype(np.int32)
     rec_ids = np.concatenate(all_rec_ids).astype(np.int32)
-    out = PROCESSED_DIR / "incart_processed_deploy.npz"
-    np.savez_compressed(out, beats=beats, labels=labels, record_ids=rec_ids)
+    out = PROCESSED_DIR / f"incart_processed{NPZ_SUFFIX}.npz"
+    _save_npz_and_npy(out, beats, labels, rec_ids)
     print(f"  => {out.name}: {len(beats)} beats "
           f"(N={int((labels==0).sum())}, A={int((labels==1).sum())}), "
           f"{out.stat().st_size/1024/1024:.1f} MB")
@@ -210,7 +235,7 @@ def build_ptb():
             continue
         peaks_map[rid] = np.asarray(kept_peaks, dtype=np.int32)
 
-        deploy_250 = deployment_chain(lead, fs)
+        deploy_250 = CHAIN_FUNC(lead, fs)
         base_250 = resample_ecg(lead, fs, TARGET_FS)
         deploy_250 = align_stream_lengths(base_250, deploy_250)
 
@@ -236,8 +261,8 @@ def build_ptb():
     beats = np.concatenate(all_beats).astype(np.float32)
     labels = np.concatenate(all_labels).astype(np.int32)
     rec_ids = np.concatenate(all_rec_ids).astype(np.int32)
-    out = PROCESSED_DIR / "ptb_processed_deploy.npz"
-    np.savez_compressed(out, beats=beats, labels=labels, record_ids=rec_ids)
+    out = PROCESSED_DIR / f"ptb_processed{NPZ_SUFFIX}.npz"
+    _save_npz_and_npy(out, beats, labels, rec_ids)
     print(f"  => {out.name}: {len(beats)} beats "
           f"(N={int((labels==0).sum())}, A={int((labels==1).sum())}), "
           f"{len(counts)} records, {len(failed)} failed, "
@@ -250,12 +275,60 @@ def build_ptb():
 # ============================================================
 def verify(mit, incart, ptb):
     print("=" * 60)
-    print("VERIFICATION (vs original npz)")
+    if NPZ_SUFFIX == "_deploy_causal":
+        print("VERIFICATION (vs *_deploy.npz, 1:1 beat counts)")
+    else:
+        print("VERIFICATION (vs original npz)")
     print("=" * 60)
     errors = []
 
-    # MIT: 原 npz 每记录拍数 == 6 × 新 raw
     _, _, _, mit_raw = mit
+    _, _, _, inc_counts = incart
+    _, _, _, ptb_counts, ptb_failed = ptb
+
+    if NPZ_SUFFIX == "_deploy_causal":
+        # 因果 HP 0.5Hz 不改变 R 峰位置/拍数/边缘跳过决策 → 与 D3 部署链逐记录 1:1
+        ref_mit = np.load(PROCESSED_DIR / "mit_bih_processed_deploy.npz")
+        ref_inc = np.load(PROCESSED_DIR / "incart_processed_deploy.npz")
+        ref_ptb = np.load(PROCESSED_DIR / "ptb_processed_deploy.npz")
+
+        for rid in MIT_BIH_RECORDS:
+            n_ref = int((ref_mit["record_ids"] == rid).sum())
+            n_new = mit_raw.get(rid, 0) * 6
+            if n_ref != n_new:
+                errors.append(f"MIT {rid}: deploy={n_ref} != causal={n_new}")
+        if len(ref_mit["beats"]) != len(mit[0]):
+            errors.append(f"MIT total: deploy={len(ref_mit['beats'])} != causal={len(mit[0])}")
+        print(f"  MIT: deploy={len(ref_mit['beats'])} causal={len(mit[0])}")
+
+        for rid in range(1, 76):
+            n_ref = int((ref_inc["record_ids"] == rid).sum())
+            if n_ref != inc_counts.get(rid, 0):
+                errors.append(f"INCART I{rid:02d}: deploy={n_ref} != causal={inc_counts.get(rid, 0)}")
+        if len(ref_inc["beats"]) != len(incart[0]):
+            errors.append(f"INCART total: deploy={len(ref_inc['beats'])} != causal={len(incart[0])}")
+        print(f"  INCART: deploy={len(ref_inc['beats'])} causal={len(incart[0])}")
+
+        ref_recs = set(np.unique(ref_ptb["record_ids"]).tolist())
+        n_diff = 0
+        for rid in sorted(ref_recs & set(ptb_counts)):
+            if int((ref_ptb["record_ids"] == rid).sum()) != ptb_counts[rid]:
+                n_diff += 1
+                errors.append(f"PTB rid={rid}: deploy count mismatch")
+        if len(ref_ptb["beats"]) != len(ptb[0]):
+            errors.append(f"PTB total: deploy={len(ref_ptb['beats'])} != causal={len(ptb[0])}")
+        print(f"  PTB: deploy={len(ref_ptb['beats'])} causal={len(ptb[0])}, diffs={n_diff}")
+
+        if errors:
+            print(f"\n  VERIFICATION FAILED: {len(errors)} errors")
+            for e in errors[:20]:
+                print(f"    {e}")
+            sys.exit(1)
+        print("\n  VERIFICATION PASSED: 因果链拍数与 D3 部署链逐记录 1:1")
+        return
+
+    # ---- 原 D3 部署链验证 (vs original npz) ----
+    # MIT: 原 npz 每记录拍数 == 6 × 新 raw
     orig = np.load(PROCESSED_DIR / "mit_bih_processed.npz")
     for rid in MIT_BIH_RECORDS:
         n_orig = int((orig["record_ids"] == rid).sum())
@@ -315,11 +388,12 @@ def write_manifest(mit, incart, ptb, wall):
     pb, pl, _, ptb_counts, ptb_failed = ptb
     manifest = {
         "date": time.strftime("%Y-%m-%d %H:%M:%S"),
-        "purpose": "部署链 (D3) 训练数据, 供 exp4/5/6 部署链重训 (TUNING_HISTORY 十三章)",
+        "purpose": f"{CHAIN_LABEL} 训练数据 (P0-2 exp7 用 _deploy_causal / 历史 _deploy)",
+        "chain": CHAIN_LABEL,
         "npz_files": {
-            "mit_bih": "data/processed/mit_bih_processed_deploy.npz",
-            "incart": "data/processed/incart_processed_deploy.npz",
-            "ptb": "data/processed/ptb_processed_deploy.npz",
+            "mit_bih": f"data/processed/mit_bih_processed{NPZ_SUFFIX}.npz",
+            "incart": f"data/processed/incart_processed{NPZ_SUFFIX}.npz",
+            "ptb": f"data/processed/ptb_processed{NPZ_SUFFIX}.npz",
         },
         "totals": {
             "mit_bih": {"records": len(mit_raw),
@@ -348,6 +422,15 @@ def write_manifest(mit, incart, ptb, wall):
 
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="部署链训练数据重建")
+    parser.add_argument("--causal", action="store_true",
+                        help="P0-2: 用修正后因果链 (D3 + 因果 HP 0.5Hz@250Hz), "
+                             "输出 *_deploy_causal.npz (exp7)")
+    args = parser.parse_args()
+    if args.causal:
+        set_causal_mode()
+        print(f"[build_deploy_npz] 链切换: {CHAIN_LABEL}")
     t0 = time.time()
     mit = build_mit()
     incart = build_incart()

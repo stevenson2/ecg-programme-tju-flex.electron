@@ -41,6 +41,7 @@ from data.preprocess import (
     load_mit_bih_record,
     extract_beats as mit_extract_beats,
     resample_ecg,
+    causal_hp_05_fs250,
 )
 from data.preprocess_incart import (
     load_incart_record,
@@ -146,6 +147,19 @@ def deployment_chain(sig: np.ndarray, orig_fs: int) -> np.ndarray:
     # 2:1 decimation — keep even indices
     decimated = filtered[0::2]
     return decimated.astype(np.float64)
+
+
+def corrected_deployment_chain(sig: np.ndarray, orig_fs: int) -> np.ndarray:
+    """修正后固件 AI 输入链 (P0-2): D3 部署链 + 因果 HP 0.5Hz @250Hz (修正系数).
+
+    与 deployment_chain (D3) 的唯一差异: 2:1 抽取后追加一档因果 HP 0.5Hz (修正系数
+    butter(2, 0.5, fs=250), 因果 IIR, 零初始状态 streaming), 替代固件原零相位
+    aiApplyFilterWindow (其系数 fs=500 设计 → 250Hz 链有效截止 0.25Hz 的 bug)。
+
+    返回 250Hz 流 (float64), 供 extract_beats_deploy 做窗口提取 + 固件 z-score。
+    """
+    decimated_250 = deployment_chain(sig, orig_fs)
+    return causal_hp_05_fs250(decimated_250)
 
 
 # ---- Ablation chain variants ----

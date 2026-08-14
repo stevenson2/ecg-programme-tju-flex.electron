@@ -1,4 +1,4 @@
-﻿#ifndef FILTER_H
+#ifndef FILTER_H
 #define FILTER_H
 
 /**
@@ -49,24 +49,46 @@ void filterReset(void);
  */
 void filterWarmup(float firstSample);
 
-/* ======================== AI 输入链独立高通 (2026-08-10) ========================
- * 训练链 (filtfilt) 为 0.5Hz HP, 部署链为 0.05Hz HP (ST 段决策) → 呼吸/电极
- * 漂移 (0.2~0.5Hz) 进入 AI 输入窗口, Z-score 归一化后形态畸变 → 真实 ECG
- * 高置信度误报 (TH §40 实测: 正常信号 11.4% 异常率, conf 0.86~0.98)。
- * 修复: AI 输入前追加 0.5Hz 二阶 HP (显示/记录链不变, ST 段功能不受影响)。
+/* ======================== AI 输入链独立高通 (2026-08-13 修正) ========================
+ * P0-2 (TH §42/§43): AI 输入链在 2:1 抽取后的 250Hz 流上做因果 0.5Hz 高通 (fs=250
+ * 修正系数), 与训练侧重训链 causal_hp_05_fs250 位级一致 (零初始状态 streaming)。
+ * 由 aiApplyFilter 逐样本调用 (ai_inference_push 内), 状态跨窗口持续。
+ * 替代原"窗口级零相位" aiApplyFilterWindow (其系数 fs=500 设计致 0.25Hz 有效截止 bug)。
  */
 
 /** @brief 初始化 AI 输入链高通 (重置状态) */
 void aiFilterInit(void);
 
-/** @brief AI 输入链高通滤波 (0.5Hz, 匹配训练分布) */
+/** @brief AI 输入链高通滤波 (0.5Hz @250Hz 因果, 匹配训练分布) */
 float aiApplyFilter(float inputSample);
-
-/** @brief AI 输入窗口零相位 0.5Hz 高通 (训练链 filtfilt 一致, 2026-08-10) */
-void aiApplyFilterWindow(float* buf, int len);
 
 /** @brief 重置 AI 输入链高通状态 (输入源切换时调用) */
 void aiFilterReset(void);
+
+/* ======================== AI 输入链独立滤波 (2026-08-13 解耦) ========================
+ * 显示链 HP 0.5Hz (基线稳定) 与 AI 链解耦: AI 输入在 2:1 抽取前独立做
+ * HP 0.05Hz + LP 40Hz, 与训练侧 exp7 复刻链位级一致。 */
+
+/** @brief AI 输入链独立滤波 (HP 0.05Hz + LP 40Hz, 与显示链解耦) */
+float applyFilterAI(float inputSample);
+
+/** @brief 重置 AI 输入链独立滤波状态 */
+void aiChainFilterReset(void);
+
+/* ======================== 显示链 (2026-08-14) ========================
+ * 用户验收反馈: 显示基线"斜 + 毛糙" (§45 去 HP/LP 后显示梳状后原始)。
+ * 显示链独立处理: 两级中值基线去除 (0.2s/0.6s, de Chazal 2004 经典法,
+ * 保留 QRS/ST 形态且无高通相位失真) + LP 40Hz 平滑。仅用于串口/BLE 显示列,
+ * AI 链 (applyFilterAI) 与心率/VF 链 (applyFilter) 不受影响。 */
+
+/** @brief 显示链滤波: 中值基线去除 + LP40 (输入=梳状后原始) */
+float applyDisplayFilter(float inputSample);
+
+/** @brief 重置显示链状态 */
+void displayFilterReset(void);
+
+/** @brief 显示链 LP 截止频率切换 (4=镜面平滑试验, 40=形态保真默认) */
+void displaySetLpCutoff(int hz);
 
 #ifdef __cplusplus
 }

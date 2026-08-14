@@ -16,7 +16,7 @@
 
 #include "ai_inference/ai_inference.h"
 #include "ai_inference/tflite_settings.h"
-#include "filter/filter.h"   /* aiApplyFilterWindow (零相位 0.5Hz, 2026-08-10) */
+#include "filter/filter.h"   /* aiApplyFilter (因果 0.5Hz@250Hz, 2026-08-13 修正) */
 
 /* TFLite Micro */
 #include <tensorflow/lite/micro/all_ops_resolver.h>
@@ -123,10 +123,10 @@ static ai_result_t run_single_inference(const float* samples, uint32_t sample_in
 
     float local_buf[AI_WINDOW_SIZE];
     memcpy(local_buf, samples, sizeof(float) * AI_WINDOW_SIZE);
-    /* 2026-08-10: 窗口级零相位 0.5Hz 高通 (训练链 filtfilt 一致)。
-     * 因果 IIR 实测扭曲 QRS 形态 (峰度 0.80→-1.21) 致高置信度误报 (TH §40)。
-     * 零相位处理后再 Z-score, 与训练链输入分布对齐。 */
-    aiApplyFilterWindow(local_buf, AI_WINDOW_SIZE);
+    /* 2026-08-13: AI 输入链因果 0.5Hz 高通已在 ai_inference_push 内对每个抽取样本
+     * streaming 应用 (aiApplyFilter, 状态跨窗口持续), 环形缓冲存的是"因果 HP 后"
+     * 样本。此处仅做 Z-score (与训练侧 corrected_deployment_chain 的窗口提取一致),
+     * 不再调用 aiApplyFilterWindow (旧零相位实现, 系数 fs=500 致 0.25Hz bug)。 */
     preprocess_samples(local_buf, AI_WINDOW_SIZE);
     fill_input_tensor(local_buf);
 
@@ -254,6 +254,12 @@ void ai_inference_push(float value) {
         static uint8_t s_decim_ctr = 0;
         if ((s_decim_ctr++ % AI_INPUT_DECIMATION) != 0) return;
     #endif
+
+    /* 2026-08-13: 因果 0.5Hz 高通 (fs=250 修正系数) 对抽取后样本 streaming 应用,
+     * 状态 ai_hp_w1/w2 跨窗口持续 (aiFilterInit 零初始化), 与训练侧
+     * causal_hp_05_fs250 (data/preprocess.py, 零初始状态 DF2T) 位级一致。
+     * 环形缓冲存"因果 HP 后"样本; run_single_inference 不再做窗口级滤波。 */
+    value = aiApplyFilter(value);
 
     if (xSemaphoreTake(g_mutex, pdMS_TO_TICKS(5)) == pdTRUE) {
         g_sample_buffer[g_buffer_idx % AI_WINDOW_SIZE] = value;

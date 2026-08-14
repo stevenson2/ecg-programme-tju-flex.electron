@@ -1,0 +1,26 @@
+# AI 输入链 HP 0.5Hz 修正系数 (P0-2 Step 1)
+# 背景: 固件 AI_HP_* 原为 butter(2,0.5,'high',fs=500) 设计, 但 AI 链经 2:1 抽取后
+#        实际 250Hz → 有效截止 0.25Hz (非 0.5Hz)。本文件给出 fs=250 设计的修正系数,
+#        使因果 HP 0.5Hz 在 250Hz 链上真正实现 0.5Hz 截止。
+# 结构: 二阶 Butterworth 高通, a0 归一化为 1, 与 filter.cpp AI_HP_* 宏同构。
+#        B0/B1/B2 = 分子系数, A1/A2 = 分母系数 (DF2T: w=x-a1*w1-a2*w2; y=b0*w+b1*w1+b2*w2)。
+# 生成: compute_ai_hp_coeffs.py (scipy.signal.butter(2, 0.5, 'high', fs=250))
+
+# ==== 修正系数 (fs=250) ====
+#define AI_HP_FS250_B0  0.99115359510166301
+#define AI_HP_FS250_B1  -1.982307190203326
+#define AI_HP_FS250_B2  0.99115359510166301
+#define AI_HP_FS250_A1  -1.9822289297925284
+#define AI_HP_FS250_A2  0.98238545061412508
+
+# ==== 现有系数 (fs=500 设计, 供对照) ====
+#define AI_HP_FS500_B0  0.99556697201764721
+#define AI_HP_FS500_B1  -1.9911339440352944
+#define AI_HP_FS500_B2  0.99556697201764721
+#define AI_HP_FS500_A1  -1.9911142922016536
+#define AI_HP_FS500_A2  0.99115359586893548
+
+# ==== 验证记录 ====
+# 现有系数 vs butter(2,0.5,fs=500): 最大 diff = 1.110e-16
+# 现有系数 @250Hz 链有效截止: 0.2500 Hz (应为 0.25Hz)
+# 修正系数 @250Hz 链有效截止: 0.5000 Hz (应为 0.5Hz)

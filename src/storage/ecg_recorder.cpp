@@ -11,17 +11,12 @@
 
 #include <Arduino.h>
 #include <SPIFFS.h>
+#include <esp32-hal-psram.h>
 
 /* ======================== 静态变量 ======================== */
 
-/** 当前打开的录制文件 (fs::File 句柄) */
-static fs::File g_recFile;
-
 /** 是否正在录制 */
 static bool g_isRecording = false;
-
-/** 录制头部缓冲区 (32 字节) — 录制过程中实时更新, STOP 时回写 */
-static uint8_t g_headerBuf[ECGR_HEADER_SIZE];
 
 /** 录制起始 Unix 时间戳 (millis()/1000, 若未同步 NTP 则为上电秒数) */
 static uint32_t g_startUnix = 0;
@@ -35,9 +30,17 @@ static uint32_t g_durationSec = 0;
 /** 异常秒累计 */
 static uint32_t g_abnormalSec = 0;
 
-/** 写缓冲区 */
-static uint8_t g_batchBuf[ECG_REC_BATCH_BYTES];
-static uint16_t g_batchIdx = 0;
+/* ======================== PSRAM 录制缓冲 (2026-08-13 重写) ========================
+ * 原实现录制期间持续写 SPIFFS (8KB 批刷): ① SPIFFS 写入阻塞主循环使帧率掉到
+ * ~150-200Hz (记录实际采样率远低于标称 250Hz); ② STOP 时用 "r+" seek(0) 原地
+ * 回写头部, SPIFFS 原地改写不可靠, 导致头部损坏 (HTTP meta 404) + 保留策略读到
+ * 垃圾 startUnix 误删新记录 (实测 180s 记录被删).
+ * 新实现: 录制全程缓冲于 PSRAM (8MB, 90KB/3min 微不足道), STOP 时一次性落盘
+ * (头部 + 样本 + 位图), 无原地改写、无录制中 SPIFFS 停顿 → 真实 250Hz 采样。 */
+static uint8_t* g_psramBuf = NULL;   /* 样本缓冲 (int16 LE 流) */
+static size_t   g_psramCap = 0;      /* 样本缓冲容量 (字节) */
+static uint8_t* g_bmpBuf = NULL;     /* 异常位图缓冲 (1 字节/秒) */
+static size_t   g_bmpCap = 0;        /* 位图缓冲容量 (字节) */
 
 /** 自动录制开关 */
 static bool g_autoRecord = false;
@@ -60,37 +63,47 @@ static uint32_t g_recordCount = 0;
 #define ECGR_BASE_PATH  "/ecgdata"
 
 /**
- * @brief 将写缓冲区刷入文件
- *
- * 若 g_batchIdx > 0, 将缓冲区内容写入 g_recFile 并清零索引。
- * 写入失败时打印警告 (不中止录制 — 存储满时优雅降级)。
+ * @brief PSRAM 分配 (失败时回退到堆)
  */
-static void flushBatch(void) {
-    if (g_batchIdx == 0) return;
-    if (!g_recFile) return;
-
-    size_t written = g_recFile.write(g_batchBuf, g_batchIdx);
-    if (written != g_batchIdx) {
-        // 存储空间不足或 I/O 错误 — 丢弃这批数据, 继续录制
-        Serial.printf("[ECGR] WARN: batch flush short write %u/%u\n",
-                      (unsigned)written, (unsigned)g_batchIdx);
-    }
-    g_recFile.flush();
-    g_batchIdx = 0;
+static void* ecgrAlloc(size_t size) {
+    void* p = ps_malloc(size);
+    if (!p) p = malloc(size);
+    return p;
 }
 
 /**
- * @brief 将单个 int16 样本以小端序写入批次缓冲区
+ * @brief PSRAM 重分配 (失败时回退到堆)
+ */
+static void* ecgrRealloc(void* ptr, size_t size) {
+    void* p = NULL;
+    if (psramFound()) {
+        p = ps_realloc(ptr, size);
+    }
+    if (!p) p = realloc(ptr, size);
+    return p;
+}
+
+/**
+ * @brief 将单个 int16 样本以小端序追加到 PSRAM 缓冲
  *
  * ESP32 为小端架构, memcpy 直接等效 LE 字节序;
  * 此处显式拆分保证跨平台一致性 (格式头可独立测试)。
  */
-static void pushSampleToBatch(int16_t sample) {
-    _ecgr_write16le(&g_batchBuf[g_batchIdx], (uint16_t)sample);
-    g_batchIdx += 2;
-    if (g_batchIdx >= ECG_REC_BATCH_BYTES) {
-        flushBatch();
+static void pushSampleToBuffer(int16_t sample) {
+    size_t need = (size_t)g_totalSamples * 2 + 2;
+    if (g_psramBuf == NULL || need > g_psramCap) {
+        size_t newCap = (g_psramCap == 0) ? (64 * 1024) : g_psramCap;
+        while (newCap < need) newCap *= 2;
+        uint8_t* p = (uint8_t*)ecgrRealloc(g_psramBuf, newCap);
+        if (!p) {
+            Serial.println("[ECGR] ERROR: PSRAM alloc failed, sample dropped");
+            return;
+        }
+        g_psramBuf = p;
+        g_psramCap = newCap;
     }
+    _ecgr_write16le(&g_psramBuf[g_totalSamples * 2], (uint16_t)sample);
+    g_totalSamples++;
 }
 
 /**
@@ -361,10 +374,11 @@ bool ecgRecorderInit(void) {
     g_totalSamples   = 0;
     g_durationSec    = 0;
     g_abnormalSec    = 0;
-    g_batchIdx       = 0;
     g_startUnix      = 0;
     g_consecutiveNormal = 0;
     g_currentSecondAbnormal = false;
+    if (g_psramBuf) { free(g_psramBuf); g_psramBuf = NULL; g_psramCap = 0; }
+    if (g_bmpBuf)   { free(g_bmpBuf);   g_bmpBuf = NULL;   g_bmpCap = 0; }
     g_currentPath[0] = '\0';
 
     Serial.println("[ECGR] init OK");
@@ -379,57 +393,39 @@ bool ecgRecorderStart(void) {
     // 生成时间戳 (millis()/1000: 上电后秒数; 若 NTP 同步则替换为真实 epoch)
     g_startUnix = (uint32_t)(millis() / 1000);
 
-    // 构建文件路径
+    // 构建文件路径 (STOP 时一次性落盘)
     snprintf(g_currentPath, sizeof(g_currentPath),
              ECGR_BASE_PATH "/ecg_rec_%u.ecgr", (unsigned)g_startUnix);
 
-    // 创建文件并写入初始头部
-    g_recFile = SPIFFS.open(g_currentPath, "w");
-    if (!g_recFile) {
-        Serial.printf("[ECGR] ERROR: cannot create %s\n", g_currentPath);
+    // PSRAM 缓冲: 样本 64KB 起步 + 位图 1KB 起步
+    g_psramBuf = (uint8_t*)ecgrAlloc(64 * 1024);
+    g_bmpBuf   = (uint8_t*)ecgrAlloc(1024);
+    if (!g_psramBuf || !g_bmpBuf) {
+        Serial.println("[ECGR] ERROR: PSRAM alloc failed");
+        if (g_psramBuf) { free(g_psramBuf); g_psramBuf = NULL; }
+        if (g_bmpBuf)   { free(g_bmpBuf);   g_bmpBuf = NULL; }
+        g_psramCap = 0;
+        g_bmpCap   = 0;
         g_currentPath[0] = '\0';
         return false;
     }
-
-    // 初始化头部: totalSamples=0, duration=0, abnormalSec=0
-    ecgrHeaderInit(g_headerBuf, ECG_REC_SAMPLE_RATE, g_startUnix,
-                   0, 0, 0, 0);
-    size_t written = g_recFile.write(g_headerBuf, ECGR_HEADER_SIZE);
-    if (written != ECGR_HEADER_SIZE) {
-        Serial.println("[ECGR] ERROR: header write failed");
-        g_recFile.close();
-        SPIFFS.remove(g_currentPath);
-        g_currentPath[0] = '\0';
-        return false;
-    }
-    g_recFile.flush();
-
-    // 重新以追加模式打开 (SPIFFS "w" 模式后续写入为覆盖语义? 稳妥用 "a")
-    g_recFile.close();
-    g_recFile = SPIFFS.open(g_currentPath, "a");
-    if (!g_recFile) {
-        Serial.println("[ECGR] ERROR: reopen for append failed");
-        SPIFFS.remove(g_currentPath);
-        g_currentPath[0] = '\0';
-        return false;
-    }
+    g_psramCap = 64 * 1024;
+    g_bmpCap   = 1024;
 
     g_isRecording  = true;
     g_totalSamples = 0;
     g_durationSec  = 0;
     g_abnormalSec  = 0;
-    g_batchIdx     = 0;
     g_consecutiveNormal = 0;
     g_currentSecondAbnormal = false;
 
-    Serial.printf("[ECGR] recording started: %s\n", g_currentPath);
+    Serial.printf("[ECGR] recording started (PSRAM): %s\n", g_currentPath);
     return true;
 }
 
 void ecgRecorderPushSample(int16_t sample) {
     if (!g_isRecording) return;
-    pushSampleToBatch(sample);
-    g_totalSamples++;
+    pushSampleToBuffer(sample);   /* 内部完成追加 + g_totalSamples++ */
 }
 
 void ecgRecorderSetSecondAbnormal(bool abnormal) {
@@ -459,18 +455,26 @@ void ecgRecorderSetSecondAbnormal(bool abnormal) {
     // 递增秒计数
     g_durationSec++;
 
-    // 写入异常位图字节 (1 = 异常秒, 0 = 正常秒)
-    if (g_recFile) {
-        uint8_t bmpByte = g_currentSecondAbnormal ? 1 : 0;
-        g_recFile.write(&bmpByte, 1);
+    // 位图字节追加到 PSRAM 位图缓冲 (1 = 异常秒, 0 = 正常秒)
+    {
+        size_t need = (size_t)g_durationSec;   /* g_durationSec 已自增 */
+        if (g_bmpBuf == NULL || need > g_bmpCap) {
+            size_t newCap = (g_bmpCap == 0) ? 1024 : g_bmpCap;
+            while (newCap < need) newCap *= 2;
+            uint8_t* p = (uint8_t*)ecgrRealloc(g_bmpBuf, newCap);
+            if (!p) {
+                Serial.println("[ECGR] WARN: bmp alloc failed, bitmap dropped");
+            } else {
+                g_bmpBuf = p;
+                g_bmpCap = newCap;
+            }
+        }
+        if (g_bmpBuf && need <= g_bmpCap) {
+            g_bmpBuf[need - 1] = g_currentSecondAbnormal ? 1 : 0;
+        }
     }
     if (g_currentSecondAbnormal) {
         g_abnormalSec++;
-    }
-
-    // 更新头部中 flags 的异常位图标志 (稍后 STOP 时写入头部)
-    if (g_abnormalSec > 0) {
-        g_headerBuf[ECGR_OFF_FLAGS] |= ECGR_FLAG_HAS_ABNORMAL_BITMAP;
     }
 
     // 自动录制: 连续正常秒达到阈值 → 自动停止
@@ -490,63 +494,80 @@ void ecgRecorderSetSecondAbnormal(bool abnormal) {
 
 bool ecgRecorderStop(void) {
     if (!g_isRecording) return false;
+    g_isRecording = false;   /* 先复位, 防止重入 */
 
     Serial.println("[ECGR] stopping recording...");
 
-    // 1. 刷写剩余缓冲数据
-    flushBatch();
-    g_recFile.flush();
-
-    // 2. 关闭追加模式句柄
-    g_recFile.close();
-
-    // 3. 计算最终头部的 durationSec (向上取整)
+    // 1. 计算最终头部的 durationSec (向上取整)
     uint32_t durFromSamples = (g_totalSamples + ECG_REC_SAMPLE_RATE - 1)
                               / ECG_REC_SAMPLE_RATE;
     uint32_t finalDur = (g_durationSec > durFromSamples)
                         ? g_durationSec : durFromSamples;
 
-    // 4. 重新以读写模式打开, seek(0) 回写最终头部
-    g_recFile = SPIFFS.open(g_currentPath, "r+");
-    if (g_recFile) {
-        ecgrHeaderUpdate(g_headerBuf, g_totalSamples, finalDur, g_abnormalSec);
-        g_recFile.seek(0, SeekSet);
-        size_t written = g_recFile.write(g_headerBuf, ECGR_HEADER_SIZE);
-        if (written != ECGR_HEADER_SIZE) {
-            Serial.println("[ECGR] WARN: final header write truncated");
+    // 2. 一次性落盘: 头部 + PSRAM 样本流 + 异常位图 (2026-08-13 重写)
+    //    不再用 "r+" seek(0) 原地改写 (SPIFFS 不可靠, 曾致头部损坏/记录被误删)
+    {
+        uint8_t hdr[ECGR_HEADER_SIZE];
+        ecgrHeaderInit(hdr, ECG_REC_SAMPLE_RATE, g_startUnix,
+                       g_totalSamples, finalDur, g_abnormalSec, 0);
+
+        fs::File f = SPIFFS.open(g_currentPath, "w");
+        if (f) {
+            f.write(hdr, ECGR_HEADER_SIZE);
+            if (g_totalSamples > 0 && g_psramBuf) {
+                f.write(g_psramBuf, (size_t)g_totalSamples * 2);
+            }
+            if (g_abnormalSec > 0 && g_bmpBuf) {
+                // 位图补齐到 finalDur (超出 g_durationSec 部分清零)
+                if (g_bmpCap < finalDur) {
+                    uint8_t* p = (uint8_t*)ecgrRealloc(g_bmpBuf, finalDur);
+                    if (p) { g_bmpBuf = p; g_bmpCap = finalDur; }
+                }
+                if (g_bmpBuf && g_bmpCap >= finalDur) {
+                    memset(g_bmpBuf + g_durationSec, 0,
+                           finalDur > g_durationSec ? finalDur - g_durationSec : 0);
+                    f.write(g_bmpBuf, finalDur);
+                }
+            }
+            f.flush();
+            f.close();
+        } else {
+            Serial.printf("[ECGR] ERROR: cannot create %s\n", g_currentPath);
         }
-        g_recFile.flush();
-        g_recFile.close();
-    } else {
-        // "r+" 不支持时降级: 重新创建临时文件, 写入头部 + 追加原数据
-        // 简化处理: 仅打印告警, header 可能不完整
-        Serial.println("[ECGR] WARN: cannot reopen for header rewrite, "
-                       "file may have empty header");
     }
 
-    // 5. 计算最终文件大小
+    // 3. 计算最终文件大小
     uint32_t fileSize = ecgrFileSize(g_totalSamples, finalDur,
                                      (g_abnormalSec > 0));
 
-    // 6. 追加索引行
+    // 4. 追加索引行
     appendIdxLine(g_startUnix, finalDur, g_totalSamples,
                   g_abnormalSec, fileSize);
     g_recordCount++;
 
-    // 7. 保留策略
+    // 5. 保留策略
     enforceRetention();
+
+    // 6. 重建索引 (2026-08-13 修复): 保留策略删文件后原先不更新 records.idx,
+    //    导致幽灵条目 (HTTP 列表有但 meta/data 404) + g_recordCount 漂移 →
+    //    误删新记录。重建同时校正计数。
+    rebuildIndex();
 
     Serial.printf("[ECGR] recording stopped: %u samples, %u sec, "
                   "%u abnormal sec, size=%u B\n",
                   (unsigned)g_totalSamples, (unsigned)finalDur,
                   (unsigned)g_abnormalSec, (unsigned)fileSize);
 
+    // 7. 释放 PSRAM 缓冲
+    if (g_psramBuf) { free(g_psramBuf); g_psramBuf = NULL; }
+    if (g_bmpBuf)   { free(g_bmpBuf);   g_bmpBuf = NULL; }
+    g_psramCap = 0;
+    g_bmpCap   = 0;
+
     // 8. 重置状态
-    g_isRecording  = false;
     g_totalSamples = 0;
     g_durationSec  = 0;
     g_abnormalSec  = 0;
-    g_batchIdx     = 0;
     g_startUnix    = 0;
     g_currentPath[0] = '\0';
     g_consecutiveNormal = 0;
@@ -620,9 +641,10 @@ void ecgRecorderReset(void) {
     g_totalSamples = 0;
     g_durationSec  = 0;
     g_abnormalSec  = 0;
-    g_batchIdx     = 0;
     g_startUnix    = 0;
     g_currentPath[0] = '\0';
     g_consecutiveNormal = 0;
     g_currentSecondAbnormal = false;
+    if (g_psramBuf) { free(g_psramBuf); g_psramBuf = NULL; g_psramCap = 0; }
+    if (g_bmpBuf)   { free(g_bmpBuf);   g_bmpBuf = NULL;   g_bmpCap = 0; }
 }
