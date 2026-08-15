@@ -93,10 +93,18 @@ class BLEService {
         await Future.delayed(const Duration(milliseconds: 500));
       }
 
-      BluetoothDevice? targetDevice = await _scanForDevice();
+      BluetoothDevice? targetDevice;
+        try {
+          targetDevice = await _scanForDevice();
+        } catch (_) {
+          // 扫描启动/平台异常: 确保停止扫描后优雅失败, 不向 UI 抛未处理异常
+          try { await FlutterBluePlus.stopScan(); } catch (_) {}
+          return false;
+        }
 
       if (targetDevice != null) {
-        return _connectToDevice(targetDevice);
+        final ok = await _connectToDevice(targetDevice);
+          if (ok) return true;  // 失败则继续下一轮扫描重试
       }
     }
 
@@ -171,6 +179,12 @@ class BLEService {
         }
       }
 
+        // 未发现 NUS TX/RX 特征值: 断开该设备并返回失败, 避免遗留半连接
+        if (_txChar == null || _rxChar == null) {
+          await _teardownCurrentConnection();
+          return false;
+        }
+
       // 监听断开事件
       _connectionSub?.cancel();
         _connectionSub = device.connectionState.listen((state) {
@@ -212,6 +226,7 @@ class BLEService {
 
       return _txChar != null;
     } catch (e) {
+          await _teardownCurrentConnection();  // 已连接但后续步骤异常时也要断开
         _connectionSub?.cancel();
         _connectionSub = null;
         _notifySub?.cancel();

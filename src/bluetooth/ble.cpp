@@ -199,6 +199,7 @@ void initBLE(void)
 void sendBLEMessage(const char* message)
 {
     if (!connected) return;
+    if (!pTxChar) return;   /* 防御: 初始化失败/未创建特征值时避免空指针 */
     if (!message || strlen(message) == 0) return;
 
     pTxChar->setValue((uint8_t*)message, strlen(message));

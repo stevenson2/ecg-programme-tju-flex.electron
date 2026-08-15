@@ -448,6 +448,7 @@ static void handleRecordsDelete(void)
     if (removed) {
         // 重建索引以同步 records.idx
         rebuildIdx();
+          ecgRecorderRefreshCount();  // 同步 recorder 的内存计数, 防 REC_STATUS/保留策略漂移
         g_server->send(200, "application/json", "{\"deleted\":true}");
     } else {
         // 文件存在但删除失败 (例如文件被打开锁定)

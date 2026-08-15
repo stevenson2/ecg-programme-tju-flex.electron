@@ -112,6 +112,7 @@ static unsigned long frameCount = 0;
 static esp_timer_handle_t s_sampleTimer = NULL;
 static volatile uint32_t s_sampleTick = 0;   /* 定时器回调递增 */
 static uint32_t s_lastSampleTick = 0;        /* loop 已消费的节拍 */
+static uint32_t s_sampleTickDrops = 0;         /* loop 跟不上 500Hz 时被丢弃的节拍 (诊断) */
 
 /* 报警锁存 (2026-08-08): AI 报警触发后 abnormal 列持续 5 秒, 防止一闪而过
  * s_alarmHold: 剩余输出周期数 (@100Hz 串口输出), 500 = 5 秒 */
@@ -214,6 +215,7 @@ static bool strEqualsIgnoreCase(const char* a, const char* b)
 static bool strStartsWithIgnoreCase(const char* s, const char* prefix)
 {
     while (*prefix) {
+        if (*s == '\0') return false;   /* 短命令防御: 避免读越界 (2026-08-14) */
         char cs = (*s >= 'a' && *s <= 'z') ? (*s - 'a' + 'A') : *s;
         char cp = (*prefix >= 'a' && *prefix <= 'z') ? (*prefix - 'a' + 'A') : *prefix;
         if (cs != cp) return false;
@@ -682,6 +684,8 @@ void loop()
     bool sampleDue = false;
     if (s_sampleTimer != NULL) {
         if (s_sampleTick != s_lastSampleTick) {
+            uint32_t missed = s_sampleTick - s_lastSampleTick;
+            if (missed > 1) s_sampleTickDrops += (missed - 1);
             s_lastSampleTick = s_sampleTick;
             sampleDue = true;
         }
@@ -952,6 +956,11 @@ void loop()
             uint32_t nowSec = (uint32_t)(millis() / 1000);
             if (nowSec != s_lastRecSec) {
                 s_lastRecSec = nowSec;
+                if (s_sampleTickDrops > 0) {
+                    Serial.printf("[SAMPLE] 500Hz tick backlog dropped=%u (loop <500Hz)\n",
+                                  (unsigned)s_sampleTickDrops);
+                    s_sampleTickDrops = 0;
+                }
                 ecgRecorderSetSecondAbnormal(s_alarmHold > 0);
 
                 /* ---- 停搏/无信号判定: 本秒峰峰值 < 阈值 连续 3 秒 ---- */

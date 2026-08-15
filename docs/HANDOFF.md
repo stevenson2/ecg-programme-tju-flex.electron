@@ -286,3 +286,24 @@ C. esp_timer 500Hz 下主循环偶发跟不上（BLE notify/串口阻塞时，es
 - 请用户烧录固件 + 重编 App 后复测：首次连接→断开→重连×3→退出 App 重连，波形应不再阶梯。
 - 若仍阶梯：`pc_tools/serial/serial_monitor.py` 抓 `[BLE] conn params evt:`，对比首次 vs 第 N 次重连 `conn_int`（剩余假设 A=Android 间隔退化 / C=esp_timer 节拍积压）。
 - 只提交用户明确要求的文件。
+
+
+---
+
+## 七、完整项目阅读与防御性修复（2026-08-14 后续）
+
+已完成全项目静态阅读（权威文档 + 固件全模块 + App 主要服务），并额外修复 10 个防御性 bug，详见 `TUNING_HISTORY.md` 第五十九章：
+
+1. `main.cpp` 短命令前缀匹配越界读；
+2. `main.cpp` 增加 esp_timer 节拍积压丢弃诊断；
+3. `ble.cpp` `sendBLEMessage` 空指针防御；
+4. `ecg_recorder.cpp` 同一秒重复 START 覆盖旧记录防御；
+5. `ecg_recorder.cpp` STOP 落盘失败仍写幽灵索引修复；
+6. WiFi DELETE 后 recorder 计数漂移修复（新增 `ecgRecorderRefreshCount()`）；
+7. `ble_service.dart` 发现不到 NUS 特征值时断开半连接再返回失败。
+8. `ble_service.dart` BLE 扫描异常优雅失败；连接/服务发现失败自动进入下一轮扫描重试。
+9. `ble_service.dart` 连接建立后中途异常也会先 `_teardownCurrentConnection()` 再失败返回。
+10. `record_schedule_service.dart` 只有调度三项设置变更才重置录制周期，避免免打扰/音量操作误打断定时录制。
+
+
+**仍待执行**：`pio run` + `flutter analyze && flutter test`（本会话执行通道不可用）；随后用户烧录/重编复测 BLE 阶梯与录制/DELETE 计数。

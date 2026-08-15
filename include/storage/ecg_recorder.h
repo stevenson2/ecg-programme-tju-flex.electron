@@ -129,6 +129,14 @@ int ecgRecorderList(char* outBuf, int bufLen);
 uint32_t ecgRecorderRecordCount(void);
 
 /**
+ * @brief 重新扫描 /ecgdata 目录并同步内存中的记录计数
+ *
+ * 供 WiFi DELETE 等外部删除路径调用: 外部删除文件后 records.idx 虽已重建,
+ * 但 recorder 的 g_recordCount 可能仍为旧值, 导致保留策略/REC_STATUS 计数漂移。
+ */
+void ecgRecorderRefreshCount(void);
+
+/**
  * @brief 获取当前录制起始 Unix 时间戳
  * @return 时间戳, 若未在录制中返回 0
  */

@@ -44,7 +44,7 @@ class SettingsProvider extends ChangeNotifier {
   static const bool kDefaultRecScheduleEnabled = false;
   static const int kDefaultRecScheduleIntervalMin = 60;
   static const int kDefaultRecScheduleDurationSec = 60;
-  static const int kMinRecScheduleIntervalMin = 1;
+  static const int kMinRecScheduleIntervalMin = 1;  // App 端用 REC_START/REC_STOP 直接调度, 可短至 1 分钟
   static const int kMaxRecScheduleIntervalMin = 1440;
   static const int kMinRecScheduleDurationSec = 5;
   static const int kMaxRecScheduleDurationSec = 600;
@@ -75,7 +75,7 @@ class SettingsProvider extends ChangeNotifier {
   /// 定时录制调度开关
   bool get recScheduleEnabled => _recScheduleEnabled;
 
-  /// 定时录制间隔分钟数（10 ~ 1440）
+  /// 定时录制间隔分钟数（1 ~ 1440，App 直接发送 REC_START/REC_STOP 调度）
   int get recScheduleIntervalMin => _recScheduleIntervalMin;
 
   /// 定时录制时长秒数（5 ~ 600）
@@ -146,7 +146,7 @@ class SettingsProvider extends ChangeNotifier {
     await _persist((prefs) => prefs.setBool(_kRecScheduleEnabledKey, v));
   }
 
-  /// 设置定时录制间隔分钟数（clamp 10 ~ 1440）并持久化
+  /// 设置定时录制间隔分钟数（clamp 1 ~ 1440）并持久化
   Future<void> setRecScheduleIntervalMin(int v) async {
     _recScheduleIntervalMin =
         v.clamp(kMinRecScheduleIntervalMin, kMaxRecScheduleIntervalMin).toInt();

@@ -391,11 +391,27 @@ bool ecgRecorderStart(void) {
     }
 
     // 生成时间戳 (millis()/1000: 上电后秒数; 若 NTP 同步则替换为真实 epoch)
-    g_startUnix = (uint32_t)(millis() / 1000);
+    uint32_t startBase = (uint32_t)(millis() / 1000);
+    g_startUnix = startBase;
 
     // 构建文件路径 (STOP 时一次性落盘)
     snprintf(g_currentPath, sizeof(g_currentPath),
              ECGR_BASE_PATH "/ecg_rec_%u.ecgr", (unsigned)g_startUnix);
+
+    /* 防同一秒重复 START 覆盖旧记录: 路径已存在时递增 ID 直到找到空闲名。
+     * (记录 ID 即 startUnix, 冲突只在 1 秒内连开两次录制时发生, 但覆盖会
+     * 不可逆丢失上一段数据, 必须防御。) */
+    for (int i = 0; i < 1000 && SPIFFS.exists(g_currentPath); i++) {
+        g_startUnix++;
+        snprintf(g_currentPath, sizeof(g_currentPath),
+                 ECGR_BASE_PATH "/ecg_rec_%u.ecgr", (unsigned)g_startUnix);
+    }
+    if (SPIFFS.exists(g_currentPath)) {
+        Serial.println("[ECGR] ERROR: cannot allocate unique record path");
+        g_startUnix = 0;
+        g_currentPath[0] = '\0';
+        return false;
+    }
 
     // PSRAM 缓冲: 样本 64KB 起步 + 位图 1KB 起步
     g_psramBuf = (uint8_t*)ecgrAlloc(64 * 1024);
@@ -506,6 +522,7 @@ bool ecgRecorderStop(void) {
 
     // 2. 一次性落盘: 头部 + PSRAM 样本流 + 异常位图 (2026-08-13 重写)
     //    不再用 "r+" seek(0) 原地改写 (SPIFFS 不可靠, 曾致头部损坏/记录被误删)
+      bool fileWritten = false;
     {
         uint8_t hdr[ECGR_HEADER_SIZE];
         ecgrHeaderInit(hdr, ECG_REC_SAMPLE_RATE, g_startUnix,
@@ -531,9 +548,25 @@ bool ecgRecorderStop(void) {
             }
             f.flush();
             f.close();
+              fileWritten = true;
         } else {
             Serial.printf("[ECGR] ERROR: cannot create %s\n", g_currentPath);
         }
+    }
+
+    if (!fileWritten) {
+        Serial.println("[ECGR] stop aborted: file write failed, no index entry created");
+        if (g_psramBuf) { free(g_psramBuf); g_psramBuf = NULL; }
+        if (g_bmpBuf)   { free(g_bmpBuf);   g_bmpBuf = NULL; }
+        g_psramCap = 0;
+        g_bmpCap   = 0;
+        g_totalSamples = 0;
+        g_durationSec  = 0;
+        g_abnormalSec  = 0;
+        g_startUnix    = 0;
+        g_currentPath[0] = '\0';
+        g_consecutiveNormal = 0;
+        return false;
     }
 
     // 3. 计算最终文件大小
@@ -613,6 +646,28 @@ int ecgRecorderList(char* outBuf, int bufLen) {
 
 uint32_t ecgRecorderRecordCount(void) {
     return g_recordCount;
+}
+
+void ecgRecorderRefreshCount(void)
+{
+    fs::File dir = SPIFFS.open(ECGR_BASE_PATH);
+    if (!dir || !dir.isDirectory()) {
+        g_recordCount = 0;
+        return;
+    }
+
+    uint32_t count = 0;
+    fs::File f = dir.openNextFile();
+    while (f) {
+        const char* name = f.name();
+        if (name && strstr(name, ".ecgr")) {
+            count++;
+        }
+        f.close();
+        f = dir.openNextFile();
+    }
+    dir.close();
+    g_recordCount = count;
 }
 
 uint32_t ecgRecorderCurrentRecordStart(void) {

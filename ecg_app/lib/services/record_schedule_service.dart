@@ -22,6 +22,9 @@ class RecordScheduleService {
   Timer? _tickTimer;
   int _secondsElapsed = 0;
   bool _isRecording = false; // false = 等待开始，true = 录制中
+  bool _lastEnabled = false;
+  int _lastIntervalMin = 0;
+  int _lastDurationSec = 0;
 
   /**
    * @param settings 设置提供者（含 recScheduleEnabled / recScheduleIntervalMin /
@@ -39,6 +42,9 @@ class RecordScheduleService {
 
   /// 启动调度循环（监听设置变更，创建 tick Timer）
   void start() {
+      _lastEnabled = _settings.recScheduleEnabled;
+      _lastIntervalMin = _settings.recScheduleIntervalMin;
+      _lastDurationSec = _settings.recScheduleDurationSec;
     stop(); // 先取消已有 Timer
     _secondsElapsed = 0;
     _isRecording = false;
@@ -60,6 +66,17 @@ class RecordScheduleService {
 
   /// 设置变更回调：重置周期，重新使用当前值
   void _onSettingsChanged() {
+      final enabled = _settings.recScheduleEnabled;
+      final intervalMin = _settings.recScheduleIntervalMin;
+      final durationSec = _settings.recScheduleDurationSec;
+      if (enabled == _lastEnabled &&
+          intervalMin == _lastIntervalMin &&
+          durationSec == _lastDurationSec) {
+        return; // 与调度无关的设置 (免打扰/音量等) 不重置录制周期
+      }
+      _lastEnabled = enabled;
+      _lastIntervalMin = intervalMin;
+      _lastDurationSec = durationSec;
     _secondsElapsed = 0;
     _isRecording = false;
   }
