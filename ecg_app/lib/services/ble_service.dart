@@ -47,11 +47,34 @@ class BLEService {
   Stream<ECGSample> get dataStream => _dataController.stream;
 
   /// 是否已连接
-  bool get isConnected => _device != null && _device!.isConnected;
+  bool get isConnected => _device?.isConnected ?? false;
 
   /// 断开回调
   VoidCallback? onDisconnected;
   StreamSubscription<BluetoothConnectionState>? _connectionSub;
+  StreamSubscription<List<int>>? _notifySub;
+  int _connectionEpoch = 0; // 连接代次：旧设备/旧订阅回调到达时直接忽略
+
+  /// 清理上一连接的订阅与设备引用（重连防泄漏，2026-08-14 阶梯感修复）。
+  /// 旧 connectionState / onValueReceived 订阅若不取消，重连后会继续向
+  /// dataStream 注入样本，并可能在新连接建立后被旧 disconnected 事件误清空。
+  Future<void> _teardownCurrentConnection() async {
+    _connectionEpoch++;
+    _connectionSub?.cancel();
+    _connectionSub = null;
+    _notifySub?.cancel();
+    _notifySub = null;
+    if (_device != null) {
+      try {
+        await _device!.disconnect();
+      } catch (_) {
+        // 设备已不可达时忽略断开异常，继续清理引用
+      }
+    }
+    _device = null;
+    _txChar = null;
+    _rxChar = null;
+  }
 
   /// 扫描并连接 ESP32-ECG 设备（含重试机制）
   Future<bool> connect() async {
@@ -114,8 +137,21 @@ class BLEService {
   /// 连接到指定设备
   Future<bool> _connectToDevice(BluetoothDevice device) async {
     try {
+      // 重连前彻底清理上一连接 (2026-08-14 阶梯感修复): 旧订阅/旧设备残留
+      // 会让 dataStream 重复注入样本, 或旧 disconnected 事件误清新连接。
+      await _teardownCurrentConnection();
+      final epoch = ++_connectionEpoch;
       _device = device;
       await device.connect();
+
+      // ★ 2026-08-14 修复 (阶梯感根因之一): MTU 协商。默认 MTU 23 → 每帧
+      // ~50B 拆成 ~3 个 ATT 包 → 250Hz notify 包量 ×3 → 链路拥塞丢帧 →
+      // App 按固定 250Hz 时间轴绘制 → 波形阶梯/粗糙。MTU 185 后单帧 1 包。
+      try {
+        await device.requestMtu(185);
+      } catch (_) {
+        // 平台不支持或协商失败 → 保持默认 MTU (无副作用)
+      }
 
       // 发现服务
       await device.discoverServices();
@@ -126,7 +162,8 @@ class BLEService {
               _txChar = chr;
               // 监听 Notify
               await chr.setNotifyValue(true);
-              chr.onValueReceived.listen(_onDataReceived);
+              _notifySub?.cancel();
+                _notifySub = chr.onValueReceived.listen(_onDataReceived);
             } else if (chr.uuid.toString().toLowerCase() == _nusRxUuid) {
               _rxChar = chr;
             }
@@ -135,8 +172,15 @@ class BLEService {
       }
 
       // 监听断开事件
-      _connectionSub = device.connectionState.listen((state) {
+      _connectionSub?.cancel();
+        _connectionSub = device.connectionState.listen((state) {
+          if (epoch != _connectionEpoch) return; // 旧代次回调：忽略
         if (state == BluetoothConnectionState.disconnected) {
+            _connectionEpoch++;
+            _connectionSub?.cancel();
+            _connectionSub = null;
+            _notifySub?.cancel();
+            _notifySub = null;
           _device = null;
           _txChar = null;
           _rxChar = null;
@@ -144,23 +188,37 @@ class BLEService {
         }
       });
 
-      // ★ 2026-08-10 候选修复 (遗留A: 重连后波形分辨率低):
-      // 连接成功后请求高优先级连接参数 (Android), 收紧连接间隔,
-      // 提升 notify 实际数据率 (固件广播建议 7.5-22.5ms, 但 Android
-      // 重连时常忽略建议用默认大间隔 → 数据率下降 → App 按固定 250Hz
-      // 绘制导致时间轴压缩/波形变糊)。失败无副作用, 静默忽略。
-      // 注意: flutter_blue_plus 1.36.x API 为命名参数
+      // ★ 2026-08-10 候选修复 (遗留A: 重连后波形分辨率低) + 2026-08-14 强化:
+      // 请求高优先级连接参数 (Android), 收紧连接间隔提升 notify 实际数据率。
+      // 重连累积变粗糙根因: 连接刚建立时 GATT 未稳定, requestConnectionPriority
+      // 会静默失败 → Android 回落到默认大间隔 (且重连次数越多间隔越退化),
+      // 退出 App 重建 BLE 栈才恢复。改为: 等 200ms 稳定后再请求, 失败重试一次。
+      // 注意: flutter_blue_plus 1.32+/1.36+ API 为命名参数
       // requestConnectionPriority({required connectionPriorityRequest})
-      try {
-        await device.requestConnectionPriority(
-          connectionPriorityRequest: ConnectionPriority.high,
-        );
-      } catch (_) {
-        // 平台不支持 (iOS) 或协商失败 → 保持系统默认
+      await Future.delayed(const Duration(milliseconds: 200));
+      for (int attempt = 0; attempt < 2; attempt++) {
+        try {
+          await device.requestConnectionPriority(
+            connectionPriorityRequest: ConnectionPriority.high,
+          );
+          break; // 成功即退出
+        } catch (_) {
+          // 平台不支持 (iOS) 或协商失败 → 间隔 300ms 后重试一次
+          if (attempt == 0) {
+            await Future.delayed(const Duration(milliseconds: 300));
+          }
+        }
       }
 
       return _txChar != null;
     } catch (e) {
+        _connectionSub?.cancel();
+        _connectionSub = null;
+        _notifySub?.cancel();
+        _notifySub = null;
+        _device = null;
+        _txChar = null;
+        _rxChar = null;
       return false;
     }
   }
@@ -208,7 +266,7 @@ class BLEService {
 
   /// 断开连接
   Future<void> disconnect() async {
-    await _device?.disconnect();
+    await _teardownCurrentConnection();
     _device = null;
     _txChar = null;
     _rxChar = null;
@@ -217,6 +275,8 @@ class BLEService {
   /// 释放资源
   void dispose() {
     _connectionSub?.cancel();
+      _notifySub?.cancel();
+      _connectionEpoch++;
     _dataController.close();
   }
 }

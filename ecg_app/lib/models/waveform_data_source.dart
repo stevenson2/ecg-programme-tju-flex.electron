@@ -20,6 +20,11 @@ abstract class WaveformDataSource {
   /// 时间窗口（秒），决定横轴显示时长
   int get timeWindow;
 
+  /// 显示数据源采样率（Hz），决定时间窗口对应的采样点数。
+  /// 实时模式 = 固件 BLE notify 实际速率 (125Hz, 2026-08-14 起)；
+  /// 回放模式 = 记录文件声明的 sample_rate。
+  int get samplesPerSecond;
+
   /// AI 异常告警（波形变红）；回放模式恒为 false（静默回放，不触发告警）
   bool get hasAbnormalAlert;
 }

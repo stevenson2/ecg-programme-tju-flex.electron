@@ -8,7 +8,7 @@
 
 ## 1. 总体判定
 
-**STATUS: 尚未就绪（NOT YET SUBMISSION-READY）。** 方法学核心（患者级评估、泄漏审计、部署链分析、AAMI 逐类）已完成且内部一致（57 项审计 0 失配）；但三类阻塞未解除：①伦理审批 ②硬件数据采集 ③导师审阅签字。
+**STATUS: 尚未就绪（NOT YET SUBMISSION-READY）。** 方法学核心（患者级评估、泄漏审计、部署链分析、AAMI 逐类）已完成且内部一致（57 项审计 0 失配）；三类阻塞中 **②硬件数据采集已部分解除**（2026-08-14：真实 AFE 采集 183s 静息 ECG + exp7c 真实数据微调上板，真机 46 次推理 0 误报），仍阻塞：①伦理审批 ③导师审阅签字。
 
 ---
 
@@ -60,6 +60,8 @@
 | H6 | 人体实验（n=5-10） | `docs/hardware/human_subject_protocol.md` |
 | H7 | 板上基准（延迟/功耗/INT8/温升） | `docs/hardware/ondevice_bench_protocol.md` |
 | H8 | 实测数据填入稿件 [待补充] | §5.1 / §5.4 / §5.5 |
+
+> **进度更新（2026-08-14）**：Block B 已部分解除——真实 AFE 采集完成（183s 静息 ECG，有效采样率实测 225.68Hz），exp7c 真实数据微调已上板（真实正常拍置信度 0.732→0.417，MIT AUC 0.8964 / PTB 0.8015，INT8 0.8979/0.7880，真机 46 次推理 0 误报，见 TUNING_HISTORY §48 / deploy_match/{finetune_exp7c,retrain_exp7c_eval,int8_exp7c_check}.json）。H5-H7 仍待执行；H8 中 exp7c 域适配结果已写入稿件 §4.3/§5.2。
 
 ### Block C：作者与投稿决策
 

@@ -1,11 +1,11 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../models/waveform_data_source.dart';
 
 /**
  * @file ecg_waveform.dart
  * @brief 心电波形绘制组件
  *
- * 波形绘制仅依赖数据源的 5 个只读属性（WaveformDataSource，见
+ * 波形绘制仅依赖数据源的 6 个只读属性（WaveformDataSource，见
  * models/waveform_data_source.dart）：实时模式由 ECGProvider 实现，
  * 记录回放由 playback_page.dart 的 PlaybackProvider 实现。
  */
@@ -26,6 +26,7 @@ class ECGWaveform extends StatelessWidget {
             maxVal: provider.maxValue,
             minVal: provider.minValue,
             timeWindow: provider.timeWindow,
+              samplesPerSecond: provider.samplesPerSecond,
             alert: provider.hasAbnormalAlert,
           ),
         );
@@ -39,12 +40,14 @@ class _ECGWaveformPainter extends CustomPainter {
   final double maxVal;
   final double minVal;
   final int timeWindow;
+  final int samplesPerSecond;
   final bool alert; // AI 异常告警：波形变红 + 红色背景光晕
 
   _ECGWaveformPainter({
     required this.data,
     required this.maxVal,
     required this.minVal,
+      required this.samplesPerSecond,
     required this.timeWindow,
     required this.alert,
   });
@@ -54,7 +57,7 @@ class _ECGWaveformPainter extends CustomPainter {
     final range = (maxVal - minVal).clamp(0.05, 10.0);
     final scaleY = size.height / range;
     final visibleCount = timeWindow * 250;
-    final dx = visibleCount > 0 ? size.width / visibleCount : 1.0;
+    final dx = visibleCount > 0 && samplesPerSecond > 0 ? size.width / (timeWindow * samplesPerSecond) : 1.0;
 
     _drawBackground(canvas, size, range);
 

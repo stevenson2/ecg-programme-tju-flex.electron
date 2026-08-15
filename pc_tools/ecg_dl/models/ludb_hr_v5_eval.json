@@ -1,0 +1,33 @@
+{
+  "detector": "energy-envelope v5 (2026-08-14)",
+  "config": {
+    "lead": "ii",
+    "gain": 1000.0,
+    "tolerance_ms": 150,
+    "records": 200,
+    "bandpass": "8-25Hz",
+    "mwi_window": 40,
+    "threshold_init": 0.0001,
+    "min_conf_feat": 1000
+  },
+  "summary": {
+    "records": 200,
+    "gold_beats": 1831,
+    "det_beats": 2499,
+    "tp": 1775,
+    "fp": 724,
+    "fn": 56,
+    "se": 0.969415619879847,
+    "ppv": 0.7102841136454582,
+    "f1": 0.8198614318706697,
+    "bpm_mae": 10.168406876523383,
+    "bpm_median_err": 3.146201459609795,
+    "bpm_p90": 36.20391684839559,
+    "bpm_within3": 49.0,
+    "bpm_within5": 65.0,
+    "rec_se_mean": 0.9773920107670108,
+    "rec_ppv_mean": 0.7128147347148895,
+    "rec_se_median": 1.0,
+    "rec_ppv_median": 0.7272727272727273
+  }
+}

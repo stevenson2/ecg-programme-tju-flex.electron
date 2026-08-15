@@ -156,4 +156,133 @@ pc_tools/ecg_dl/（Python 训练/评估，WSL2）。
 微调流程第 1 步已完成: `src/main.cpp` 步骤3.7 记录源 `filteredSample` → `cleanSample`
 (去偏置原始), `pio run` 编译通过 (SUCCESS)。第 2 步起需用户硬件配合
 (烧录 + 静息贴电极录制), 详见第二部分与 TUNING_HISTORY.md 第四十六章。
+---
 
+## 四、下一步工作提示词（2026-08-13 后，exp7c + HR 重构已完成、git 已提交）
+
+> 复制下面整段给新 agent（DeepSeek Harness）作为第一条消息，即可从当前状态接手。
+
+```
+# ESP32-ECG 项目接手提示词（exp7c + HR 重构已完成，git 已提交 b33e53c）
+
+## 权威文档（先读，勿信其他旧文档）
+- AGENTS.md —— 项目铁律（§4 只提交用户要求文件、§5 诚实纠正、§7 自主决策+TH留痕、§8 数字审计、§9 用户BLE验证期禁串口）
+- docs/FINAL_RESULTS.md —— 论文权威数字（可溯源到 pc_tools/ecg_dl/models/deploy_match/*.json）
+- TUNING_HISTORY.md —— 证据日志（最新到第五十五章）
+- docs/manuscript_sections_1_4.md —— 论文手稿 §1-§7
+- docs/paper_submission_status.md —— 论文提交单一事实来源
+
+## 当前状态（已完成，勿重做）
+- exp7c 已上板：真实数据微调（冻结骨干、只训 fc1/out、Adam lr=1e-5、稀疏CE + class_weight{0:4,1:1}、2000异常+600正常原始拍+210真实正常拍）。INT8 模型在 include/ai_inference/ecg_model_data.h（167,376 字节）。
+- exp7c 锚点数字（写论文用，可溯源 deploy_match/*.json）：
+  - 真实正常拍置信度 0.732→0.417（frac>0.5 从 81%→15%）
+  - MIT AUC 0.8769→0.8964（INT8 0.8979）；PTB 0.8033→0.8015（INT8 0.7880，vs exp7b INT8 0.7816）
+  - 上板 46 次推理 0 误报
+- HR 检测器已重构（src/heartrate/heartrate.cpp）：能量包络 x² + 8-25Hz QRS带通 + 40采样MWI + millis计时RR + 形态学验证关闭(MIN_CONF_FEAT 1000)。模拟器验证 75 BPM=真实75，RR 798-804ms，SQI 0.97。
+- 显示链：applyDisplayFilter = HP4 + LP40（filter.cpp/filter.h）。
+- git 已提交 b33e53c（100 文件），工作区 clean。
+
+## 待办（按优先级，自主执行不询问）
+1.【最高】LUDB 重验 —— 论文 §5.4 表 T12 已脱节：§5.4 仍写旧 Pan-Tompkins 导数检测器的 LUDB 表（Se 72.9% / PPV 82.6% / BPM MAE 3.2），但板上已换成能量包络检测器。把新检测器 port 成 Python，在 LUDB（200记录、1831标注QRS峰、lead ii、500Hz）重跑，更新表 T12 + §6.5(7) 的"72.9% 敏感性"表述。旧 LUDB 验证脚本位置需先定位（pc_tools/ 或 TUNING_HISTORY 相关章节）。
+2. 论文同步 —— 把 exp7c 域适配结果 + 336Hz 帧率失配发现写进 manuscript_sections_1_4.md（§4.3 训练/部署链匹配、§5.2 结果、§6.4 一致性代价、§6.5 局限），并更新 paper_submission_status.md（硬件数据采集阻塞已部分解除：真实AFE采集 + exp7c）。
+3. esp_timer 硬件定时根治 —— 主循环"尽可能快"约 336Hz（AFE）/516Hz（SIM），非设计 500Hz，导致 50Hz梳状陷波漂移、记录采样率 225.7Hz。用 esp_timer 固定采样节拍到 500Hz，改后重验陷波与记录率。
+4. BLE 波形阶梯感诊断 —— 需用户手机 + 串口捕捉（§9 注意与用户协调）。
+
+## 关键根因备忘（避免重踩）
+- 主循环非 500Hz（见待办3）。
+- 心率检测最严重 bug：MIN_RR 用 ms 数值却和秒比较→除首拍外全拒。已修为 0.480s/2.000s。
+- 导数² 放大锐利伪影 8×→改能量包络 x²。
+- 5-15Hz 带通把窄 R 峰衰减到 T 波级→改 8-25Hz。
+- 形态学宽度检查(40-80采样)按能量包络校准错、卡拍在 8→MIN_CONF_FEAT 1000 关闭。
+- 串口会话会复位设备（DTR/RTS）；SIM 是默认模式（无需 'm'）；AFE 需 'm'×N 直到"真实AFE"。
+- OneDrive 同步偶发 EIO(1175)：edit 失败就重试，或用 pwsh Add-Content 追加。
+
+## 环境与命令
+- 固件编译：pio run（PowerShell；exit code 1 但输出含 SUCCESS 是 PS 管道伪影，看 SUCCESS 文本）。只编译检查，不烧录。
+- 训练/评估：wsl -e bash -lc "cd /mnt/c/.../pc_tools/ecg_dl && python3 <脚本>"（timeout 训练 900000ms/评估 600000ms）
+- 串口：pc_tools/serial/*.py（COM4，460800；DTR/RTS 复位见 serial_cmd.py）
+
+## 完成后
+向用户汇报：LUDB 新表数字、论文同步段落、esp_timer 改动与编译结果、变更清单。只提交用户明确要求的文件。
+```
+
+
+
+---
+
+## 五、未来 bug 修复与改进计划提示词（2026-08-14 后，BLE 阶梯感未根治）
+
+> 复制下面整段给新 agent 作为第一条消息。上一段（四）的待办 ①②③ 已完成，④ BLE 阶梯感仍未根治，是本段重点。
+
+```
+# ESP32-ECG 项目接手提示词（BLE 阶梯感未根治 + 收尾改进）
+
+## 权威文档（先读）
+- AGENTS.md —— 铁律（§4 只提交用户要求文件、§5 诚实纠正、§7 自主决策+TH留痕、§8 数字审计、§9 用户BLE验证期禁串口）
+- TUNING_HISTORY.md —— 最新到第五十七章（含 BLE 阶梯感诊断全过程）
+- docs/HANDOFF.md（本文档）、docs/FINAL_RESULTS.md、docs/paper_submission_status.md
+
+## 当前状态（本会话已完成，勿重做）
+- LUDB 重验完成（能量包络检测器 v5）：Se 96.94% / PPV 71.03% / F1 0.820 / BPM MAE 10.17（中位 3.15 / P90 36.2）。脚本 pc_tools/ecg_dl/verify_heartrate_ludb_v5.py，结果 models/ludb_hr_v5_{eval.json,detail.csv}。已更新论文 §5.4 表 T12 + §6.5(7)（敏感性不再是限制指标，改为 Se↔PPV/BPM 权衡）。
+- 论文同步完成：exp7c 域适配 + 336Hz 帧率失配已写入 manuscript_sections_1_4.md（§4.3/§5.2/§6.4/§6.5）+ paper_submission_status.md（硬件采集阻塞部分解除）。
+- esp_timer 500Hz 已改（src/main.cpp）：esp_timer 周期 2000µs 固定节拍 + AFE 双重读取根治（每帧 8→4 analogRead）。pio run 编译通过，【未烧录验证】。
+- 上述改动 + TUNING_HISTORY 56/57 章 + 3 个新文件均【未提交 git】；docs/manuscript_sections_1_4.md 被 gitignore（.gitignore:40），改动仅落盘不进 git。
+
+## 【未解决·最高】BLE 波形阶梯感（重连累积退化）
+症状：初次连接波形光滑；每次重连波形越来越阶梯状（一段段平直台阶）；退出 App 重连恢复光滑。
+
+已排除（都试过、固件已烧录、仍退化）：
+1. MTU：固件 setMTU(185) + App requestMtu(185)。
+2. 连接优先级：App requestConnectionPriority(high) + 200ms 稳定延时 + 失败重试。
+3. 外设侧连接参数更新：已移除 ble.cpp onConnect 的 esp_ble_gap_update_conn_params（改为 App 端 central 请求唯一控制）。
+
+吞吐账（关键认知，写代码前先想清）：250Hz notify × ~45B/帧 ≈ 11KB/s。BLE 有效吞吐由连接间隔决定：15ms+DLD(251B)≈16KB/s 可承载；30ms≈6KB/s 必丢帧→阶梯。所以阶梯的本质=连接间隔过长导致 notify 丢帧，不是 MTU。
+
+剩余假设（按可能性排序）：
+A. Android BLE 栈连接间隔随重连退化（外设/App 请求都拦不住，退出 App 重建 BLE 栈才恢复）。
+B. App 侧流订阅泄漏：ble_service.dart _connectionSub 每次 _connectToDevice 未 cancel 旧订阅即覆盖；_onDataReceived 每次 connect 新增 listener（旧 device 若未被 GC 可能重复收数）。
+C. esp_timer 500Hz 下主循环偶发跟不上（BLE notify/串口阻塞时，esp_timer 累积节拍被一次性消费=丢样本 → notify<250Hz）。
+
+下一步（按顺序，先确认再动手）：
+1.【确认根因】串口抓 gapCallback 日志（"[BLE] conn params evt: status=… conn_int=…"），对比首次 vs 第 N 次重连的 conn_int，确认是否间隔退化。（§9：在用户不操作手机的空档做短时捕捉）
+2.【若间隔退化·App侧】断开彻底清理：disconnect() 后等 connectionState 真正 disconnected 再重连；cancel 旧 _connectionSub 与 onValueReceived 订阅。
+3.【若间隔退化·Android侧】requestConnectionPriority 改 BALANCED 档、或加更长稳定延时、或调整 requestMtu 与 requestConnectionPriority 的调用顺序。
+4.【根治·降数据率（最稳健）】notify 降到 125Hz（s_bleNotifyDivider 2→4），App 时间轴适配（visibleSamples = timeWindow*250 → *125）。125Hz×45B≈5.5KB/s，即使 30ms 间隔也能承载。代价=波形分辨率减半（QRS ~100ms 从 25 采样降到 12，仍可显示）。
+5.【根治·自适应时间轴】App 实测样本到达率，动态适配时间轴（替代硬编码 250Hz）。工作量较大但最通用。
+6.【检查 DLE】确认 ESP32 BLE Arduino 2.0.0 默认启用 DLE（数据长度扩展）。若未启用，27B/包吞吐仅 ~2KB/s，任何间隔都扛不住 11KB/s。
+
+## 改进计划（非阻塞，可择机做）
+- HR 检测器 BPM 精度：LUDB 新结果暴露能量包络检测器 12% 记录 T 波双计数（BPM MAE 10.17 vs 旧 3.2）。改进方向：形态学宽度验证不直接关闭，而是按能量包络重新校准阈值（当前 MIN_CONF_FEAT=1000 是粗暴禁用），可恢复 PPV/BPM 又不丢 Se。
+- esp_timer 运行时验证（需硬件）：烧录后串口实测帧率应收敛 ~500Hz、50Hz 陷波回归、录制采样率回归 250Hz。
+- 论文收尾：表 T12 新数字同步进 FINAL_RESULTS.md（当前仅 manuscript 已更新）；T12 的 v4.x 旧行标注固件版本与历史溯源。
+- git 提交：工作区累积未提交改动（见上），待用户确认范围后一次性提交。
+
+## 环境与命令
+- 固件编译：pio run（PowerShell；看 SUCCESS 文本，exit 1 是 PS 管道伪影）。只编译不烧录。
+- App 构建：D:\flutter\bin\flutter.bat build apk --debug && flutter install -d 85a8d7ce（手机 RMX3888）。
+- 训练/评估：wsl -e bash -lc "cd /mnt/c/.../pc_tools/ecg_dl && python3 <脚本>"。
+- 串口：pc_tools/serial/*.py（COM4，460800；DTR/RTS 复位）。
+
+## 完成后
+向用户汇报 BLE 阶梯感根因结论与修复方案、esp_timer 验证结果。只提交用户明确要求的文件。
+```
+
+
+---
+
+## 六、二轮继续结果（2026-08-14，BLE 阶梯感：订阅泄漏修复 + 125Hz 降载）
+
+上一段（五）中"先串口确认根因"未执行（§9 需用户空档）。本会话改为代码审计驱动的确定性修复，已完成：
+
+1. **App 重连订阅泄漏修复**：`ble_service.dart` 新增 `_notifySub`/`_connectionEpoch`/`_teardownCurrentConnection()`；每次重连先 cancel 旧 `connectionState` 与 `onValueReceived` 订阅，旧代次 disconnected 事件直接忽略；`ecg_provider.dart` 重连前也 cancel 旧 `_subscription`。
+2. **固件 notify 默认 125Hz**：`src/main.cpp` `s_bleNotifyDivider` 2→4（250→125Hz）。`DIAG NOTIFY 2` 仅供 PC/串口诊断（App 已按 125Hz 编译，联调勿切回）。
+3. **App 时间轴同步 125Hz**：`ecg_provider.dart` `kLiveSampleRate=125`；`WaveformDataSource` 新增 `samplesPerSecond`；`ecg_waveform.dart` 横向 dx 按动态采样率计算；回放页仍按记录 `sample_rate`。
+4. 证据与决策详见 `TUNING_HISTORY.md` 第五十八章。
+
+**未完成**：本会话执行通道不可用（bash/PowerShell/Python 均返回 win32 terminal inspection unsupported），因此 **未跑 `pio run` / `flutter test` / `git status`**；以上改动为文件级静态复核。
+
+**下一步（新 agent 接手）**：
+- 先跑 `pio run`（看 SUCCESS）与 `flutter analyze && flutter test`，修复任何编译/测试问题。
+- 请用户烧录固件 + 重编 App 后复测：首次连接→断开→重连×3→退出 App 重连，波形应不再阶梯。
+- 若仍阶梯：`pc_tools/serial/serial_monitor.py` 抓 `[BLE] conn params evt:`，对比首次 vs 第 N 次重连 `conn_int`（剩余假设 A=Android 间隔退化 / C=esp_timer 节拍积压）。
+- 只提交用户明确要求的文件。

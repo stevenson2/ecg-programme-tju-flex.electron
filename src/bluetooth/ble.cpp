@@ -1,4 +1,4 @@
-﻿#include <Arduino.h>
+#include <Arduino.h>
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEUtils.h>
@@ -55,19 +55,16 @@ class ServerCallbacks : public BLEServerCallbacks
         connected = true;
         Serial.println("[BLE] 手机已连接");
 
-        /* 2026-08-12 (TH §40): 主动请求连接参数更新 — 解决手机 App 波形阶梯感。
-         * 根因: Android 常忽略广播中的首选连接参数, 实际连接间隔 30ms+,
-         * 250Hz notify 批量到达 → App 波形呈阶梯状 (实测截图)。
-         * 外设侧主动发起连接参数更新请求; App 端 requestConnectionPriority 双保险。
-         * ⚠️ WiFi 共存权衡: 连接间隔过小 (7.5ms) 会压缩 WiFi 时隙, 降低 AP
-         * 下载吞吐 (共存矩阵 C1); beacon 可见性不受影响 (Y)。取 15~22.5ms 折中。 */
-        esp_ble_conn_update_params_t connParams = {0};
-        memcpy(connParams.bda, param->connect.remote_bda, 6);
-        connParams.latency = 0;
-        connParams.min_int = 0x0C;   /* 15ms (折中: 平滑度 vs WiFi 余量) */
-        connParams.max_int = 0x12;   /* 22.5ms */
-        connParams.timeout = 400;    /* 4s */
-        esp_ble_gap_update_conn_params(&connParams);
+        /* 2026-08-14 (重连累积阶梯感根治): 移除外设侧 esp_ble_gap_update_conn_params。
+         * 原 2026-08-12 每次 onConnect 主动请求 15-22.5ms 间隔, 但 Android 对
+         * "外设发起的 L2CAP 连接参数更新请求"处理不佳: 首次连接生效, 重连时与
+         * App 端 requestConnectionPriority(high) 冲突/竞态, 使连接间隔随重连次数
+         * 逐步退化 (波形越来越阶梯状), 退出 App 重建 Android BLE 栈才恢复。
+         * 连接间隔改由 App 端 requestConnectionPriority 唯一控制 (central 发起,
+         * Android 可靠执行); 广播首选连接参数 (setMinPreferred 7.5ms /
+         * setMaxPreferred 22.5ms) 保留作为协商提示。 */
+        (void)srv;
+        (void)param;
     }
 
     void onDisconnect(BLEServer* srv) override
@@ -132,6 +129,12 @@ void initBLE(void)
 
     /* 初始化 BLE 设备 */
     BLEDevice::init(DEVICE_NAME);
+
+    /* 2026-08-14 修复 (阶梯感): MTU 协商上限 185。默认 MTU 23 下每帧 ~50B
+     * 被 L2CAP 拆成 ~3 个 ATT 包 → 250Hz notify 包量 ×3 → 链路拥塞丢帧,
+     * App 按固定 250Hz 时间轴绘制 → 波形阶梯/粗糙。客户端 requestMtu 后
+     * 单帧 1 包, 包量降 ~3×, 有效吞吐恢复。 */
+    BLEDevice::setMTU(185);
 
     /* 注册 GAP 回调 (连接参数协商诊断, 2026-08-12) */
     esp_ble_gap_register_callback(gapCallback);

@@ -98,6 +98,9 @@ class PlaybackProvider extends ChangeNotifier implements WaveformDataSource {
   @override
   int get timeWindow => _timeWindow;
 
+  @override
+  int get samplesPerSecond => _record.sampleRate;
+
   /// 回放为静默审查：永不进入告警态，波形保持正常颜色
   @override
   bool get hasAbnormalAlert => false;

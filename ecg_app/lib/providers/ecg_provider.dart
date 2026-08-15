@@ -10,7 +10,7 @@ import '../services/ble_service.dart';
  * @brief 心电数据状态管理（ChangeNotifier + Provider）
  *
  * 管理：
- * - 历史数据环形缓冲区（最新 1500 点 = 6 秒 @250Hz）
+ * - 历史数据环形缓冲区（最新 1500 点 = 12 秒 @125Hz（实时 notify 默认速率））
  * - 连接状态
  * - 心率计算
  * - 显示速度/幅度控制
@@ -21,7 +21,8 @@ class ECGProvider extends ChangeNotifier implements WaveformDataSource {
   final BLEService _bleService = BLEService();
 
   // ── 环形缓冲区 ──
-  static const int kBufferSize = 1500; // 6 秒 @ 250Hz
+  static const int kBufferSize = 1500; // 12 秒 @125Hz (2026-08-14 前为 6 秒 @250Hz)
+  static const int kLiveSampleRate = 125; // 固件 BLE notify 默认速率 (2026-08-14 起)
   final List<ECGSample> _samples = [];
   int _droppedCount = 0;
 
@@ -81,7 +82,10 @@ class ECGProvider extends ChangeNotifier implements WaveformDataSource {
   }
 
   /// 当前时间窗口对应的样本数
-  int get visibleSamples => _timeWindow * 250;
+  int get visibleSamples => _timeWindow * kLiveSampleRate;
+
+  @override
+  int get samplesPerSecond => kLiveSampleRate;
 
   /// 幅度缩放系数
   double get amplitudeScale => _amplitudeScale;
@@ -107,6 +111,11 @@ class ECGProvider extends ChangeNotifier implements WaveformDataSource {
     _statusMessage = '正在扫描 ESP32-ECG...';
     notifyListeners();
 
+    // 重连前先取消上一次数据订阅：ECGProvider.connect 可能被多次调用，
+    // 旧订阅不取消会与新订阅同时追加样本 → 重连后波形重复/速率错乱。
+    await _subscription?.cancel();
+    _subscription = null;
+
     final success = await _bleService.connect();
 
     _isScanning = false;
@@ -123,6 +132,7 @@ class ECGProvider extends ChangeNotifier implements WaveformDataSource {
         _isConnected = false;
         _statusMessage = '连接已断开';
         _subscription?.cancel();
+          _subscription = null;
         notifyListeners();
       };
     } else {
@@ -135,6 +145,7 @@ class ECGProvider extends ChangeNotifier implements WaveformDataSource {
   /// 手动断开连接
   Future<void> disconnect() async {
     _subscription?.cancel();
+      _subscription = null;
     _resetAlarmStateMachine(); // 立即重置告警（在异步 BLE 断开之前，不组装事件）
     await _bleService.disconnect();
     _isConnected = false;

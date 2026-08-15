@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <esp_task_wdt.h>
+#include "esp_timer.h"
 #include "filter/filter.h"
 #include "bluetooth/ble.h"
 #include "signal_generator/ecg_simulator.h"
@@ -52,6 +53,7 @@
 
 /* ======================== 常量定义 ======================== */
 #define SAMPLE_INTERVAL_MS  2   /* 500Hz 采样间隔 */
+#define SAMPLE_INTERVAL_US  2000 /* 500Hz 采样间隔 (esp_timer 微秒) */
 #define DC_OFFSET_REMOVE    1.65f  /* 去除 ADC 直流偏置，统一显示基准 */
 
 /* ======================== 开发板适配 ======================== */
@@ -95,13 +97,21 @@ typedef enum {
 static char s_bleBuf[BLE_BUF_SIZE];
 static int  s_bleBufLen = 0;
 
-/* BLE 通知分频 (DIAG NOTIFY 可调, 2026-08-10): 2=250Hz(原行为), 4=125Hz
- * WiFi beacon 专项: 8 轮二分仅测过 125Hz notify, 正式固件为 250Hz → 密度差 2× 未测 */
-static int s_bleNotifyDivider = 2;
+/* BLE 通知分频 (DIAG NOTIFY 可调, 2026-08-10 引入):
+ * 2=250Hz(原行为), 4=125Hz(默认, 2026-08-14 BLE 阶梯感根治)
+ * 250Hz notify ≈11KB/s; 连接间隔退化到 30ms 时有效吞吐仅 ~6KB/s → 必丢帧/阶梯。
+ * 125Hz ≈5.5KB/s, 30ms 间隔 + MTU185 下仍可承载; App 时间轴同步 125Hz。
+ * DIAG NOTIFY 2 仅用于 PC/串口诊断; App 时间轴已按 125Hz 编译, App 联调勿切回。 */
+static int s_bleNotifyDivider = 4;
 
 /* ======================== 全局变量 ======================== */
 static unsigned long lastSampleTime = 0;
 static unsigned long frameCount = 0;
+
+/* esp_timer 硬件采样节拍 (2026-08-14 根治 336Hz 帧率漂移): 500Hz 固定节拍, 帧率无关 */
+static esp_timer_handle_t s_sampleTimer = NULL;
+static volatile uint32_t s_sampleTick = 0;   /* 定时器回调递增 */
+static uint32_t s_lastSampleTick = 0;        /* loop 已消费的节拍 */
 
 /* 报警锁存 (2026-08-08): AI 报警触发后 abnormal 列持续 5 秒, 防止一闪而过
  * s_alarmHold: 剩余输出周期数 (@100Hz 串口输出), 500 = 5 秒 */
@@ -323,7 +333,7 @@ static bool parseRecorderCommand(const char* cmd, char* reply, size_t replyLen,
      *   DIAG TXP <v>      → AP 发射功率 (0=跳过 setTxPower, 34=8.5dBm, 60=15dBm, 78=19.5dBm)
      *   DIAG CH <1|6|11>  → AP 信道 (下次 WIFI_ON 生效)
      *   DIAG SEQ <0|1>    → AP 启动序列 (1=PR#1865 式慢速 OFF→AP 切换 + setSleep(false))
-     *   DIAG NOTIFY <2|4> → BLE 通知分频 (2=250Hz, 4=125Hz)
+     *   DIAG NOTIFY <2|4> → BLE 通知分频 (4=125Hz 默认, 2=250Hz 原行为)
      *   DIAG AI <0|1>     → AI 推理开关
      * 证据: WiFiManager PR#1865 (2.0.17 世代 S3 实测) / ESP-IDF#13508 / ESPHome#6456 */
     if (strStartsWithIgnoreCase(cmd, "DIAG")) {
@@ -418,6 +428,36 @@ static bool parseRecorderCommand(const char* cmd, char* reply, size_t replyLen,
         return true;
     }
     return false;
+}
+
+/* ======================== esp_timer 500Hz 采样节拍 ======================== */
+
+/* 定时器回调 (ISR 上下文, 仅递增计数器, 快速无阻塞) */
+static void sampleTimerCb(void *arg)
+{
+    (void)arg;
+    s_sampleTick++;
+}
+
+static void sampleTimerStart(void)
+{
+    esp_timer_create_args_t cfg = {
+        .callback = &sampleTimerCb,
+        .arg = NULL,
+        .dispatch_method = ESP_TIMER_TASK,
+        .name = "ecg_sample",
+    };
+    if (esp_timer_create(&cfg, &s_sampleTimer) != ESP_OK) {
+        Serial.println("[系统] esp_timer 创建失败, 回退 millis 软定时");
+        return;
+    }
+    if (esp_timer_start_periodic(s_sampleTimer, SAMPLE_INTERVAL_US) != ESP_OK) {
+        Serial.println("[系统] esp_timer 启动失败, 回退 millis 软定时");
+        s_sampleTimer = NULL;
+        return;
+    }
+    s_lastSampleTick = s_sampleTick;
+    Serial.println("[系统] esp_timer 500Hz 采样节拍已启动 (根治 336Hz 帧率漂移)");
 }
 
 void setup()
@@ -534,7 +574,8 @@ void setup()
     Serial.println("[系统] 当前输入: 模拟发生器");
     Serial.println("[系统] 按 BOOT 键或发 'm' 切换真实/模拟输入");
 
-    lastSampleTime = millis();
+    lastSampleTime = millis();   /* 回退软定时基准 (esp_timer 失败时) */
+    sampleTimerStart();
     Serial.println("[系统] 系统启动完成，开始采集...");
 }
 
@@ -635,10 +676,22 @@ void loop()
     esp_task_wdt_reset();   /* 喂狗: 主循环卡死 >10s 触发 panic 回溯 (诊断) */
     unsigned long currentTime = millis();
 
-    /* 精确定时 4ms 采样间隔 */
-    if (currentTime - lastSampleTime >= SAMPLE_INTERVAL_MS)
-    {
+    /* 500Hz 固定采样节拍 (2026-08-14 esp_timer 硬件定时, 根治 336Hz 帧率漂移):
+     * 每 2ms 定时器回调递增 s_sampleTick, loop 每节拍处理一帧; esp_timer
+     * 创建失败时回退原 millis 软定时。 */
+    bool sampleDue = false;
+    if (s_sampleTimer != NULL) {
+        if (s_sampleTick != s_lastSampleTick) {
+            s_lastSampleTick = s_sampleTick;
+            sampleDue = true;
+        }
+    } else if (currentTime - lastSampleTime >= SAMPLE_INTERVAL_MS) {
         lastSampleTime = currentTime;
+        sampleDue = true;
+    }
+
+    if (sampleDue)
+    {
         frameCount++;
 
         /* ---- 按键检测 (在帧处理前, 确保及时响应) ---- */
@@ -672,9 +725,13 @@ void loop()
             noisySample = ecgReplayNextSample();   /* 真实心电, ±2V */
             cleanSample = noisySample;
         } else {
-            /* 真实模式: ADC 采集 */
-            noisySample = afeHalReadSample();       /* 含 dcBias */
-            cleanSample = afeHalReadECG();          /* 已去偏置 */
+            /* 真实模式: ADC 采集 — 单次读取 (2026-08-14 根治 336Hz):
+             * 原 afeHalReadSample + afeHalReadECG 双重读取 = 每帧 2×4=8 次
+             * analogRead, 拖慢主循环致 ~336Hz; 改为单次读取, clean 由同一
+             * 采样值减 dcBias 导出 (与 afeHalReadECG 语义等价, 且 noisy/clean
+             * 严格同源更正确)。 */
+            noisySample = afeHalReadSample();        /* 含 dcBias */
+            cleanSample = noisySample - AFE_DC_BIAS; /* 已去偏置 */
         }
 
         /* ======== 步骤2：去除直流偏置，统一显示基准 ======== */
@@ -779,13 +836,15 @@ void loop()
         /* ======== 步骤3.9：WiFi HTTP 请求轮询 (handleClient 空闲时 μs 级, 每迭代调用) ======== */
         ecgWifiProcess();
 
-        /* ======== 步骤4：通过 BLE 发送 (默认 250Hz, 1帧/Notify; DIAG NOTIFY 可调) ======== */
+        /* ======== 步骤4：通过 BLE 发送 (默认 125Hz, 1帧/Notify; DIAG NOTIFY 可调) ======== */
         /* 每帧格式: clean,noisy,filtered,bpm,true_bpm,sqi,motion,abnormal,confidence;
          * 与串口 9 列一致 (2026-08-10 修复: 原仅 5 列, App 收不到 abnormal 致报警永不触发);
          * abnormal 取报警锁存值 (AI 新结果由 100Hz 块更新锁存), 锁存 5 秒与串口语义一致
          * 2026-08-10 修复2: 发送率 500Hz→250Hz (每 2 帧发 1 帧)。
          *   根因: 9 列解析修复后 App 每包解析全部帧, 数据率变 500Hz,
-         *   而 App 缓冲/时间轴按 250Hz 设计 (timeWindow*250) → 速率错配致波形变形 */
+         *   而 App 缓冲/时间轴按 250Hz 设计 (timeWindow*250) → 速率错配致波形变形
+ * 2026-08-14 修复3: 默认 250Hz→125Hz (s_bleNotifyDivider=4), App 时间轴同步 125Hz;
+ *   250Hz notify≈11KB/s 在连接间隔退化到 30ms 时必丢帧致波形阶梯 (TH §57/§58)。 */
         if (frameCount % s_bleNotifyDivider == 0) {
             /* 2026-08-14 修复: true_bpm/motion 原硬编码 0 (串口路径正确, BLE 未同步)
              * → 与串口 9 列语义一致 */
