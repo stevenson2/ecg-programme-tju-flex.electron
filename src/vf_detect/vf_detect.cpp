@@ -3,7 +3,9 @@
  * @brief 模块2: VF/VT 检测器 (T4-9)
  *
  * 5s 窗 DSP 特征 + 逻辑回归分数 + 连续 2 窗确认。
- * 特征与 PC 原型 eval_vf_detect.py 一致 (PC 验证 Se 0.957/Sp 0.824)。
+ * v2 (2026-08-16): 特征与 PC 训练逐位复刻 (4 节全精度 SOS forward-backward +
+ * ZCR 主频), 输入由 main.cpp 换算 mV; PC 验证 eval_vf_detect_v2.py
+ * (VFDB 留出 Se 0.985 / MIT 对照 Sp 0.888 / CUDB Se 0.921)。
  * 4-10Hz 带通: 4 阶 Butterworth (直接 II 型, 系数来自 scipy butter(2, [4,10], fs=250)).
  */
 #include "vf_detect/vf_detect.h"
@@ -13,36 +15,66 @@
 
 static float s_buf[VF_WIN_SAMPLES];     /* 5s 窗缓冲 */
 static uint32_t s_pos = 0;              /* 写指针 */
-/* 4-10Hz 带通状态 (直接 II 型 4 阶: 2 个二阶节) */
-static float s_f1[2], s_f2[2];
+/* 4-10Hz 带通状态: scipy butter(4,[4,10],fs=250) 的 4 个二阶节 (全精度, v2) */
+static float s_f1[2], s_f2[2], s_f3[2], s_f4[2];
+/* v2 窗内计算工作区 (静态, 避免 15KB 栈) */
+static float s_work[VF_WIN_SAMPLES];    /* demeaned 原始窗 */
+static float s_fwd[VF_WIN_SAMPLES];     /* 前向滤波结果 / abs 排序暂存 */
+static float s_xf[VF_WIN_SAMPLES];      /* 反向滤波最终结果 */
 /* 历史窗判定 */
 static uint8_t s_lastSuspect = 0;       /* 上一窗是否疑似 */
 static VF_Result s_res;
 
-/* 4-10Hz 带通 (biquad 级联, scipy butter(2,[4,10]/125)):
-   b = [0.00512927, 0, -0.01025854, 0, 0.00512927]
-   a = [1, -3.73959554, 5.2925656, -3.36034609, 0.80794959]
-   分解为 2 个二阶节 (scipy sos 近似): */
-static const float SOS[2][6] = {
-    {0.00512927f, 0.0f, -0.00512927f, 1.0f, -1.90644760f, 0.95561144f},
-    {1.0f, 0.0f, -1.0f, 1.0f, -1.83314794f, 0.84572785f},
+/* scipy.signal.butter(4,[4,10],fs=250, output='sos') 全精度 4 节 (2026-08-16
+ * 修正: 旧固件只有 2 节 5 位小数近似, 与 PC 训练失配致 CUDB Se 0.936→0.86) */
+static const float SOS4[4][6] = {
+    { 2.67349040e-05f,  5.34698080e-05f,  2.67349040e-05f, 1.0f, -1.81135233f, 0.846093824f},
+    { 1.0f,  2.0f,  1.0f, 1.0f, -1.87777543f, 0.893812835f},
+    { 1.0f, -2.0f,  1.0f, 1.0f, -1.86519459f, 0.922431828f},
+    { 1.0f, -2.0f,  1.0f, 1.0f, -1.95573823f, 0.966220895f},
 };
+
+static void bpfResetStates(void)
+{
+    s_f1[0] = s_f1[1] = 0.0f;
+    s_f2[0] = s_f2[1] = 0.0f;
+    s_f3[0] = s_f3[1] = 0.0f;
+    s_f4[0] = s_f4[1] = 0.0f;
+}
 
 static float bandpass4(float x)
 {
-    /* 级联 2 个二阶 (transposed direct form II) */
-    float y1 = SOS[0][0] * x + s_f1[0];
-    s_f1[0] = SOS[0][1] * x - SOS[0][4] * y1 + s_f1[1];
-    s_f1[1] = SOS[0][2] * x - SOS[0][5] * y1;
-    float y2 = SOS[1][0] * y1 + s_f2[0];
-    s_f2[0] = SOS[1][1] * y1 - SOS[1][4] * y2 + s_f2[1];
-    s_f2[1] = SOS[1][2] * y1 - SOS[1][5] * y2;
-    return y2;
+    /* 级联 4 个二阶节 (transposed direct form II) */
+    float y = SOS4[0][0] * x + s_f1[0];
+    s_f1[0] = SOS4[0][1] * x - SOS4[0][4] * y + s_f1[1];
+    s_f1[1] = SOS4[0][2] * x - SOS4[0][5] * y;
+
+    float y2 = SOS4[1][0] * y + s_f2[0];
+    s_f2[0] = SOS4[1][1] * y - SOS4[1][4] * y2 + s_f2[1];
+    s_f2[1] = SOS4[1][2] * y - SOS4[1][5] * y2;
+
+    float y3 = SOS4[2][0] * y2 + s_f3[0];
+    s_f3[0] = SOS4[2][1] * y2 - SOS4[2][4] * y3 + s_f3[1];
+    s_f3[1] = SOS4[2][2] * y2 - SOS4[2][5] * y3;
+
+    float y4 = SOS4[3][0] * y3 + s_f4[0];
+    s_f4[0] = SOS4[3][1] * y3 - SOS4[3][4] * y4 + s_f4[1];
+    s_f4[1] = SOS4[3][2] * y3 - SOS4[3][5] * y4;
+    return y4;
 }
 
 static float sigmoid(float z)
 {
     return 1.0f / (1.0f + expf(-z));
+}
+
+static int cmpFloatAsc(const void* a, const void* b)
+{
+    float fa = *(const float*)a;
+    float fb = *(const float*)b;
+    if (fa < fb) return -1;
+    if (fa > fb) return  1;
+    return 0;
 }
 
 static void compute_features(float *feat)
@@ -52,44 +84,55 @@ static void compute_features(float *feat)
     for (uint32_t i = 0; i < VF_WIN_SAMPLES; i++) mean += s_buf[i];
     mean /= VF_WIN_SAMPLES;
 
-    float rms = 0.0f, sum_abs = 0.0f;
-    float xf[VF_WIN_SAMPLES];
+    float rms = 0.0f;
     for (uint32_t i = 0; i < VF_WIN_SAMPLES; i++) {
         float v = s_buf[i] - mean;
+        s_work[i] = v;
         rms += v * v;
-        sum_abs += fabsf(v);
-        xf[i] = bandpass4(v);
     }
     rms = sqrtf(rms / VF_WIN_SAMPLES);
-    /* 幅度中位 (近似: 排序太贵 → 用均值绝对值的缩放近似, PC 端 med_abs≈0.78×mean_abs) */
-    float mean_abs = sum_abs / VF_WIN_SAMPLES;
+
+    /* 幅度中位 (与 PC np.median(|x|) 一致; 旧 mean_abs×0.78 近似废弃) */
+    for (uint32_t i = 0; i < VF_WIN_SAMPLES; i++) s_fwd[i] = fabsf(s_work[i]);
+    qsort(s_fwd, VF_WIN_SAMPLES, sizeof(float), cmpFloatAsc);
+    float med_abs = (s_fwd[VF_WIN_SAMPLES / 2 - 1] + s_fwd[VF_WIN_SAMPLES / 2]) * 0.5f;
+
+    /* 4-10Hz 带通: forward → backward (等价 scipy sosfiltfilt padlen=0, v2) */
+    bpfResetStates();
+    for (uint32_t i = 0; i < VF_WIN_SAMPLES; i++) {
+        s_fwd[i] = bandpass4(s_work[i]);
+    }
+    bpfResetStates();
+    for (uint32_t i = VF_WIN_SAMPLES; i-- > 0; ) {
+        s_xf[i] = bandpass4(s_fwd[i]);
+    }
 
     /* VF 滤波比 + VF 带 ZCR */
     float vf_e = 0.0f;
     uint32_t zc = 0;
     for (uint32_t i = 0; i < VF_WIN_SAMPLES; i++) {
-        vf_e += xf[i] * xf[i];
-        if (i > 0 && ((xf[i] > 0) != (xf[i - 1] > 0))) zc++;
+        vf_e += s_xf[i] * s_xf[i];
+        if (i > 0 && ((s_xf[i] > 0) != (s_xf[i - 1] > 0))) zc++;
     }
     float vf_ratio = vf_e / (rms * rms * VF_WIN_SAMPLES + 1e-12f);
     float vf_zcr = (float)zc / VF_WIN_SAMPLES;
 
-    /* 峰谷率 (原始信号局部峰) */
+    /* 峰谷率 (demeaned 窗局部峰, 与 PC diff 峰计数一致) */
     uint32_t n_pk = 0;
     for (uint32_t i = 1; i + 1 < VF_WIN_SAMPLES; i++) {
-        if (s_buf[i] > s_buf[i - 1] && s_buf[i] >= s_buf[i + 1]) n_pk++;
+        if (s_work[i] > s_work[i - 1] && s_work[i] >= s_work[i + 1]) n_pk++;
     }
     float pv_rate = (float)n_pk / 5.0f;  /* 5s 窗 */
 
-    /* 主频近似: 原始信号零交叉率 → 频率 (正弦近似 f = zcr_samples/2) */
+    /* 主频近似: demeaned 零交叉率 → 频率 (PC v2 同公式, 非 FFT) */
     uint32_t zc_raw = 0;
     for (uint32_t i = 1; i < VF_WIN_SAMPLES; i++) {
-        if (((s_buf[i] - mean) > 0) != ((s_buf[i - 1] - mean) > 0)) zc_raw++;
+        if (((s_work[i] > 0) != (s_work[i - 1] > 0))) zc_raw++;
     }
     float dom_freq = (float)zc_raw / VF_WIN_SAMPLES * 125.0f;  /* zcr×fs/2 */
 
     feat[0] = rms;
-    feat[1] = mean_abs * 0.78f;  /* med_abs 近似 */
+    feat[1] = med_abs;
     feat[2] = vf_ratio;
     feat[3] = vf_zcr;
     feat[4] = pv_rate;
@@ -99,8 +142,7 @@ static void compute_features(float *feat)
 void vfInit(void)
 {
     memset(s_buf, 0, sizeof(s_buf));
-    memset(s_f1, 0, sizeof(s_f1));
-    memset(s_f2, 0, sizeof(s_f2));
+    bpfResetStates();
     s_pos = 0;
     s_lastSuspect = 0;
     memset(&s_res, 0, sizeof(s_res));

@@ -137,6 +137,18 @@ float afeHalReadECG(void)
     return sample - s_config.dcBias;
 }
 
+void afeHalSetOversample(uint8_t oversample)
+{
+    if (oversample == 0) oversample = 1;
+    if (oversample > 16) oversample = 16;
+    s_config.oversample = oversample;
+}
+
+uint8_t afeHalGetOversample(void)
+{
+    return s_config.oversample;
+}
+
 uint16_t afeHalGetRawCode(void) { return s_rawCode; }
 AFE_HAL_Status afeHalGetStatus(void) { return s_status; }
 bool afeHalIsClipping(void) { return (s_status >= AFE_HAL_CLIPPING); }

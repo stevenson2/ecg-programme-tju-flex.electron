@@ -143,6 +143,12 @@ void afeHalInit(const AFE_HAL_Config *config);
  */
 float afeHalReadSample(void);
 
+/** @brief 运行时修改过采样次数 (1-16, 越界自动钳位) — DIAG OVS 用 */
+void afeHalSetOversample(uint8_t oversample);
+
+/** @brief 当前过采样次数 — DIAG 状态输出用 */
+uint8_t afeHalGetOversample(void);
+
 /**
  * @brief 采集一个心电信号 (已去除 DC 偏置)
  *

@@ -1,0 +1,42 @@
+{
+  "detector": "energy-envelope v6 (blank260_rf_c3_40_prev055_rr065, 2026-08-14)",
+  "config": {
+    "lead": "ii",
+    "gain": 1000.0,
+    "tolerance_ms": 150.0,
+    "records": 200,
+    "bandpass": "8-25Hz",
+    "mwi_window": 40,
+    "min_conf_feat": 3,
+    "STARTUP_BLANK_SAMP": 260,
+    "MIN_CONF_FEAT": 3,
+    "GATE_RF_MAX": 40,
+    "GATE_WIDTH_RATIO": null,
+    "GATE_AMP_CONSISTENCY": null,
+    "GATE_AMP_FRAC_PREV": 0.55,
+    "GATE_RR_RATIO": 0.65,
+    "MIN_QRS_WIDTH": null,
+    "MAX_QRS_WIDTH": null
+  },
+  "summary": {
+    "records": 200,
+    "gold_beats": 1831,
+    "det_beats": 2238,
+    "tp": 1765,
+    "fp": 473,
+    "fn": 66,
+    "se": 0.9639541234298198,
+    "ppv": 0.788650580875782,
+    "f1": 0.8675350208896536,
+    "bpm_mae": 4.1628109282911945,
+    "bpm_median_err": 1.4631147540983633,
+    "bpm_p90": 9.119192922271369,
+    "bpm_within3": 69.0,
+    "bpm_within5": 81.0,
+    "audit": {
+      "confusion_ok": true,
+      "warnings": []
+    }
+  },
+  "selection_note": "--final blank260_rf_c3_40_prev055_rr065"
+}

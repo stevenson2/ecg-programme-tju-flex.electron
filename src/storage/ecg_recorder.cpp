@@ -131,8 +131,11 @@ static void removeRecordFile(const char* name)
  *
  * 扫描 /ecgdata/*.ecgr, 解析头部取 startUnixTime,
  * 删除 startUnixTime 最小的文件, 同时更新 g_recordCount。
+ * 2026-08-16: protectUnix 参数 — 刚写入的新记录必须跳过, 否则新记录 startUnix
+ * (当前上电秒) 可能恰为全盘最小, 保留策略会把刚录完的文件立刻删掉
+ * (AFE 60s 录制后 REC_LIST diff 0 条新记录的根因)。
  */
-static void deleteOldestRecord(void) {
+static void deleteOldestRecord(uint32_t protectUnix) {
     fs::File dir = SPIFFS.open(ECGR_BASE_PATH);
     if (!dir || !dir.isDirectory()) return;
 
@@ -148,7 +151,7 @@ static void deleteOldestRecord(void) {
                 uint8_t hdr[ECGR_HEADER_SIZE];
                 if (f.read(hdr, ECGR_HEADER_SIZE) == ECGR_HEADER_SIZE) {
                     uint32_t st = ecgrHeaderStartUnix(hdr);
-                    if (st < oldestUnix) {
+                    if (st != protectUnix && st < oldestUnix) {
                         oldestUnix = st;
                         strncpy(oldestPath, name, sizeof(oldestPath) - 1);
                         oldestPath[sizeof(oldestPath) - 1] = '\0';
@@ -173,11 +176,14 @@ static void deleteOldestRecord(void) {
  *
  * 1. 若记录数 > ECG_REC_KEEP_MAX, 删除最旧直到 ≤ 上限
  * 2. 若 SPIFFS 空闲空间 < ECG_REC_FREE_MIN_BYTES, 删除最旧直到 ≥ 阈值
+ * protectUnix: 跳过刚写入的记录 (只保护一条; 全盘仅剩受保护记录时停止)
  */
-static void enforceRetention(void) {
+static void enforceRetention(uint32_t protectUnix) {
     // 上限策略
     while (g_recordCount > ECG_REC_KEEP_MAX) {
-        deleteOldestRecord();
+        uint32_t before = g_recordCount;
+        deleteOldestRecord(protectUnix);
+        if (g_recordCount == before) break;   /* 只剩受保护记录, 防死循环 */
     }
 
     // 空闲空间策略
@@ -185,7 +191,9 @@ static void enforceRetention(void) {
     size_t usedBytes  = SPIFFS.usedBytes();
     while (g_recordCount > 0
            && (totalBytes - usedBytes) < ECG_REC_FREE_MIN_BYTES) {
-        deleteOldestRecord();
+        uint32_t before = g_recordCount;
+        deleteOldestRecord(protectUnix);
+        if (g_recordCount == before) break;
         usedBytes = SPIFFS.usedBytes();
     }
 }
@@ -578,8 +586,8 @@ bool ecgRecorderStop(void) {
                   g_abnormalSec, fileSize);
     g_recordCount++;
 
-    // 5. 保留策略
-    enforceRetention();
+    // 5. 保留策略 (保护刚写入的记录, 见 deleteOldestRecord 2026-08-16 修复)
+    enforceRetention(g_startUnix);
 
     // 6. 重建索引 (2026-08-13 修复): 保留策略删文件后原先不更新 records.idx,
     //    导致幽灵条目 (HTTP 列表有但 meta/data 404) + g_recordCount 漂移 →

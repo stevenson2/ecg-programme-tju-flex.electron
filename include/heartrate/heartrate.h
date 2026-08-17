@@ -121,6 +121,15 @@ float hrGetSQI(void);
  */
 bool hrIsMotionActive(void);
 
+/**
+ * @brief 最近一次有效心拍的 millis() 时间戳 (0=尚无有效拍)
+ *
+ * 供 VF/VT 报警互锁使用: 真 VF/VT 下 QRS 检测无法连续检出有效拍,
+ * 距最近有效拍 >2.5s 才放行 VF 报警, 抑制正常窦律下的 VF 误报
+ * (2026-08-16 AFE 实测: 正常窦律 VF v2 仍 12 次/60s 误报)。
+ */
+uint32_t hrGetLastBeatMillis(void);
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="description" content="ESP32-ECG 心电采集与 AI 异常检测系统 Web 控制台：实时波形监测、WiFi 录制记录管理与 .ecgr 本地回放。" />
+  <title>ESP32-ECG · 心电 AI 控制台</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b1220'/%3E%3Cpath d='M3 17h6l3-8 5 15 4-9 2 2h6' fill='none' stroke='%2334d399' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="bg-fx" aria-hidden="true">
+    <div class="bg-fx__orb bg-fx__orb--a"></div>
+    <div class="bg-fx__orb bg-fx__orb--b"></div>
+    <div class="bg-fx__grid"></div>
+  </div>
+
+  <!-- ======================= 顶部导航 ======================= -->
+  <header class="topbar">
+    <a class="brand" href="#view-overview" data-nav="overview" aria-label="返回概览">
+      <span class="brand__logo" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="30" height="30">
+          <rect width="32" height="32" rx="9" fill="rgba(45,212,191,0.12)" />
+          <path d="M4 17.5h5.4l2.9-8.2 5.6 15.6 4-9.2 1.6 1.8H28"
+                fill="none" stroke="url(#brandGrad)" stroke-width="2.3"
+                stroke-linecap="round" stroke-linejoin="round" />
+          <defs>
+            <linearGradient id="brandGrad" x1="4" y1="8" x2="28" y2="26">
+              <stop offset="0" stop-color="#2dd4bf" />
+              <stop offset="1" stop-color="#818cf8" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </span>
+      <span class="brand__text">
+        <b>ESP32-ECG</b>
+        <small>心电 AI 控制台</small>
+      </span>
+    </a>
+
+    <nav class="main-nav" id="mainNav" aria-label="主导航">
+      <button class="nav-btn active" data-view="overview" type="button">概览</button>
+      <button class="nav-btn" data-view="live" type="button">
+        实时监测
+        <span class="nav-btn__dot" id="navLiveDot" aria-hidden="true"></span>
+      </button>
+      <button class="nav-btn" data-view="records" type="button">录制管理</button>
+      <button class="nav-btn" data-view="playback" type="button">本地回放</button>
+    </nav>
+
+    <div class="topbar__status" id="globalStatus" title="当前数据源状态">
+      <span class="status-dot"></span>
+      <span id="globalStatusText">离线演示</span>
+    </div>
+  </header>
+
+  <main class="page">
+    <!-- ============================================================
+         VIEW 1 · 概览
+    ============================================================ -->
+    <section class="view active" id="view-overview" data-view="overview">
+      <div class="hero">
+        <div class="hero__copy">
+          <div class="eyebrow">
+            <span class="eyebrow__pulse"></span>
+            ESP32-S3 · 边缘 AI 心电采集系统
+          </div>
+          <h1 class="hero__title">
+            把心电信号<br />
+            <span class="grad-text">装进你的浏览器</span>
+          </h1>
+          <p class="hero__sub">
+            500&nbsp;Hz 三通道实时波形 · 板上 Pan-Tompkins 心率 · TFLite&nbsp;Micro INT8
+            逐拍异常检测 · BLE / 串口 / WiFi 三通道数据出口。无需安装任何软件，打开网页即可演示、
+            连接设备并回放录制数据。
+          </p>
+          <div class="hero__actions">
+            <button class="btn btn--primary btn--lg" data-go-view="live" type="button">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5.5v13l11-6.5-11-6.5z" fill="currentColor"/></svg>
+              进入实时监测
+            </button>
+            <button class="btn btn--ghost btn--lg" data-go-view="playback" type="button">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm-2 14.5v-9l6.5 4.5-6.5 4.5z" fill="currentColor"/></svg>
+              本地回放 .ecgr
+            </button>
+          </div>
+          <p class="hero__note">离线可用 · 演示模式开箱即跑 · Chrome / Edge 支持串口与 BLE</p>
+        </div>
+
+        <div class="hero__monitor" aria-hidden="true">
+          <div class="monitor-card glass">
+            <div class="monitor-card__head">
+              <span class="monitor-card__led"></span>
+              <span>LEAD II · 500 Hz · FILTERED</span>
+              <span class="monitor-card__bpm" id="heroBpm">75 BPM</span>
+            </div>
+            <svg class="hero-ecg" viewBox="0 0 600 220" preserveAspectRatio="none">
+              <path class="hero-ecg__grid" d="M0 55h600M0 110h600M0 165h600M150 0v220M300 0v220M450 0v220" />
+              <path class="hero-ecg__trace" id="heroTrace"
+                    d="M0 110h90l10-18 8 28 9-36 10 40 8-8 10 14 8-24 9 30 10-12 8 20 9-28 8-10 10 26 9-30 10 24 8-14 10 22 9-32 10 30 8-16 10 24 9-34 10 38 8-10 10 22 9-26 10 16 8-14 10 20 9-28 10 24 8-12 10 18 9-30 10 34 8-14 10 22 9-20 10 14 8-12 10 18 9-26 10 22 8-10 10 16 9-24 10 28 8-12 10 18 9-22 10 16 8-10 10 18 9-24 10 20 8-12 10 16 9-20 10 14 8-8 10 12 9-18 10 22 8-10 10 14 9-16 10 12 8-8 10 12 9-14 10 10 8-6 10 8 9-10 10 6 8-4 10 4h600" />
+            </svg>
+            <div class="monitor-card__foot">
+              <span>AI exp6-SGD · INT8</span>
+              <span class="monitor-card__conf">置信度 0.14 · 正常</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-strip">
+        <div class="stat glass">
+          <div class="stat__value grad-text">500<span>Hz</span></div>
+          <div class="stat__label">三通道采样率</div>
+        </div>
+        <div class="stat glass">
+          <div class="stat__value grad-text">163.5<span>KB</span></div>
+          <div class="stat__label">INT8 边缘模型体积</div>
+        </div>
+        <div class="stat glass">
+          <div class="stat__value grad-text">0.912</div>
+          <div class="stat__label">MIT D3 部署链 AUC</div>
+        </div>
+        <div class="stat glass">
+          <div class="stat__value grad-text">0.972</div>
+          <div class="stat__label">房颤检测 AUC</div>
+        </div>
+        <div class="stat glass">
+          <div class="stat__value grad-text">3.2</div>
+          <div class="stat__label">心率 BPM MAE</div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-head">
+          <h2>系统能力</h2>
+          <p>一块 ESP32-S3 芯片上完成采集、滤波、检测、推理与三通道数据出口</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature glass">
+            <div class="feature__icon" style="--c:#2dd4bf">◫</div>
+            <h3>500Hz 三通道采集</h3>
+            <p>clean / noisy / filtered 三路同源信号，模拟发生器、真实 AFE 与 MIT-BIH 回放三种信号源可切换。</p>
+          </article>
+          <article class="feature glass">
+            <div class="feature__icon" style="--c:#818cf8">∿</div>
+            <h3>级联数字滤波</h3>
+            <p>双级梳状在 50/100Hz 精确陷零（-119.2dB），级联 HP 0.05Hz 与 LP 40Hz，完整 double 精度系数。</p>
+          </article>
+          <article class="feature glass">
+            <div class="feature__icon" style="--c:#f472b6">♥</div>
+            <h3>Pan-Tompkins 心率</h3>
+            <p>LUDB 金标准验证 F1 0.774，带 SQI 信号质量与运动干扰冻结，BPM 平均误差 3.2。</p>
+          </article>
+          <article class="feature glass">
+            <div class="feature__icon" style="--c:#f59e0b">⌬</div>
+            <h3>AI 逐拍异常检测</h3>
+            <p>1D-CNN（exp6-SGD，80K 参数）TFLite Micro INT8 部署，250 点 = 1 秒因果窗口，双核独立推理。</p>
+          </article>
+          <article class="feature glass">
+            <div class="feature__icon" style="--c:#f43f5e">⚠</div>
+            <h3>心律安全分析</h3>
+            <p>停搏 / 过缓 / 过速规则检测，房颤 CV+熵（PTB-XL AUC 0.9717），VF/VT DSP 特征（Se 0.957）。</p>
+          </article>
+          <article class="feature glass">
+            <div class="feature__icon" style="--c:#22d3ee">⌁</div>
+            <h3>三通道数据出口</h3>
+            <p>串口 CSV 9 列 @100Hz，BLE NUS @125Hz 透传，SPIFFS 在板录制 + WiFi AP REST 下载。</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-head">
+          <h2>数据流架构</h2>
+          <p>从电极到网页的完整链路</p>
+        </div>
+        <div class="pipeline" role="list">
+          <div class="pipe-step glass" role="listitem"><span class="pipe-step__num">01</span><b>3 电极 · Lead II</b><small>RA / LA / RL → AD8232 AFE</small></div>
+          <span class="pipe-arrow" aria-hidden="true">→</span>
+          <div class="pipe-step glass" role="listitem"><span class="pipe-step__num">02</span><b>ADC 采集</b><small>12-bit · 500Hz · 4× 过采样</small></div>
+          <span class="pipe-arrow" aria-hidden="true">→</span>
+          <div class="pipe-step glass" role="listitem"><span class="pipe-step__num">03</span><b>数字滤波</b><small>梳状 → HP → LP40</small></div>
+          <span class="pipe-arrow" aria-hidden="true">→</span>
+          <div class="pipe-step glass pipe-step--accent" role="listitem"><span class="pipe-step__num">04</span><b>Core 1 · Core 0</b><small>心率 / 安全 / AI 1D-CNN</small></div>
+          <span class="pipe-arrow" aria-hidden="true">→</span>
+          <div class="pipe-step glass" role="listitem"><span class="pipe-step__num">05</span><b>数据出口</b><small>串口 · BLE · SPIFFS · WiFi</small></div>
+          <span class="pipe-arrow" aria-hidden="true">→</span>
+          <div class="pipe-step glass pipe-step--web" role="listitem"><span class="pipe-step__num">06</span><b>本网页</b><small>波形 / 报警 / 回放</small></div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-head">
+          <h2>三种使用方式</h2>
+          <p>按你手头的数据源选择</p>
+        </div>
+        <div class="usage-grid">
+          <button class="usage glass" data-go-view="live" type="button">
+            <span class="usage__tag">01 · 离线演示</span>
+            <h3>演示模式</h3>
+            <p>浏览器内合成逼真心电波形（PQRST + 噪声 + 运动片段），零依赖体验完整控制台。</p>
+          </button>
+          <button class="usage glass" data-go-view="live" type="button">
+            <span class="usage__tag">02 · 实时连接</span>
+            <h3>Web Serial / BLE</h3>
+            <p>Chrome / Edge 通过串口（460800）解析 9 列 CSV，或 Web Bluetooth 直连 NUS 服务，实时显示波形与报警。</p>
+          </button>
+          <button class="usage glass" data-go-view="playback" type="button">
+            <span class="usage__tag">03 · 数据回放</span>
+            <h3>.ecgr 录制回放</h3>
+            <p>拖入 ESP32 录制的 .ecgr 文件，本地解析 32 字节头 + int16 样本 + 异常位图，浏览整段记录。</p>
+          </button>
+        </div>
+      </div>
+
+      <div class="note-box">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"/></svg>
+        <p><b>医疗免责声明：</b>本网页与设备仅用于科研、教学与工程演示，不构成医疗器械，输出结果不得用于临床诊断或治疗决策。</p>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         VIEW 2 · 实时监测
+    ============================================================ -->
+    <section class="view" id="view-live" data-view="live">
+      <div class="view-head">
+        <div>
+          <h1>实时监测</h1>
+          <p>串口 9 列 CSV @100Hz · BLE NUS @125Hz · 浏览器合成演示信号</p>
+        </div>
+        <div class="view-head__actions">
+          <button class="btn btn--ghost" id="btnSnapshot" type="button" title="导出当前窗口为 PNG">导出截图</button>
+          <button class="btn btn--ghost" id="btnCsvRecord" type="button">
+            <span class="rec-dot" id="recDot"></span><span id="btnCsvRecordText">开始记录 CSV</span>
+          </button>
+          <button class="btn btn--primary" id="btnLivePlay" type="button">暂停</button>
+        </div>
+      </div>
+
+      <div class="source-bar glass">
+        <div class="source-seg" id="sourceSeg" role="tablist" aria-label="数据源">
+          <button class="source-seg__btn active" data-source="demo" type="button">演示信号</button>
+          <button class="source-seg__btn" data-source="serial" type="button">串口 (Web Serial)</button>
+          <button class="source-seg__btn" data-source="ble" type="button">蓝牙 (Web Bluetooth)</button>
+        </div>
+        <div class="source-bar__controls">
+          <label class="ctrl">
+            <span>增益</span>
+            <input id="gainRange" type="range" min="0.25" max="4" step="0.25" value="1" />
+            <output id="gainOut">1.0×</output>
+          </label>
+          <label class="ctrl">
+            <span>窗口</span>
+            <select id="windowSel">
+              <option value="3">3 秒</option>
+              <option value="5" selected>5 秒</option>
+              <option value="10">10 秒</option>
+              <option value="20">20 秒</option>
+            </select>
+          </label>
+          <div class="channel-chips" id="channelChips" aria-label="通道显示">
+            <button class="chip chip--clean active" data-chan="clean" type="button">Clean</button>
+            <button class="chip chip--noisy active" data-chan="noisy" type="button">Noisy</button>
+            <button class="chip chip--filtered active" data-chan="filtered" type="button">Filtered</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="source-panel glass" id="serialPanel" hidden>
+        <div class="source-panel__row">
+          <div>
+            <b>串口连接</b>
+            <small>选择 ESP32 的 COM 端口（Windows）或 /dev/ttyUSBx（Linux / macOS），波特率默认 460800。连接后会同时收到 CSV 波形与诊断日志。</small>
+          </div>
+          <div class="source-panel__actions">
+            <select id="serialBaud" class="input input--compact">
+              <option value="460800" selected>460800</option>
+              <option value="115200">115200</option>
+              <option value="921600">921600</option>
+            </select>
+            <button class="btn btn--primary" id="btnSerialConnect" type="button">连接串口</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="source-panel glass" id="blePanel" hidden>
+        <div class="source-panel__row">
+          <div>
+            <b>蓝牙 NUS 连接</b>
+            <small>Nordic UART Service（6E400001-...）。连接 ESP32-ECG 后可接收 125Hz 9 列帧，并可发送 REC_START / REC_STOP / REC_STATUS 录制命令。</small>
+          </div>
+          <div class="source-panel__actions">
+            <button class="btn btn--ghost" id="btnBleRecStart" type="button" disabled>REC_START</button>
+            <button class="btn btn--ghost" id="btnBleRecStop" type="button" disabled>REC_STOP</button>
+            <button class="btn btn--ghost" id="btnBleRecStatus" type="button" disabled>REC_STATUS</button>
+            <button class="btn btn--primary" id="btnBleConnect" type="button">连接设备</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="live-grid">
+        <div class="chart-card glass">
+          <div class="chart-card__head">
+            <div class="chart-card__title">
+              <span class="status-dot status-dot--live" id="liveStatusDot"></span>
+              <b id="liveSourceName">演示信号</b>
+              <span class="muted" id="liveSampleRate">100 Hz · 缓冲 0s</span>
+            </div>
+            <div class="chart-card__meta">
+              <span class="muted">Lead II</span>
+              <span class="legend legend--clean">Clean</span>
+              <span class="legend legend--noisy">Noisy</span>
+              <span class="legend legend--filtered">Filtered</span>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="liveCanvas" aria-label="实时心电图波形"></canvas>
+            <div class="alarm-overlay" id="alarmOverlay" hidden>
+              <span>⚠ AI 异常报警 · 锁存 5s</span>
+            </div>
+            <div class="chart-hint" id="chartHint">点击下方「演示信号」即可看到合成心电波形</div>
+          </div>
+        </div>
+
+        <aside class="vitals">
+          <div class="vital glass vital--bpm">
+            <div class="vital__head"><span>心率</span><span class="muted" id="vitalHrState">学习/检测</span></div>
+            <div class="vital__main">
+              <span class="heart" id="heartIcon">♥</span>
+              <span class="vital__bpm" id="vitalBpm">--</span>
+              <span class="vital__unit">BPM</span>
+            </div>
+            <div class="vital__foot"><span>真实心率（模拟器）</span><b id="vitalTrueBpm">--</b></div>
+          </div>
+
+          <div class="vital glass vital--ai" id="vitalAi">
+            <div class="vital__head"><span>AI 异常检测</span><span class="badge badge--ok" id="vitalAiBadge">正常</span></div>
+            <div class="vital__main vital__main--ai">
+              <span class="vital__conf" id="vitalAiConf">--</span>
+              <span class="vital__unit">conf</span>
+            </div>
+            <div class="conf-bar"><i id="vitalAiBar" style="width:0%"></i></div>
+            <div class="vital__foot"><span>exp6-SGD · INT8 · 1Hz 推理</span></div>
+          </div>
+
+          <div class="vital glass vital--sqi">
+            <div class="vital__head"><span>信号质量 SQI</span><b id="vitalSqi">--</b></div>
+            <div class="bar"><i id="vitalSqiBar" style="width:0%"></i></div>
+            <div class="vital__foot"><span>0.0 ~ 1.0 · 越高越可靠</span></div>
+          </div>
+
+          <div class="vital glass vital--motion" id="vitalMotion">
+            <div class="vital__head"><span>运动干扰</span><span class="badge badge--muted" id="vitalMotionBadge">无运动</span></div>
+            <div class="vital__foot"><span>检测到运动时心率冻结</span></div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="bottom-grid">
+        <div class="event-log glass">
+          <div class="event-log__head">
+            <b>事件日志</b>
+            <button class="link-btn" id="btnClearLog" type="button">清空</button>
+          </div>
+          <div class="event-log__body" id="eventLog" aria-live="polite">
+            <p class="muted">等待事件…</p>
+          </div>
+        </div>
+        <div class="csv-card glass">
+          <div class="event-log__head">
+            <b>CSV 会话记录</b>
+            <span class="muted" id="csvStats">0 行</span>
+          </div>
+          <p class="muted small-p">把当前数据源解析出的 9 列 CSV 保存到浏览器内存，随时导出为 .csv 供 Python 工具离线分析。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         VIEW 3 · 录制管理（WiFi AP REST）
+    ============================================================ -->
+    <section class="view" id="view-records" data-view="records">
+      <div class="view-head">
+        <div>
+          <h1>录制管理</h1>
+          <p>连接 ESP32 的 WiFi 热点（ESP32-ECG-XXXX / 密码 12345678），浏览、下载、删除在板 .ecgr 录制。</p>
+        </div>
+      </div>
+
+      <div class="connect-card glass">
+        <div class="connect-card__row">
+          <label class="field">
+            <span>设备地址</span>
+            <div class="field__group">
+              <input id="apiBase" class="input" type="text" value="http://192.168.4.1" spellcheck="false" />
+              <button class="btn btn--primary" id="btnFetchRecords" type="button">获取录制列表</button>
+            </div>
+          </label>
+          <div class="connect-card__hint">
+            <b>连接步骤</b>
+            <ol>
+              <li>电脑连接热点 <code>ESP32-ECG-XXXX</code>，密码 <code>12345678</code>；</li>
+              <li>设备地址保持 <code>http://192.168.4.1</code>；</li>
+              <li>点击「获取录制列表」。下载的 .ecgr 可自动载入「本地回放」页。</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-strip stat-strip--records" id="recordStats" hidden>
+        <div class="stat glass"><div class="stat__value" id="recStatCount">0</div><div class="stat__label">录制数</div></div>
+        <div class="stat glass"><div class="stat__value" id="recStatSize">0</div><div class="stat__label">总大小</div></div>
+        <div class="stat glass"><div class="stat__value" id="recStatAbn">0s</div><div class="stat__label">异常秒数</div></div>
+        <div class="stat glass"><div class="stat__value" id="recStatDur">0s</div><div class="stat__label">总时长</div></div>
+      </div>
+
+      <div class="cors-note" id="corsNote" hidden>
+        <b>请求被浏览器拦截（CORS）</b>
+        <p>
+          当前固件的 WebServer 未返回跨域响应头。若无法连接：请刷新固件到包含
+          <code>Access-Control-Allow-Origin</code> 的版本（本仓库已随前端一并更新），
+          或把本页面部署到与设备同源的服务器上，也可以在浏览器地址栏直接访问
+          <a id="corsDirectLink" href="#" target="_blank" rel="noreferrer">http://192.168.4.1/api/records</a> 查看 JSON。
+        </p>
+      </div>
+
+      <div class="records-table-wrap glass" id="recordsWrap" hidden>
+        <table class="records-table">
+          <thead>
+            <tr>
+              <th>ID / 起始时间</th>
+              <th>时长</th>
+              <th>样本数</th>
+              <th>大小</th>
+              <th>异常秒</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="recordsBody"></tbody>
+        </table>
+        <p class="records-empty muted" id="recordsEmpty">设备上暂无录制记录。</p>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         VIEW 4 · 本地回放
+    ============================================================ -->
+    <section class="view" id="view-playback" data-view="playback">
+      <div class="view-head">
+        <div>
+          <h1>本地回放</h1>
+          <p>解析 .ecgr（32 字节头 + int16 样本 + 可选异常位图），在浏览器内逐段浏览、缩放、回放整段录制。</p>
+        </div>
+        <div class="view-head__actions">
+          <label class="btn btn--primary file-btn">
+            打开 .ecgr 文件
+            <input id="fileInput" type="file" accept=".ecgr,application/octet-stream" hidden />
+          </label>
+        </div>
+      </div>
+
+      <div class="dropzone glass" id="dropzone">
+        <div class="dropzone__icon">⬇</div>
+        <h3>拖入 .ecgr 文件</h3>
+        <p class="muted">或点击上方「打开 .ecgr 文件」。录制来自 ESP32 SPIFFS，可通过 WiFi API 下载。</p>
+      </div>
+
+      <div id="playerWrap" hidden>
+        <div class="player-info">
+          <div class="info-card glass"><span>时长</span><b id="pbDur">--</b></div>
+          <div class="info-card glass"><span>采样率</span><b id="pbRate">--</b></div>
+          <div class="info-card glass"><span>样本数</span><b id="pbSamples">--</b></div>
+          <div class="info-card glass"><span>异常秒</span><b id="pbAbn">--</b></div>
+          <div class="info-card glass"><span>起始时间</span><b id="pbStart">--</b></div>
+          <div class="info-card glass"><span>文件</span><b id="pbFile">--</b></div>
+        </div>
+
+        <div class="player-card glass">
+          <div class="chart-card__head">
+            <div class="chart-card__title">
+              <span class="status-dot status-dot--live"></span>
+              <b id="pbTitle">ECG 录制回放</b>
+              <span class="muted" id="pbWindow">窗口 5s</span>
+            </div>
+            <div class="chart-card__meta">
+              <button class="link-btn" id="btnExportWindowCsv" type="button">导出当前窗口 CSV</button>
+            </div>
+          </div>
+          <div class="overview-chart-wrap">
+            <canvas id="pbOverview" aria-label="整段录制概览"></canvas>
+            <div class="playhead" id="pbPlayhead"></div>
+          </div>
+          <div class="chart-wrap chart-wrap--playback">
+            <canvas id="pbCanvas" aria-label="录制波形窗口"></canvas>
+            <div class="playback-marker" id="pbMarker"></div>
+          </div>
+          <div class="player-controls">
+            <button class="icon-btn" id="btnPbSkipBack" type="button" title="回退 5 秒">⏮</button>
+            <button class="icon-btn icon-btn--primary" id="btnPbPlay" type="button" title="播放/暂停">▶</button>
+            <button class="icon-btn" id="btnPbSkipFwd" type="button" title="前进 5 秒">⏭</button>
+            <span class="time-readout"><b id="pbTime">0.0</b> / <span id="pbTotal">0.0</span> s</span>
+            <label class="ctrl ctrl--speed"><span>速度</span>
+              <select id="pbSpeed">
+                <option value="0.25">0.25×</option>
+                <option value="0.5">0.5×</option>
+                <option value="1" selected>1×</option>
+                <option value="2">2×</option>
+                <option value="4">4×</option>
+              </select>
+            </label>
+            <label class="ctrl ctrl--speed"><span>窗口</span>
+              <select id="pbWindowSel">
+                <option value="3">3s</option>
+                <option value="5" selected>5s</option>
+                <option value="10">10s</option>
+                <option value="20">20s</option>
+                <option value="30">30s</option>
+              </select>
+            </label>
+          </div>
+          <p class="hint-line muted">滚轮缩放窗口 · 点击 / 拖拽概览或波形跳转 · 空格播放/暂停 · ←→ 微调</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <span>ESP32-ECG Web Console · 前端页面 v1.0</span>
+      <span>固件 exp6-SGD / exp7c 微调链 · 仅用于科研与教学演示，不构成医疗建议</span>
+    </div>
+  </footer>
+
+  <div class="toast-root" id="toastRoot" aria-live="polite"></div>
+
+  <script src="js/ecg-core.js"></script>
+  <script src="js/live.js"></script>
+  <script src="js/records.js"></script>
+  <script src="js/playback.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

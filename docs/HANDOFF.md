@@ -307,3 +307,99 @@ C. esp_timer 500Hz 下主循环偶发跟不上（BLE notify/串口阻塞时，es
 
 
 **仍待执行**：`pio run` + `flutter analyze && flutter test`（本会话执行通道不可用）；随后用户烧录/重编复测 BLE 阶梯与录制/DELETE 计数。
+
+
+---
+
+## 八、BLE 真机验收通过后的下一优先级（2026-08-14）
+
+用户已确认 BLE 阶梯感修复真机正常。下一步按优先级：
+
+1. **esp_timer 运行时验证**：SIM 模式已通过（60s 捕获 6164 行，`[SAMPLE]` 0 行，约 503Hz）；下一步用 `pc_tools/serial/serial_monitor_afe.py` 在真实 AFE 模式复测，并录一段下载验证采样率回 250Hz。
+2. **P1-1 心率 T 波双计数**：软件侧用 LUDB 复现 v5 的 24 条双计数记录并扫描形态学宽度/RR 约束，产出 v6 参数；执行通道恢复后即可跑 WSL Python。
+3. **P1-2 报警决策层集成**：把 VF/AF/停搏/过缓过速合并进 `abnormal_flag` 与 BLE/App 报警链。
+4. **git 提交**：工作区累积改动待用户确认范围后一次性提交。
+
+
+---
+
+## 九、下一阶段完整提示词（复制给新 agent 作为第一条消息）
+
+```
+# ESP32-ECG 项目接手提示词（BLE 已验收 + esp_timer SIM 已验证）
+
+## 项目根目录
+C:\Users\cai\OneDrive\Desktop\Fe programme 25261\ecg-programme-tju-flex.electron-master
+
+## 权威文档（先读，勿信其他旧文档）
+- AGENTS.md —— 项目铁律：§2 只编译不烧录；§4 只提交用户要求文件；§5 诚实纠正；§7 自主决策+TUNING_HISTORY 留痕；§8 数字审计；§9 用户 BLE 验证期禁串口
+- TUNING_HISTORY.md —— 最新到第六十章（含第五十九/六十章本轮修复与 esp_timer SIM 验证）
+- docs/HANDOFF.md —— 本文档，第八/九部分为当前状态
+- docs/FINAL_RESULTS.md —— 论文权威数字；已新增"表9附 LUDB v5"
+- docs/manuscript_sections_1_4.md —— 论文手稿；§5.4 表 T12 已是能量包络 v5 新数字
+- docs/paper_submission_status.md —— 投稿单一事实来源
+- PROJECT_SUMMARY.md —— 已更新 BLE/esp_timer/LUDB v5 状态
+
+## 当前状态（已完成，勿重做）
+- BLE 波形阶梯感已修复并【用户真机验收通过】：固件 notify 默认 125Hz（DIAG NOTIFY 2 仅 PC/串口诊断）+ App 时间轴 125Hz + BLE 重连订阅泄漏清理（ble_service/ecg_provider）。
+- esp_timer 500Hz 已在【SIM 模式】串口验证通过：60s 捕获 6164 行，[SAMPLE] tick backlog 0 行，主循环约 503Hz；待【真实 AFE 模式】复测。
+- 防御性修复已完成（TH §59）：短命令越界读、sendBLEMessage 空指针、录制路径冲突、STOP 落盘失败幽灵索引、WiFi DELETE 计数漂移、BLE 半连接清理、扫描异常/重试、录制调度误重置等。
+- LUDB v5 数字已同步进 FINAL_RESULTS/PROJECT_SUMMARY：Se 96.94% / PPV 71.03% / F1 0.820 / BPM MAE 10.17（中位 3.15）；旧 v4.2 行保留为历史。
+- 新增脚本：pc_tools/serial/analyze_esp_timer.py、pc_tools/serial/serial_monitor_afe.py。
+- 所有改动均未提交 git（工作区 dirty 是预期状态）。
+
+## 待办（按优先级，自主执行不询问；硬件步骤需与用户协调空档）
+1.【硬件验证】真实 AFE 模式 esp_timer 复测：
+   - 用户静息贴电极后运行：
+     C:\Users\cai\.platformio\penv\Scripts\python.exe pc_tools\serial\serial_monitor_afe.py COM4 60 esp_timer_check_afe.txt
+   - 判据：输出切到"真实AFE"；[SAMPLE] 0 行；心率≈实测；SQI 合理。
+   - 然后录制 60s（REC_START → 60s → REC_STOP → REC_LIST → WiFi 下载），验证 totalSamples/durationSec≈250（不是旧的 225.7）。
+
+2.【最高·软件侧 P1-1】心率 T 波双计数 v6 参数扫描：
+   - 基础脚本：pc_tools/ecg_dl/verify_heartrate_ludb_v5.py（当前 v5 复刻）。
+   - 目标：保持 Se≥95%，把 PPV 从 71.03% 提升、BPM MAE 从 10.17 降到接近 v4.2 的 3.2 水平。
+   - 方法：先列出 24 条双计数记录的 FP 峰值位置，区分 T 波/宽 QRS 双计数；在能量包络域重新校准形态学宽度门限（当前 MIN_CONF_FEAT=1000 是粗暴禁用，不能直接恢复旧 40-80 标定）；扫描 MIN_QRS_WIDTH/MAX_QRS_WIDTH、峰宽约束、RR 约束、峰值幅度一致性组合。
+   - 产出：ludb_hr_v6_eval.json + ludb_hr_v6_detail.csv + 参数表；确认 Se/PPV/BPM 三者权衡后，再改 src/heartrate/heartrate.cpp，pio run 编译检查，不烧录。
+   - 数字审计：不要出现 1.000/0/100% 完美值；混淆矩阵 TP/FP/FN 与 1831 金标准自洽。
+
+3.【固件侧 P1-2】报警决策层集成：
+   - 把五路检测结果（AI、VF/VT、AF、停搏、过缓/过速）合并进 abnormal_flag 与 BLE/App 报警链；当前 VF/AF/safety 只打串口。
+   - 建议：规则报警触发时也走 s_alarmHold 5 秒锁存，confidence 用各模块 score 或固定 0.99；在 main.cpp BLE 发送前统一计算，避免 BLE/串口两套口径。
+   - 改完 pio run 编译检查；行为验证留到用户真机阶段。
+
+4.【论文/文档】：
+   - manuscript §5.4 T12 与 FINAL_RESULTS"表9附"保持逐字一致；
+   - esp_timer AFE 验证通过后，把 exp7c 的帧率失配段落从"待验证"改为"已修复+实测数据"；
+   - paper_submission_status.md 同步 H19 数值一致性检查结论。
+
+5.【git】：
+   - 所有任务完成后，先列 git status 变更清单向用户汇报；只提交用户明确要求的文件；大文件不提交。
+
+## 环境与命令
+- 固件编译：& 'C:\Users\cai\.platformio\penv\Scripts\pio.exe' run（只编译，不烧录；看输出 SUCCESS）
+- App：D:\flutter\bin\flutter.bat analyze / test / build apk --debug
+- 训练/评估：wsl -e bash -lc "cd /mnt/c/Users/cai/OneDrive/Desktop/'Fe programme 25261'/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl && python3 <脚本>"（注意 WSL 路径中空格需转义或写脚本）
+- 串口：C:\Users\cai\.platformio\penv\Scripts\python.exe pc_tools\serial\*.py（COM4，460800；串口关闭会复位设备，AFE 切换必须在同一会话内发 m,m）
+- 烧录/App 安装/真机操作由用户执行或按用户指令执行；用户手机 BLE 验证期间禁止串口脚本（AGENTS §9）。
+
+## 关键根因备忘（避免重踩）
+- 主循环无硬件定时器时代实际 ~336Hz；esp_timer 修复后 SIM 已验证 500Hz，AFE 待验。
+- 心率最严重历史 bug：MIN_RR 单位 ms vs 秒混用；已改为 MIN_RR_SEC=0.480 / millis() 计时，勿回退。
+- 导数平方会放大尖锐伪影 8×；当前用能量包络 x²+8-25Hz，勿切回导数平方。
+- 形态学宽度验证旧标定（40-80 采样）会误杀窄 R；当前 MIN_CONF_FEAT=1000 禁用，恢复前必须在 LUDB v6 扫描中重新标定。
+- BLE 250Hz notify 在连接间隔退化到 30ms 时必丢帧；当前默认 125Hz，App 时间轴已同步，勿单端改动。
+- 串口脚本每次打开/关闭可能复位设备；OneDrive 文件编辑偶发 EIO(1175)，失败重试。
+
+## 完成后
+向用户汇报：①AFE esp_timer 验证数字；②LUDB v6 扫描结果（Se/PPV/BPM MAE 前后对比）；③报警集成改动与编译结果；④git status 变更清单（不擅自提交）。
+```
+
+---
+
+## 十、v6 / P1-2 完成记录（2026-08-16）
+
+- **LUDB v6 已完成并回填固件**：`verify_heartrate_ludb_v6.py`（完整状态机复刻 + 16 核并行全量扫描）产出 `models/ludb_hr_v6_{eval.json,detail.csv,param_table.csv,scan.json}`。选定 `blank260_rf_c3_40_prev055_rr065`：Se 96.40% / PPV 78.87% / F1 0.868 / BPM MAE 4.16（中位 1.46 / P90 9.12 / ±3BPM 69.0% / ±5BPM 81.0%）；v5 基线（96.94% / 71.03% / 0.820 / 10.17）在扫描中逐记录复现。`src/heartrate/heartrate.cpp` 已落地（起始消隐 260 样本 + rf≤40 + 前拍幅度 ≥0.55 + RR≥0.65×中位，自第 3 拍起），pio run SUCCESS。
+- **P1-2 报警统一收尾**：`updateUnifiedAlarm` 每帧合并 AI/VF/AF/停搏/过缓过速/flatline；串口块不再二次消费 AI 结果、只读锁存并 100Hz 递减，锁存到期 conf 清零，BLE 帧 conf 与串口同口径；pio run SUCCESS（Flash 17.2% / RAM 44.9%）。
+- **待办**：①真实 AFE 模式 esp_timer 复测（SIM 已过）与 60s 录制采样率验证（≈250Hz）仍需用户空档；②git 提交待用户确认范围。
+- **备忘更新**：旧形态学块保持 `MIN_CONF_FEAT=1000` 禁用不变；v6 新门用独立 `MIN_CONF_FEAT_RF=3`，二者勿混用。
+- **AFE 三轮验收通过并归档（2026-08-16）**：主循环 **496.17Hz**（稳态 drop 1-2 拍）、abnormal 全程 0（VF 12 行被互锁拦截）、60s 录制 **15684 样本/64s = 245.06Hz**（NEWREC 正常出现）；心率读数与录音形态一致，用户确认验证通过归档（后续若同步数脉搏仍差再开真机域 v7）。已修并烧录验证：AFE_OVERSAMPLE 4→1、VF v2 + 无组织心律互锁、录制保留策略保护新记录、REC_LIST 512B→2KB。

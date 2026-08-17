@@ -19,31 +19,34 @@
 extern "C" {
 #endif
 
-/* ===== 参数 (PC 校准, eval_vf_detect.py model_params) ===== */
+/* ===== 参数 (PC 校准 v2, eval_vf_detect_v2.py 2026-08-16) =====
+ * v1 系数在 mV 域标定但固件喂 V 域 (AFE 正常窦律 11 次 VF 误报, 实测);
+ * v2: ①输入由 main.cpp 显式换算 mV (AFE/SIM ×0.763, REPLAY ×0.001)
+ *      ②特征逐位复刻 PC (4 节全精度 SOS forward-backward + ZCR 主频, 弃旧 2 节近似) */
 #define VF_WIN_SAMPLES   1250      /* 5s @250Hz */
 #define VF_FEATURES      6
 /* 标准化 (训练域) */
-#define VF_MEAN_0  0.4251f
-#define VF_MEAN_1  0.2436f
-#define VF_MEAN_2  0.2601f
-#define VF_MEAN_3  0.0409f
-#define VF_MEAN_4  43.31f
-#define VF_MEAN_5  3.2761f
-#define VF_STD_0   0.4191f
-#define VF_STD_1   0.3631f
-#define VF_STD_2   0.1320f
-#define VF_STD_3   0.0045f
-#define VF_STD_4   9.8119f
-#define VF_STD_5   1.0245f
+#define VF_MEAN_0  0.42513171332031363f
+#define VF_MEAN_1  0.24363859527220647f
+#define VF_MEAN_2  0.25254772741265197f
+#define VF_MEAN_3  0.04137449856733724f
+#define VF_MEAN_4  43.309992836676216f
+#define VF_MEAN_5  4.105229226361016f
+#define VF_STD_0   0.4191231586420349f
+#define VF_STD_1   0.3631392072566181f
+#define VF_STD_2   0.12891100945922151f
+#define VF_STD_3   0.004458203265709307f
+#define VF_STD_4   9.81194160995198f
+#define VF_STD_5   1.7036455584085064f
 /* 逻辑回归系数 */
-#define VF_COEF_0  1.2346f
-#define VF_COEF_1  3.0073f
-#define VF_COEF_2 -0.5847f
-#define VF_COEF_3  1.5251f
-#define VF_COEF_4 -0.8605f
-#define VF_COEF_5  1.1886f
-#define VF_INTERCEPT -0.0307f
-#define VF_THETA  0.12f      /* 决策阈值 (PC 校准 θ=0.12) */
+#define VF_COEF_0  0.6866138077335683f
+#define VF_COEF_1  4.134092762658282f
+#define VF_COEF_2  -0.8109653996849735f
+#define VF_COEF_3  1.2396861763592981f
+#define VF_COEF_4  -1.2619362566532957f
+#define VF_COEF_5  1.3262778596404012f
+#define VF_INTERCEPT 0.24291412543887136f
+#define VF_THETA  0.15f      /* 决策阈值 (PC 校准 θ=0.15) */
 #define VF_CONFIRM_WINDOWS 2 /* 连续 2 窗确认 */
 
 typedef struct {

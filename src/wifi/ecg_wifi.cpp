@@ -6,6 +6,7 @@
  * 供 Flutter App 查询/下载/删除 ECG 录制记录。
  *
  * == 路由表 ==
+ *   OPTIONS *                            → 204 CORS 预检 (Web 前端跨域)
  *   GET    /api/records            → 记录列表 JSON
  *   GET    /api/records/{id}/meta  → 单条记录元数据 JSON
  *   GET    /api/records/{id}/data  → 原始 .ecgr 二进制流 (支持 Range)
@@ -458,9 +459,17 @@ static void handleRecordsDelete(void)
 
 /**
  * @brief 404 处理器: 所有未匹配路由
+ *
+ * OPTIONS 预检请求由浏览器在跨域 DELETE 前发出; 直接回 204 + CORS 头
+ * (enableCORS 会自动附上 Allow-Origin/Methods/Headers), 否则预检失败。
  */
 static void handleNotFound(void)
 {
+    if (g_server->method() == HTTP_OPTIONS) {
+        g_server->sendHeader("Access-Control-Max-Age", "600");
+        g_server->send(204);
+        return;
+    }
     g_server->send(404, "application/json", "{\"error\":\"not found\"}");
 }
 
@@ -473,6 +482,12 @@ bool ecgWifiInit(void)
     Serial.println("[WiFi] init: creating WebServer + registering routes...");
 
     g_server = new WebServer(ECG_WIFI_PORT);
+
+    /* 2026-08 web 前端配套: 允许浏览器跨域访问 REST API
+     * (Web 页面从 http://localhost 或 file:// 打开时, fetch 192.168.4.1
+     *  属于 cross-origin; arduino-esp32 WebServer 内置 enableCORS 会在
+     *  所有响应头附上 Allow-Origin/Methods/Headers = *) */
+    g_server->enableCORS(true);
 
     // 注册路由 (顺序重要: 更具体的模式先注册, 因为 WebServer
     // 按 handler 链表顺序匹配, 首个命中即返回)

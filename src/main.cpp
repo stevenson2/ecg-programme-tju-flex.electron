@@ -73,7 +73,13 @@
 #define AFE_ADC_PIN         GPIO_NUM_4   /* AFE 输出接在哪个 GPIO */
 #define AFE_DC_BIAS         1.65f        /* PCB 输出的直流偏置 (V) */
 #define AFE_VREF            3.3f         /* ESP32 ADC 参考电压 */
-#define AFE_OVERSAMPLE      4            /* 过采样次数 (500Hz下降为4x以节省时间) */
+#define AFE_OVERSAMPLE      1            /* 过采样次数。2026-08-16 AFE 实测: OVS=4 时
+ * 主循环仅 462.5Hz (丢拍 2589/60s); OVS=1 → 499.75Hz (零星 1-2 拍) 且 SQI
+ * 0.974-0.987 无劣化 → 默认 1。仍可用 DIAG OVS 运行时切换诊断。 */
+/* VF 输入尺度: ADC V → 电极 mV (2026-08-16 校准, 见 vfProcess 调用处注释) */
+#define VF_SCALE_AFE_TO_MV 0.763f
+/* VF/VT 报警互锁: 距最近有效心拍超过该时长才放行 (正常窦律压误报) */
+#define VF_HR_GATE_MS     2500UL
 
 /* ======================== AFE 导联脱落检测引脚 ======================== */
 /* AD8232 LOD+/LOD- 为推挽输出 (VOH≈2.9V/VOL≈0.05V, 无需上拉):
@@ -119,6 +125,13 @@ static uint32_t s_sampleTickDrops = 0;         /* loop 跟不上 500Hz 时被丢
 #define ALARM_HOLD_OUTS  500
 static int32_t s_alarmHold = 0;
 static float  s_alarmHoldConf = 0.0f;
+
+/* P1-2 五路报警统一决策 (2026-08-14):
+ * AI / VF-VT / AF / 停搏 / 过缓-过速 与 flatline 合并进同一 s_alarmHold 锁存,
+ * BLE 与串口使用同一 abnormal_flag/confidence 口径, 不再各自计算。
+ * 规则报警 (VF/AF/停搏/过缓/过速/flatline) 固定 confidence=0.99;
+ * AI 报警保留模型原始 confidence。锁存单位仍为 100Hz 串口输出周期
+ * (ALARM_HOLD_OUTS=500 -> 5s), 由串口输出块统一递减。 */
 
 /* 最近一次 AI 原始置信度 (诊断用, 2026-08-13): 独立于 LOD/flatline 强制报警,
  * 用于判断 AI 模型在真实 ECG 上的真实输出 (是否误报/漏报)。 */
@@ -337,6 +350,7 @@ static bool parseRecorderCommand(const char* cmd, char* reply, size_t replyLen,
      *   DIAG SEQ <0|1>    → AP 启动序列 (1=PR#1865 式慢速 OFF→AP 切换 + setSleep(false))
      *   DIAG NOTIFY <2|4> → BLE 通知分频 (4=125Hz 默认, 2=250Hz 原行为)
      *   DIAG AI <0|1>     → AI 推理开关
+     *   DIAG OVS <1|2|4|8> → AFE ADC 过采样 (2026-08-16 帧率诊断用)
      * 证据: WiFiManager PR#1865 (2.0.17 世代 S3 实测) / ESP-IDF#13508 / ESPHome#6456 */
     if (strStartsWithIgnoreCase(cmd, "DIAG")) {
         const char* arg = cmd + 4;
@@ -345,10 +359,11 @@ static bool parseRecorderCommand(const char* cmd, char* reply, size_t replyLen,
         if (strEqualsIgnoreCase(arg, "") || strEqualsIgnoreCase(arg, "STATUS")) {
             char ip[24];
             ecgWifiDiagStaIp(ip, sizeof(ip));
-            snprintf(reply, replyLen, "DIAG txp=%d ch=%d seq=%d notify=%d ai=%d mode=%d sta=%d ip=%s",
+            snprintf(reply, replyLen, "DIAG txp=%d ch=%d seq=%d notify=%d ai=%d ovs=%d mode=%d sta=%d ip=%s",
                      ecgWifiDiagGetTxPower(), ecgWifiDiagGetChannel(),
                      ecgWifiDiagGetSeqSlow() ? 1 : 0, s_bleNotifyDivider,
                      ai_inference_is_enabled() ? 1 : 0,
+                     (int)afeHalGetOversample(),
                      ecgWifiDiagGetMode(), ecgWifiDiagStaStatus(), ip);
             return true;
         }
@@ -415,6 +430,17 @@ static bool parseRecorderCommand(const char* cmd, char* reply, size_t replyLen,
             }
             return true;
         }
+        /* DIAG OVS <1|2|4|8> — AFE ADC 过采样运行时切换 (2026-08-16,
+         * 帧率诊断: 过采样 4→1 可测 analogRead 开销; 不影响已滤波输出语义) */
+        if (strStartsWithIgnoreCase(arg, "OVS") && sscanf(arg + 3, "%d", &v) == 1) {
+            if (v == 1 || v == 2 || v == 4 || v == 8) {
+                afeHalSetOversample((uint8_t)v);
+                snprintf(reply, replyLen, "DIAG OVS %d ok", v);
+            } else {
+                snprintf(reply, replyLen, "DIAG OVS fail (1|2|4|8)");
+            }
+            return true;
+        }
         /* DIAG LPF <4|40> — 显示链低通截止频率切换 (2026-08-14,
          * 用户按 ADI 视频要求试验 4Hz 镜面平滑; 40Hz 恢复形态保真) */
         if (strStartsWithIgnoreCase(arg, "LPF") && sscanf(arg + 3, "%d", &v) == 1) {
@@ -426,7 +452,7 @@ static bool parseRecorderCommand(const char* cmd, char* reply, size_t replyLen,
             }
             return true;
         }
-        snprintf(reply, replyLen, "DIAG fail (TXP|CH|SEQ|NOTIFY|AI|LPF)");
+        snprintf(reply, replyLen, "DIAG fail (TXP|CH|SEQ|NOTIFY|AI|OVS|LPF)");
         return true;
     }
     return false;
@@ -673,6 +699,77 @@ static void toggleInputMode(void)
     Serial.println("---");
 }
 
+/* ======================== 统一报警决策 (P1-2) ======================== */
+/**
+ * @brief 每帧合并 AI / VF / AF / 停搏 / 过缓-过速 / flatline 报警
+ *
+ * 在 BLE 发送与串口输出之前调用一次, 所有输出路径都读同一个 s_alarmHold /
+ * s_alarmHoldConf, 避免 BLE/串口两套口径。
+ *   - AI: 弹出推理结果并更新诊断变量, 异常时用模型原始 confidence;
+ *   - VF: 与"无组织心律"互锁 (距最近有效心拍 >2.5s 才放行, 2026-08-16 AFE
+ *     实测正常窦律 VF v2 仍 12 次/60s 误报; 真 VF/VT 下 QRS 检测无连续有效拍);
+ *   - AF/停搏/过缓/过速/flatline: 规则命中固定 confidence=0.99;
+ *   - 触发即刷新 5 秒锁存 (s_alarmHold=ALARM_HOLD_OUTS, 串口输出块统一递减)。
+ */
+static void updateUnifiedAlarm(const HR_Result &hr, const RS_Result &rs,
+                               const AF_Result &af, const VF_Result &vf)
+{
+    uint8_t ruleAbn = 0;
+    uint8_t aiAbn = 0;
+    float   aiConf = 0.0f;
+
+    /* AI: 每次最多消费一个结果, 与 100Hz 串口块原语义一致; 诊断变量始终更新 */
+    ai_result_t aiResult;
+    if (ai_inference_pop_result(&aiResult)) {
+        s_lastAiConf = aiResult.confidence;
+        s_lastAiAbn  = aiResult.is_abnormal;
+        if (aiResult.is_abnormal) {
+            aiAbn = 1;
+            aiConf = aiResult.confidence;
+        }
+    }
+
+    if (aiAbn) {
+        s_alarmHold = ALARM_HOLD_OUTS;
+        if (aiConf > s_alarmHoldConf) {
+            s_alarmHoldConf = aiConf;
+        }
+    }
+
+    /* VF/VT 互锁: 无组织心律 = 距最近有效 QRS > VF_HR_GATE_MS。
+     * 正常窦律时 hrGetLastBeatMillis() 持续刷新 → 门关闭, 压掉 VF 误报;
+     * 真 VF/VT (或 >125BPM 的规律心动过速超出 HR 检出上限) 时无有效拍 → 门开启。 */
+    bool vfPlausible = vf.vfAlarm
+                       && (millis() - hrGetLastBeatMillis()) > VF_HR_GATE_MS;
+    if (vfPlausible) {
+        ruleAbn = 1;
+    }
+    if (af.windowReady && af.label == 1) {
+        ruleAbn = 1;
+    }
+    if (rs.asystole || rs.bradycardia || rs.tachycardia) {
+        ruleAbn = 1;
+    }
+    if (s_flatline) {
+        ruleAbn = 1;
+    }
+
+    if (ruleAbn) {
+        if (s_alarmHold <= 0) {
+            Serial.printf("[ALARM] unified rule alarm (VF=%u AF=%u ASY=%u BRADY=%u "
+                          "TACHY=%u flatline=%u) conf=0.99\n",
+                          (unsigned)vfPlausible,
+                          (unsigned)(af.windowReady && af.label == 1),
+                          (unsigned)rs.asystole,
+                          (unsigned)rs.bradycardia,
+                          (unsigned)rs.tachycardia,
+                          (unsigned)s_flatline);
+        }
+        s_alarmHold = ALARM_HOLD_OUTS;
+        s_alarmHoldConf = 0.99f;
+    }
+}
+
 void loop()
 {
     esp_task_wdt_reset();   /* 喂狗: 主循环卡死 >10s 触发 panic 回溯 (诊断) */
@@ -779,10 +876,22 @@ void loop()
         /* T4-9 模块2: VF/VT 检测 — 特征链按 250Hz 标定 (5s 窗 1250 点)
          * 2026-08-14 修复: 原每帧 (~500Hz) 喂入致采样率错配 (5s 窗实为 ~2.8s,
          * 带通 8-20Hz 标定漂移, PROJECT_SUMMARY 已识别问题); 与 AI 链一致
-         * 2:1 抽取后喂入 (250Hz 设计速率)。 */
+         * 2:1 抽取后喂入 (250Hz 设计速率)。
+         * 2026-08-16 v2 修复: 逻辑回归在 mV 域标定, 原 V 域直喂致 AFE 正常窦律
+         * 11 次 VF 误报 (esp_timer_check_afe.txt) → 输入显式换算 mV:
+         *   AFE/SIM: ×0.763 (V→电极 mV; 校准依据: LUDB 链输出每 1s pp 中位
+         *     0.577V vs AFE filtered 0.758V → AFE 增益≈1310)
+         *   REPLAY:  ×0.001 (回放本就是 mV×1000 域, ±2V clip) */
+        static VF_Result s_latestVf = {false, false, 0.0f, 0.0f, 0};
         if ((frameCount % 2) == 0) {
-            VF_Result vf = vfProcess(filteredSample);
-            if (vf.vfAlarm) {
+            float vfInput = filteredSample;
+            if (s_inputMode == SOURCE_REPLAY) {
+                vfInput *= 0.001f;
+            } else {
+                vfInput *= VF_SCALE_AFE_TO_MV;
+            }
+            s_latestVf = vfProcess(vfInput);
+            if (s_latestVf.vfAlarm) {
                 Serial.println("[VF] VF/VT ALARM (2-window confirmed)");
             }
         }
@@ -792,6 +901,9 @@ void loop()
          * (HP 0.05 + LP 40, 与训练侧 exp7 复刻链一致), 显示链 filtered 用 HP 0.5
          * (基线稳定)。改显示链 HP 不再影响 AI 输入, 避免 train/deploy 失配。 */
         ai_inference_push(applyFilterAI(noisyNoDC));
+
+        /* P1-2: BLE/串口输出前统一合并 AI/VF/AF/停搏/过缓过速/flatline 报警 */
+        updateUnifiedAlarm(hr, rs, af, s_latestVf);
 
         /* ---- 停搏/无信号检测: 当前秒内 filtered 极值跟踪 ---- */
         if (filteredSample < s_secMin) s_secMin = filteredSample;
@@ -816,8 +928,10 @@ void loop()
             while (bleCommandQueueTake(bleCmd, sizeof(bleCmd))) {
                 if (parseRecorderCommand(bleCmd, reply, sizeof(reply), false)) {
                     if (strcmp(reply, "REC_LIST") == 0) {
-                        /* REC_LIST: 多行输出, BLE 逐行发送 (ESP32 BLE 栈自动分片) */
-                        char listBuf[512];
+                        /* REC_LIST: 多行输出, BLE 逐行发送 (ESP32 BLE 栈自动分片)。
+                         * 2026-08-16: 512B 在 ~10 条记录时溢出致 ecgRecorderList 返回 -1
+                         * (AFE 录制后 post-list 空、rec_collect diff 不到新记录) → 2KB。 */
+                        char listBuf[2048];
                         int n = ecgRecorderList(listBuf, sizeof(listBuf));
                         if (n > 0) {
                             sendBLEMessage("REC_LIST ok");
@@ -843,7 +957,8 @@ void loop()
         /* ======== 步骤4：通过 BLE 发送 (默认 125Hz, 1帧/Notify; DIAG NOTIFY 可调) ======== */
         /* 每帧格式: clean,noisy,filtered,bpm,true_bpm,sqi,motion,abnormal,confidence;
          * 与串口 9 列一致 (2026-08-10 修复: 原仅 5 列, App 收不到 abnormal 致报警永不触发);
-         * abnormal 取报警锁存值 (AI 新结果由 100Hz 块更新锁存), 锁存 5 秒与串口语义一致
+         * abnormal/confidence 只读统一锁存 (updateUnifiedAlarm 每帧合并 AI/VF/AF/停搏/
+         * 过缓过速/flatline; AI 结果仅由 updateUnifiedAlarm 消费, 锁存 5 秒两路径同口径)
          * 2026-08-10 修复2: 发送率 500Hz→250Hz (每 2 帧发 1 帧)。
          *   根因: 9 列解析修复后 App 每包解析全部帧, 数据率变 500Hz,
          *   而 App 缓冲/时间轴按 250Hz 设计 (timeWindow*250) → 速率错配致波形变形
@@ -859,7 +974,8 @@ void loop()
                                cleanSample, noisyNoDC, displaySample,
                                hr.bpm, (unsigned)trueBPM, hr.sqi,
                                hr.motionActive ? 1u : 0u,
-                               (s_alarmHold > 0) ? 1u : 0u, s_alarmHoldConf);
+                               (s_alarmHold > 0) ? 1u : 0u,
+                               (s_alarmHold > 0) ? s_alarmHoldConf : 0.0f);
             if (len > 0) {
                 sendBLEMessage(s_bleBuf);
             }
@@ -874,35 +990,17 @@ void loop()
         {
             uint8_t trueBPM = (s_inputMode == SOURCE_SIMULATOR)
                               ? ecgSimulatorGetTrueBPM() : 0;
-            /* 检查 AI 推理结果 */
-            uint8_t abnormFlag = 0;
-            float abnormConf = 0.0f;
-            ai_result_t aiResult;
-            if (ai_inference_pop_result(&aiResult)) {
-                abnormFlag = aiResult.is_abnormal;
-                abnormConf = aiResult.confidence;
-                s_lastAiConf = aiResult.confidence;   /* 记录原始置信度 (诊断) */
-                s_lastAiAbn  = aiResult.is_abnormal;
-            }
-
-            /* 报警锁存: 触发后 abnormal 列保持 1 共 5 秒 (防一闪而过, 2026-08-08) */
-            if (abnormFlag) {
-                s_alarmHold = ALARM_HOLD_OUTS;
-                s_alarmHoldConf = abnormConf;
-            }
+            /* 统一报警锁存: updateUnifiedAlarm 每帧已合并 AI/VF/AF/停搏/过缓过速/
+             * flatline 并刷新 s_alarmHold/Conf。本块只读锁存并做 100Hz 递减,
+             * 不再二次 ai_inference_pop_result (2026-08-16 P1-2 收尾: 消除双消费者
+             * 与 AI conf 覆盖规则 conf 0.99 的口径冲突)。 */
+            uint8_t abnormFlag = (s_alarmHold > 0) ? 1u : 0u;
+            float abnormConf = (s_alarmHold > 0) ? s_alarmHoldConf : 0.0f;
             if (s_alarmHold > 0) {
-                abnormFlag = 1;
-                abnormConf = s_alarmHoldConf;
                 s_alarmHold--;
-            }
-
-            /* 停搏/无信号合并: AI 未报但低电压直线持续 3 秒 → 强制报警 (2026-08-10)
-             * 覆盖模型训练分布外的停搏/导联脱落场景 */
-            if (s_flatline) {
-                abnormFlag = 1;
-                abnormConf = 0.99f;
-                s_alarmHold = ALARM_HOLD_OUTS;   /* 维持锁存 (flatline 期间持续报警) */
-                s_alarmHoldConf = 0.99f;
+                if (s_alarmHold == 0) {
+                    s_alarmHoldConf = 0.0f;   /* 锁存到期清零, 避免残留旧 conf */
+                }
             }
 
             /* 导联脱落检测 (AD8232 LOD+/LOD-, 2026-08-13): 已禁用。
@@ -1086,7 +1184,8 @@ void loop()
                     if (parseRecorderCommand(s_serialLine, reply, sizeof(reply), true)) {
                         if (strcmp(reply, "REC_LIST") == 0) {
                             Serial.println("REC_LIST ok");
-                            char listBuf[512];
+                            /* 2026-08-16: 512→2048, 修复 >10 条记录时列表溢出返回 -1 */
+                            char listBuf[2048];
                             int n = ecgRecorderList(listBuf, sizeof(listBuf));
                             if (n > 0) {
                                 Serial.print(listBuf);

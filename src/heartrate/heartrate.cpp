@@ -114,9 +114,21 @@ static float qrs_bpf_hp_w2 = 0.0f;
 #define TIMEOUT_MS      3000UL      /**< 3 秒无 QRS → 复位 (2026-08-14 毫秒化) */
 #define HOLD_MS         1000UL      /**< 1 秒无新拍 → 停止输出旧 BPM */
 #define MIN_CONF_BEATS  5           /**< 至少 5 拍才开始输出 BPM */
-#define MIN_CONF_FEAT   1000        /**< 至少 N 拍才开启特征验证。2026-08-14: 8→1000
- * (禁用形态学验证) — 该验证按旧导数-MWI 标定, 能量包络+8-25Hz 下误杀 R 波
- * (真机/模拟 beats 到 8 即停 → 3s 超时复位循环); 能量包络已实现 100× 分离。 */
+#define MIN_CONF_FEAT   1000        /**< 旧形态学验证开关: 保持 1000 = 禁用 —
+ * 2026-08-14: 该验证按旧导数-MWI 标定 (40-80 宽 / rf 0.5-2.0 / 幅度一致性均值),
+ * 能量包络+8-25Hz 下误杀 R 波; v6 用下方 MIN_CONF_FEAT_RF 的新门替代, 不再恢复旧块 */
+#define MIN_CONF_FEAT_RF 3          /**< v6 新形态学门激活拍数 (2026-08-16 LUDB 扫描:
+ * 能量包络域重新标定, 见 verify_heartrate_ludb_v6.py; 第 3 拍起激活) */
+#define RISE_FALL_MAX_ENERGY 40.0f  /**< v6: 能量包络 rise/fall 比上限 — T 波 rf≈65-70,
+ * 真 QRS rf≈6-33; LUDB 全量: rf>40 的 FP 145 拍, TP 仅 3 拍 (2026-08-16 峰值诊断) */
+#define AMP_FRAC_PREV     0.55f     /**< v6: rr<0.9s 且峰幅 < 0.55×前一有效峰 → 拒
+ * (宽 QRS 双计数次峰/残余 T 波; LUDB 全量 FP -11 且 TP 不减) */
+#define AMP_FRAC_PREV_RR_MAX 0.9f   /**< 前拍幅度分数门仅作用于短 RR (<0.9s) */
+#define RR_RATIO_MIN      0.65f     /**< v6: rr < 0.65×medianRR → 拒 (半 RR 双计数;
+ * rr 缓冲 <3 拍或 median 无效时不启用) */
+#define STARTUP_BLANK_SAMP 260      /**< v6: 起始消隐 260 样本 (520ms) — 滤波/MWI
+ * 初始化瞬态伪峰集中在样本 ~44-97; LUDB 200 记录最早 TP 检出在样本 306,
+ * 消隐不伤真实拍 (2026-08-16 峰值级证据) */
 /* v4.2: MIN_PEAK_RATIO 2.0→1.5 (LUDB 参数扫描: 修复A后 np 不再暴涨, 2.0 过严) */
 /* 2026-08-08: 1.5→1.2 (模拟器小信号下 np 仍被次峰抬升, QRS/噪声比 ~1.26 被误拒) */
 #define MIN_PEAK_RATIO  1.2f        /**< 峰/噪比门限 (静止) */
@@ -212,6 +224,9 @@ static float      s_lastRR;
 
 static int        s_sampSinceBeat;
 static uint32_t   s_beatCount;
+static uint32_t   s_sampSinceInit;   /* v6 起始消隐计数: 自 hrFullReset 起累计,
+                                       * hrReset/hrSoftReset 不清零 (与 Python 复刻
+                                       * self.i 同源, 仅在检测器全量初始化时归零) */
 
 static bool       s_signalPresent;
 static float      s_winMaxAbs;
@@ -588,6 +603,11 @@ static bool isQRSValid(float peakVal, float rrSec)
     if (s_state == HR_REFRACTORY)         return false;
     if (peakVal <= s_threshold)           return false;
 
+    /* v6 (2026-08-16): 起始消隐 — 滤波/MWI 初始化瞬态伪峰 (LUDB 集中在
+     * 样本 ~44-97); LUDB 200 记录最早 TP 检出在样本 306, 260 样本消隐安全。
+     * <= 对齐 Python 复刻 self.i < 260 (固件计数 1-based vs 0-based) */
+    if (s_sampSinceInit <= STARTUP_BLANK_SAMP) return false;
+
     /* 修复E (v4.1): 硬拒绝超范围 RR 间期。
      * 固件 v4.0 只在 addRRInterval() 中丢弃超范围 RR, 但 isQRSValid()
      * 会接受该峰并递增 beatCount, 导致不应期边缘的次级峰污染
@@ -635,6 +655,32 @@ static bool isQRSValid(float peakVal, float rrSec)
             if (dev > rejectThresh) {
                 return false;
             }
+        }
+    }
+
+    /* ======== v6 能量包络域形态学门 (2026-08-16 LUDB 全量重标定) ========
+     * 旧形态学块 (MIN_CONF_FEAT=1000) 保持禁用; 以下三门自第 3 拍起激活,
+     * 与 verify_heartrate_ludb_v6.py 的 blank260_rf_c3_40_prev055_rr065 逐行同源:
+     *   Se 96.94%→96.40% (TP 1775→1765, FN 56→66),
+     *   PPV 71.03%→78.87% (FP 724→473),
+     *   F1 0.820→0.868, BPM MAE 10.17→4.16 (中位 3.15→1.46, P90 36.2→9.1) */
+    if (s_beatCount >= MIN_CONF_FEAT_RF) {
+        /* 门1: rise/fall 比上限 — T 波 rf≈65-70, QRS rf≈6-33 */
+        float rf = getRiseFallRatio();
+        if (rf > RISE_FALL_MAX_ENERGY) return false;
+
+        /* 门2: 短 RR 内前拍幅度分数 — 宽 QRS 双计数次峰/残余 T 波 */
+        if (rrSec < AMP_FRAC_PREV_RR_MAX && s_peakHistCount >= 1) {
+            float prevPeak = s_recentPeaks[(s_peakHistIdx - 1 + PEAK_HIST_LEN)
+                                           % PEAK_HIST_LEN];
+            if (prevPeak >= 0.0001f && peakVal < AMP_FRAC_PREV * prevPeak) {
+                return false;
+            }
+        }
+
+        /* 门3: 半 RR 双计数 — rr 显著短于近期中位 RR */
+        if (s_rrCount >= 3 && s_medianRR >= 0.001f) {
+            if (rrSec < RR_RATIO_MIN * s_medianRR) return false;
         }
     }
 
@@ -723,6 +769,7 @@ void hrInit(void)
 HR_Result hrProcess(float filteredSample)
 {
     HR_Result result = { 0 };
+    s_sampSinceInit++;   /* v6 起始消隐计数 (hrReset/hrSoftReset 不清零) */
 
     checkSignalActivity(filteredSample);
 
@@ -955,6 +1002,7 @@ void hrFullReset(void)
     s_confirmedBPMCount = 0;
 
     s_lastOutputBPM = 0.0f;
+    s_sampSinceInit = 0;   /* v6 起始消隐计数仅在检测器全量初始化时归零 */
 
     qrs_bpf_lp_w1 = 0.0f;
     qrs_bpf_lp_w2 = 0.0f;
@@ -970,4 +1018,9 @@ float hrGetSQI(void)
 bool hrIsMotionActive(void)
 {
     return s_motionActive;
+}
+
+uint32_t hrGetLastBeatMillis(void)
+{
+    return s_lastBeatMillis;
 }
