@@ -1,0 +1,52 @@
+{
+  "config": {
+    "model": "pc_tools/ecg_dl/models/ecg_model_kd_a070_t1_int8.tflite",
+    "lead": 1,
+    "n_max": 0,
+    "aggregate": "mean",
+    "threshold": 0.6,
+    "superclass": "MI",
+    "positive": null,
+    "tag": "kd_mi_mean"
+  },
+  "model": "pc_tools/ecg_dl/models/ecg_model_kd_a070_t1_int8.tflite",
+  "deploy_chain": {
+    "comb_taps": 10,
+    "ai_chain_hp_hz": 0.05,
+    "ai_chain_lp_hz": 40,
+    "decimation": 2,
+    "ai_hp_hz": 0.5,
+    "window": 250,
+    "stride": 250,
+    "trigger_offset": 6,
+    "dc_offset_remove": 1.65,
+    "output": "dequant abnormal class probability (no re-softmax)"
+  },
+  "label_definition": {
+    "positive": "MI",
+    "normal_keys": [
+      "NORM",
+      "SR"
+    ]
+  },
+  "n_records": {
+    "positive": 3494,
+    "negative": 5920
+  },
+  "aggregate": "mean",
+  "auc": 0.7768220665929236,
+  "threshold": 0.6,
+  "confusion_matrix": {
+    "TP": 653,
+    "FP": 130,
+    "FN": 2841,
+    "TN": 5790
+  },
+  "metrics": {
+    "precision": 0.8339719029374202,
+    "recall": 0.18689181453921008,
+    "f1": 0.30535422024783726,
+    "specificity": 0.9780405405405406
+  },
+  "elapsed_s": 107.5
+}
