@@ -1,0 +1,24 @@
+{
+  "source": "rec_latest.ecgr",
+  "chain": "248Hz→500Hz resample→DC→comb10x2→HP/LP→2:1→causalHP0.5@250→slide W=250 S=250 O=6",
+  "fs_eff_hz": 245.0625,
+  "dur_s": 64,
+  "raw_n": 15684,
+  "chain250_n": 16001,
+  "windows": 63,
+  "threshold": 0.6,
+  "confirm": 5,
+  "conf": {
+    "mean": 0.47873,
+    "median": 0.42188,
+    "p90": 0.80391,
+    "p99": 0.98586,
+    "max": 0.98828
+  },
+  "alarm": {
+    "frac_gt_threshold": 0.22222,
+    "longest_consecutive_abnormal": 2,
+    "alarm_blocks_after_confirm": 0
+  },
+  "note": "无人工金标准; 用户确认该段为静息真实 AFE 验证, 归档时视为正常段。直接概率为固件语义 (反量化后取异常类, 无二次 softmax)。"
+}
