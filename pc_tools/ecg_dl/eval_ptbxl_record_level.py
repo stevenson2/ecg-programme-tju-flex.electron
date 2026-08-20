@@ -296,6 +296,10 @@ def main():
                     help="阳性诊断大类（abnormal=任意异常；或 MI/STTC/CD/HYP）")
     ap.add_argument("--positive", type=str, default=None,
                     help="（可选）直接指定 SCP 码，如 AFIB/PVC/IMI；优先于 --superclass")
+    ap.add_argument("--threshold-sweep", action="store_true",
+                    help="对记录级分数做全阈值扫描，输出 Se/Sp/PPV/F1 表和最优操作点")
+    ap.add_argument("--sweep-step", type=float, default=0.01,
+                    help="阈值扫描步长（默认 0.01，范围 0.01~0.99）")
     ap.add_argument("--tag", default="", help="输出 JSON 文件名后缀")
     args = ap.parse_args()
 
@@ -376,6 +380,36 @@ def main():
         f1 = float("nan")
     spec = cm["TN"] / (cm["TN"] + cm["FP"]) if (cm["TN"] + cm["FP"]) > 0 else float("nan")
 
+    # ---------- 阈值扫描 ----------
+    sweep = None
+    best_youden = None
+    best_f1 = None
+    if args.threshold_sweep:
+        thrs = np.arange(0.01, 1.0, args.sweep_step)
+        sweep = []
+        n_pos_total = int((y_true == 1).sum())
+        n_neg_total = int((y_true == 0).sum())
+        for thr in thrs:
+            pred = (scores >= thr).astype(int)
+            tp = int(((pred == 1) & (y_true == 1)).sum())
+            fp = int(((pred == 1) & (y_true == 0)).sum())
+            fn = int(((pred == 0) & (y_true == 1)).sum())
+            tn = int(((pred == 0) & (y_true == 0)).sum())
+            se = tp / max(1, tp + fn)          # 灵敏度 = 召回
+            sp = tn / max(1, tn + fp)          # 特异度
+            ppv = tp / max(1, tp + fp)         # 阳性预测值 = 精确率
+            f1v = 2 * se * ppv / (se + ppv) if (se + ppv) > 0 else 0.0
+            row = {"threshold": round(float(thr), 3), "TP": tp, "FP": fp,
+                   "FN": fn, "TN": tn, "sensitivity": round(se, 4),
+                   "specificity": round(sp, 4), "precision": round(ppv, 4),
+                   "f1": round(f1v, 4)}
+            sweep.append(row)
+            youden = se + sp
+            if best_youden is None or youden > best_youden["youden"]:
+                best_youden = {"youden": youden, **row}
+            if best_f1 is None or f1v > best_f1["f1"]:
+                best_f1 = row
+
     out_json = OUT_JSON if not args.tag else OUT_JSON.with_name(
         f"{OUT_JSON.stem}_{args.tag}.json")
     report = {
@@ -398,6 +432,9 @@ def main():
         "metrics": {
             "precision": prec, "recall": rec, "f1": f1, "specificity": spec,
         },
+        "threshold_sweep": sweep,
+        "best_youden_point": best_youden,
+        "best_f1_point": best_f1,
         "elapsed_s": round(time.time() - t0, 1),
     }
     out_json.parent.mkdir(parents=True, exist_ok=True)
@@ -411,6 +448,18 @@ def main():
     print(f"AUC: {auc:.4f}" if not np.isnan(auc) else "AUC: N/A")
     print(f"混淆矩阵: {cm}")
     print(f"Precision={prec:.3f} Recall={rec:.3f} F1={f1:.3f} Specificity={spec:.3f}")
+    if best_youden:
+        b = best_youden
+        print("\n-- 最优操作点（Youden = Se+Sp-1 最大）--")
+        print(f"  阈值={b['threshold']}  Se={b['sensitivity']:.3f}  Sp={b['specificity']:.3f}  "
+              f"PPV={b['precision']:.3f}  F1={b['f1']:.3f}")
+        print(f"  TP={b['TP']} FP={b['FP']} FN={b['FN']} TN={b['TN']}")
+    if best_f1:
+        b = best_f1
+        print("\n-- 最优操作点（F1 最大）--")
+        print(f"  阈值={b['threshold']}  Se={b['sensitivity']:.3f}  Sp={b['specificity']:.3f}  "
+              f"PPV={b['precision']:.3f}  F1={b['f1']:.3f}")
+        print(f"  TP={b['TP']} FP={b['FP']} FN={b['FN']} TN={b['TN']}")
     print(f"\n报告已保存: {out_json}")
 
 
