@@ -62,6 +62,11 @@
  *   LED: GPIO48 RGB 共阳极, LOW=亮, HIGH=灭
  *   USB: 内置 USB-Serial-JTAG, 需要等待枚举
  */
+/* 覆盖 esp32s3 variant 默认的 LED_BUILTIN 常量，固定为 SuperMini 板载 GPIO48 */
+#ifdef LED_BUILTIN
+#undef LED_BUILTIN
+#endif
+#define LED_BUILTIN 48
 #define LED_ACTIVE_LEVEL   LOW   /* 共阳极: LOW 点亮 */
 
 /* ======================== 按键配置 ======================== */
