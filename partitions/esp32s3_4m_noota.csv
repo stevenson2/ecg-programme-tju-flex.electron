@@ -1,9 +1,11 @@
 # ESP-IDF Partition Table - ESP32-S3 4MB Flash, no OTA (SuperMini N4R2)
-# 2026-08-20, 适配 ESP32-S3-SuperMini (ESP32-S3FH4R2: 4MB Quad Flash / 2MB Quad PSRAM)
-# 代码 src/storage/ecg_recorder.cpp 使用 SPIFFS.begin(..., "ecgdata") 按标签挂载，
-# 因此数据分区标签必须为 ecgdata（不要用 ffat，否则录制模块挂载失败）。
-# 保留 uf2 分区以兼容带 UF2 bootloader 的 SuperMini 变体；若确认无 UF2，
-# 可删除 uf2 行并把 0x2D0000..0x400000 全部并入 ecgdata。
+# 2026-08-20, for ESP32-S3-SuperMini (ESP32-S3FH4R2: 4MB Quad Flash / 2MB Quad PSRAM)
+# NOTE: KEEP THIS FILE PURE ASCII - PlatformIO parses partition CSVs with the
+#       system locale encoding (GBK on zh-CN Windows); UTF-8 comments crash builds.
+# ecg_recorder.cpp mounts SPIFFS with label "ecgdata", so the data partition
+# MUST be named ecgdata (do not use ffat, otherwise recording mount fails).
+# uf2 partition is kept for SuperMini variants with UF2 bootloader; if your
+# board has no UF2, remove the uf2 line and enlarge ecgdata to 0x2D0000..0x400000.
 # Name,   Type, SubType, Offset,  Size, Flags
 # bootloader.bin,,          0x1000, 32K
 # partition table,          0x8000, 4K
