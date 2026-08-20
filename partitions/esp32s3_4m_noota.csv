@@ -1,9 +1,9 @@
-# ESP-IDF Partition Table - ESP32-S3 4MB Flash, no OTA (dual-model budget plan A)
-# 2026-08-06, see docs/flash_budget_dual_model.md
-# vs partitions-4MB-tinyuf2.csv: removed ota_1 (1408K), ota_0 enlarged to 2816K
-#   -> app 0x10000..0x2D0000 (2.75MB); dual models (2x163.5KB) = 52.9%, 1.35MB free
-#   USB upload (usb_cdc_on_boot=1) only in dev; uf2/ffat layout kept
-#   (uf2 256K required by TinyUF2 bootloader on QTPY board)
+# ESP-IDF Partition Table - ESP32-S3 4MB Flash, no OTA (SuperMini N4R2)
+# 2026-08-20, 适配 ESP32-S3-SuperMini (ESP32-S3FH4R2: 4MB Quad Flash / 2MB Quad PSRAM)
+# 代码 src/storage/ecg_recorder.cpp 使用 SPIFFS.begin(..., "ecgdata") 按标签挂载，
+# 因此数据分区标签必须为 ecgdata（不要用 ffat，否则录制模块挂载失败）。
+# 保留 uf2 分区以兼容带 UF2 bootloader 的 SuperMini 变体；若确认无 UF2，
+# 可删除 uf2 行并把 0x2D0000..0x400000 全部并入 ecgdata。
 # Name,   Type, SubType, Offset,  Size, Flags
 # bootloader.bin,,          0x1000, 32K
 # partition table,          0x8000, 4K
@@ -12,4 +12,4 @@ nvs,      data, nvs,      0x9000,  20K,
 otadata,  data, ota,      0xe000,  8K,
 ota_0,    app,  ota_0,   0x10000,  2816K,
 uf2,      app,  factory,0x2d0000,  256K,
-ffat,     data, fat,    0x310000,  960K,
+ecgdata,  data, spiffs,  0x310000,  960K,
