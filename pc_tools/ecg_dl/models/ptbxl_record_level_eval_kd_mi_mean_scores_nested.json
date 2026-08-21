@@ -1,0 +1,43 @@
+{
+  "npz": "pc_tools/ecg_dl/models/ptbxl_record_level_eval_kd_mi_mean_scores.npz",
+  "seed": 42,
+  "auc": {
+    "all": 0.7768220665929236,
+    "select": 0.7790843537414966,
+    "eval": 0.7746971399544362
+  },
+  "n_patients": {
+    "select": 4354,
+    "eval": 4355
+  },
+  "n_records": {
+    "select": 4690,
+    "eval": 4724
+  },
+  "nested": {
+    "threshold": 0.175,
+    "TP": 1319,
+    "FP": 1043,
+    "FN": 425,
+    "TN": 1937,
+    "sensitivity": 0.7563,
+    "specificity": 0.65,
+    "precision": 0.5584,
+    "f1": 0.6425
+  },
+  "naive_on_eval": {
+    "threshold": 0.175,
+    "TP": 1319,
+    "FP": 1043,
+    "FN": 425,
+    "TN": 1937,
+    "sensitivity": 0.7563,
+    "specificity": 0.65,
+    "precision": 0.5584,
+    "f1": 0.6425
+  },
+  "peek_bias": {
+    "delta_se": 0.0,
+    "delta_sp": 0.0
+  }
+}
