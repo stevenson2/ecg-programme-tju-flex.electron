@@ -2,12 +2,11 @@
  * @file tflite_settings.h
  * @brief TFLite Micro 运行时配置
  *
- * 适配 ESP32-S3 (240MHz, 2MB PSRAM)
- * 
- * 内存预算:
- *   - Tensor Arena: 32KB (模型输入 1KB + 中间特征图 ~25KB)
- *   - 模型权重: ~5KB (INT8, 嵌入 Flash)
- *   - 总计: ~37KB (从 SRAM 分配)
+ * 适配 ESP32-S3 (240MHz, 8MB Octal PSRAM)
+ *
+ * 内存预算 (2026-08-14 现状, exp7c INT8):
+ *   - 模型权重: 167,376 B (~163.5KB, exp7c; 嵌入 Flash)
+ *   - Tensor Arena: 64KB (2026-08-08 从 32KB 扩, AllocateTensors 实测需 40,004B)
  */
 
 #ifndef TFLITE_SETTINGS_H

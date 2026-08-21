@@ -28,8 +28,8 @@
 
 - **实时采集**：500Hz 三通道信号（clean / noisy / filtered），信号源可选软件模拟发生器、真实 AFE 模拟前端或 MIT-BIH 回放
 - **数字滤波**：双级梳状（50/100Hz 陷零）→ 高通 → 低通 40Hz 级联
-- **心率检测**：Pan-Tompkins QRS 检测（LUDB 金标准验证 F1 0.774）
-- **AI 逐拍异常检测**：exp6-SGD 部署链定稿模型（TFLite Micro INT8），Core 0 独立推理
+- **心率检测**：能量包络 QRS 检测（x² + 8-25Hz 带通 + MWI + 形态学门 v6；LUDB 金标准验证 F1 0.868）
+- **AI 逐拍异常检测**：exp7c 部署模型（ResNet-L INT8，2026-08-14 真实数据微调版），Core 0 独立推理
 - **心律安全与节律分析**：停搏 / 过缓 / 过速（纯规则）、房颤（CV + Shannon 熵）、VF/VT 检测
 - **报警锁存**：AI 异常触发后 5 秒锁存，防止一闪而过
 - **BLE 透传**：Nordic UART Service，手机 App 实时波形显示与报警提示
@@ -111,9 +111,9 @@ cd ecg_app && flutter run
 |  +--------------------------------+    +--------------------+    |
 |  | 模拟器 / ADC / MIT-BIH 回放    |    | 环形缓冲 250 点    |    |
 |  |   -> 梳状 -> HP -> LP40        |--->| Z-score 归一化     |    |
-|  |  Pan-Tompkins 心率 + SQI       |    | INT8 量化          |    |
+|  | 能量包络心率 v6 + SQI         |    | INT8 量化          |    |
 |  |  心律安全 / AF / VF 检测       |    | TFLite Micro 推理  |    |
-|  |  SPIFFS 记录器 (REC_* 命令)    |    | (exp6-SGD, INT8)   |    |
+|  |  SPIFFS 记录器 (REC_* 命令)    |    | (exp7c, INT8)      |    |
 |  +--------------------------------+    +--------------------+    |
 |            |                                  |                  |
 |            v                                  v                  |
@@ -163,7 +163,7 @@ cd ecg_app && flutter run
 │   ├── ai_inference/       TFLite Micro 推理（Core 0 任务 + 环形缓冲）+ 模型权重
 │   ├── bluetooth/          BLE NUS 通信（+9dBm，RX 命令队列）
 │   ├── filter/             数字滤波（IIR Biquad HP + LP）
-│   ├── heartrate/          Pan-Tompkins 心率检测（自适应阈值 + SQI + 运动检测）
+│   ├── heartrate/          能量包络心率检测（x²+8-25Hz+MWI+形态学门 v6 + SQI + 运动检测）
 │   ├── rhythm_safety/      心律安全（停搏 / 过缓 / 过速，纯规则秒级）
 │   ├── af_detect/          房颤检测（CV + Shannon 熵，10s 窗三态）
 │   ├── vf_detect/          VF/VT 检测（5s 窗 DSP 特征 + LR + 2 窗确认）
@@ -208,7 +208,7 @@ cd ecg_app && flutter run
 
 ## AI 异常检测
 
-**部署定稿（2026-08-03 决策，2026-08-05 T0-1 固件集成）**：单拍 250 点 ResNet-L（~80K 参数）+ 0.5Hz 因果部署链 + SGD 优化器；INT8 模型**实测 163.5 KB**（167,376 B）。板上模型 = **exp6-SGD 部署链定稿模型**（`best_resnet_large_exp6_sgd.h5` → `ecg_model_exp6_sgd_int8.tflite` → `include/ai_inference/ecg_model_data.h`，替换旧 CNN-v2）。最优操作点：**beat 级 θ≈0.35 / patient 级 θ≈0.5**（决策 D13，详见 TH §十三·8.7）。
+**部署定稿（2026-08-03 决策；板上模型 2026-08-14 起为 exp7c）**：单拍 250 点 ResNet-L（~80K 参数）+ 0.5Hz 因果部署链 + SGD 优化器；INT8 模型**实测 163.5 KB**（167,376 B）。板上模型演进：CNN-v2 → **exp6-SGD**（08-05 T0-1 集成）→ **exp7c**（08-14 真实 AFE 数据微调版上板并烧录验证，`include/ai_inference/ecg_model_data.h`）。论文评估口径最优操作点：**beat 级 θ≈0.35 / patient 级 θ≈0.5**（决策 D13，TH §十三·8.7）；**固件实际运行 θ=0.60 + 5 拍确认**（TH §40，真实数据分布偏移的保守化调整，见核心配置表）。
 
 **部署方案演进（一句话）**：双专家 OR（P2A + exp5）严谨口径实测**已否决**（TH §8.8：MIT 误报叠加 25~32%、PTB 召回仅 0.41，旧口径数字为泄漏版作废）；改为**分模型 + 前置关卡**：心律失常交给 P2A（θ=0.5），心梗筛查交给 KD 蒸馏学生 a070_t1（θ=0.35 + 时序确认），前置"正常 vs 异常"关卡过滤正常拍（实测精度 +20%，TH §8.9.1/8.9.5/8.9.6）。
 
@@ -269,13 +269,13 @@ cd ecg_app && flutter run
 
 ### VF/VT 检测（`src/vf_detect/`，5s 窗 DSP 特征 + LR + 2 窗确认）
 
-| 测试 | 口径 | 指标 | 结果 |
+| 测试 | 口径 | 指标 | v2 结果（当前固件） |
 |------|------|------|:---:|
-| VFDB 留出（7 记录 789 VF 窗） | VF 窗 | Se | **0.9569** |
-| MIT-BIH 正常对照（3117 窗） | 正常窗 | Sp | **0.8239**（95% CI [0.811, 0.838]） |
-| CUDB 独立（35 条全 VF，6601 窗） | 窗级 / 2 窗确认 | Se | 0.9359 / 0.9179 |
+| VFDB 留出（7 记录 789 VF 窗） | VF 窗 | Se | **0.9848** |
+| MIT-BIH 正常对照（3117 窗） | 正常窗 | Sp | **0.8877** |
+| CUDB 独立（35 条全 VF，6601 窗） | 窗级 / 2 窗确认 | Se | 0.9212 / 0.9032 |
 
-结论：**Se 0.957 / Sp 0.824**（验收 Se≥95% / Sp≥83% 达标，Sp 略低于名义值 0.83 但 95% CI 覆盖）；**连续 2 窗确认**（时延 ≤10s）以 4% Se 换误报抑制。
+结论（v2, 2026-08-16）：**Se 0.985 / Sp 0.888**（验收 Se≥95% / Sp≥83% 均达标）。v2 相对 v1 的变化 = 固件逐位复刻（4 节 SOS/ZCR 主频）替代 PC filtfilt 原型 + 输入显式 mV 换算 + 无组织心律互锁（距最近有效 QRS >2.5s 才放行 VF 报警）；CUDB Se 较 v1 略降 0.015 为诚实代价。详见 FINAL_RESULTS.md 表10。
 
 ### 报警锁存
 
@@ -407,6 +407,8 @@ python3 train.py --epochs 200 --batch-size 128
 | [consumer_ecg_architecture_plan.md](consumer_ecg_architecture_plan.md) | 消费级产品架构（模块 1-4：心律安全 / VF / AF / 决策层） | 产品化设计、报警决策层设计 |
 | [docs/hardware/](docs/hardware/) | 硬件笔记：AFE 选型（afe_selection_notes.md）、板上评测协议（ondevice_bench_protocol.md）、人体实验协议等 | 硬件问题、真机评测 |
 | [pc_tools/ecg_dl/PATIENT_SPLIT_PROGRESS.md](pc_tools/ecg_dl/PATIENT_SPLIT_PROGRESS.md) | 患者级划分与重训进度（数据划分细节的交叉验证源） | 数据划分、泄漏审计细节 |
+| `pc_tools/ecg_dl/README.md` | **深度学习工具包分类目录**（全部脚本索引：用途/状态/依赖/硬编码警告） | 找训练/评估/导出脚本时先读这个 |
+| `docs/archive/` | 历史文档归档区（7 篇早期规划/一次性分析，含索引 README） | 找旧文档时（引用其中的数字前先核对现役文档） |
 
 ---
 
@@ -416,18 +418,19 @@ python3 train.py --epochs 200 --batch-size 128
 
 | 参数 | 值 | 说明 |
 |------|-----|------|
-| 采样率 | 500 Hz | SAMPLE_INTERVAL_MS=2；串口每 5 帧输出 1 次 = 100Hz |
+| 采样率 | 500 Hz | esp_timer 500Hz 硬件节拍（2026-08-14 起，替代旧帧定时；真机实测主循环 496.2Hz）；串口每 5 帧输出 1 次 = 100Hz |
 | 串口波特率 | 460800 | 2026-08-08 从 115200 上调（全仓库同步）；板载 USB CDC（ARDUINO_USB_CDC_ON_BOOT=1）下波特率参数实际无效，保持一致性 |
 | CPU 频率 | 240 MHz | 过温（>65°C）降频至 60MHz，<55°C 恢复 |
 | BLE TX 功率 | +9 dBm | esp_ble_tx_power_set(ESP_PWR_LVL_P9) |
 | BLE 设备名 | ESP32-ECG | - |
 | 滤波链 | 双级梳状(50/100Hz) → HP → LP 40Hz | 梳状双级合计 50Hz 衰减 -119.2dB、群延迟 20ms；独立 50/100Hz 陷波器已移除由梳状统一处理；HP 固件实际 0.05Hz（训练主线 0.5Hz，见 TH §十三·8.7） |
-| 心率算法 | Pan-Tompkins v4.2 | 自适应阈值（噪声峰 + 0.30×(信号峰−噪声峰)）+ 200ms 不应期；LUDB 验证：Se 72.9% / PPV 82.6% / F1 0.774 / BPM MAE 3.2 |
-| AI 模型 | exp6-SGD（ResNet-L ~80K 参数） | TFLite Micro INT8，**实测 163.5 KB**（167,376 B）；`include/ai_inference/ecg_model_data.h` |
+| 心率算法 | 能量包络 v6 | x² 能量包络 + 8-25Hz 带通 + 40 样本 MWI + millis RR + 形态学门（2026-08-16 LUDB 全量重标定）；LUDB 验证：Se 96.40% / PPV 78.87% / F1 0.868 / BPM MAE 4.16（旧导数型 Pan-Tompkins v4.2 为 F1 0.774，见 FINAL_RESULTS 表9附） |
+| AI 模型 | exp7c（ResNet-L ~80K 参数） | TFLite Micro INT8，167,376 B；2026-08-14 上板（真实 AFE 数据微调，前身 exp6-SGD）；`include/ai_inference/ecg_model_data.h` |
 | AI 输入窗口 | 250 点 @ 250Hz = 1.0s | 固件 2:1 抽取（AI_INPUT_DECIMATION=2，500→250Hz），与训练窗口一致 |
 | AI 推理间隔 | AI_STRIDE=250（1s） | 2026-08-08 从 125（0.5s）调大：真机实测单次推理 ~910ms > 500ms 触发间隔 |
 | AI 群延迟补偿 | AI_TRIGGER_OFFSET=6 | 因果链群延迟 6 样本（24ms），触发时刻后移，等效 δ=+6（FINAL_RESULTS.md 表5） |
-| AI 判定阈值 | θ = 0.35 | 拍级操作点（TH §十三·8.7，决策 D13）；patient 级 θ≈0.5 |
+| AI 判定阈值 | θ = 0.60 | **固件实际值**（INFERENCE_THRESHOLD，TH §40：真实数据分布偏移上调）；论文评估口径最优操作点 beat θ≈0.35 / patient θ≈0.5（D13）不可混用 |
+| 多拍确认 | 5 拍 | MULTI_BEAT_CONFIRM=5（连续 5 拍异常才报警，确认延迟 ~5s；TH §40 从 2 调大） |
 | AI Tensor Arena | 64 KB | 2026-08-08 从 32KB 扩（实测 AllocateTensors 需 40,004B） |
 | AI 核心 / 栈 | Core 0 / 16KB | 推理后 vTaskDelay(50ms) 让出 CPU 0；结果队列深度 8 |
 | 温度阈值 | 65°C 降频 / 55°C 恢复 | 8 点滑动平均，每秒采样 |
@@ -444,9 +447,9 @@ python3 train.py --epochs 200 --batch-size 128
 - ⬜ **阶段 B（WiFi AP 传输 + 云端存储）待办**：`src/wifi/` 占位已接线，App 云端 API 客户端骨架已搭
 - 📝 **论文写作修订进行中**：19 条审稿问题已全部有解（MODEL_GUIDE §6）；权威数字以 [docs/FINAL_RESULTS.md](docs/FINAL_RESULTS.md) 为准，稿件见 `docs/manuscript_sections_1_4.md`
 
-**模型侧（ROADMAP Phase 4）**：exp6-SGD 已上板（T0-1）；双模型部署（P2A + KD a070_t1）为 4.2 待办（N16R8 下 Flash 无容量障碍，需双 TFLite interpreter / 分时加载运行时实现）；4.3 全链路集成验证（PC-ESP32 一致性、真实采集链路、温度/功耗）待办；4.4 模型侧优化按需。
+**模型侧（ROADMAP Phase 4）**：板上单模型 = exp7c（08-14 上板）；**关卡 + 双专家部署为现役方案，训练测试进行中**（规划见 `docs/03_Software_Docs/dual_expert_deployment_plan.md`；KD a070_t1 INT8 已导出，关卡模型训练中，N16R8 下 Flash 无容量障碍）；4.3 全链路集成验证（PC-ESP32 一致性、真实采集链路、温度/功耗）待办；4.4 模型侧优化按需。
 
-**已关闭路线（避免重复踩坑）**：双专家 OR（TH §8.8 否决）、3-beat 输入（D5）、SSL 预训练（D6）、平衡混合单模型（TH §8.9.6）、拍级 RR 上下文融合器（TH §二十八 负面结果）、全类相位扰动增强（TH §十八 负面结果）。
+**已关闭路线（避免重复踩坑）**：双专家**裸 OR** 融合（TH §8.8 否决——注意否决的是无关卡的 OR，关卡 + 双专家现役进行中）、3-beat 输入（D5）、SSL 预训练（D6）、平衡混合单模型（TH §8.9.6）、拍级 RR 上下文融合器（TH §二十八 负面结果）、全类相位扰动增强（TH §十八 负面结果）。
 
 **已知遗留**：回放 100 段 bpm 偏低（心率参数按模拟器标定，真实信号需再标定）；VF/VT 检测器在模拟器/回放段有误报（阈值 / SQI 门控待调）。
 

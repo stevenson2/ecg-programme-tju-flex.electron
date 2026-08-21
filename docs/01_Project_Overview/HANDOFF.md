@@ -65,8 +65,8 @@ pc_tools/ecg_dl/（Python 训练/评估，WSL2）。
 - docs/FINAL_RESULTS.md —— 论文权威数字（可溯源 JSON）
 - TUNING_HISTORY.md —— 证据日志，最新到第四十五章
 - PROJECT_SUMMARY.md —— 现状总结
-- docs/PROBLEM_SOLUTION_PLAN.md —— v4 问题解决计划（硬件锁死/固件可改/产品优先）
-- docs/SOFTWARE_PLAN.md —— 软件侧执行细节
+- docs/archive/PROBLEM_SOLUTION_PLAN.md —— v4 问题解决计划（已归档，被 ROADMAP 取代）
+- docs/archive/SOFTWARE_PLAN.md —— 软件侧执行细节（已归档，已执行完毕）
 - AGENTS.md —— 项目行为规范（铁律，必须读）
 
 ## 当前固件状态（本会话已改，未提交）

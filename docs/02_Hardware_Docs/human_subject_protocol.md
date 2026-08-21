@@ -188,8 +188,8 @@ CSV 文件，每行 9 列，无表头：
 |-----|-------|------|-------------|
 | 1 | clean | V | 纯净心电 / 去偏置 ADC 信号 |
 | 2 | noisy | V | 含噪声原始信号 |
-| 3 | filtered | V | 数字滤波后信号（HP 0.5Hz + LP 40Hz + Notch 50Hz + Comb 50/100Hz） |
-| 4 | bpm | bpm | ESP32 板上 Pan-Tompkins 心率检测值 |
+| 3 | filtered | V | 数字滤波后信号（双级梳状 50/100Hz → HP 0.05Hz → LP 40Hz，与固件 filter.cpp 一致） |
+| 4 | bpm | bpm | ESP32 板上能量包络心率检测值（v6） |
 | 5 | true_bpm | bpm | 真实心率（仅模拟器模式有效，人体实测时写入 0 或与 bpm 相同） |
 | 6 | sqi | — | 信号质量指数 [0–1] |
 | 7 | motion | 0/1 | 运动标志（ESP32 板载加速度计判定） |

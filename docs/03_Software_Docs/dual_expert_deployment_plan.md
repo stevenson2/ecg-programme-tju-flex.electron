@@ -1,7 +1,10 @@
 # 双专家模型部署规划（分诊式关卡 + 心律失常专家 + 心梗专家）
 
 - 创建日期：2026-08-20
-- 状态：规划稿，待评审
+- 状态：**执行中（2026-08-21 更新）**——KD a070_t1 INT8 已导出（`ecg_model_kd_a070_t1_int8.tflite`，
+  167,376 B）；P1 补证完成（MI 亚类分层 / 12 导联扫描 / 阴性集扩充，见 innovation_and_rigor_audit §3.3）；
+  **关卡模型训练与 A2 级联模拟进行中**（产物将落盘 `models/dual_expert_triage_eval.json`）。
+  阶段 A 决策门槛（A4）通过前，论文与固件不得声称双专家部署完成。
 - 相关历史记录：`docs/03_Software_Docs/TUNING_HISTORY.md` §8.8 / §8.9 / §8.10
 - 关键资产：P2A（心律失常专家）、KD a070_t1（心梗筛查专家）、exp7c（当前板上模型）、exp5_clean（已证名不副实）
 

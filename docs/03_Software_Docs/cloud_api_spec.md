@@ -133,7 +133,7 @@
 | mean_confidence | float | ✅ | 板上 AI 全时段平均异常置信度（0–1） |
 | max_confidence | float | ✅ | 全时段最大异常置信度（0–1） |
 | abnormal_flag_count | int | ✅ | 1Hz 异常位图中置 1 的秒数 |
-| model | string | ✅ | 板上模型标识，固定 `"exp6-SGD"` |
+| model | string | ✅ | 板上模型标识，当前 `"exp7c"`（随固件 `ecg_model_data.h` 演进：CNN-v2 → exp6-SGD → exp7c） |
 
 示例：
 

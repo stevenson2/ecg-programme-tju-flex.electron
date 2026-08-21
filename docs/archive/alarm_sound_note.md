@@ -1,3 +1,5 @@
+> **⚠️ 已归档（2026-08-21）**：报警音效小笔记。非现役文档；现役入口见根目录 README.md 文档导航。
+
 # 告警提示音服务说明（AlarmSoundService）
 
 > 日期：2026-08-08 ｜ 模块：`ecg_app/lib/services/alarm_sound_service.dart`

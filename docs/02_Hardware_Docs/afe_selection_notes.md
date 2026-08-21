@@ -44,7 +44,7 @@
 - 任务 6 实测对照：**原始信号**手动 ST80 对前壁 MI 判别 d=+0.75（强）；
   模型在归一化窗口只能学到"相对形态"的影子。
 - 若走 ST 形态学路线（模块 4），**测量必须基于未归一化的原始信号**（J 点固定
-  偏移 + PQ 基线, 已预研, `docs/st_morphology_feasibility.md`）。
+  偏移 + PQ 基线, 已预研, `docs/archive/st_morphology_feasibility.md`）。
 
 ### 2.3 任务/标签层：MI 标签不分急慢性
 

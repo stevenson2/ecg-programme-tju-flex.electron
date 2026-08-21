@@ -25,7 +25,7 @@
 
 | 项目 | 要求 |
 |------|------|
-| 开发板 | ESP32-S3-SUPERMINI (ESP32S3FH4R2) |
+| 开发板 | ESP32-S3-WROOM-1-N16R8（当前板；旧 SUPERMINI 已弃用） |
 | USB 线 | 数据线（连接 PC 串口监视器） |
 | 万用表 | 支持 mA/μA 电流测量（或 USB 功率计） |
 | 可选: USB 功率计 | 如 UM25C / FNB38 / Power-Z 等，USB-A 公-母直插式 |

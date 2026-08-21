@@ -2,10 +2,11 @@
 
 ## 项目概述
 基于 ESP32-S3 的便携式心电采集系统，集成深度学习异常检测。
-- 芯片: ESP32-S3-SUPERMINI (ESP32S3FH4R2)
+- 芯片: ESP32-S3-WROOM-1-N16R8 (16MB Flash / 8MB Octal PSRAM；旧 SUPERMINI 板已弃用)
 - 框架: PlatformIO + Arduino
-- 采样率: 500Hz 三通道 (clean/noisy/filtered); AI 输入经固件 2:1 抽取为 250Hz (250 点 = 1s 窗口)
-- AI: TFLite Micro 1D-CNN INT8 推理 (部署链定稿 exp6-SGD, 单模型 163.5KB)
+- 采样率: esp_timer 500Hz 硬件节拍，三通道 (clean/noisy/filtered); AI 输入经固件 2:1 抽取为 250Hz (250 点 = 1s 窗口)
+- AI: TFLite Micro ResNet-L INT8 推理 (板上模型 = **exp7c**, 167,376 B; 前身 exp6-SGD)
+- 心率: 能量包络检测器 v6 (x²+8-25Hz+MWI+形态学门; LUDB F1 0.868)
 - BLE: Nordic UART Service (NUS)
 
 ## 项目结构
@@ -14,10 +15,15 @@
   - `adc_afe/` — ADC/AFE 采集
   - `ai_inference/` — TFLite Micro 推理
   - `bluetooth/` — BLE 通信
-  - `filter/` — 数字滤波 (HP+LP)
-  - `heartrate/` — Pan-Tompkins 心率检测
-  - `signal_generator/` — 模拟信号发生器
+  - `filter/` — 数字滤波 (梳状+HP+LP)
+  - `heartrate/` — 能量包络心率检测 (v6)
+  - `rhythm_safety/` — 心律安全 (停搏/过缓/过速)
+  - `af_detect/` — 房颤检测 (CV+Shannon 熵)
+  - `vf_detect/` — VF/VT 检测 (DSP 特征+LR)
+  - `storage/` — SPIFFS 记录器 (ECGR)
+  - `signal_generator/` — 模拟信号发生器 / MIT-BIH 回放
   - `thermal/` — 温度管理
+  - `wifi/` — WiFi AP 传输
 - `pc_tools/` — Python PC 工具 (训练/绘图/调试)
 - `ecg_app/` — Flutter 手机 App
 - `test/` — 测试代码
@@ -159,3 +165,31 @@ Se=1.000（代码索引污染 bug, 实为 Se 0.621）、§30 AAMI 类内精确�
   的持续读写会干扰 BLE 连接稳定性（实测导致手机 App 连接中断）。
 - 需要真机数据时,先征得用户同意并说明脚本用途与时长,或在用户不操作手机的空档执行。
 - 手机验证流程中,固件命令（'e'/'n' 等）发送前先告知用户,避免与用户操作冲突。
+
+### 10. 文档真值层级与一致性守则（2026-08-21 固化，治"旧文参数当部署参数"）
+
+**背景**：项目文档数量多、迭代快，多次出现 AI 会话引用过期文档——把已否决方案
+当待办重新提出（双专家 OR）、把论文评估口径参数当固件参数（θ=0.35 vs 实际 0.60）、
+把历史模型当板上模型（exp6-SGD vs 实际 exp7c）。本节为强制真值层级：
+
+| 问题类型 | 唯一真值源 | 冲突时处理 |
+|---|---|---|
+| 固件实际行为/参数 | **源码本身**：`tflite_settings.h` / `ecg_model_data.h` 头注释 / `main.cpp` / `filter.cpp` / `heartrate.cpp` | 以源码为准，同步修正过期文档 |
+| 评估指标数字 | `docs/FINAL_RESULTS.md`（可溯源至 JSON） | 禁止引用其他文档的孤立数字 |
+| 决策历史/证据链 | `TUNING_HISTORY.md`（追加式日志） | **不改写历史条目**，只追加修正章节 |
+| 战略决策现状 | `ROADMAP.md` 快速现状总结 | 与 TH 冲突时以 TH 为准 |
+| 当前板上模型 | `include/ai_inference/ecg_model_data.h` 头注释 | 现为 **exp7c**（2026-08-14 起） |
+
+**强制规则**：
+1. **口径分离**：论文评估口径参数（beat θ≈0.35 / patient θ≈0.5，D13）≠ 固件运行
+   参数（INFERENCE_THRESHOLD=0.60 + MULTI_BEAT_CONFIRM=5，TH §40）。引用任何
+   "阈值/确认拍数"前必须声明是哪个口径，禁止混用。
+2. **已关闭路线不得复活为待办**：双专家 **裸 OR 融合**（TH §8.8 否决——注意：否决的是
+   "无关卡的 OR"，**"关卡 + 双专家"是现役方案**，见 `dual_expert_deployment_plan.md`，
+   状态以该文档头部为准）、3-beat 输入（D5）、SSL 预训练（D6）、拍级 RR 融合器
+   （TH §二十八）、全类相位增强（TH §十八）。提出相关任务前先查此清单与现役方案文档。
+3. **"已完成"必须有仓库内产物**：声称已完成的实验/核查必须能指出
+   脚本 + 结果 JSON 的路径；只有文字描述而无产物的结论按"未验证"处理
+   （漏洞#2 事故教训：交互式会话跑完未落盘 = 没做）。
+4. **修改固件参数后必须同步**：README 核心配置表 + AGENTS.md 本文件 +
+   相关协议文档，同一次提交内完成。

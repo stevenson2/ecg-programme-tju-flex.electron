@@ -1,0 +1,208 @@
+{
+  "protocol": {
+    "l1": "ptbdb lead II 10s 探针(1000→125Hz 粗化,z-score) × PTB-XL 全量(500→125Hz) Pearson",
+    "l2": "top-K 对 500Hz 全分辨率滑移对齐(±250) 12 导联相关；同源判据=12 导联全部≥0.95",
+    "l3": "年龄差≤5.0 且性别一致；ptbdb 头注释 vs ptbxl_database.csv"
+  },
+  "n_probes_ptbdb": 1167,
+  "n_records_ptbxl": 21837,
+  "candidates": [
+    {
+      "ptbdb_record": "patient038/s0125lre",
+      "xl_record": "records500/18000/18007_hr",
+      "coarse_corr": 0.9514,
+      "shift_samples": -215,
+      "lead_corr": {
+        "I": 0.1089,
+        "II": 0.554,
+        "III": 0.5042,
+        "aVR": 0.4254,
+        "aVL": 0.4057,
+        "aVF": 0.5471,
+        "V1": 0.432,
+        "V2": 0.2839,
+        "V3": 0.2294,
+        "V4": 0.1984,
+        "V5": -0.1104,
+        "V6": 0.1225
+      },
+      "lead_corr_mean": 0.3084,
+      "l2_same_source": false,
+      "metadata": {
+        "ptbdb": {
+          "age": "36",
+          "sex": "male"
+        },
+        "ptbxl": {
+          "patient_id": "9328.0",
+          "age": "49.0",
+          "sex": "1"
+        }
+      },
+      "l3": {
+        "age_diff": 13.0,
+        "sex_match": false,
+        "consistent": false
+      },
+      "leak": false
+    },
+    {
+      "ptbdb_record": "patient021/s0073lre",
+      "xl_record": "records500/05000/05016_hr",
+      "coarse_corr": 0.9451,
+      "shift_samples": 230,
+      "lead_corr": {
+        "I": -0.1443,
+        "II": -0.7875,
+        "III": -0.8733,
+        "aVR": -0.3686,
+        "aVL": -0.769,
+        "aVF": -0.872,
+        "V1": 0.423,
+        "V2": 0.2838,
+        "V3": 0.3019,
+        "V4": 0.1658,
+        "V5": 0.2359,
+        "V6": 0.3035
+      },
+      "lead_corr_mean": -0.1751,
+      "l2_same_source": false,
+      "metadata": {
+        "ptbdb": {
+          "age": "67",
+          "sex": "male"
+        },
+        "ptbxl": {
+          "patient_id": "9932.0",
+          "age": "43.0",
+          "sex": "0"
+        }
+      },
+      "l3": {
+        "age_diff": 24.0,
+        "sex_match": false,
+        "consistent": false
+      },
+      "leak": false
+    },
+    {
+      "ptbdb_record": "patient017/s0063lre",
+      "xl_record": "records500/05000/05016_hr",
+      "coarse_corr": 0.9435,
+      "shift_samples": 200,
+      "lead_corr": {
+        "I": -0.0579,
+        "II": -0.831,
+        "III": -0.752,
+        "aVR": -0.3167,
+        "aVL": -0.5241,
+        "aVF": -0.8667,
+        "V1": 0.3511,
+        "V2": 0.3233,
+        "V3": 0.3689,
+        "V4": 0.3095,
+        "V5": 0.5043,
+        "V6": 0.7217
+      },
+      "lead_corr_mean": -0.0642,
+      "l2_same_source": false,
+      "metadata": {
+        "ptbdb": {
+          "age": "60",
+          "sex": "male"
+        },
+        "ptbxl": {
+          "patient_id": "9932.0",
+          "age": "43.0",
+          "sex": "0"
+        }
+      },
+      "l3": {
+        "age_diff": 17.0,
+        "sex_match": false,
+        "consistent": false
+      },
+      "leak": false
+    },
+    {
+      "ptbdb_record": "patient033/s0105lre",
+      "xl_record": "records500/18000/18007_hr",
+      "coarse_corr": 0.9372,
+      "shift_samples": 250,
+      "lead_corr": {
+        "I": -0.0718,
+        "II": 0.3276,
+        "III": 0.3107,
+        "aVR": 0.2418,
+        "aVL": 0.1688,
+        "aVF": 0.3453,
+        "V1": -0.0026,
+        "V2": 0.1128,
+        "V3": 0.123,
+        "V4": 0.1121,
+        "V5": 0.0752,
+        "V6": -0.0488
+      },
+      "lead_corr_mean": 0.1412,
+      "l2_same_source": false,
+      "metadata": {
+        "ptbdb": {
+          "age": "60",
+          "sex": "male"
+        },
+        "ptbxl": {
+          "patient_id": "9328.0",
+          "age": "49.0",
+          "sex": "1"
+        }
+      },
+      "l3": {
+        "age_diff": 11.0,
+        "sex_match": false,
+        "consistent": false
+      },
+      "leak": false
+    },
+    {
+      "ptbdb_record": "patient029/s0098lre",
+      "xl_record": "records500/05000/05615_hr",
+      "coarse_corr": 0.9236,
+      "shift_samples": 250,
+      "lead_corr": {
+        "I": -0.0615,
+        "II": 0.4769,
+        "III": -0.4843,
+        "aVR": 0.4298,
+        "aVL": -0.5688,
+        "aVF": 0.1403,
+        "V1": 0.1518,
+        "V2": 0.1598,
+        "V3": -0.086,
+        "V4": -0.0613,
+        "V5": -0.0143,
+        "V6": 0.0119
+      },
+      "lead_corr_mean": 0.0079,
+      "l2_same_source": false,
+      "metadata": {
+        "ptbdb": {
+          "age": "49",
+          "sex": "male"
+        },
+        "ptbxl": {
+          "patient_id": "17022.0",
+          "age": "72.0",
+          "sex": "0"
+        }
+      },
+      "l3": {
+        "age_diff": 23.0,
+        "sex_match": false,
+        "consistent": false
+      },
+      "leak": false
+    }
+  ],
+  "verdict": "NO OVERLAP EVIDENCE",
+  "elapsed_s": 629.5
+}

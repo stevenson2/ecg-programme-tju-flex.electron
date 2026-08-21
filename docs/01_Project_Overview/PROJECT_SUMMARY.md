@@ -26,7 +26,7 @@
 | 硬件 | ESP32-S3-WROOM-1-N16R8；固件 `bc0d865` 已烧录（含全部修复），USB COM4 |
 | 阶段 A（板上记录存储） | ✅ **完成**：SPIFFS 记录器（ECGR 格式）+ REC_* 命令，断电持久化验收通过 |
 | 阶段 B（WiFi AP + 云端） | 🔶 **基本可用**：AP 上电自动启动、WebServer 4 端点 REST、App 下载→本地回放已完成（TH §41）；定时录制全链路待真机验证 |
-| 部署模型 | **exp6-SGD**（ResNet-L ~80K，INT8 163.5KB）已替换旧 CNN-v2 上板；双模型（P2A + KD a070_t1）为待办 |
+| 部署模型 | **exp7c**（ResNet-L ~80K，INT8 167,376 B；2026-08-14 真实数据微调版上板，前身 exp6-SGD）；双模型（P2A + KD a070_t1）为待办 |
 | 论文 | 写作修订进行中，19 条审稿问题已全部有解；权威数字以 `docs/FINAL_RESULTS.md` 为准 |
 
 ---
@@ -34,13 +34,13 @@
 ## 3. 系统架构
 
 ```
-采集前端: 3 电极(RA/LA/RL) 单导联(Lead II) → AD8232 AFE → ESP32 ADC1(12-bit, 500Hz, 4×过采样)
+采集前端: 3 电极(RA/LA/RL) 单导联(Lead II) → AD8232 AFE → ESP32 ADC1(12-bit, esp_timer 500Hz 节拍)
 数字滤波: 双级梳状(50/100Hz 精确陷零, -119.2dB) → HP 0.05Hz(固件) → LP 40Hz
-         (AI 输入链另加窗口级零相位 0.5Hz HP, 匹配训练 filtfilt)
+         (AI 输入链: 抽取后因果 0.5Hz HP @250Hz, 与固件系数一致; 训练侧 filtfilt 为另一口径)
 双核分工:
   Core 1 主循环: 采样/滤波/心率/心律安全/AF/VF/报警锁存/BLE/串口/SPIFFS/WiFi
   Core 0 AI 任务: 250 点窗口 → Z-score → INT8 → TFLite Micro 推理(1Hz, ~910ms)
-检测模块: ① Pan-Tompkins 心率  ② AI 逐拍异常(exp6-SGD)  ③ 心律安全(停搏/过缓/过速)
+检测模块: ① 能量包络心率(v6)  ② AI 逐拍异常(exp7c, θ=0.60+5 拍确认)  ③ 心律安全(停搏/过缓/过速)
           ④ AF(RR 不规则度)  ⑤ VF/VT(DSP 特征+LR)  ⑥ 停搏/无信号(flatline)
 数据出口: 串口 CSV 9列@100Hz + BLE NUS 125Hz 9列帧(2026-08-14 阶梯感降载) + SPIFFS ECGR 记录 + WiFi AP REST
 ```
@@ -99,7 +99,7 @@ exp6-SGD：MIT D3 **0.9122** / PTB D3 **0.7697**。部署链失配（训练 filt
 
 ## 6. 未解决问题与下一步
 
-> 详细操作细节见 `docs/ecg_solution_prompt.md`（最新交接文档）。按优先级：
+> 详细操作细节见 `docs/archive/ecg_solution_prompt.md`（已归档；现役待办见 ROADMAP Phase 4）。按优先级：
 
 | # | 问题 | 状态 | 方向 |
 |---|------|------|------|
@@ -133,7 +133,7 @@ exp6-SGD：MIT D3 **0.9122** / PTB D3 **0.7697**。部署链失配（训练 filt
 | `docs/MODEL_GUIDE.md` | 通俗故事版导读（含 19 条审稿问题解答） | 活跃（08-06） |
 | `ROADMAP.md` | 战略决策视图（D1-D14 决策清单 + 模型演进表） | 现状部分滞后至 08-05，决策清单仍有效 |
 | `consumer_ecg_architecture_plan.md` | 消费级产品架构（双模式 + 模块1-4 + 分级报警） | 设计仍有效，部分"缺口"已实现 |
-| `docs/ecg_solution_prompt.md` | 交接文档（当前状态 + 未解决问题 + 操作细节） | 活跃（08-12） |
+| `docs/archive/ecg_solution_prompt.md` | 交接文档（已归档，被 ROADMAP/HANDOFF 取代） | 归档 |
 | `docs/paper_submission_status.md` | 论文投稿状态与待办（整合自 3 份旧投稿文档） | 整合后 |
 | `docs/cloud_api_spec.md` | 云端 REST API 规范 | 活跃（08-08） |
 | `docs/hardware/` | 硬件笔记（AFE 选型 / 电极 / 人体实验 / 板上评测协议） | 活跃 |

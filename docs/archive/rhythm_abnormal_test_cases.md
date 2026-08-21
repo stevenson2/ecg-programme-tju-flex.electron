@@ -1,3 +1,5 @@
+> **⚠️ 已归档（2026-08-21）**：节律异常测试用例记录（T4 阶段一次性产物）。非现役文档；现役入口见根目录 README.md 文档导航。
+
 # 心律异常固件测试用例（Rhythm Abnormal Test Cases）
 
 - 目标固件：`ecg-programme-tju-flex.electron-master`（ESP32-S3，N16R8）
