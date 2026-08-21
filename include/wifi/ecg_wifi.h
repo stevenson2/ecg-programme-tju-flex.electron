@@ -27,7 +27,12 @@ extern "C" {
 
 /* ======================== 可调参数 (#ifndef 默认值) ======================== */
 
-/** @brief AP 密码 (8 位数字, 方便输入) */
+/** @brief AP 密码 (8 位数字, 方便输入)
+ *  开发默认值，仅用于本地快速验证。
+ *  生产/对外固件必须通过 scripts/inject_build_flags.py 注入：
+ *    PowerShell: $env:ECG_WIFI_AP_PASSWORD="your-strong-password"; pio run
+ *    Linux/WSL:  ECG_WIFI_AP_PASSWORD="your-strong-password" pio run
+ */
 #ifndef ECG_WIFI_AP_PASSWORD
 #define ECG_WIFI_AP_PASSWORD  "12345678"
 #endif

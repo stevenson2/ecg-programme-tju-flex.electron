@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 import 'ecg_record_codec.dart';
+import '../config/app_config.dart';
 
 /**
  * @file upload_service.dart
@@ -14,8 +15,8 @@ import 'ecg_record_codec.dart';
  *   POST   /v1/records/{id}/analyze     触发云端分析
  *   GET    /v1/records/{id}/report      获取分析报告
  *
- * 认证：Bearer token（默认 'dev-token'，configurable const）。
- * 生产环境替换 baseUrl 为实际云服务地址。
+ * 认证：Bearer token（默认 'dev-token'，可通过 --dart-define=CLOUD_TOKEN 注入）。
+ * 生产环境通过 --dart-define=CLOUD_BASE_URL 注入实际云服务地址。
  *
  * 元数据结构（multipart "meta" part）：
  *   {
@@ -95,15 +96,15 @@ class CloudUploadException implements Exception {
  * @brief 云端记录上传 HTTP 客户端
  *
  * 可注入 http.Client（用于测试 MockClient）、baseUrl 和 token。
- * 默认指向本地 mock 服务器；生产环境需替换 baseUrl 与 token。
+ * 默认指向本地 mock 服务器；生产环境通过 --dart-define 注入 CLOUD_BASE_URL / CLOUD_TOKEN。
  */
 class CloudUploadService {
   final http.Client _client;
   final String baseUrl;
   final String token;
 
-  static const String defaultBaseUrl = 'http://127.0.0.1:8000/v1';
-  static const String defaultToken = 'dev-token';
+  static const String defaultBaseUrl = AppConfig.cloudBaseUrl;
+  static const String defaultToken = AppConfig.cloudToken;
   static const Duration _defaultTimeout = Duration(seconds: 30);
 
   CloudUploadService({

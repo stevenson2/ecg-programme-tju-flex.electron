@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../config/app_config.dart';
 import '../services/record_api.dart';
 import '../services/ecg_record_codec.dart';
 import '../services/upload_service.dart';
@@ -354,8 +355,8 @@ class _RecordListPageState extends State<RecordListPage> {
             ],
           ),
           const SizedBox(height: 6),
-          const Text(
-            '请连接手机 WiFi 到热点 ESP32-ECG-XXXX（密码 12345678），然后返回本页刷新',
+          Text(
+            '请连接手机 WiFi 到热点 ESP32-ECG-XXXX（密码 ${AppConfig.apPassword}），然后返回本页刷新',
             style: TextStyle(color: Colors.white70, fontSize: 13),
           ),
           const SizedBox(height: 8),

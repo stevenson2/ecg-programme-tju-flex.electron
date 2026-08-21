@@ -26,6 +26,21 @@ pc_tools/ecg_dl/**/__pycache__/
 *.npy
 *.npz
 
+# 生成物/调试日志/已忽略但仍可能被误提交的文件
+esp_timer_check*.txt
+rec_*.txt
+rec_latest.ecgr
+pc_tools/ecg_dl/fig_*.png
+pc_tools/ecg_dl/test_vectors/*.csv
+pc_tools/ecg_dl/test_vectors/*.npy
+pc_tools/ecg_dl/models/ecg_model_data.h
+pc_tools/ecg_dl/models/ecg_model_*_data.h
+pc_tools/ecg_dl/models/*.log
+pc_tools/ecg_dl/models/cross_arch/logs/*.log
+api_records.json
+api_record_meta.json
+tools/cloud_mock/sample_60s.ecgr
+
 # 外部数据集 (PhysioNet 再分发受限, 不推送)
 ECGdata_1000/
 PTB-XL_ECG/
@@ -62,3 +77,4 @@ pc_tools/serial/*.id
 
 # 无关工具目录（勿提交）
 dsh-routing-suite/
+dsh-sessions-export/
