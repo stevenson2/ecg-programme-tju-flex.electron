@@ -1,0 +1,208 @@
+{
+  "meta": {
+    "date": "2026-08-21 14:09:38",
+    "source_npz": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/ptbxl_record_level_eval_kd_mi_mean_scores.npz",
+    "label": "MI 各亚类 vs PTB-XL 正常记录（NORM/SR）",
+    "deploy_chain": "见源 eval_ptbxl_record_level.py 输出（完整板上部署链）",
+    "aggregate": "mean（源 npz 由 kd_mi_mean_scores 生成）",
+    "bootstrap": "患者级重采样 500 reps, seed=123, 95% CI 百分位"
+  },
+  "mi_code_counts": {
+    "IMI": 1609,
+    "ASMI": 1620,
+    "ILMI": 248,
+    "AMI": 272,
+    "ALMI": 162,
+    "INJAS": 154,
+    "LMI": 153,
+    "INJAL": 105,
+    "IPLMI": 34,
+    "IPMI": 25,
+    "INJIN": 12,
+    "INJLA": 13,
+    "PMI": 14,
+    "INJIL": 14
+  },
+  "results": {
+    "IMI": {
+      "n": 1609,
+      "n_normal": 5920,
+      "auc": 0.7622,
+      "ci_lo": 0.7488,
+      "ci_hi": 0.7753,
+      "ci_width": 0.0265,
+      "bootstrap_mean": 0.7625,
+      "bootstrap_std": 0.007,
+      "n_patients": 7096,
+      "reps": 500
+    },
+    "ASMI": {
+      "n": 1620,
+      "n_normal": 5920,
+      "auc": 0.8123,
+      "ci_lo": 0.7991,
+      "ci_hi": 0.825,
+      "ci_width": 0.0258,
+      "bootstrap_mean": 0.8127,
+      "bootstrap_std": 0.0065,
+      "n_patients": 7081,
+      "reps": 500
+    },
+    "ILMI": {
+      "n": 248,
+      "n_normal": 5920,
+      "auc": 0.8564,
+      "ci_lo": 0.831,
+      "ci_hi": 0.8819,
+      "ci_width": 0.051,
+      "bootstrap_mean": 0.8566,
+      "bootstrap_std": 0.013,
+      "n_patients": 5878,
+      "reps": 500
+    },
+    "AMI": {
+      "n": 272,
+      "n_normal": 5920,
+      "auc": 0.7585,
+      "ci_lo": 0.7283,
+      "ci_hi": 0.7872,
+      "ci_width": 0.0589,
+      "bootstrap_mean": 0.7581,
+      "bootstrap_std": 0.0146,
+      "n_patients": 5916,
+      "reps": 500
+    },
+    "ALMI": {
+      "n": 162,
+      "n_normal": 5920,
+      "auc": 0.8292,
+      "ci_lo": 0.774,
+      "ci_hi": 0.8765,
+      "ci_width": 0.1025,
+      "bootstrap_mean": 0.8308,
+      "bootstrap_std": 0.0261,
+      "n_patients": 5794,
+      "reps": 500
+    },
+    "INJAS": {
+      "n": 154,
+      "n_normal": 5920,
+      "auc": 0.7447,
+      "ci_lo": 0.7058,
+      "ci_hi": 0.7834,
+      "ci_width": 0.0776,
+      "bootstrap_mean": 0.7443,
+      "bootstrap_std": 0.0197,
+      "n_patients": 5793,
+      "reps": 500
+    },
+    "LMI": {
+      "n": 153,
+      "n_normal": 5920,
+      "auc": 0.7382,
+      "ci_lo": 0.6928,
+      "ci_hi": 0.7813,
+      "ci_width": 0.0885,
+      "bootstrap_mean": 0.7378,
+      "bootstrap_std": 0.0228,
+      "n_patients": 5795,
+      "reps": 500
+    },
+    "INJAL": {
+      "n": 105,
+      "n_normal": 5920,
+      "auc": 0.8012,
+      "ci_lo": 0.7553,
+      "ci_hi": 0.8401,
+      "ci_width": 0.0848,
+      "bootstrap_mean": 0.7995,
+      "bootstrap_std": 0.0222,
+      "n_patients": 5753,
+      "reps": 500
+    },
+    "IPLMI": {
+      "n": 34,
+      "n_normal": 5920,
+      "auc": 0.7463,
+      "ci_lo": 0.6438,
+      "ci_hi": 0.8381,
+      "ci_width": 0.1943,
+      "bootstrap_mean": 0.7448,
+      "bootstrap_std": 0.0485,
+      "n_patients": 5687,
+      "reps": 500
+    },
+    "IPMI": {
+      "n": 25,
+      "n_normal": 5920,
+      "auc": 0.704,
+      "ci_lo": 0.5854,
+      "ci_hi": 0.7954,
+      "ci_width": 0.21,
+      "bootstrap_mean": 0.6972,
+      "bootstrap_std": 0.0525,
+      "n_patients": 5674,
+      "reps": 500
+    },
+    "INJIN": {
+      "n": 12,
+      "n_normal": 5920,
+      "note": "样本<20，不计算 AUC"
+    },
+    "INJLA": {
+      "n": 13,
+      "n_normal": 5920,
+      "note": "样本<20，不计算 AUC"
+    },
+    "PMI": {
+      "n": 14,
+      "n_normal": 5920,
+      "note": "样本<20，不计算 AUC"
+    },
+    "INJIL": {
+      "n": 14,
+      "n_normal": 5920,
+      "note": "样本<20，不计算 AUC"
+    },
+    "IMI_inferior_exclusive": {
+      "n": 1274,
+      "n_normal": 5920,
+      "desc": "下壁 MI 亚类（IMI/ILMI/IPLMI/IPMI/INJIN/INJIL），不含其他 MI 码",
+      "auc": 0.7419,
+      "ci_lo": 0.727,
+      "ci_hi": 0.7569,
+      "ci_width": 0.0299,
+      "bootstrap_mean": 0.7421,
+      "bootstrap_std": 0.0075,
+      "n_patients": 6799,
+      "reps": 500
+    },
+    "ASMI_exclusive": {
+      "n": 915,
+      "n_normal": 5920,
+      "desc": "前间壁 MI（ASMI），不含其他 MI 码",
+      "auc": 0.7916,
+      "ci_lo": 0.7734,
+      "ci_hi": 0.8084,
+      "ci_width": 0.0351,
+      "bootstrap_mean": 0.7909,
+      "bootstrap_std": 0.0087,
+      "n_patients": 6485,
+      "reps": 500
+    },
+    "AMI_anterior_exclusive": {
+      "n": 258,
+      "n_normal": 5920,
+      "desc": "前壁/前侧壁 MI（AMI/ALMI/INJAL/INJLA），不含其他 MI 码",
+      "auc": 0.7606,
+      "ci_lo": 0.7282,
+      "ci_hi": 0.7906,
+      "ci_width": 0.0624,
+      "bootstrap_mean": 0.7603,
+      "bootstrap_std": 0.0161,
+      "n_patients": 5895,
+      "reps": 500
+    }
+  },
+  "elapsed_s": 21.2
+}

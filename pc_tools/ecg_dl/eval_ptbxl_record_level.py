@@ -31,6 +31,8 @@ eval_ptbxl_record_level.py — PTB-XL 记录级验证（完全复刻板上部署
   python3 pc_tools/ecg_dl/eval_ptbxl_record_level.py --superclass MI
   python3 pc_tools/ecg_dl/eval_ptbxl_record_level.py --superclass AFIB --aggregate mean
   python3 pc_tools/ecg_dl/eval_ptbxl_record_level.py --n-max 100
+  python3 pc_tools/ecg_dl/eval_ptbxl_record_level.py --superclass MI --negative abnormal \
+      --aggregate mean --threshold-sweep --tag mi_vs_abnormal
 
 输出：
   pc_tools/ecg_dl/models/ptbxl_record_level_eval.json
@@ -296,10 +298,16 @@ def main():
                     help="阳性诊断大类（abnormal=任意异常；或 MI/STTC/CD/HYP）")
     ap.add_argument("--positive", type=str, default=None,
                     help="（可选）直接指定 SCP 码，如 AFIB/PVC/IMI；优先于 --superclass")
+    ap.add_argument("--negative", type=str, default="normal",
+                    choices=["normal", "abnormal"],
+                    help="负类定义：normal=健康对照（默认）；abnormal=排除阳性后的其他异常记录")
     ap.add_argument("--threshold-sweep", action="store_true",
                     help="对记录级分数做全阈值扫描，输出 Se/Sp/PPV/F1 表和最优操作点")
     ap.add_argument("--sweep-step", type=float, default=0.01,
                     help="阈值扫描步长（默认 0.01，范围 0.01~0.99）")
+    ap.add_argument("--save-scores", action="store_true",
+                    help="保存每条记录的原始分数/标签/patient_id 到 npz，"
+                         "供嵌套阈值选择等离线分析（避免重复推理）")
     ap.add_argument("--tag", default="", help="输出 JSON 文件名后缀")
     args = ap.parse_args()
 
@@ -325,16 +333,26 @@ def main():
 
     positive = args.positive or args.superclass
     pos = [r for r in rows if classify(parse_scp(r["scp_codes"]), positive, mapping)]
-    neg = [r for r in rows if not classify(parse_scp(r["scp_codes"]), positive, mapping)
-           and is_normal_record(parse_scp(r["scp_codes"]))]
-    print(f"正类({positive}): {len(pos)}  负类(正常): {len(neg)}")
+    if args.negative == "normal":
+        neg = [r for r in rows if not classify(parse_scp(r["scp_codes"]), positive, mapping)
+               and is_normal_record(parse_scp(r["scp_codes"]))]
+        neg_desc = "正常"
+    elif args.negative == "abnormal":
+        if positive == "abnormal":
+            raise SystemExit("[ERROR] --negative abnormal 在 positive=abnormal 下无意义：负类需排除阳性")
+        neg = [r for r in rows if not classify(parse_scp(r["scp_codes"]), positive, mapping)
+               and not is_normal_record(parse_scp(r["scp_codes"]))]
+        neg_desc = "排除阳性后的其他异常"
+    else:
+        raise SystemExit(f"[ERROR] unknown --negative: {args.negative}")
+    print(f"正类({positive}): {len(pos)}  负类({neg_desc}): {len(neg)}")
 
     n_pos = len(pos) if args.n_max == 0 else min(args.n_max, len(pos))
     n_neg = len(neg) if args.n_max == 0 else min(args.n_max, len(neg))
     print(f"实际采样: 正 {n_pos} / 负 {n_neg}（Lead {args.lead+1}, 部署链）")
 
     t0 = time.time()
-    y_true, scores = [], []
+    y_true, scores, patient_ids, fnames = [], [], [], []
 
     def process(rec):
         fname = PTBXL_DIR / (rec["filename_hr"] + ".dat")
@@ -346,16 +364,30 @@ def main():
     for i, rec in enumerate(pos[:n_pos]):
         scores.append(process(rec))
         y_true.append(1)
+        patient_ids.append(rec.get("patient_id", ""))
+        fnames.append(rec["filename_hr"])
         if (i + 1) % 200 == 0:
             print(f"  正类 {i+1}/{n_pos}  ({time.time()-t0:.0f}s)")
     for i, rec in enumerate(neg[:n_neg]):
         scores.append(process(rec))
         y_true.append(0)
+        patient_ids.append(rec.get("patient_id", ""))
+        fnames.append(rec["filename_hr"])
         if (i + 1) % 200 == 0:
             print(f"  负类 {i+1}/{n_neg}  ({time.time()-t0:.0f}s)")
 
     y_true = np.asarray(y_true)
     scores = np.asarray(scores)
+
+    # 保存原始分数供离线分析（嵌套阈值选择等，避免重复推理）
+    if args.save_scores:
+        scores_npz = OUT_JSON.with_suffix(".npz") if not args.tag else \
+            OUT_JSON.with_name(f"{OUT_JSON.stem}_{args.tag}.npz")
+        np.savez_compressed(
+            scores_npz, y_true=y_true, scores=scores,
+            patient_ids=np.asarray(patient_ids, dtype=str),
+            filenames=np.asarray(fnames, dtype=str))
+        print(f"[save-scores] 原始分数已保存: {scores_npz}")
 
     from sklearn.metrics import roc_auc_score, precision_recall_fscore_support
     if len(np.unique(y_true)) < 2 or len(np.unique(scores)) < 2:
@@ -423,7 +455,8 @@ def main():
             "dc_offset_remove": DC_OFFSET_REMOVE,
             "output": "dequant abnormal class probability (no re-softmax)",
         },
-        "label_definition": {"positive": positive, "normal_keys": sorted(NORMAL_KEYS)},
+        "label_definition": {"positive": positive, "negative": args.negative,
+                             "normal_keys": sorted(NORMAL_KEYS)},
         "n_records": {"positive": n_pos, "negative": n_neg},
         "aggregate": args.aggregate,
         "auc": auc,

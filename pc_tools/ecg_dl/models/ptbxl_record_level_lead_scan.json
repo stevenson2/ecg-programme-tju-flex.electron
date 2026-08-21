@@ -1,0 +1,552 @@
+{
+  "meta": {
+    "date": "2026-08-21 14:21:09",
+    "task": "PTB-XL 12 导联逐导扫描（KD a070_t1, MI vs NORM, aggregate=mean, 完整部署链）",
+    "bootstrap": "患者级重采样 500 reps, seed=123, 95% CI 百分位"
+  },
+  "results": {
+    "I": {
+      "lead_index": 0,
+      "lead_name": "I",
+      "auc": 0.698757981829855,
+      "n_records": {
+        "positive": 3494,
+        "negative": 5920
+      },
+      "best_youden_point": {
+        "youden": 1.3027889509429293,
+        "threshold": 0.16,
+        "TP": 2151,
+        "FP": 1852,
+        "FN": 1343,
+        "TN": 4068,
+        "sensitivity": 0.6156,
+        "specificity": 0.6872,
+        "precision": 0.5373,
+        "f1": 0.5738
+      },
+      "best_f1_point": {
+        "threshold": 0.12,
+        "TP": 2582,
+        "FP": 2658,
+        "FN": 912,
+        "TN": 3262,
+        "sensitivity": 0.739,
+        "specificity": 0.551,
+        "precision": 0.4927,
+        "f1": 0.5913
+      },
+      "bootstrap_ci": {
+        "ci_lo": 0.6877,
+        "ci_hi": 0.7099,
+        "ci_width": 0.0222,
+        "bootstrap_mean": 0.6988,
+        "bootstrap_std": 0.0055,
+        "n_patients": 8709,
+        "reps": 500
+      }
+    },
+    "II": {
+      "lead_index": 1,
+      "lead_name": "II",
+      "auc": 0.7768220665929236,
+      "n_records": {
+        "positive": 3494,
+        "negative": 5920
+      },
+      "best_youden_point": {
+        "youden": 1.4129063916520985,
+        "threshold": 0.18,
+        "TP": 2593,
+        "FP": 1949,
+        "FN": 901,
+        "TN": 3971,
+        "sensitivity": 0.7421,
+        "specificity": 0.6708,
+        "precision": 0.5709,
+        "f1": 0.6453
+      },
+      "best_f1_point": {
+        "threshold": 0.16,
+        "TP": 2738,
+        "FP": 2222,
+        "FN": 756,
+        "TN": 3698,
+        "sensitivity": 0.7836,
+        "specificity": 0.6247,
+        "precision": 0.552,
+        "f1": 0.6477
+      },
+      "bootstrap_ci": {
+        "ci_lo": 0.7673,
+        "ci_hi": 0.786,
+        "ci_width": 0.0188,
+        "bootstrap_mean": 0.7772,
+        "bootstrap_std": 0.005,
+        "n_patients": 8709,
+        "reps": 500
+      }
+    },
+    "III": {
+      "lead_index": 2,
+      "lead_name": "III",
+      "auc": 0.7577951681647304,
+      "n_records": {
+        "positive": 3494,
+        "negative": 5920
+      },
+      "best_youden_point": {
+        "youden": 1.3743237441792107,
+        "threshold": 0.5,
+        "TP": 2277,
+        "FP": 1642,
+        "FN": 1217,
+        "TN": 4278,
+        "sensitivity": 0.6517,
+        "specificity": 0.7226,
+        "precision": 0.581,
+        "f1": 0.6143
+      },
+      "best_f1_point": {
+        "threshold": 0.42,
+        "TP": 2616,
+        "FP": 2272,
+        "FN": 878,
+        "TN": 3648,
+        "sensitivity": 0.7487,
+        "specificity": 0.6162,
+        "precision": 0.5352,
+        "f1": 0.6242
+      },
+      "bootstrap_ci": {
+        "ci_lo": 0.7466,
+        "ci_hi": 0.7678,
+        "ci_width": 0.0211,
+        "bootstrap_mean": 0.7577,
+        "bootstrap_std": 0.0056,
+        "n_patients": 8709,
+        "reps": 500
+      }
+    },
+    "aVR": {
+      "lead_index": 3,
+      "lead_name": "aVR",
+      "auc": 0.3390325016630827,
+      "n_records": {
+        "positive": 3494,
+        "negative": 5920
+      },
+      "best_youden_point": {
+        "youden": 1.0029417224895187,
+        "threshold": 0.88,
+        "TP": 15,
+        "FP": 8,
+        "FN": 3479,
+        "TN": 5912,
+        "sensitivity": 0.0043,
+        "specificity": 0.9986,
+        "precision": 0.6522,
+        "f1": 0.0085
+      },
+      "best_f1_point": {
+        "threshold": 0.01,
+        "TP": 3494,
+        "FP": 5920,
+        "FN": 0,
+        "TN": 0,
+        "sensitivity": 1.0,
+        "specificity": 0.0,
+        "precision": 0.3711,
+        "f1": 0.5414
+      },
+      "bootstrap_ci": {
+        "ci_lo": 0.3272,
+        "ci_hi": 0.3522,
+        "ci_width": 0.0251,
+        "bootstrap_mean": 0.3391,
+        "bootstrap_std": 0.0062,
+        "n_patients": 8709,
+        "reps": 500
+      }
+    },
+    "aVL": {
+      "lead_index": 4,
+      "lead_name": "aVL",
+      "auc": 0.5687773393384798,
+      "n_records": {
+        "positive": 3494,
+        "negative": 5920
+      },
+      "best_youden_point": {
+        "youden": 1.143318952180572,
+        "threshold": 0.16,
+        "TP": 2462,
+        "FP": 3323,
+        "FN": 1032,
+        "TN": 2597,
+        "sensitivity": 0.7046,
+        "specificity": 0.4387,
+        "precision": 0.4256,
+        "f1": 0.5307
+      },
+      "best_f1_point": {
+        "threshold": 0.07,
+        "TP": 3226,
+        "FP": 4910,
+        "FN": 268,
+        "TN": 1010,
+        "sensitivity": 0.9233,
+        "specificity": 0.1706,
+        "precision": 0.3965,
+        "f1": 0.5548
+      },
+      "bootstrap_ci": {
+        "ci_lo": 0.5574,
+        "ci_hi": 0.5815,
+        "ci_width": 0.024,
+        "bootstrap_mean": 0.5691,
+        "bootstrap_std": 0.006,
+        "n_patients": 8709,
+        "reps": 500
+      }
+    },
+    "aVF": {
+      "lead_index": 5,
+      "lead_name": "aVF",
+      "auc": 0.7741560822413712,
+      "n_records": {
+        "positive": 3494,
+        "negative": 5920
+      },
+      "best_youden_point": {
+        "youden": 1.4153311081545197,
+        "threshold": 0.28,
+        "TP": 2654,
+        "FP": 2038,
+        "FN": 840,
+        "TN": 3882,
+        "sensitivity": 0.7596,
+        "specificity": 0.6557,
+        "precision": 0.5656,
+        "f1": 0.6484
+      },
+      "best_f1_point": {
+        "threshold": 0.26,
+        "TP": 2727,
+        "FP": 2188,
+        "FN": 767,
+        "TN": 3732,
+        "sensitivity": 0.7805,
+        "specificity": 0.6304,
+        "precision": 0.5548,
+        "f1": 0.6486
+      },
+      "bootstrap_ci": {
+        "ci_lo": 0.7644,
+        "ci_hi": 0.7834,
+        "ci_width": 0.0191,
+        "bootstrap_mean": 0.7745,
+        "bootstrap_std": 0.0049,
+        "n_patients": 8709,
+        "reps": 500
+      }
+    },
+    "V1": {
+      "lead_index": 6,
+      "lead_name": "V1",
+      "auc": 0.6023957334194527,
+      "n_records": {
+        "positive": 3494,
+        "negative": 5920
+      },
+      "best_youden_point": {
+        "youden": 1.1727420752177478,
+        "threshold": 0.79,
+        "TP": 1300,
+        "FP": 1180,
+        "FN": 2194,
+        "TN": 4740,
+        "sensitivity": 0.3721,
+        "specificity": 0.8007,
+        "precision": 0.5242,
+        "f1": 0.4352
+      },
+      "best_f1_point": {
+        "threshold": 0.01,
+        "TP": 3494,
+        "FP": 5920,
+        "FN": 0,
+        "TN": 0,
+        "sensitivity": 1.0,
+        "specificity": 0.0,
+        "precision": 0.3711,
+        "f1": 0.5414
+      },
+      "bootstrap_ci": {
+        "ci_lo": 0.5899,
+        "ci_hi": 0.6154,
+        "ci_width": 0.0255,
+        "bootstrap_mean": 0.6026,
+        "bootstrap_std": 0.0068,
+        "n_patients": 8709,
+        "reps": 500
+      }
+    },
+    "V2": {
+      "lead_index": 7,
+      "lead_name": "V2",
+      "auc": 0.6082179489162889,
+      "n_records": {
+        "positive": 3494,
+        "negative": 5920
+      },
+      "best_youden_point": {
+        "youden": 1.1652491143117931,
+        "threshold": 0.82,
+        "TP": 1275,
+        "FP": 1182,
+        "FN": 2219,
+        "TN": 4738,
+        "sensitivity": 0.3649,
+        "specificity": 0.8003,
+        "precision": 0.5189,
+        "f1": 0.4285
+      },
+      "best_f1_point": {
+        "threshold": 0.21,
+        "TP": 3382,
+        "FP": 5564,
+        "FN": 112,
+        "TN": 356,
+        "sensitivity": 0.9679,
+        "specificity": 0.0601,
+        "precision": 0.378,
+        "f1": 0.5437
+      },
+      "bootstrap_ci": {
+        "ci_lo": 0.5944,
+        "ci_hi": 0.6233,
+        "ci_width": 0.0289,
+        "bootstrap_mean": 0.6082,
+        "bootstrap_std": 0.007,
+        "n_patients": 8709,
+        "reps": 500
+      }
+    },
+    "V3": {
+      "lead_index": 8,
+      "lead_name": "V3",
+      "auc": 0.7385433184687263,
+      "n_records": {
+        "positive": 3494,
+        "negative": 5920
+      },
+      "best_youden_point": {
+        "youden": 1.336514333451941,
+        "threshold": 0.43,
+        "TP": 2512,
+        "FP": 2264,
+        "FN": 982,
+        "TN": 3656,
+        "sensitivity": 0.7189,
+        "specificity": 0.6176,
+        "precision": 0.526,
+        "f1": 0.6075
+      },
+      "best_f1_point": {
+        "threshold": 0.35,
+        "TP": 2790,
+        "FP": 2841,
+        "FN": 704,
+        "TN": 3079,
+        "sensitivity": 0.7985,
+        "specificity": 0.5201,
+        "precision": 0.4955,
+        "f1": 0.6115
+      },
+      "bootstrap_ci": {
+        "ci_lo": 0.7271,
+        "ci_hi": 0.7493,
+        "ci_width": 0.0223,
+        "bootstrap_mean": 0.7383,
+        "bootstrap_std": 0.0056,
+        "n_patients": 8709,
+        "reps": 500
+      }
+    },
+    "V4": {
+      "lead_index": 9,
+      "lead_name": "V4",
+      "auc": 0.7848213249740869,
+      "n_records": {
+        "positive": 3494,
+        "negative": 5920
+      },
+      "best_youden_point": {
+        "youden": 1.4351096087501354,
+        "threshold": 0.27,
+        "TP": 2356,
+        "FP": 1416,
+        "FN": 1138,
+        "TN": 4504,
+        "sensitivity": 0.6743,
+        "specificity": 0.7608,
+        "precision": 0.6246,
+        "f1": 0.6485
+      },
+      "best_f1_point": {
+        "threshold": 0.24,
+        "TP": 2555,
+        "FP": 1785,
+        "FN": 939,
+        "TN": 4135,
+        "sensitivity": 0.7313,
+        "specificity": 0.6985,
+        "precision": 0.5887,
+        "f1": 0.6523
+      },
+      "bootstrap_ci": {
+        "ci_lo": 0.7747,
+        "ci_hi": 0.7954,
+        "ci_width": 0.0206,
+        "bootstrap_mean": 0.7849,
+        "bootstrap_std": 0.0049,
+        "n_patients": 8709,
+        "reps": 500
+      }
+    },
+    "V5": {
+      "lead_index": 10,
+      "lead_name": "V5",
+      "auc": 0.7477522761026626,
+      "n_records": {
+        "positive": 3494,
+        "negative": 5920
+      },
+      "best_youden_point": {
+        "youden": 1.372815076811213,
+        "threshold": 0.23,
+        "TP": 2159,
+        "FP": 1451,
+        "FN": 1335,
+        "TN": 4469,
+        "sensitivity": 0.6179,
+        "specificity": 0.7549,
+        "precision": 0.5981,
+        "f1": 0.6078
+      },
+      "best_f1_point": {
+        "threshold": 0.17,
+        "TP": 2663,
+        "FP": 2334,
+        "FN": 831,
+        "TN": 3586,
+        "sensitivity": 0.7622,
+        "specificity": 0.6057,
+        "precision": 0.5329,
+        "f1": 0.6273
+      },
+      "bootstrap_ci": {
+        "ci_lo": 0.7374,
+        "ci_hi": 0.7575,
+        "ci_width": 0.0201,
+        "bootstrap_mean": 0.7479,
+        "bootstrap_std": 0.0051,
+        "n_patients": 8709,
+        "reps": 500
+      }
+    },
+    "V6": {
+      "lead_index": 11,
+      "lead_name": "V6",
+      "auc": 0.7321799484444376,
+      "n_records": {
+        "positive": 3494,
+        "negative": 5920
+      },
+      "best_youden_point": {
+        "youden": 1.3703230634756107,
+        "threshold": 0.18,
+        "TP": 2433,
+        "FP": 1930,
+        "FN": 1061,
+        "TN": 3990,
+        "sensitivity": 0.6963,
+        "specificity": 0.674,
+        "precision": 0.5576,
+        "f1": 0.6193
+      },
+      "best_f1_point": {
+        "threshold": 0.18,
+        "TP": 2433,
+        "FP": 1930,
+        "FN": 1061,
+        "TN": 3990,
+        "sensitivity": 0.6963,
+        "specificity": 0.674,
+        "precision": 0.5576,
+        "f1": 0.6193
+      },
+      "bootstrap_ci": {
+        "ci_lo": 0.7214,
+        "ci_hi": 0.7425,
+        "ci_width": 0.0211,
+        "bootstrap_mean": 0.7323,
+        "bootstrap_std": 0.0054,
+        "n_patients": 8709,
+        "reps": 500
+      }
+    }
+  },
+  "rank_by_auc": [
+    [
+      "V4",
+      0.7848213249740869
+    ],
+    [
+      "II",
+      0.7768220665929236
+    ],
+    [
+      "aVF",
+      0.7741560822413712
+    ],
+    [
+      "III",
+      0.7577951681647304
+    ],
+    [
+      "V5",
+      0.7477522761026626
+    ],
+    [
+      "V3",
+      0.7385433184687263
+    ],
+    [
+      "V6",
+      0.7321799484444376
+    ],
+    [
+      "I",
+      0.698757981829855
+    ],
+    [
+      "V2",
+      0.6082179489162889
+    ],
+    [
+      "V1",
+      0.6023957334194527
+    ],
+    [
+      "aVL",
+      0.5687773393384798
+    ],
+    [
+      "aVR",
+      0.3390325016630827
+    ]
+  ],
+  "elapsed_s": 25.5
+}

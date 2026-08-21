@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "date": "2026-08-21 14:18:46",
+    "source_npz": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/ptbxl_record_level_eval_kd_mi_vs_abnormal.npz",
+    "positive": "MI",
+    "negative": "排除 MI 后的 PTB-XL 异常记录（STTC/CD/HYP 可重叠）",
+    "deploy_chain": "完整板上部署链（源 eval_ptbxl_record_level.py）",
+    "bootstrap": "患者级重采样 500 reps, seed=123, 95% CI 百分位"
+  },
+  "results": {
+    "all_abnormal": {
+      "n_positive": 3494,
+      "n_negative": 6680,
+      "auc": 0.6009,
+      "ci_lo": 0.5899,
+      "ci_hi": 0.6128,
+      "ci_width": 0.0228,
+      "bootstrap_mean": 0.6012,
+      "bootstrap_std": 0.0061,
+      "n_patients": 9068,
+      "reps": 500
+    },
+    "STTC": {
+      "n_positive": 3494,
+      "n_negative": 2753,
+      "auc": 0.6377,
+      "ci_lo": 0.6233,
+      "ci_hi": 0.652,
+      "ci_width": 0.0288,
+      "bootstrap_mean": 0.6376,
+      "bootstrap_std": 0.0075,
+      "n_patients": 5526,
+      "reps": 500
+    },
+    "CD": {
+      "n_positive": 3494,
+      "n_negative": 2338,
+      "auc": 0.444,
+      "ci_lo": 0.4279,
+      "ci_hi": 0.4594,
+      "ci_width": 0.0315,
+      "bootstrap_mean": 0.4441,
+      "bootstrap_std": 0.0081,
+      "n_patients": 5198,
+      "reps": 500
+    },
+    "HYP": {
+      "n_positive": 3494,
+      "n_negative": 1231,
+      "auc": 0.5829,
+      "ci_lo": 0.5617,
+      "ci_hi": 0.6002,
+      "ci_width": 0.0385,
+      "bootstrap_mean": 0.583,
+      "bootstrap_std": 0.0099,
+      "n_patients": 4228,
+      "reps": 500
+    },
+    "other_unclassified": {
+      "n_positive": 3494,
+      "n_negative": 1695,
+      "classes_found": [],
+      "note": "这些记录不含 STTC/CD/HYP 诊断类，通常只含 NORM/SR + 节律/描述性 SCP 码"
+    }
+  }
+}
