@@ -1,0 +1,266 @@
+{
+  "date": "2026-08-25 11:44:58",
+  "purpose": "exp7c_v4 joint acceptance eval",
+  "models": [
+    "exp7c",
+    "exp7c_v4"
+  ],
+  "public_patient_level": {
+    "exp7c": {
+      "mit_incart": {
+        "auc": 0.8963099468995921,
+        "n_beats": 51883,
+        "n_abnormal": 5636,
+        "n_records": 23,
+        "event": {
+          "theta": 0.5,
+          "policy": "1-of-5",
+          "cooldown": 5,
+          "event_recall": 0.924413,
+          "event_precision": 0.836842,
+          "event_f1": 0.87845,
+          "fp_per_record": 5.391304,
+          "fp_per_1000_beats": 2.389993,
+          "gt_events": 979,
+          "alert_blocks": 760,
+          "false_alarm_blocks": 124,
+          "matched_gt_events": 905,
+          "matched_pred_blocks": 636,
+          "beat_tp": 4983,
+          "beat_fp": 16734,
+          "beat_tn": 29513,
+          "beat_fn": 653
+        }
+      },
+      "ptb": {
+        "auc": 0.8015097305781951,
+        "n_beats": 13058,
+        "n_abnormal": 10204,
+        "n_records": 95,
+        "event": {
+          "theta": 0.5,
+          "policy": "1-of-5",
+          "cooldown": 5,
+          "event_recall": 0.773333,
+          "event_precision": 0.931298,
+          "event_f1": 0.844996,
+          "fp_per_record": 0.094737,
+          "fp_per_1000_beats": 0.689233,
+          "gt_events": 75,
+          "alert_blocks": 131,
+          "false_alarm_blocks": 9,
+          "matched_gt_events": 58,
+          "matched_pred_blocks": 122,
+          "beat_tp": 6436,
+          "beat_fp": 444,
+          "beat_tn": 2410,
+          "beat_fn": 3768
+        }
+      }
+    },
+    "exp7c_v4": {
+      "mit_incart": {
+        "auc": 0.9003243231107174,
+        "n_beats": 51883,
+        "n_abnormal": 5636,
+        "n_records": 23,
+        "event": {
+          "theta": 0.5,
+          "policy": "1-of-5",
+          "cooldown": 5,
+          "event_recall": 0.901941,
+          "event_precision": 0.829016,
+          "event_f1": 0.863942,
+          "fp_per_record": 5.73913,
+          "fp_per_1000_beats": 2.544186,
+          "gt_events": 979,
+          "alert_blocks": 772,
+          "false_alarm_blocks": 132,
+          "matched_gt_events": 883,
+          "matched_pred_blocks": 640,
+          "beat_tp": 4939,
+          "beat_fp": 16093,
+          "beat_tn": 30154,
+          "beat_fn": 697
+        }
+      },
+      "ptb": {
+        "auc": 0.7954402748746867,
+        "n_beats": 13058,
+        "n_abnormal": 10204,
+        "n_records": 95,
+        "event": {
+          "theta": 0.5,
+          "policy": "1-of-5",
+          "cooldown": 5,
+          "event_recall": 0.76,
+          "event_precision": 0.947712,
+          "event_f1": 0.843539,
+          "fp_per_record": 0.084211,
+          "fp_per_1000_beats": 0.612651,
+          "gt_events": 75,
+          "alert_blocks": 153,
+          "false_alarm_blocks": 8,
+          "matched_gt_events": 57,
+          "matched_pred_blocks": 145,
+          "beat_tp": 5768,
+          "beat_fp": 454,
+          "beat_tn": 2400,
+          "beat_fn": 4436
+        }
+      }
+    }
+  },
+  "real_afe_holdout": {
+    "exp7c": {
+      "mean": 0.4496377408504486,
+      "frac_gt_0.5": 0.225,
+      "frac_gt_0.75": 0.05,
+      "n": 40
+    },
+    "exp7c_v4": {
+      "mean": 0.3179056942462921,
+      "frac_gt_0.5": 0.05,
+      "frac_gt_0.75": 0.025,
+      "n": 40
+    }
+  },
+  "real_afe_audit": {
+    "n_real_total": 311,
+    "holdout_indices": [
+      246,
+      26,
+      271,
+      56,
+      19,
+      273,
+      276,
+      28,
+      136,
+      194,
+      163,
+      24,
+      131,
+      191,
+      119,
+      37,
+      68,
+      196,
+      146,
+      243,
+      205,
+      147,
+      120,
+      264,
+      211,
+      255,
+      208,
+      148,
+      237,
+      53,
+      231,
+      108,
+      85,
+      225,
+      169,
+      179,
+      216,
+      297,
+      133,
+      23
+    ],
+    "holdout_n": 40,
+    "real_train_unique": 271,
+    "excluded_from_training_by_construction": true
+  },
+  "leakage_check": {
+    "mit_incart_patient_level_ok": true,
+    "ptb_patient_level_ok": true,
+    "mit_incart_patients": {
+      "n_patients": 79,
+      "n_train": 49,
+      "n_val": 15,
+      "n_test": 15
+    },
+    "ptb_patients": {
+      "n_patients": 286,
+      "n_train": 172,
+      "n_val": 57,
+      "n_test": 57
+    }
+  },
+  "leakage_ok": true,
+  "matrix_ok": true,
+  "matrix_audit": [
+    {
+      "model": "exp7c",
+      "domain": "mit_incart",
+      "event_matrix_ok": true,
+      "alert_blocks": 760,
+      "fp_blocks": 124,
+      "matched_pred_blocks": 636,
+      "tp_events": 905
+    },
+    {
+      "model": "exp7c",
+      "domain": "mit_incart",
+      "beat_matrix_sum": 51883,
+      "n_beats": 51883,
+      "ok": true
+    },
+    {
+      "model": "exp7c",
+      "domain": "ptb",
+      "event_matrix_ok": true,
+      "alert_blocks": 131,
+      "fp_blocks": 9,
+      "matched_pred_blocks": 122,
+      "tp_events": 58
+    },
+    {
+      "model": "exp7c",
+      "domain": "ptb",
+      "beat_matrix_sum": 13058,
+      "n_beats": 13058,
+      "ok": true
+    },
+    {
+      "model": "exp7c_v4",
+      "domain": "mit_incart",
+      "event_matrix_ok": true,
+      "alert_blocks": 772,
+      "fp_blocks": 132,
+      "matched_pred_blocks": 640,
+      "tp_events": 883
+    },
+    {
+      "model": "exp7c_v4",
+      "domain": "mit_incart",
+      "beat_matrix_sum": 51883,
+      "n_beats": 51883,
+      "ok": true
+    },
+    {
+      "model": "exp7c_v4",
+      "domain": "ptb",
+      "event_matrix_ok": true,
+      "alert_blocks": 153,
+      "fp_blocks": 8,
+      "matched_pred_blocks": 145,
+      "tp_events": 57
+    },
+    {
+      "model": "exp7c_v4",
+      "domain": "ptb",
+      "beat_matrix_sum": 13058,
+      "n_beats": 13058,
+      "ok": true
+    }
+  ],
+  "perfect_number_audit": [],
+  "reference_event_policy": {
+    "theta": 0.5,
+    "policy": "1-of-5",
+    "cooldown": 5
+  }
+}

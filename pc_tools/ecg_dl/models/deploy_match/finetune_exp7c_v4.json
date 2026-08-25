@@ -1,0 +1,109 @@
+{
+  "date": "2026-08-25 11:35:39",
+  "purpose": "exp7c_v4 multi-domain balanced finetune with real AFE normal suppression",
+  "base_model": "best_resnet_large_exp7c.h5",
+  "output_model": "models/best_resnet_large_exp7c_v4.h5",
+  "patient_split": {
+    "mit_incart": {
+      "n_patients": 79,
+      "n_train": 49,
+      "n_val": 15,
+      "n_test": 15
+    },
+    "ptb": {
+      "n_patients": 286,
+      "n_train": 172,
+      "n_val": 57,
+      "n_test": 57
+    }
+  },
+  "data": {
+    "main": {
+      "mit_abn": 1500,
+      "mit_norm": 500,
+      "incart_abn": 400,
+      "incart_norm": 150,
+      "ptb_abn": 600,
+      "ptb_norm": 200
+    },
+    "real_afe_train_unique": 271,
+    "real_afe_train_repeated": 542,
+    "real_afe_holdout": 40,
+    "synthetic_hard_negative": 600,
+    "public_hard_normal": 200,
+    "train_total": 4692,
+    "train_abn": 2500,
+    "train_norm": 2192,
+    "val_total": 2440,
+    "val_abn": 1200,
+    "val_norm": 1240,
+    "real_holdout_indices": [
+      246,
+      26,
+      271,
+      56,
+      19,
+      273,
+      276,
+      28,
+      136,
+      194,
+      163,
+      24,
+      131,
+      191,
+      119,
+      37,
+      68,
+      196,
+      146,
+      243,
+      205,
+      147,
+      120,
+      264,
+      211,
+      255,
+      208,
+      148,
+      237,
+      53,
+      231,
+      108,
+      85,
+      225,
+      169,
+      179,
+      216,
+      297,
+      133,
+      23
+    ]
+  },
+  "config": {
+    "freeze": "all except fc1/out",
+    "optimizer": "adam",
+    "lr": 1e-05,
+    "loss": "sparse_categorical_crossentropy",
+    "class_weight": {
+      "0": 2.0,
+      "1": 1.0
+    },
+    "epochs_requested": 40,
+    "epochs_run": 40,
+    "early_stopping_patience": 10,
+    "val_monitor": "val_auc"
+  },
+  "before": {
+    "real_holdout_mean": 0.4496377408504486,
+    "real_holdout_frac_gt_0.5": 0.225,
+    "val_auc": 0.8094879032258064
+  },
+  "after": {
+    "real_holdout_mean": 0.3179056942462921,
+    "real_holdout_frac_gt_0.5": 0.05,
+    "real_holdout_frac_gt_0.75": 0.025,
+    "val_auc": 0.8132251344086021,
+    "train_acc": 0.7659846544265747
+  }
+}
