@@ -29,7 +29,7 @@
 - **实时采集**：500Hz 三通道信号（clean / noisy / filtered），信号源可选软件模拟发生器、真实 AFE 模拟前端或 MIT-BIH 回放
 - **数字滤波**：双级梳状（50/100Hz 陷零）→ 高通 → 低通 40Hz 级联
 - **心率检测**：能量包络 QRS 检测（x² + 8-25Hz 带通 + MWI + 形态学门 v6；LUDB 金标准验证 F1 0.868）
-- **AI 逐拍异常检测**：exp7c 部署模型（ResNet-L INT8，2026-08-14 真实数据微调版），Core 0 独立推理
+- **AI 逐拍异常检测**：exp7c 部署模型（ResNet-L INT8，2026-08-14 真实数据微调版），Core 0 独立推理；2026-08-25 已完成 exp7c_v4 PC float 联合验收，尚未替换上板
 - **心律安全与节律分析**：停搏 / 过缓 / 过速（纯规则）、房颤（CV + Shannon 熵）、VF/VT 检测
 - **报警锁存**：AI 异常触发后 5 秒锁存，防止一闪而过
 - **BLE 透传**：Nordic UART Service，手机 App 实时波形显示与报警提示
@@ -131,6 +131,8 @@ cd ecg_app && flutter run
 - Core 0 推理任务：等待信号量 → 取 250 点窗口 → 归一化 → 推理 → 结果队列（深度 8），主循环非阻塞读取
 - 推理间隔 **AI_STRIDE=250（1Hz）**：2026-08-08 真机实测单次推理 ~910ms，超过原 0.5s 触发间隔，任务占满 Core 0 触发 Task WDT 崩溃；调为 1s 间隔 + 推理后让出 CPU 修复（TH §三十一）
 
+> **推理加速进展（2026-08-24）**：IDF 迁移实验中使用 `esp-tflite-micro + ESP-NN` 将同一 exp7c INT8 推理从约 940ms 降至 **49ms**，PC↔板端 200 拍一致性通过（mean|Δp|=0.000625）；该后端当前仍在 `experiments/esp_idf_ecg_migration` 中验证，尚未切换正式 Arduino 固件（TH 75/76）。
+
 **串口 / BLE CSV 数据格式（每行）**：
 
 ```
@@ -170,7 +172,7 @@ cd ecg_app && flutter run
 │   ├── signal_generator/   ecg_simulator（模拟信号）+ ecg_replay（MIT-BIH 回放）
 │   ├── storage/            SPIFFS 记录器（ECGR 格式，崩溃安全）
 │   ├── thermal/            温度管理（>65°C 降频保护）
-│   └── wifi/               阶段 B WiFi 传输（占位，WIFI_ON/OFF 命令已接线）
+│   └── wifi/               WiFi AP + HTTP 记录下载（Arduino 固件已实现，WIFI_ON/OFF 命令已接线）
 ├── include/                头文件（与 src/ 同构；含 ai_inference/ecg_model_data.h 模型权重）
 ├── pc_tools/               Python PC 工具
 │   ├── ecg_plotter.py      实时三通道绘图（可打包 ECG-Plotter.exe）
@@ -180,7 +182,10 @@ cd ecg_app && flutter run
 ├── test/                   测试代码（ecg_recorder_format_test 等，WSL g++ 可独立跑）
 ├── docs/                   论文与结果文档（权威数字见 docs/FINAL_RESULTS.md）
 ├── papers/                 文献 PDF 与阅读笔记
-├── partitions/             分区表（esp32s3_16m_noota_v2.csv 等）
+├── components/             ESP-IDF 迁移组件（ecg_ai / ecg_storage / ecg_wifi / ecg_ble / ecg_core）
+├── experiments/             IDF 迁移工程 + esp-tflite-micro/ESP-NN 基准与一致性实验
+├── esp-nn/                  ESP-NN 组件源码（外部组件，含独立 .git）
+├── partitions/             分区表（esp32s3_16m_noota_v2.csv / partitions_ecg.csv 等）
 └── lib/                    库文件（TFLite Micro 等经 platformio.ini lib_deps 引入）
 ```
 
@@ -212,6 +217,18 @@ cd ecg_app && flutter run
 
 **部署方案演进（一句话）**：双专家 OR（P2A + exp5）严谨口径实测**已否决**（TH §8.8：MIT 误报叠加 25~32%、PTB 召回仅 0.41，旧口径数字为泄漏版作废）；改为**分模型 + 前置关卡**：心律失常交给 P2A（θ=0.5），心梗筛查交给 KD 蒸馏学生 a070_t1（θ=0.35 + 时序确认），前置"正常 vs 异常"关卡过滤正常拍（实测精度 +20%，TH §8.9.1/8.9.5/8.9.6）。
 
+### 近期进展（2026-08-24 ~ 08-25）
+
+- **exp7c_v4（PC float 候选，未上板）**
+  - 真实 AFE 留出 40 拍 mean：0.3179，frac>0.5：5.0%；exp7c 基线为 mean 0.4496 / frac>0.5 22.5%。
+  - 选定事件级操作点：θ=0.45、1-of-7、cooldown=10；MIT+INCART event F1 0.8758、FP/record 3.26；PTB event F1 0.8534、FP/record 0.0947。
+  - 患者级无泄漏、混淆矩阵自洽、无未审计完美数字。
+  - 详细见 `pc_tools/ecg_dl/models/deploy_match/exp7c_v4_eval.json` 与 TUNING_HISTORY 第九十六章。
+- **推理后端迁移（IDF 实验）**
+  - `esp-tflite-micro + ESP-NN` 实测 exp7c INT8 推理约 **49ms**（原 Arduino TFLM 约 940ms）。
+  - PC↔板端 200 拍一致性：|ΔAUC|=0.00015，mean|Δp|=0.000625。
+  - `experiments/esp_idf_ecg_migration` 已完成 AI/存储/WiFi/BLE/心率/规则组件编译，但尚未完成 ADC/AFE 与完整真机联调，未替换当前 Arduino 正式固件。
+
 ### 关键指标速览
 
 > 权威数字见 [docs/FINAL_RESULTS.md](docs/FINAL_RESULTS.md)（表2 / 表4），每个数值可溯源至 `patient_split_eval.json` / `retrain_exp6_sgd_eval.json`。**口径标注**：表2 为患者级 60/20/20 划分 + 训练链（filtfilt）评估 + **MIT 测试未增强**（T1-2）；表4 为部署链口径（D3：因果滤波 + 2:1 抽取 + 梳状），数字取自 δ 对齐（群延迟窗口错位 ~6 样本，δ=0 下 exp6-SGD 为 MIT 0.8946 / PTB 0.7326）。**两表口径不同，不可直接比较**。
@@ -235,14 +252,14 @@ cd ecg_app && flutter run
 3. **TFLite Micro 推理**：ResNet-L 前向传播（1D-CNN，INT8）
 4. **反量化直取概率**：模型输出层自带 softmax，直接取异常类概率，**不再二次 softmax**（二次 softmax 会把概率动态范围压缩至 [0.270, 0.730]，导致阈值语义漂移，TH §二十三）
 5. **群延迟补偿**：因果部署链群延迟 ~6 样本 @250Hz（24ms），固件将推理触发时刻后移 6 样本（`AI_TRIGGER_OFFSET=6`），等效评估侧 δ=+6 窗口重提取语义，零成本抵消错位（详见 FINAL_RESULTS.md 表5）
-6. **真机实测**：单次推理 ~910ms，AI_STRIDE=250（1Hz）；真机温度 ≤51°C，无 WDT 崩溃（TH §三十一）
+6. **当前 Arduino 正式固件真机实测**：单次推理 ~910ms，AI_STRIDE=250（1Hz）；真机温度 ≤51°C，无 WDT 崩溃（TH §三十一）。IDF 迁移实验中同一模型用 ESP-NN 可降至 ~49ms，尚未接入正式固件。
 
 ### 核心结论
 
 - **数据量 > 模型架构 > 训练技巧**；单域 recall 天花板 ~0.82（TH §八 / ROADMAP 核心结论）
 - **SVEB / F 类为单拍信息固有瓶颈**（非模型缺陷）：VEB / Q 召回 ≥0.98，拖后腿的是 SVEB（Recall 44%）与 F（73%），单拍形态与正常拍几乎相同，需多拍上下文而数据量已否决多拍方案（D14，TH §十三·8.5）
 - **部署链失配**：训练链（filtfilt 零相位）与部署链（因果滤波）差异使 PTB 域 ΔAUC −0.105，部署链重训（D10）+ SGD（优于 AdamW，PTB +0.035，D11）为当前正解；输入侧补偿中仅 P0 时间对齐实用（恢复失配 30~60%，FINAL_RESULTS.md 表5）
-- 完整实验证据见 [TUNING_HISTORY.md](TUNING_HISTORY.md)，决策路线见 [ROADMAP.md](ROADMAP.md)，通俗故事见 [docs/MODEL_GUIDE.md](docs/MODEL_GUIDE.md)
+- 完整实验证据见 [docs/03_Software_Docs/TUNING_HISTORY.md](docs/03_Software_Docs/TUNING_HISTORY.md)，决策路线见 [docs/01_Project_Overview/ROADMAP.md](docs/01_Project_Overview/ROADMAP.md)，通俗故事见 [docs/MODEL_GUIDE.md](docs/MODEL_GUIDE.md)
 
 ---
 
@@ -307,7 +324,7 @@ AI / 规则报警触发后，CSV 的 `abnormal_flag` 保持 1 共 **5 秒**（`s
 - **REC_* 命令**（BLE + 串口双通道，大小写无关，共享解析器）：`REC_START` / `REC_STOP` / `REC_STATUS` / `REC_LIST` / `REC_AUTO 0|1`；记录采样 2:1 抽取 500→250Hz，int16 缩放统一 scale=8000.0
 - **硬件验收（2026-08-08 补记）**：真机 60s 录制 durationSec 自洽（修复 2Hz tick bug 后 63 ≈ 实际 62s）；**断电重启后记录仍在（count=2），阶段 A 核心验收通过**（TH §三十二）
 
-> 阶段 B：WiFi AP 传输 + 云端存储为下一阶段（`src/wifi/` 占位，WIFI_ON/OFF 命令已接线；App 侧云端记录 API 客户端已搭骨架）。
+> WiFi AP + HTTP 记录下载已在 Arduino 固件实现（TH §三十三）；云端/账号同步、完整 ESP-IDF 迁移联调仍在进行。App 侧已具备记录列表/回放与云端 API 骨架。
 
 ---
 
@@ -336,7 +353,9 @@ AI / 规则报警触发后，CSV 的 `abnormal_flag` 保持 1 共 **5 秒**（`s
 | `train_kd.py` | 知识蒸馏训练（a070_t1 心梗筛查器即产自 KD 路线） |
 | `train_ssl.py` / `train_ensemble.py` / `train_multitask.py` | SSL 预训练 / 集成 / 多任务（均为走岔路验证，见 TH §六） |
 | `evaluate.py` | H5 / TFLite 精度对比 |
-| `export.py` / `export_exp6_sgd.py` | INT8 量化导出 + C 数组（含部署链口径双域校准集） |
+| `export.py` / `export_exp6_sgd.py` / `export_exp7c.py` | INT8 量化导出 + C 数组（含部署链口径双域校准集） |
+| `finetune_exp7c_v4.py` | exp7c_v4 多域平衡后训练（患者级无泄漏 + 真实 AFE 留出） |
+| `eval_exp7c_v4.py` | exp7c_v4 联合验收：公共库事件级 + 真实 AFE 留出 + 策略扫描 |
 | `07_pc_inference.py` | PC 侧实时推理 + 基准 |
 | `eval_*.py` 系列 | 患者级划分 / 部署链匹配 / 报警决策层 / AF / VF / 相位鲁棒性 / bootstrap CI 等评估 |
 
@@ -400,8 +419,8 @@ python3 train.py --epochs 200 --batch-size 128
 | 文档 | 定位 | 什么时候读 |
 |------|------|-----------|
 | **README.md**（本文） | 总览入口：架构 / 结构 / 配置 / 快速上手 | 第一次看项目 |
-| [ROADMAP.md](ROADMAP.md) | 战略决策视图：D1-D14 决策清单 + 模型演进表 + Phase 4 计划，3 分钟读完 | 想快速知道"决策是什么、下一步去哪" |
-| [TUNING_HISTORY.md](TUNING_HISTORY.md) | 实验证据日志（三十二章）：每个结论的完整证据链与根因分析 | 深挖某个结论、审计数字、复盘踩坑 |
+| [docs/01_Project_Overview/ROADMAP.md](docs/01_Project_Overview/ROADMAP.md) | 战略决策视图：D1-D14 决策清单 + 模型演进表 + Phase 4 计划，3 分钟读完 | 想快速知道"决策是什么、下一步去哪" |
+| [docs/03_Software_Docs/TUNING_HISTORY.md](docs/03_Software_Docs/TUNING_HISTORY.md) | 实验证据日志（已至第九十六章，持续追加）：每个结论的完整证据链与根因分析 | 深挖某个结论、审计数字、复盘踩坑 |
 | [docs/FINAL_RESULTS.md](docs/FINAL_RESULTS.md) | **论文权威数字源**：全部指标可溯源至 JSON，含口径标注与修正声明 | 引用任何指标之前（数字审计规范：只信这里） |
 | [docs/MODEL_GUIDE.md](docs/MODEL_GUIDE.md) | 通俗故事版导读：不讲术语不堆指标，只讲来龙去脉 | 隔一段时间回来忘了项目在干嘛时 |
 | [consumer_ecg_architecture_plan.md](consumer_ecg_architecture_plan.md) | 消费级产品架构（模块 1-4：心律安全 / VF / AF / 决策层） | 产品化设计、报警决策层设计 |
@@ -414,7 +433,7 @@ python3 train.py --epochs 200 --batch-size 128
 
 ## 核心配置
 
-> 以下数值全部与源码核对（`src/`、`include/`，2026-08-08 状态）。AI 相关常量见 `include/ai_inference/tflite_settings.h`。
+> 以下数值与源码/最新实验核对（2026-08-25 状态）。AI 相关常量见 `include/ai_inference/tflite_settings.h`；IDF 迁移实验组件见 `experiments/esp_idf_ecg_migration/`。
 
 | 参数 | 值 | 说明 |
 |------|-----|------|
@@ -425,9 +444,9 @@ python3 train.py --epochs 200 --batch-size 128
 | BLE 设备名 | ESP32-ECG | - |
 | 滤波链 | 双级梳状(50/100Hz) → HP → LP 40Hz | 梳状双级合计 50Hz 衰减 -119.2dB、群延迟 20ms；独立 50/100Hz 陷波器已移除由梳状统一处理；HP 固件实际 0.05Hz（训练主线 0.5Hz，见 TH §十三·8.7） |
 | 心率算法 | 能量包络 v6 | x² 能量包络 + 8-25Hz 带通 + 40 样本 MWI + millis RR + 形态学门（2026-08-16 LUDB 全量重标定）；LUDB 验证：Se 96.40% / PPV 78.87% / F1 0.868 / BPM MAE 4.16（旧导数型 Pan-Tompkins v4.2 为 F1 0.774，见 FINAL_RESULTS 表9附） |
-| AI 模型 | exp7c（ResNet-L ~80K 参数） | TFLite Micro INT8，167,376 B；2026-08-14 上板（真实 AFE 数据微调，前身 exp6-SGD）；`include/ai_inference/ecg_model_data.h` |
+| AI 模型 | exp7c（ResNet-L ~80K 参数） | TFLite Micro INT8，167,376 B；2026-08-14 上板（真实 AFE 数据微调，前身 exp6-SGD）；`include/ai_inference/ecg_model_data.h`。exp7c_v4 为 2026-08-25 PC float 候选，未上板 |
 | AI 输入窗口 | 250 点 @ 250Hz = 1.0s | 固件 2:1 抽取（AI_INPUT_DECIMATION=2，500→250Hz），与训练窗口一致 |
-| AI 推理间隔 | AI_STRIDE=250（1s） | 2026-08-08 从 125（0.5s）调大：真机实测单次推理 ~910ms > 500ms 触发间隔 |
+| AI 推理间隔 | AI_STRIDE=250（1s） | 当前 Arduino 正式固件仍为 1s；IDF 迁移实验用 ESP-NN 已可降至 ~49ms/次，尚未切换正式固件 |
 | AI 群延迟补偿 | AI_TRIGGER_OFFSET=6 | 因果链群延迟 6 样本（24ms），触发时刻后移，等效 δ=+6（FINAL_RESULTS.md 表5） |
 | AI 判定阈值 | θ = 0.60 | **固件实际值**（INFERENCE_THRESHOLD，TH §40：真实数据分布偏移上调）；论文评估口径最优操作点 beat θ≈0.35 / patient θ≈0.5（D13）不可混用 |
 | 多拍确认 | 5 拍 | MULTI_BEAT_CONFIRM=5（连续 5 拍异常才报警，确认延迟 ~5s；TH §40 从 2 调大） |
@@ -441,17 +460,26 @@ python3 train.py --epochs 200 --batch-size 128
 
 ## 开发状态与路线
 
-**当前阶段（2026-08-08）**：
+**当前状态（2026-08-25）**：
 
-- ✅ **阶段 A（板上 ECG 记录存储）完成**：SPIFFS 记录器 + REC_* 命令落地，**硬件验收通过**（断电持久化验证成功，TH §三十二）；真机四连修完成（AI arena / Task WDT / 滤波器 double 精度 / 心率跨域标定，TH §三十一）
-- ⬜ **阶段 B（WiFi AP 传输 + 云端存储）待办**：`src/wifi/` 占位已接线，App 云端 API 客户端骨架已搭
-- 📝 **论文写作修订进行中**：19 条审稿问题已全部有解（MODEL_GUIDE §6）；权威数字以 [docs/FINAL_RESULTS.md](docs/FINAL_RESULTS.md) 为准，稿件见 `docs/manuscript_sections_1_4.md`
+- ✅ **正式固件仍为 Arduino + PlatformIO**：esp_timer 500Hz、心率 v6、五路统一报警、SPIFFS 记录、WiFi AP、BLE 125Hz；板上模型仍为 **exp7c INT8**。
+- ✅ **exp7c_v4 后训练完成并通过 PC 侧联合验收**：真实 AFE 留出抑制显著、公共库事件级能力保持、患者级无泄漏；当前为 float32 H5 候选，**尚未导出 INT8、未上板**。
+- 🚧 **ESP-IDF 迁移进行中**：`experiments/esp_idf_ecg_migration` 已编译通过 AI/存储/WiFi/BLE/心率/规则组件，`esp-tflite-micro + ESP-NN` 已将 exp7c INT8 推理从 ~940ms 降至 ~49ms；ADC/AFE、串口命令、完整真机联调尚未完成。
+- 📝 **论文与审计**：跨架构部署链失配、AAMI 矩阵、QAT/后训练、v6 泄漏审计均已留档；权威数字仍以 `docs/FINAL_RESULTS.md` 为准。
 
-**模型侧（ROADMAP Phase 4）**：板上单模型 = exp7c（08-14 上板）；**关卡 + 双专家部署为现役方案，训练测试进行中**（规划见 `docs/03_Software_Docs/dual_expert_deployment_plan.md`；KD a070_t1 INT8 已导出，关卡模型训练中，N16R8 下 Flash 无容量障碍）；4.3 全链路集成验证（PC-ESP32 一致性、真实采集链路、温度/功耗）待办；4.4 模型侧优化按需。
+**模型侧（ROADMAP Phase 4）**：
 
-**已关闭路线（避免重复踩坑）**：双专家**裸 OR** 融合（TH §8.8 否决——注意否决的是无关卡的 OR，关卡 + 双专家现役进行中）、3-beat 输入（D5）、SSL 预训练（D6）、平衡混合单模型（TH §8.9.6）、拍级 RR 上下文融合器（TH §二十八 负面结果）、全类相位扰动增强（TH §十八 负面结果）。
+- 板上单模型 = exp7c；
+- 关卡 + 双专家部署为现役方案（KD a070_t1 INT8 已导出，关卡模型仍在推进）；
+- exp7c_v4 是当前最接近替换候选的 PC 模型，但还需 INT8 导出、PC↔板端一致性、长时真实 AFE 验证。
 
-**已知遗留**：回放 100 段 bpm 偏低（心率参数按模拟器标定，真实信号需再标定）；VF/VT 检测器在模拟器/回放段有误报（阈值 / SQI 门控待调）。
+**已关闭路线（避免重复踩坑）**：双专家**裸 OR** 融合（TH §8.8 否决——注意否决的是无关联卡的 OR，关卡 + 双专家现役进行中）、3-beat 输入（D5）、SSL 预训练（D6）、平衡混合单模型（TH §8.9.6）、拍级 RR 上下文融合器（TH §二十八 负面结果）、全类相位扰动增强（TH §十八 负面结果）。
+
+**已知遗留**：
+
+- exp7c_v4 尚未导出 INT8、未做板端验证；
+- IDF 迁移工程尚未完成 ADC/AFE 与完整真机验收；
+- 回放 100 段 bpm 偏低、VF/VT 在模拟/回放段误报等旧问题仍待硬件阶段复核。
 
 ---
 
