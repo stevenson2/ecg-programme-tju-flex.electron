@@ -1,0 +1,162 @@
+name: Launchpad Build & Deploy
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build ${{ matrix.example }} (${{ matrix.idf_target }})
+    runs-on: ubuntu-latest
+    container: espressif/idf:release-v5.5
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # hello_world - all 4 targets
+          - example: hello_world
+            idf_target: esp32
+          - example: hello_world
+            idf_target: esp32s3
+          - example: hello_world
+            idf_target: esp32c3
+          - example: hello_world
+            idf_target: esp32p4
+          # micro_speech - all 4 targets
+          - example: micro_speech
+            idf_target: esp32
+          - example: micro_speech
+            idf_target: esp32s3
+          - example: micro_speech
+            idf_target: esp32c3
+          - example: micro_speech
+            idf_target: esp32p4
+          # person_detection - S3 and P4 only
+          - example: person_detection
+            idf_target: esp32s3
+          - example: person_detection
+            idf_target: esp32p4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build
+        shell: bash
+        run: |
+          . $IDF_PATH/export.sh
+          cd examples/${{ matrix.example }}
+          idf.py set-target ${{ matrix.idf_target }}
+          idf.py build
+
+      - name: Create merged binary
+        shell: bash
+        run: |
+          . $IDF_PATH/export.sh
+          cd examples/${{ matrix.example }}/build
+          python -m esptool --chip ${{ matrix.idf_target }} merge_bin -o merged-binary.bin -f raw @flash_args
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.example }}_${{ matrix.idf_target }}
+          path: examples/${{ matrix.example }}/build/merged-binary.bin
+
+  collect:
+    name: Collect & Generate launchpad.toml
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare deploy directory
+        run: |
+          mkdir -p deploy
+          for dir in artifacts/*/; do
+            name=$(basename "$dir")
+            cp "$dir/merged-binary.bin" "deploy/${name}.bin"
+          done
+
+      - name: Generate launchpad.toml
+        run: |
+          cat > deploy/launchpad.toml <<'TOML'
+          esp_toml_version = 1.0
+          firmware_images_url = "https://espressif.github.io/esp-tflite-micro/"
+          supported_apps = ["hello_world", "micro_speech", "person_detection"]
+
+          [hello_world]
+          chipsets = ["ESP32", "ESP32-S3", "ESP32-C3", "ESP32-P4"]
+          image.esp32 = "hello_world_esp32.bin"
+          image.esp32-s3 = "hello_world_esp32s3.bin"
+          image.esp32-c3 = "hello_world_esp32c3.bin"
+          image.esp32-p4 = "hello_world_esp32p4.bin"
+          description = "TFLite Micro Hello World example - sine wave inference"
+
+          [micro_speech]
+          chipsets = ["ESP32", "ESP32-S3", "ESP32-C3", "ESP32-P4"]
+          image.esp32 = "micro_speech_esp32.bin"
+          image.esp32-s3 = "micro_speech_esp32s3.bin"
+          image.esp32-c3 = "micro_speech_esp32c3.bin"
+          image.esp32-p4 = "micro_speech_esp32p4.bin"
+          description = "TFLite Micro Speech recognition example"
+
+          [person_detection]
+          chipsets = ["ESP32-S3", "ESP32-P4"]
+          image.esp32-s3 = "person_detection_esp32s3.bin"
+          image.esp32-p4 = "person_detection_esp32p4.bin"
+          description = "TFLite Micro Person Detection with camera"
+          TOML
+
+      - name: Generate minimal-launchpad TOML for ESP32-S3-EYE
+        run: |
+          mkdir -p deploy/person_detection/esp32_s3_eye
+          cat > deploy/person_detection/esp32_s3_eye/launchpad.toml <<'TOML'
+          esp_toml_version = 1.0
+
+          multipart = true
+          chip = "esp32-s3"
+          supported_apps = [ "Person Detection: ESP32-S3-EYE" ]
+
+          ["Person Detection: ESP32-S3-EYE"]
+          icon = "https://raw.githubusercontent.com/espressif/esp-who/master/docs/_static/get-started/ESP32-S3-EYE-isometric.png"
+          image.esp32-s3.parts = [
+            "https://espressif.github.io/esp-tflite-micro/person_detection_esp32s3.bin",
+          ]
+          image.esp32-s3.addresses = [ "0x0" ]
+          readme.text = "https://raw.githubusercontent.com/espressif/esp-tflite-micro/master/examples/person_detection/README.md"
+
+          [[portConnectionOptions]]
+          console_baudrate = 115200
+          TOML
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: deploy
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: collect
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

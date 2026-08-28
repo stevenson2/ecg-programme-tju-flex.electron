@@ -78,3 +78,18 @@ pc_tools/serial/*.id
 # 无关工具目录（勿提交）
 dsh-routing-suite/
 dsh-sessions-export/
+
+# ESP-IDF 迁移线（experiments/esp_idf_ecg_migration）
+build/
+managed_components/
+dependencies.lock
+
+# 根目录旧克隆（已 vendor 进迁移工程，见 experiments/esp_idf_ecg_migration/components/）
+components/esp-nn/
+components/esp-tflite-micro/
+/esp-nn/
+# 冗余副本（真实 ecg_ai 已随迁移工程入库）
+components/ecg_ai/
+
+# 环境文件
+.clangd

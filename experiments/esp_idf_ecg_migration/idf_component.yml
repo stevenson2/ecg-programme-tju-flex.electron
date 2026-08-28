@@ -1,0 +1,7 @@
+# Project-level component manager dependencies.
+# Third-party components are fetched from the ESP component registry,
+# so a fresh clone can build with `idf.py build` (no manual git clones needed).
+dependencies:
+  idf: ">=5.1"
+  espressif/esp-nn: "1.3.0"
+  espressif/esp-tflite-micro: "1.4.0"
