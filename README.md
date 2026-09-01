@@ -47,11 +47,25 @@ cd ecg_app && flutter run
 
 ## 架构
 
-```
-电极(RA/LA/RL, Lead II) ─► AFE(AD8232/自制) ─► ADC ─► 500Hz
-   └► 梳状50/100Hz ─► HP ─► LP40 ─► 心率v6 + 心律/AF/VF
-                                   └► 2:1抽取(250Hz) ─► 250点窗 ─► Z-score ─► INT8 ─► TFLite+NN 推理
-   结果 ─► 报警锁存5s ─► BLE NUS(TX) / 串口(+异常位图) / ECGR 录制 ─► WiFi REST 下载
+```mermaid
+flowchart LR
+    A[电极 RA/LA/RL<br/>Lead II] --> B[AFE<br/>AD8232 / 自制]
+    B --> C[ADC<br/>500 Hz]
+    C --> D[梳状 50/100 Hz<br/>-119.2 dB]
+    D --> E[HP + LP 40 Hz]
+    E --> F[心率 v6 + 心律/AF/VF]
+    E --> G[2:1 抽取<br/>250 Hz]
+    G --> H[250 点窗]
+    H --> I[Z-score + INT8]
+    I --> J[TFLite Micro + ESP-NN<br/>exp7c INT8]
+    J --> K[异常概率]
+    K --> L[报警锁存 5 s]
+    E --> M[ECGR 录制 + 异常位图]
+    F --> L
+    L --> N[BLE NUS TX + 串口]
+    M --> O[WiFi REST 下载]
+    L --> P[Flutter App]
+    O --> P
 ```
 
 - **核心分工**：Core 1 = 采集/滤波/通信/存储；Core 0 = AI 推理（250 点窗，AI_STRIDE=250）。

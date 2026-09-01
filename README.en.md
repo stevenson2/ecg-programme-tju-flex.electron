@@ -47,11 +47,25 @@ cd ecg_app && flutter run
 
 ## Architecture
 
-```
-Electrodes(RA/LA/RL, Lead II) ─► AFE(AD8232/custom) ─► ADC ─► 500 Hz
-   └► Comb 50/100 Hz ─► HP ─► LP40 ─► HR v6 + rhythm/AF/VF
-                                   └► 2:1 decimate(250 Hz) ─► 250-pt window ─► Z-score ─► INT8 ─► TFLite+NN inference
-   Result ─► Alarm latch 5 s ─► BLE NUS(TX) / serial(+bitmap) / ECGR record ─► WiFi REST download
+```mermaid
+flowchart LR
+    A[Electrodes RA/LA/RL<br/>Lead II] --> B[AFE<br/>AD8232 / custom]
+    B --> C[ADC<br/>500 Hz]
+    C --> D[Comb 50/100 Hz<br/>-119.2 dB]
+    D --> E[HP + LP 40 Hz]
+    E --> F[HR v6 + Rhythm/AF/VF]
+    E --> G[2:1 decimate<br/>250 Hz]
+    G --> H[250-pt window]
+    H --> I[Z-score + INT8]
+    I --> J[TFLite Micro + ESP-NN<br/>exp7c INT8]
+    J --> K[Anomaly probability]
+    K --> L[Alarm latch 5 s]
+    E --> M[ECGR record + bitmap]
+    F --> L
+    L --> N[BLE NUS TX + serial]
+    M --> O[WiFi REST download]
+    L --> P[Flutter App]
+    O --> P
 ```
 
 - **Core assignment**: Core 1 = acquisition/filtering/comms/storage; Core 0 = AI inference (250-pt window, AI_STRIDE=250).
