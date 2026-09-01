@@ -1,0 +1,39 @@
+{
+  "date": "2026-08-24 13:07:46",
+  "purpose": "exp7c_v2 后训练: real AFE normal + synthetic hard negatives",
+  "data": {
+    "real_normal_beats": 311,
+    "synthetic_hard_negatives": 3110,
+    "mix_abn": 2000,
+    "mix_norm": 600,
+    "held_out_real": 40
+  },
+  "config": {
+    "freeze": "backbone except fc1/out",
+    "lr": 1e-05,
+    "optimizer": "adam",
+    "loss": "sparse CE",
+    "class_weight": {
+      "0": 4.0,
+      "1": 1.0
+    },
+    "epochs": 60
+  },
+  "confidence_real_normal": {
+    "before_exp7b": {
+      "mean": 0.7197644114494324,
+      "frac_gt_0.5": 0.77491961414791
+    },
+    "after_v2_all": {
+      "mean": 0.11867883801460266,
+      "frac_gt_0.5": 0.006430868167202572
+    },
+    "after_v2_heldout40": {
+      "mean": 0.11980617046356201
+    },
+    "after_v2_synth_hard": {
+      "mean": 0.056637730449438095,
+      "frac_gt_0.5": 0.0028938906752411574
+    }
+  }
+}

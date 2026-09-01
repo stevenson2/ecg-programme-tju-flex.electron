@@ -1,0 +1,14 @@
+{
+  "task": "dual_expert_gate_A1",
+  "arch": "resnet_medium",
+  "epochs_run": 26,
+  "best_val_auc": 0.7958482503890991,
+  "best_val_loss": 0.29309406876564026,
+  "optimizer": "sgd",
+  "lr": 0.01,
+  "batch_size": 256,
+  "steps_per_epoch": 500,
+  "model_path": "models/gate/gate_model_resnet_medium.h5",
+  "history_csv": "models/gate/gate_model_resnet_medium_history.csv",
+  "elapsed_s": 241.9
+}

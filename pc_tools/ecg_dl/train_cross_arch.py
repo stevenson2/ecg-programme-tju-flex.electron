@@ -30,6 +30,22 @@ from config import TRAIN_CONFIG, MODELS_DIR
 import data.dataset as dataset
 from models.external_architectures import ARCHITECTURES, print_summary
 
+# 显存按需分配：RTX 5070 Laptop 在 WSL 下 TF 可见约 5.2GB，若贪心分配会挤爆
+# 其余内存并放大 OOM 风险（与 train.py / TUNING_HISTORY 十三章约定一致）。
+_GPU_DEVICES = tf.config.list_physical_devices("GPU")
+if _GPU_DEVICES:
+    for _gpu in _GPU_DEVICES:
+        try:
+            tf.config.experimental.set_memory_growth(_gpu, True)
+        except Exception:
+            pass
+
+_MIXED_POLICIES = {
+    "fp32": "float32",
+    "mixed_float16": "mixed_float16",
+    "mixed_bfloat16": "mixed_bfloat16",
+}
+
 
 def compile_model(model, learning_rate=0.0005, optimizer="adamw"):
     """与项目 ResNet 编译协议一致：FocalLoss + AdamW."""
@@ -69,8 +85,18 @@ def main():
     ap.add_argument("--learning-rate", type=float, default=5e-4)
     ap.add_argument("--optimizer", choices=["adamw", "sgd"], default="adamw")
     ap.add_argument("--out-dir", type=str, default=str(MODELS_DIR / "cross_arch"))
+    ap.add_argument("--mixed-precision", choices=sorted(_MIXED_POLICIES),
+                    default="mixed_float16",
+                    help="训练精度策略。RTX 5070(Blackwell) 上 mixed_float16 可降低显存、"
+                         "在 ResNet 等卷积网络上显著加速；如需与历史 FP32 协议逐位对齐可传 fp32。")
     ap.add_argument("--quick", action="store_true", help="小数据 smoke 测试")
+    ap.add_argument("--no-patient-split", action="store_true",
+                    help="关闭患者级划分，改用记录级划分（仅用于对照实验，正式结果禁止使用）")
     args = ap.parse_args()
+
+    # 必须在构建模型前设置全局精度策略。
+    if args.mixed_precision != "fp32":
+        tf.keras.mixed_precision.set_global_policy(_MIXED_POLICIES[args.mixed_precision])
 
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -83,7 +109,9 @@ def main():
 
     print("=" * 70, flush=True)
     print(f"[CrossArch] arch={args.arch} chain={args.chain} "
-          f"epochs={args.epochs} patience={args.patience}", flush=True)
+          f"epochs={args.epochs} patience={args.patience} "
+          f"mixed_precision={args.mixed_precision} "
+          f"patient_split={not args.no_patient_split}", flush=True)
     print("=" * 70, flush=True)
 
     datasets = dataset.prepare_datasets(
@@ -92,7 +120,7 @@ def main():
         use_ptb_beat=True,
         ptb_abn_max=10000,
         domain_balanced=True,
-        patient_split=True,
+        patient_split=not args.no_patient_split,
     )
 
     # quick smoke: 截断 epoch? Keras datasets have .take; easier to build tiny dataset below.
@@ -149,6 +177,8 @@ def main():
     meta = {
         "arch": args.arch,
         "chain": args.chain,
+        "mixed_precision": args.mixed_precision,
+        "patient_split": not args.no_patient_split,
         "epochs_run": len(history.history.get("loss", [])),
         "best_val_auc": float(final_val_auc),
         "best_val_loss": float(min(history.history.get("val_loss", [0.0]))),

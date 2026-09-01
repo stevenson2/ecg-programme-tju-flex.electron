@@ -1,0 +1,133 @@
+{
+  "date": "2026-09-01 15:16:03",
+  "purpose": "TH §99 从零重训干净基线 (随机初始化 + SplitGuard 取数)",
+  "provenance": "from scratch; no checkpoint loaded",
+  "gpu": [
+    "PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')"
+  ],
+  "output_model": "models/best_resnet_large_clean_baseline.h5",
+  "patient_split_seed": 42,
+  "split_stats": {
+    "mit_bih": {
+      "n_patients": 79,
+      "n_train": 49,
+      "n_val": 15,
+      "n_test": 15,
+      "beats_train": 512369,
+      "beats_val": 159294,
+      "beats_test": 163078
+    },
+    "incart": {
+      "n_patients": 79,
+      "n_train": 49,
+      "n_val": 15,
+      "n_test": 15,
+      "beats_train": 512369,
+      "beats_val": 159294,
+      "beats_test": 163078
+    },
+    "ptb": {
+      "n_patients": 286,
+      "n_train": 172,
+      "n_val": 57,
+      "n_test": 57,
+      "beats_train": 41730,
+      "beats_val": 14694,
+      "beats_test": 13058
+    }
+  },
+  "data": {
+    "main": {
+      "mit_abn": 1500,
+      "mit_norm": 500,
+      "incart_abn": 400,
+      "incart_norm": 150,
+      "ptb_abn": 600,
+      "ptb_norm": 200
+    },
+    "real_afe_train_unique": 271,
+    "real_afe_train_repeated": 542,
+    "real_afe_holdout": 40,
+    "synthetic_hard_negative": 600,
+    "train_total": 4492,
+    "train_abn": 2500,
+    "train_norm": 1992,
+    "val_total": 4040,
+    "val_abn": 2000,
+    "val_norm": 2040,
+    "real_holdout_indices": [
+      228,
+      183,
+      269,
+      43,
+      292,
+      0,
+      289,
+      40,
+      212,
+      50,
+      16,
+      81,
+      53,
+      20,
+      84,
+      92,
+      230,
+      137,
+      112,
+      310,
+      138,
+      248,
+      71,
+      193,
+      167,
+      13,
+      35,
+      36,
+      95,
+      302,
+      93,
+      217,
+      19,
+      23,
+      99,
+      29,
+      284,
+      235,
+      229,
+      46
+    ]
+  },
+  "config": {
+    "architecture": "build_ecg_resnet_lite_large",
+    "params": 62834,
+    "optimizer": "adam",
+    "lr_schedule": "cosine decay from 0.0003",
+    "epochs_requested": 80,
+    "epochs_run": 24,
+    "batch_size": 32,
+    "early_stopping_patience": 20,
+    "val_monitor": "val_auc",
+    "class_weight": {
+      "0": 2.0,
+      "1": 1.0
+    },
+    "loss": "sparse_categorical_crossentropy"
+  },
+  "results": {
+    "best_val_auc": 0.7627099264705883,
+    "real_holdout_mean_prob": 0.05009490251541138,
+    "real_holdout_frac_gt_0.5": 0.0,
+    "train_time_s": 157.9
+  },
+  "anchors": {
+    "v4_clean_mit_incart": {
+      "auc": 0.848,
+      "event_f1": 0.697
+    },
+    "ptb_clean_deployed_int8": {
+      "auc": 0.9,
+      "event_f1": 0.898
+    }
+  }
+}

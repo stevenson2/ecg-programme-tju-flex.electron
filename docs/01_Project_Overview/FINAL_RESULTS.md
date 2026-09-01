@@ -644,4 +644,68 @@ BPM MAE 10.17→4.16（中位 3.15→1.46、P90 36.2→9.12、±3BPM 49%→69%�
 异常率以诚实呈现单窗风险，报警由 5 拍确认抑制。
 
 ---
+
+## AAMI 部署链逐类矩阵（2026-08-22，exploratory）
+
+**口径**：MIT+INCART deploy 数据，患者级 seed=42；测试集 163,078 拍 / 异常 20,891 拍。
+该矩阵使用带增强块的 deploy 测试集，**不能与上方 exp7c noaug causal-cache MIT/PTB AUC 直接横比**。
+
+| 模型 | S R@0.60 | V R@0.60 | F R@0.60 | Global R@0.60 | Global P@0.60 | FAR@0.60 | Global AUC |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| exp5_patient_clean | 0.966 | 0.957 | 0.677 | 0.927 | 0.352 | 0.251 | 0.9031 |
+| exp6_sgd | 0.853 | 0.940 | 0.383 | 0.869 | 0.316 | 0.276 | 0.8524 |
+| exp7b | 0.919 | 0.877 | 0.224 | 0.801 | 0.297 | 0.279 | 0.7990 |
+| exp7c_float32 | 0.802 | 0.484 | 0.024 | 0.469 | 0.361 | 0.122 | 0.8302 |
+| **exp7c_INT8_TFLite** | 0.538 | 0.220 | 0.008 | **0.249** | 0.346 | **0.069** | 0.8349 |
+| p2a_float32 | 0.932 | 0.982 | 0.535 | 0.926 | 0.398 | 0.205 | 0.9233 |
+| lstm_cnn_baseline | 0.094 | 0.607 | 0.289 | 0.472 | 0.408 | 0.101 | 0.8033 |
+| lstm_cnn_deploy | 0.141 | 0.051 | 0.000 | 0.058 | 0.404 | 0.013 | 0.7417 |
+| cnn_standard_baseline | 0.627 | 0.416 | 0.112 | 0.416 | 0.221 | 0.215 | 0.7484 |
+| cnn_standard_deploy | 0.338 | 0.329 | 0.027 | 0.314 | 0.314 | 0.101 | 0.7987 |
+| resnet1d_baseline | 0.746 | 0.642 | 0.095 | 0.621 | 0.359 | 0.163 | 0.8290 |
+| resnet1d_deploy | 0.734 | 0.770 | 0.151 | 0.697 | 0.406 | 0.150 | 0.8311 |
+
+**解读**：
+
+- 类内 precision 未列入：AAMI 类内可能无负样本，precision 存在恒等式陷阱（AGENTS §30）。
+- `N` 类无二分类正例，Recall 无定义；`Q` 在可恢复符号测试拍中不存在。
+- exp7c @0.60 的低 Recall 反映高特异性操作点；@0.35 时 float32 global recall 为 0.888，INT8 为 0.948，但 FAR 分别为 0.328 / 0.544。
+- 固件报警还依赖 θ=0.60 + 5-beat confirmation；本表是 PC 离线拍级口径，不等于真机报警口径。
+
+**溯源**：
+- 脚本：`pc_tools/ecg_dl/eval_aami_matrix.py`
+- JSON：`pc_tools/ecg_dl/models/aami_matrix_deploy_patient.json`
+- CSV：`pc_tools/ecg_dl/models/aami_matrix_deploy_patient.csv`
+- 决策记录：`docs/03_Software_Docs/TUNING_HISTORY.md` 第六十七章
+
+---
+
+## AAMI noaug 矩阵（2026-08-23，主表候选口径）
+
+**口径**：MIT deploy 每条记录只保留第一块原始拍；INCART 不变。患者级 seed=42；noaug test = 51,883 拍 / 异常 5,636 拍，与 exp7c causal-cache 口径一致。
+
+| 模型 | S R@0.60 | V R@0.60 | F R@0.60 | Global R@0.60 | Global P@0.60 | FAR@0.60 | Global AUC |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| exp5_patient_clean | 0.964 | 0.965 | 0.686 | 0.946 | 0.401 | 0.172 | 0.9486 |
+| exp6_sgd | 0.861 | 0.944 | 0.393 | 0.895 | 0.351 | 0.202 | 0.9122 |
+| exp7b | 0.924 | 0.895 | 0.275 | 0.822 | 0.329 | 0.205 | 0.8635 |
+| exp7c_float32 | 0.818 | 0.497 | 0.031 | 0.509 | 0.436 | 0.080 | 0.8858 |
+| **exp7c_INT8_TFLite** | 0.583 | 0.207 | 0.005 | 0.313 | 0.468 | 0.043 | 0.8894 |
+| p2a_float32 | 0.940 | 0.983 | 0.548 | 0.942 | 0.466 | 0.132 | 0.9646 |
+| lstm_cnn_baseline | 0.103 | 0.571 | 0.298 | 0.337 | 0.415 | 0.058 | 0.7987 |
+| lstm_cnn_deploy | 0.265 | 0.075 | 0.000 | 0.088 | 0.258 | 0.031 | 0.7910 |
+| cnn_standard_baseline | 0.649 | 0.529 | 0.157 | 0.521 | 0.288 | 0.157 | 0.8173 |
+| cnn_standard_deploy | 0.427 | 0.348 | 0.031 | 0.388 | 0.419 | 0.066 | 0.8503 |
+| resnet1d_baseline | 0.788 | 0.730 | 0.105 | 0.769 | 0.363 | 0.165 | 0.8713 |
+| resnet1d_deploy | 0.772 | 0.817 | 0.134 | 0.746 | 0.351 | 0.168 | 0.8494 |
+
+**结论**：该表优先作为论文 AAMI 主表候选；exp7c INT8 noaug global AUC 0.8894 与历史 causal-cache 0.8979 一致，验证口径还原有效。
+
+**溯源**：
+- 脚本：`pc_tools/ecg_dl/eval_aami_matrix_noaug.py`
+- JSON：`pc_tools/ecg_dl/models/aami_matrix_deploy_patient_noaug.json`
+- CSV：`pc_tools/ecg_dl/models/aami_matrix_deploy_patient_noaug.csv`
+- 决策记录：`docs/03_Software_Docs/TUNING_HISTORY.md` 第七十章
+
+---
 *本文件为 `docs/FINAL_RESULTS.md`，由 todo 9 生成。修改需同步更新来源 JSON 并重新验证。*

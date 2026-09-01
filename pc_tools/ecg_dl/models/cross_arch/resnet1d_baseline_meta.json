@@ -1,0 +1,11 @@
+{
+  "arch": "resnet1d",
+  "chain": "baseline",
+  "mixed_precision": "mixed_float16",
+  "epochs_run": 27,
+  "best_val_auc": 0.8048599362373352,
+  "best_val_loss": 0.4664846956729889,
+  "model_path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/cross_arch/resnet1d_baseline.h5",
+  "history_csv": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/cross_arch/resnet1d_baseline_history.csv",
+  "elapsed_s": 147.0
+}

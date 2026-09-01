@@ -1,0 +1,22 @@
+{
+  "date": "2026-08-25 10:37:54",
+  "purpose": "Clean patient-level QAT v6: base exp7b, train-only MIT/INCART/PTB",
+  "mit_incart_patients": {
+    "train": 49,
+    "val": 15,
+    "test": 15
+  },
+  "ptb_patients": {
+    "train": 172,
+    "val": 57,
+    "test": 57
+  },
+  "data": {
+    "train": 5321,
+    "real": 311,
+    "pub_normal": 2360,
+    "epochs": 10
+  },
+  "tflite_size": 127600,
+  "tflite_path": "models/ecg_model_exp7c_clean_v6_qat_int8.tflite"
+}

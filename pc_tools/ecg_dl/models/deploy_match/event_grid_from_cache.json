@@ -1,0 +1,568 @@
+{
+  "theta_grid": [
+    0.8,
+    0.82,
+    0.84,
+    0.85,
+    0.86,
+    0.88,
+    0.9
+  ],
+  "cooldown_grid": [
+    5,
+    6,
+    8,
+    10
+  ],
+  "results": {
+    "v3b_qat": [
+      {
+        "theta": 0.8,
+        "cooldown": 5,
+        "recall": 0.95097,
+        "precision": 0.781491,
+        "f1": 0.857941,
+        "fp_per_record": 7.391304,
+        "fp_per_1000": 3.276603
+      },
+      {
+        "theta": 0.82,
+        "cooldown": 5,
+        "recall": 0.945863,
+        "precision": 0.788535,
+        "f1": 0.860063,
+        "fp_per_record": 7.217391,
+        "fp_per_1000": 3.199507
+      },
+      {
+        "theta": 0.84,
+        "cooldown": 5,
+        "recall": 0.931563,
+        "precision": 0.80305,
+        "f1": 0.862546,
+        "fp_per_record": 6.73913,
+        "fp_per_1000": 2.987491
+      },
+      {
+        "theta": 0.85,
+        "cooldown": 5,
+        "recall": 0.930541,
+        "precision": 0.811465,
+        "f1": 0.866933,
+        "fp_per_record": 6.434783,
+        "fp_per_1000": 2.852572
+      },
+      {
+        "theta": 0.86,
+        "cooldown": 5,
+        "recall": 0.925434,
+        "precision": 0.823087,
+        "f1": 0.871265,
+        "fp_per_record": 6.130435,
+        "fp_per_1000": 2.717653
+      },
+      {
+        "theta": 0.88,
+        "cooldown": 5,
+        "recall": 0.912155,
+        "precision": 0.820197,
+        "f1": 0.863735,
+        "fp_per_record": 6.347826,
+        "fp_per_1000": 2.814024
+      },
+      {
+        "theta": 0.9,
+        "cooldown": 5,
+        "recall": 0.889683,
+        "precision": 0.822464,
+        "f1": 0.854754,
+        "fp_per_record": 6.391304,
+        "fp_per_1000": 2.833298
+      },
+      {
+        "theta": 0.8,
+        "cooldown": 6,
+        "recall": 0.951992,
+        "precision": 0.78169,
+        "f1": 0.858477,
+        "fp_per_record": 6.73913,
+        "fp_per_1000": 2.987491
+      },
+      {
+        "theta": 0.82,
+        "cooldown": 6,
+        "recall": 0.946885,
+        "precision": 0.794979,
+        "f1": 0.864308,
+        "fp_per_record": 6.391304,
+        "fp_per_1000": 2.833298
+      },
+      {
+        "theta": 0.84,
+        "cooldown": 6,
+        "recall": 0.931563,
+        "precision": 0.812062,
+        "f1": 0.867717,
+        "fp_per_record": 5.826087,
+        "fp_per_1000": 2.582734
+      },
+      {
+        "theta": 0.85,
+        "cooldown": 6,
+        "recall": 0.930541,
+        "precision": 0.822535,
+        "f1": 0.873211,
+        "fp_per_record": 5.478261,
+        "fp_per_1000": 2.428541
+      },
+      {
+        "theta": 0.86,
+        "cooldown": 6,
+        "recall": 0.925434,
+        "precision": 0.836538,
+        "f1": 0.878744,
+        "fp_per_record": 5.173913,
+        "fp_per_1000": 2.293622
+      },
+      {
+        "theta": 0.88,
+        "cooldown": 6,
+        "recall": 0.912155,
+        "precision": 0.830645,
+        "f1": 0.869494,
+        "fp_per_record": 5.478261,
+        "fp_per_1000": 2.428541
+      },
+      {
+        "theta": 0.9,
+        "cooldown": 6,
+        "recall": 0.889683,
+        "precision": 0.835325,
+        "f1": 0.861648,
+        "fp_per_record": 5.391304,
+        "fp_per_1000": 2.389993
+      },
+      {
+        "theta": 0.8,
+        "cooldown": 8,
+        "recall": 0.954035,
+        "precision": 0.771231,
+        "f1": 0.852948,
+        "fp_per_record": 5.73913,
+        "fp_per_1000": 2.544186
+      },
+      {
+        "theta": 0.82,
+        "cooldown": 8,
+        "recall": 0.948927,
+        "precision": 0.786458,
+        "f1": 0.860088,
+        "fp_per_record": 5.347826,
+        "fp_per_1000": 2.370719
+      },
+      {
+        "theta": 0.84,
+        "cooldown": 8,
+        "recall": 0.932584,
+        "precision": 0.802744,
+        "f1": 0.862807,
+        "fp_per_record": 5.0,
+        "fp_per_1000": 2.216526
+      },
+      {
+        "theta": 0.85,
+        "cooldown": 8,
+        "recall": 0.931563,
+        "precision": 0.813036,
+        "f1": 0.868273,
+        "fp_per_record": 4.73913,
+        "fp_per_1000": 2.100881
+      },
+      {
+        "theta": 0.86,
+        "cooldown": 8,
+        "recall": 0.926456,
+        "precision": 0.825127,
+        "f1": 0.872861,
+        "fp_per_record": 4.478261,
+        "fp_per_1000": 1.985236
+      },
+      {
+        "theta": 0.88,
+        "cooldown": 8,
+        "recall": 0.913177,
+        "precision": 0.820896,
+        "f1": 0.864581,
+        "fp_per_record": 4.695652,
+        "fp_per_1000": 2.081607
+      },
+      {
+        "theta": 0.9,
+        "cooldown": 8,
+        "recall": 0.890705,
+        "precision": 0.831169,
+        "f1": 0.859908,
+        "fp_per_record": 4.521739,
+        "fp_per_1000": 2.00451
+      },
+      {
+        "theta": 0.8,
+        "cooldown": 10,
+        "recall": 0.954035,
+        "precision": 0.760825,
+        "f1": 0.846545,
+        "fp_per_record": 5.043478,
+        "fp_per_1000": 2.2358
+      },
+      {
+        "theta": 0.82,
+        "cooldown": 10,
+        "recall": 0.95097,
+        "precision": 0.773389,
+        "f1": 0.853036,
+        "fp_per_record": 4.73913,
+        "fp_per_1000": 2.100881
+      },
+      {
+        "theta": 0.84,
+        "cooldown": 10,
+        "recall": 0.934627,
+        "precision": 0.803313,
+        "f1": 0.864009,
+        "fp_per_record": 4.130435,
+        "fp_per_1000": 1.831043
+      },
+      {
+        "theta": 0.85,
+        "cooldown": 10,
+        "recall": 0.933606,
+        "precision": 0.81405,
+        "f1": 0.869738,
+        "fp_per_record": 3.913043,
+        "fp_per_1000": 1.734672
+      },
+      {
+        "theta": 0.86,
+        "cooldown": 10,
+        "recall": 0.927477,
+        "precision": 0.82449,
+        "f1": 0.872956,
+        "fp_per_record": 3.73913,
+        "fp_per_1000": 1.657576
+      },
+      {
+        "theta": 0.88,
+        "cooldown": 10,
+        "recall": 0.914198,
+        "precision": 0.828629,
+        "f1": 0.869313,
+        "fp_per_record": 3.695652,
+        "fp_per_1000": 1.638302
+      },
+      {
+        "theta": 0.9,
+        "cooldown": 10,
+        "recall": 0.892748,
+        "precision": 0.839921,
+        "f1": 0.865529,
+        "fp_per_record": 3.521739,
+        "fp_per_1000": 1.561205
+      }
+    ],
+    "v3b_qat_top": [
+      {
+        "theta": 0.86,
+        "cooldown": 6,
+        "recall": 0.925434,
+        "precision": 0.836538,
+        "f1": 0.878744,
+        "fp_per_record": 5.173913,
+        "fp_per_1000": 2.293622
+      },
+      {
+        "theta": 0.85,
+        "cooldown": 6,
+        "recall": 0.930541,
+        "precision": 0.822535,
+        "f1": 0.873211,
+        "fp_per_record": 5.478261,
+        "fp_per_1000": 2.428541
+      },
+      {
+        "theta": 0.86,
+        "cooldown": 10,
+        "recall": 0.927477,
+        "precision": 0.82449,
+        "f1": 0.872956,
+        "fp_per_record": 3.73913,
+        "fp_per_1000": 1.657576
+      },
+      {
+        "theta": 0.86,
+        "cooldown": 8,
+        "recall": 0.926456,
+        "precision": 0.825127,
+        "f1": 0.872861,
+        "fp_per_record": 4.478261,
+        "fp_per_1000": 1.985236
+      },
+      {
+        "theta": 0.86,
+        "cooldown": 5,
+        "recall": 0.925434,
+        "precision": 0.823087,
+        "f1": 0.871265,
+        "fp_per_record": 6.130435,
+        "fp_per_1000": 2.717653
+      },
+      {
+        "theta": 0.85,
+        "cooldown": 10,
+        "recall": 0.933606,
+        "precision": 0.81405,
+        "f1": 0.869738,
+        "fp_per_record": 3.913043,
+        "fp_per_1000": 1.734672
+      },
+      {
+        "theta": 0.88,
+        "cooldown": 6,
+        "recall": 0.912155,
+        "precision": 0.830645,
+        "f1": 0.869494,
+        "fp_per_record": 5.478261,
+        "fp_per_1000": 2.428541
+      },
+      {
+        "theta": 0.88,
+        "cooldown": 10,
+        "recall": 0.914198,
+        "precision": 0.828629,
+        "f1": 0.869313,
+        "fp_per_record": 3.695652,
+        "fp_per_1000": 1.638302
+      },
+      {
+        "theta": 0.85,
+        "cooldown": 8,
+        "recall": 0.931563,
+        "precision": 0.813036,
+        "f1": 0.868273,
+        "fp_per_record": 4.73913,
+        "fp_per_1000": 2.100881
+      },
+      {
+        "theta": 0.84,
+        "cooldown": 6,
+        "recall": 0.931563,
+        "precision": 0.812062,
+        "f1": 0.867717,
+        "fp_per_record": 5.826087,
+        "fp_per_1000": 2.582734
+      }
+    ],
+    "exp7c": [
+      {
+        "theta": 0.5,
+        "cooldown": 5,
+        "recall": 0.883555,
+        "precision": 0.783659,
+        "f1": 0.830614,
+        "fp_per_record": 8.173913,
+        "fp_per_1000": 3.623538
+      },
+      {
+        "theta": 0.52,
+        "cooldown": 5,
+        "recall": 0.853933,
+        "precision": 0.792669,
+        "f1": 0.822161,
+        "fp_per_record": 7.869565,
+        "fp_per_1000": 3.488619
+      },
+      {
+        "theta": 0.55,
+        "cooldown": 5,
+        "recall": 0.826353,
+        "precision": 0.788571,
+        "f1": 0.80702,
+        "fp_per_record": 8.043478,
+        "fp_per_1000": 3.565715
+      },
+      {
+        "theta": 0.5,
+        "cooldown": 6,
+        "recall": 0.884576,
+        "precision": 0.790281,
+        "f1": 0.834774,
+        "fp_per_record": 7.130435,
+        "fp_per_1000": 3.160958
+      },
+      {
+        "theta": 0.52,
+        "cooldown": 6,
+        "recall": 0.854954,
+        "precision": 0.798469,
+        "f1": 0.825747,
+        "fp_per_record": 6.869565,
+        "fp_per_1000": 3.045313
+      },
+      {
+        "theta": 0.55,
+        "cooldown": 6,
+        "recall": 0.826353,
+        "precision": 0.790404,
+        "f1": 0.807979,
+        "fp_per_record": 7.217391,
+        "fp_per_1000": 3.199507
+      },
+      {
+        "theta": 0.5,
+        "cooldown": 8,
+        "recall": 0.88764,
+        "precision": 0.791469,
+        "f1": 0.836801,
+        "fp_per_record": 5.73913,
+        "fp_per_1000": 2.544186
+      },
+      {
+        "theta": 0.52,
+        "cooldown": 8,
+        "recall": 0.858018,
+        "precision": 0.797823,
+        "f1": 0.826826,
+        "fp_per_record": 5.652174,
+        "fp_per_1000": 2.505638
+      },
+      {
+        "theta": 0.55,
+        "cooldown": 8,
+        "recall": 0.831461,
+        "precision": 0.79697,
+        "f1": 0.81385,
+        "fp_per_record": 5.826087,
+        "fp_per_1000": 2.582734
+      },
+      {
+        "theta": 0.5,
+        "cooldown": 10,
+        "recall": 0.891726,
+        "precision": 0.791423,
+        "f1": 0.838586,
+        "fp_per_record": 4.652174,
+        "fp_per_1000": 2.062333
+      },
+      {
+        "theta": 0.52,
+        "cooldown": 10,
+        "recall": 0.863126,
+        "precision": 0.801498,
+        "f1": 0.831171,
+        "fp_per_record": 4.608696,
+        "fp_per_1000": 2.043058
+      },
+      {
+        "theta": 0.55,
+        "cooldown": 10,
+        "recall": 0.835546,
+        "precision": 0.79566,
+        "f1": 0.815116,
+        "fp_per_record": 4.913043,
+        "fp_per_1000": 2.177977
+      }
+    ],
+    "exp7c_top": [
+      {
+        "theta": 0.5,
+        "cooldown": 10,
+        "recall": 0.891726,
+        "precision": 0.791423,
+        "f1": 0.838586,
+        "fp_per_record": 4.652174,
+        "fp_per_1000": 2.062333
+      },
+      {
+        "theta": 0.5,
+        "cooldown": 8,
+        "recall": 0.88764,
+        "precision": 0.791469,
+        "f1": 0.836801,
+        "fp_per_record": 5.73913,
+        "fp_per_1000": 2.544186
+      },
+      {
+        "theta": 0.5,
+        "cooldown": 6,
+        "recall": 0.884576,
+        "precision": 0.790281,
+        "f1": 0.834774,
+        "fp_per_record": 7.130435,
+        "fp_per_1000": 3.160958
+      },
+      {
+        "theta": 0.52,
+        "cooldown": 10,
+        "recall": 0.863126,
+        "precision": 0.801498,
+        "f1": 0.831171,
+        "fp_per_record": 4.608696,
+        "fp_per_1000": 2.043058
+      },
+      {
+        "theta": 0.5,
+        "cooldown": 5,
+        "recall": 0.883555,
+        "precision": 0.783659,
+        "f1": 0.830614,
+        "fp_per_record": 8.173913,
+        "fp_per_1000": 3.623538
+      },
+      {
+        "theta": 0.52,
+        "cooldown": 8,
+        "recall": 0.858018,
+        "precision": 0.797823,
+        "f1": 0.826826,
+        "fp_per_record": 5.652174,
+        "fp_per_1000": 2.505638
+      },
+      {
+        "theta": 0.52,
+        "cooldown": 6,
+        "recall": 0.854954,
+        "precision": 0.798469,
+        "f1": 0.825747,
+        "fp_per_record": 6.869565,
+        "fp_per_1000": 3.045313
+      },
+      {
+        "theta": 0.52,
+        "cooldown": 5,
+        "recall": 0.853933,
+        "precision": 0.792669,
+        "f1": 0.822161,
+        "fp_per_record": 7.869565,
+        "fp_per_1000": 3.488619
+      },
+      {
+        "theta": 0.55,
+        "cooldown": 10,
+        "recall": 0.835546,
+        "precision": 0.79566,
+        "f1": 0.815116,
+        "fp_per_record": 4.913043,
+        "fp_per_1000": 2.177977
+      },
+      {
+        "theta": 0.55,
+        "cooldown": 8,
+        "recall": 0.831461,
+        "precision": 0.79697,
+        "f1": 0.81385,
+        "fp_per_record": 5.826087,
+        "fp_per_1000": 2.582734
+      }
+    ]
+  },
+  "elapsed_s": 2.1
+}

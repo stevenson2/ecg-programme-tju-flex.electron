@@ -1,0 +1,55 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1787491019.289073   11743 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1787491019.416341   11743 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1787491020.543826   11743 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+W0000 00:00:1787491022.539386   11743 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+W0000 00:00:1787491022.762874   11743 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+I0000 00:00:1787491022.939509   11743 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 5199 MB memory:  -> device: 0, name: NVIDIA GeForce RTX 5070 Laptop GPU, pci bus id: 0000:01:00.0, compute capability: 12.0a
+[数据集] npz 后缀切换: '_deploy' (部署链数据源)
+[数据集] 加载 (mmap): mit_bih_processed_deploy_beats.npy
+[数据集] 加载数据: /home/devcontainers/ecg_data/mit_bih_processed_deploy.npz
+[数据集]   心拍数: 658962
+[数据集]   形状: (658962, 250)
+[数据集]   类别分布:
+[数据集]     Normal: 543786 (82.5%)
+[数据集]     Abnormal: 115176 (17.5%)
+[数据集] 加载 (mmap): incart_processed_deploy_beats.npy
+[INCART] 加载: 175779 心拍, 形状: (175779, 250)
+[INCART]   Normal: 153596 (87.4%)
+[INCART]   Abnormal: 22183 (12.6%)
+
+[合并数据集] MIT-BIH + INCART
+  总心拍: 834741
+  Normal: 697382 (83.5%)
+  Abnormal: 137359 (16.5%)
+[数据集] 加载 (mmap): mit_bih_processed_deploy_beats.npy
+[数据集] 加载数据: /home/devcontainers/ecg_data/mit_bih_processed_deploy.npz
+[数据集]   心拍数: 658962
+[数据集]   形状: (658962, 250)
+[数据集]   类别分布:
+[数据集]     Normal: 543786 (82.5%)
+[数据集]     Abnormal: 115176 (17.5%)
+[数据集] 患者级划分 (seed=42): 患者 79 = train 49 / val 15 / test 15
+[数据集]   拍数: train 512,369 / val 159,294 / test 163,078
+[数据集] 加载 (mmap): ptb_processed_deploy_beats.npy
+[PTB] 加载: 69482 心拍, 形状: (69482, 250)
+[PTB]   Normal: 10416 (15.0%)
+[PTB]   Abnormal: 59066 (85.0%)
+[数据集] 患者级清洁: PTB 训练拍仅取 train 患者 (172/286 患者, 剩 41,730 拍)
+[数据集] 域平衡采样: A域(MIT+INCART) 512369 拍, B域(PTB) 15159 拍 (正常5159+异常10000)
+[数据集] 每 batch 20% PTB, PTB loss 权重 0.5
+I0000 00:00:1787491028.053120   11829 service.cc:153] XLA service 0x785c98044ee0 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1787491028.053539   11829 service.cc:161]   StreamExecutor [0]: NVIDIA GeForce RTX 5070 Laptop GPU, Compute Capability 12.0a (Driver: 13.2.0; Runtime: 12.9.0; Toolkit: 12.5.0; DNN: 9.24.0)
+I0000 00:00:1787491028.085118   11829 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1787491028.323744   11829 cuda_dnn.cc:461] Loaded cuDNN version 92400
+I0000 00:00:1787491035.157415   11829 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+[数据集] 加载 (mmap): ptb_processed_deploy_beats.npy
+[PTB] 加载: 69482 心拍, 形状: (69482, 250)
+[PTB]   Normal: 10416 (15.0%)
+[PTB]   Abnormal: 59066 (85.0%)
+mit_incart {'n': 163078, 'n_abn': 20891, 'n_normal': 142187, 'auc': 0.8615, 'best_Sn>=95': {'theta': None, 'Sn_A': 0.9427, 'E_A': 0.4292, 'note': 'no threshold meets Sn>=0.95'}, 'thr_0.5': {'Sn_A': 0.9047, 'E_A': 0.3112}}
+ptb {'n': 13058, 'n_abn': 10204, 'n_normal': 2854, 'auc': 0.7464, 'best_Sn>=95': {'theta': None, 'Sn_A': 0.7945, 'E_A': 0.3651, 'note': 'no threshold meets Sn>=0.95'}, 'thr_0.5': {'Sn_A': 0.6998, 'E_A': 0.2852}}
+combined {'n': 176136, 'n_abn': 31095, 'n_normal': 145041, 'auc': 0.8233, 'best_Sn>=95': {'theta': None, 'Sn_A': 0.894, 'E_A': 0.4279, 'note': 'no threshold meets Sn>=0.95'}, 'thr_0.5': {'Sn_A': 0.8375, 'E_A': 0.3107}}
+Saved models/gate/gate_model_large_eval.json

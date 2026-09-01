@@ -1,0 +1,2725 @@
+{
+  "date": "2026-09-01 14:13:40",
+  "purpose": "PTB 诊断分层可检测性审计: Lead II 信息上限 + 认人/认病探针",
+  "reference_policy": {
+    "theta": 0.5,
+    "policy": "1-of-5",
+    "cooldown": 5
+  },
+  "test_set": {
+    "beats": 13058,
+    "records": [
+      400000,
+      400001,
+      400002,
+      400004,
+      400005,
+      400006,
+      400032,
+      400033,
+      400034,
+      400054,
+      400055,
+      400056,
+      400071,
+      400072,
+      400073,
+      400079,
+      400080,
+      400081,
+      400120,
+      400121,
+      400122,
+      400123,
+      400150,
+      400151,
+      400152,
+      400153,
+      400166,
+      400167,
+      400176,
+      400189,
+      400190,
+      400191,
+      400199,
+      400200,
+      400201,
+      400202,
+      400207,
+      400208,
+      400209,
+      400210,
+      400227,
+      400228,
+      400229,
+      400230,
+      400247,
+      400248,
+      400249,
+      400250,
+      400255,
+      400259,
+      400260,
+      400261,
+      400262,
+      400316,
+      400320,
+      400329,
+      400336,
+      400345,
+      400351,
+      400354,
+      400370,
+      400376,
+      400382,
+      400390,
+      400391,
+      400392,
+      400393,
+      400408,
+      400410,
+      400413,
+      400415,
+      400421,
+      400444,
+      400446,
+      400447,
+      400449,
+      400475,
+      400476,
+      400478,
+      400479,
+      400484,
+      400485,
+      400501,
+      400504,
+      400505,
+      400509,
+      400511,
+      400514,
+      400519,
+      400520,
+      400529,
+      400530,
+      400544,
+      400545,
+      400548
+    ],
+    "strata_record_counts": {
+      "lead2_favorable": 37,
+      "lead2_unreliable": 38,
+      "control": 20
+    },
+    "diagnosis_record_counts": {
+      "MI infero-latera": 3,
+      "MI infero-postero-lateral": 1,
+      "MI antero-septal": 13,
+      "MI anterior": 7,
+      "MI inferior": 12,
+      "MI antero-lateral": 8,
+      "MI infero-lateral": 15,
+      "MI postero-lateral": 4,
+      "Healthy control": 20,
+      "MI infero-posterior": 2,
+      "Dysrhythmia": 2,
+      "Cardiomyopathy": 3,
+      "n/a": 3,
+      "Hypertrophy": 1,
+      "Bundle branch block": 1
+    }
+  },
+  "strata_definition": {
+    "lead2_favorable": "下壁 MI / 束支阻滞 / 心律失常 / 肥厚 / 心悸 — 单导联 II 理论上有承载信号",
+    "lead2_unreliable": "前壁系/侧壁/后壁 MI、心肌病/心衰、心肌炎、瓣膜病、心绞痛、定位未知 — 形态学改变主要在胸前导联",
+    "control": "健康对照"
+  },
+  "caveats": [
+    "除 exp7c_v4 (PTB 泄漏=0) 外, 其余模型训练集均混入大量测试记录, 层内数字含记忆成分, 只能做相对比较。",
+    "PTB 为记录级标签: 每个诊断层内标签单类 (层内 AUC 无定义), 判别力读法 = 各层 sensitivity + control 层 FP, 不是层内 AUC。",
+    "泄漏模型的按诊断 sensitivity 模式被'哪些记录被背下来'污染, 与临床 Lead II 可检测性无必然对应; 以 v4 为最接近诚实的参照。",
+    "逐拍 z-score 抹掉绝对幅值 (ST 抬/压幅度), 所有层结果均在该表示下测得。",
+    "部分层样本极少 (心肌炎/瓣膜病/心绞痛), 仅供方向性参考。"
+  ],
+  "record_meta": {
+    "400000": {
+      "record": "patient001/s0010_re",
+      "patient": "patient001",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-latera",
+      "rationale": "mi_inferior"
+    },
+    "400001": {
+      "record": "patient001/s0014lre",
+      "patient": "patient001",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-latera",
+      "rationale": "mi_inferior"
+    },
+    "400002": {
+      "record": "patient001/s0016lre",
+      "patient": "patient001",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-latera",
+      "rationale": "mi_inferior"
+    },
+    "400004": {
+      "record": "patient003/s0017lre",
+      "patient": "patient003",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-postero-lateral",
+      "rationale": "mi_inferior"
+    },
+    "400005": {
+      "record": "patient004/s0020are",
+      "patient": "patient004",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-septal",
+      "rationale": "mi_non_inferior"
+    },
+    "400006": {
+      "record": "patient004/s0020bre",
+      "patient": "patient004",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-septal",
+      "rationale": "mi_non_inferior"
+    },
+    "400032": {
+      "record": "patient013/s0045lre",
+      "patient": "patient013",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-septal",
+      "rationale": "mi_non_inferior"
+    },
+    "400033": {
+      "record": "patient013/s0051lre",
+      "patient": "patient013",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-septal",
+      "rationale": "mi_non_inferior"
+    },
+    "400034": {
+      "record": "patient013/s0072lre",
+      "patient": "patient013",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-septal",
+      "rationale": "mi_non_inferior"
+    },
+    "400054": {
+      "record": "patient020/s0062lre",
+      "patient": "patient020",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI anterior",
+      "rationale": "mi_non_inferior"
+    },
+    "400055": {
+      "record": "patient020/s0069lre",
+      "patient": "patient020",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI anterior",
+      "rationale": "mi_non_inferior"
+    },
+    "400056": {
+      "record": "patient020/s0079lre",
+      "patient": "patient020",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI anterior",
+      "rationale": "mi_non_inferior"
+    },
+    "400071": {
+      "record": "patient025/s0087lre",
+      "patient": "patient025",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-septal",
+      "rationale": "mi_non_inferior"
+    },
+    "400072": {
+      "record": "patient025/s0091lre",
+      "patient": "patient025",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-septal",
+      "rationale": "mi_non_inferior"
+    },
+    "400073": {
+      "record": "patient025/s0150lre",
+      "patient": "patient025",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-septal",
+      "rationale": "mi_non_inferior"
+    },
+    "400079": {
+      "record": "patient028/s0090lre",
+      "patient": "patient028",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI anterior",
+      "rationale": "mi_non_inferior"
+    },
+    "400080": {
+      "record": "patient028/s0093lre",
+      "patient": "patient028",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI anterior",
+      "rationale": "mi_non_inferior"
+    },
+    "400081": {
+      "record": "patient028/s0108lre",
+      "patient": "patient028",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI anterior",
+      "rationale": "mi_non_inferior"
+    },
+    "400120": {
+      "record": "patient040/s0130lre",
+      "patient": "patient040",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI inferior",
+      "rationale": "mi_inferior"
+    },
+    "400121": {
+      "record": "patient040/s0131lre",
+      "patient": "patient040",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI inferior",
+      "rationale": "mi_inferior"
+    },
+    "400122": {
+      "record": "patient040/s0133lre",
+      "patient": "patient040",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI inferior",
+      "rationale": "mi_inferior"
+    },
+    "400123": {
+      "record": "patient040/s0219lre",
+      "patient": "patient040",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI inferior",
+      "rationale": "mi_inferior"
+    },
+    "400150": {
+      "record": "patient048/s0171lre",
+      "patient": "patient048",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-lateral",
+      "rationale": "mi_non_inferior"
+    },
+    "400151": {
+      "record": "patient048/s0172lre",
+      "patient": "patient048",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-lateral",
+      "rationale": "mi_non_inferior"
+    },
+    "400152": {
+      "record": "patient048/s0180lre",
+      "patient": "patient048",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-lateral",
+      "rationale": "mi_non_inferior"
+    },
+    "400153": {
+      "record": "patient048/s0277lre",
+      "patient": "patient048",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-lateral",
+      "rationale": "mi_non_inferior"
+    },
+    "400166": {
+      "record": "patient052/s0190lre",
+      "patient": "patient052",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-lateral",
+      "rationale": "mi_inferior"
+    },
+    "400167": {
+      "record": "patient053/s0191lre",
+      "patient": "patient053",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-septal",
+      "rationale": "mi_non_inferior"
+    },
+    "400176": {
+      "record": "patient059/s0208lre",
+      "patient": "patient059",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-lateral",
+      "rationale": "mi_inferior"
+    },
+    "400189": {
+      "record": "patient067/s0227lre",
+      "patient": "patient067",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-lateral",
+      "rationale": "mi_inferior"
+    },
+    "400190": {
+      "record": "patient067/s0230lre",
+      "patient": "patient067",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-lateral",
+      "rationale": "mi_inferior"
+    },
+    "400191": {
+      "record": "patient067/s0283lre",
+      "patient": "patient067",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-lateral",
+      "rationale": "mi_inferior"
+    },
+    "400199": {
+      "record": "patient072/s0237lre",
+      "patient": "patient072",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-lateral",
+      "rationale": "mi_inferior"
+    },
+    "400200": {
+      "record": "patient072/s0240lre",
+      "patient": "patient072",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-lateral",
+      "rationale": "mi_inferior"
+    },
+    "400201": {
+      "record": "patient072/s0244lre",
+      "patient": "patient072",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-lateral",
+      "rationale": "mi_inferior"
+    },
+    "400202": {
+      "record": "patient072/s0318lre",
+      "patient": "patient072",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-lateral",
+      "rationale": "mi_inferior"
+    },
+    "400207": {
+      "record": "patient074/s0239lre",
+      "patient": "patient074",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-lateral",
+      "rationale": "mi_inferior"
+    },
+    "400208": {
+      "record": "patient074/s0241lre",
+      "patient": "patient074",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-lateral",
+      "rationale": "mi_inferior"
+    },
+    "400209": {
+      "record": "patient074/s0245lre",
+      "patient": "patient074",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-lateral",
+      "rationale": "mi_inferior"
+    },
+    "400210": {
+      "record": "patient074/s0406lre",
+      "patient": "patient074",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-lateral",
+      "rationale": "mi_inferior"
+    },
+    "400227": {
+      "record": "patient079/s0256lre",
+      "patient": "patient079",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI postero-lateral",
+      "rationale": "mi_non_inferior"
+    },
+    "400228": {
+      "record": "patient079/s0257lre",
+      "patient": "patient079",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI postero-lateral",
+      "rationale": "mi_non_inferior"
+    },
+    "400229": {
+      "record": "patient079/s0263lre",
+      "patient": "patient079",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI postero-lateral",
+      "rationale": "mi_non_inferior"
+    },
+    "400230": {
+      "record": "patient079/s0269lre",
+      "patient": "patient079",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI postero-lateral",
+      "rationale": "mi_non_inferior"
+    },
+    "400247": {
+      "record": "patient084/s0281lre",
+      "patient": "patient084",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-septal",
+      "rationale": "mi_non_inferior"
+    },
+    "400248": {
+      "record": "patient084/s0288lre",
+      "patient": "patient084",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-septal",
+      "rationale": "mi_non_inferior"
+    },
+    "400249": {
+      "record": "patient084/s0289lre",
+      "patient": "patient084",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-septal",
+      "rationale": "mi_non_inferior"
+    },
+    "400250": {
+      "record": "patient084/s0313lre",
+      "patient": "patient084",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-septal",
+      "rationale": "mi_non_inferior"
+    },
+    "400255": {
+      "record": "patient086/s0316lre",
+      "patient": "patient086",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-lateral",
+      "rationale": "mi_inferior"
+    },
+    "400259": {
+      "record": "patient088/s0339lre",
+      "patient": "patient088",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI inferior",
+      "rationale": "mi_inferior"
+    },
+    "400260": {
+      "record": "patient088/s0343lre",
+      "patient": "patient088",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI inferior",
+      "rationale": "mi_inferior"
+    },
+    "400261": {
+      "record": "patient088/s0352lre",
+      "patient": "patient088",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI inferior",
+      "rationale": "mi_inferior"
+    },
+    "400262": {
+      "record": "patient088/s0413lre",
+      "patient": "patient088",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI inferior",
+      "rationale": "mi_inferior"
+    },
+    "400316": {
+      "record": "patient104/s0306lre",
+      "patient": "patient104",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400320": {
+      "record": "patient108/s0013_re",
+      "patient": "patient108",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-posterior",
+      "rationale": "mi_inferior"
+    },
+    "400329": {
+      "record": "patient116/s0302lre",
+      "patient": "patient116",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400336": {
+      "record": "patient122/s0312lre",
+      "patient": "patient122",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400345": {
+      "record": "patient131/s0273lre",
+      "patient": "patient131",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400351": {
+      "record": "patient139/s0223_re",
+      "patient": "patient139",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI inferior",
+      "rationale": "mi_inferior"
+    },
+    "400354": {
+      "record": "patient142/s0351lre",
+      "patient": "patient142",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-posterior",
+      "rationale": "mi_inferior"
+    },
+    "400370": {
+      "record": "patient157/s0338lre",
+      "patient": "patient157",
+      "reason": "Dysrhythmia",
+      "stratum": "lead2_favorable",
+      "diagnosis": "Dysrhythmia",
+      "rationale": "reason"
+    },
+    "400376": {
+      "record": "patient163/s0034_re",
+      "patient": "patient163",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI anterior",
+      "rationale": "mi_non_inferior"
+    },
+    "400382": {
+      "record": "patient167/s0200_re",
+      "patient": "patient167",
+      "reason": "Cardiomyopathy",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "Cardiomyopathy",
+      "rationale": "reason"
+    },
+    "400390": {
+      "record": "patient173/s0305lre",
+      "patient": "patient173",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400391": {
+      "record": "patient174/s0300lre",
+      "patient": "patient174",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400392": {
+      "record": "patient174/s0324lre",
+      "patient": "patient174",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400393": {
+      "record": "patient174/s0325lre",
+      "patient": "patient174",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400408": {
+      "record": "patient182/s0308lre",
+      "patient": "patient182",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400410": {
+      "record": "patient184/s0363lre",
+      "patient": "patient184",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400413": {
+      "record": "patient187/s0207_re",
+      "patient": "patient187",
+      "reason": "Dysrhythmia",
+      "stratum": "lead2_favorable",
+      "diagnosis": "Dysrhythmia",
+      "rationale": "reason"
+    },
+    "400415": {
+      "record": "patient189/s0309lre",
+      "patient": "patient189",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI inferior",
+      "rationale": "mi_inferior"
+    },
+    "400421": {
+      "record": "patient194/s0310lre",
+      "patient": "patient194",
+      "reason": "n/a",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "n/a",
+      "rationale": "unmapped_reason"
+    },
+    "400444": {
+      "record": "patient212/s0434_re",
+      "patient": "patient212",
+      "reason": "Hypertrophy",
+      "stratum": "lead2_favorable",
+      "diagnosis": "Hypertrophy",
+      "rationale": "reason"
+    },
+    "400446": {
+      "record": "patient214/s0436_re",
+      "patient": "patient214",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400447": {
+      "record": "patient215/s0437_re",
+      "patient": "patient215",
+      "reason": "Cardiomyopathy",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "Cardiomyopathy",
+      "rationale": "reason"
+    },
+    "400449": {
+      "record": "patient217/s0439_re",
+      "patient": "patient217",
+      "reason": "Bundle branch block",
+      "stratum": "lead2_favorable",
+      "diagnosis": "Bundle branch block",
+      "rationale": "reason"
+    },
+    "400475": {
+      "record": "patient236/s0463_re",
+      "patient": "patient236",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400476": {
+      "record": "patient236/s0464_re",
+      "patient": "patient236",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400478": {
+      "record": "patient238/s0466_re",
+      "patient": "patient238",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400479": {
+      "record": "patient239/s0467_re",
+      "patient": "patient239",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400484": {
+      "record": "patient243/s0472_re",
+      "patient": "patient243",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400485": {
+      "record": "patient244/s0473_re",
+      "patient": "patient244",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400501": {
+      "record": "patient257/s0493_re",
+      "patient": "patient257",
+      "reason": "Cardiomyopathy",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "Cardiomyopathy",
+      "rationale": "reason"
+    },
+    "400504": {
+      "record": "patient260/s0496_re",
+      "patient": "patient260",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400505": {
+      "record": "patient261/s0497_re",
+      "patient": "patient261",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI inferior",
+      "rationale": "mi_inferior"
+    },
+    "400509": {
+      "record": "patient265/s0501_re",
+      "patient": "patient265",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-lateral",
+      "rationale": "mi_non_inferior"
+    },
+    "400511": {
+      "record": "patient267/s0504_re",
+      "patient": "patient267",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400514": {
+      "record": "patient270/s0507_re",
+      "patient": "patient270",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-lateral",
+      "rationale": "mi_non_inferior"
+    },
+    "400519": {
+      "record": "patient275/s0513_re",
+      "patient": "patient275",
+      "reason": "n/a",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "n/a",
+      "rationale": "unmapped_reason"
+    },
+    "400520": {
+      "record": "patient276/s0526_re",
+      "patient": "patient276",
+      "reason": "Healthy control",
+      "stratum": "control",
+      "diagnosis": "Healthy control",
+      "rationale": "reason"
+    },
+    "400529": {
+      "record": "patient280/s0535_re",
+      "patient": "patient280",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI infero-lateral",
+      "rationale": "mi_inferior"
+    },
+    "400530": {
+      "record": "patient281/s0537_re",
+      "patient": "patient281",
+      "reason": "n/a",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "n/a",
+      "rationale": "unmapped_reason"
+    },
+    "400544": {
+      "record": "patient292/s0555_re",
+      "patient": "patient292",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-lateral",
+      "rationale": "mi_non_inferior"
+    },
+    "400545": {
+      "record": "patient292/s0556_re",
+      "patient": "patient292",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_unreliable",
+      "diagnosis": "MI antero-lateral",
+      "rationale": "mi_non_inferior"
+    },
+    "400548": {
+      "record": "patient294/s0559_re",
+      "patient": "patient294",
+      "reason": "Myocardial infarction",
+      "stratum": "lead2_favorable",
+      "diagnosis": "MI inferior",
+      "rationale": "mi_inferior"
+    }
+  },
+  "models": {
+    "DEPLOYED_exp7c_int8": {
+      "file": "ecg_model_exp7c_int8.tflite",
+      "kind": "tflite",
+      "n_leaked_test_records": 64,
+      "overall_beat": {
+        "n_beats": 13058,
+        "n_abnormal": 10204,
+        "theta": 0.5,
+        "tp": 3801,
+        "fp": 259,
+        "tn": 2595,
+        "fn": 6403,
+        "sensitivity": 0.37250098000784004,
+        "precision": 0.9362068965517242,
+        "f1": 0.5329500841278744,
+        "auc": 0.7880250252934048
+      },
+      "overall_event": {
+        "event_recall": 0.826667,
+        "event_precision": 0.88961,
+        "event_f1": 0.856984,
+        "fp_per_record": 0.178947,
+        "fp_per_1000_beats": 1.301884,
+        "alert_rate": 0.513938,
+        "gt_events": 75,
+        "alert_blocks": 154,
+        "false_alarm_blocks": 17,
+        "matched_gt_events": 62,
+        "matched_pred_blocks": 137
+      },
+      "strata": {
+        "lead2_favorable": {
+          "n_records": 37,
+          "records": [
+            400000,
+            400001,
+            400002,
+            400004,
+            400120,
+            400121,
+            400122,
+            400123,
+            400166,
+            400176,
+            400189,
+            400190,
+            400191,
+            400199,
+            400200,
+            400201,
+            400202,
+            400207,
+            400208,
+            400209,
+            400210,
+            400255,
+            400259,
+            400260,
+            400261,
+            400262,
+            400320,
+            400351,
+            400354,
+            400370,
+            400413,
+            400415,
+            400444,
+            400449,
+            400505,
+            400529,
+            400548
+          ],
+          "n_patients": 21,
+          "beat": {
+            "n_beats": 4916,
+            "n_abnormal": 4916,
+            "theta": 0.5,
+            "tp": 1564,
+            "fp": 0,
+            "tn": 0,
+            "fn": 3352,
+            "sensitivity": 0.31814483319772174,
+            "precision": 1.0,
+            "f1": 0.4827160493827161,
+            "auc": null
+          },
+          "event": {
+            "skipped": "single-class labels (AUC undefined)"
+          }
+        },
+        "lead2_unreliable": {
+          "n_records": 38,
+          "records": [
+            400005,
+            400006,
+            400032,
+            400033,
+            400034,
+            400054,
+            400055,
+            400056,
+            400071,
+            400072,
+            400073,
+            400079,
+            400080,
+            400081,
+            400150,
+            400151,
+            400152,
+            400153,
+            400167,
+            400227,
+            400228,
+            400229,
+            400230,
+            400247,
+            400248,
+            400249,
+            400250,
+            400376,
+            400382,
+            400421,
+            400447,
+            400501,
+            400509,
+            400514,
+            400519,
+            400530,
+            400544,
+            400545
+          ],
+          "n_patients": 19,
+          "beat": {
+            "n_beats": 5288,
+            "n_abnormal": 5288,
+            "theta": 0.5,
+            "tp": 2237,
+            "fp": 0,
+            "tn": 0,
+            "fn": 3051,
+            "sensitivity": 0.4230332829046899,
+            "precision": 1.0,
+            "f1": 0.5945514950166113,
+            "auc": null
+          },
+          "event": {
+            "skipped": "single-class labels (AUC undefined)"
+          }
+        },
+        "control": {
+          "n_records": 20,
+          "records": [
+            400316,
+            400329,
+            400336,
+            400345,
+            400390,
+            400391,
+            400392,
+            400393,
+            400408,
+            400410,
+            400446,
+            400475,
+            400476,
+            400478,
+            400479,
+            400484,
+            400485,
+            400504,
+            400511,
+            400520
+          ],
+          "n_patients": 17,
+          "beat": {
+            "n_beats": 2854,
+            "n_abnormal": 0,
+            "theta": 0.5,
+            "tp": 0,
+            "fp": 259,
+            "tn": 2595,
+            "fn": 0,
+            "sensitivity": null,
+            "precision": 0.0,
+            "f1": null,
+            "auc": null
+          },
+          "event": {
+            "skipped": "single-class labels (AUC undefined)"
+          }
+        }
+      },
+      "diagnoses": {
+        "Bundle branch block": {
+          "n_records": 1,
+          "records": [
+            400449
+          ],
+          "n_leaked_records": 1,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 127,
+            "n_abnormal": 127,
+            "theta": 0.5,
+            "tp": 116,
+            "fp": 0,
+            "tn": 0,
+            "fn": 11,
+            "sensitivity": 0.9133858267716536,
+            "precision": 1.0,
+            "f1": 0.9547325102880658,
+            "auc": null
+          }
+        },
+        "Cardiomyopathy": {
+          "n_records": 3,
+          "records": [
+            400382,
+            400447,
+            400501
+          ],
+          "n_leaked_records": 3,
+          "stratum": "lead2_unreliable",
+          "beat": {
+            "n_beats": 379,
+            "n_abnormal": 379,
+            "theta": 0.5,
+            "tp": 194,
+            "fp": 0,
+            "tn": 0,
+            "fn": 185,
+            "sensitivity": 0.5118733509234829,
+            "precision": 1.0,
+            "f1": 0.6771378708551484,
+            "auc": null
+          }
+        },
+        "Dysrhythmia": {
+          "n_records": 2,
+          "records": [
+            400370,
+            400413
+          ],
+          "n_leaked_records": 1,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 120,
+            "n_abnormal": 120,
+            "theta": 0.5,
+            "tp": 27,
+            "fp": 0,
+            "tn": 0,
+            "fn": 93,
+            "sensitivity": 0.225,
+            "precision": 1.0,
+            "f1": 0.36734693877551017,
+            "auc": null
+          }
+        },
+        "Healthy control": {
+          "n_records": 20,
+          "records": [
+            400316,
+            400329,
+            400336,
+            400345,
+            400390,
+            400391,
+            400392,
+            400393,
+            400408,
+            400410,
+            400446,
+            400475,
+            400476,
+            400478,
+            400479,
+            400484,
+            400485,
+            400504,
+            400511,
+            400520
+          ],
+          "n_leaked_records": 16,
+          "stratum": "control",
+          "beat": {
+            "n_beats": 2854,
+            "n_abnormal": 0,
+            "theta": 0.5,
+            "tp": 0,
+            "fp": 259,
+            "tn": 2595,
+            "fn": 0,
+            "sensitivity": null,
+            "precision": 0.0,
+            "f1": null,
+            "auc": null
+          }
+        },
+        "Hypertrophy": {
+          "n_records": 1,
+          "records": [
+            400444
+          ],
+          "n_leaked_records": 0,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 155,
+            "n_abnormal": 155,
+            "theta": 0.5,
+            "tp": 0,
+            "fp": 0,
+            "tn": 0,
+            "fn": 155,
+            "sensitivity": 0.0,
+            "precision": null,
+            "f1": null,
+            "auc": null
+          }
+        },
+        "MI anterior": {
+          "n_records": 7,
+          "records": [
+            400054,
+            400055,
+            400056,
+            400079,
+            400080,
+            400081,
+            400376
+          ],
+          "n_leaked_records": 3,
+          "stratum": "lead2_unreliable",
+          "beat": {
+            "n_beats": 718,
+            "n_abnormal": 718,
+            "theta": 0.5,
+            "tp": 629,
+            "fp": 0,
+            "tn": 0,
+            "fn": 89,
+            "sensitivity": 0.8760445682451253,
+            "precision": 1.0,
+            "f1": 0.9339272457312546,
+            "auc": null
+          }
+        },
+        "MI antero-lateral": {
+          "n_records": 8,
+          "records": [
+            400150,
+            400151,
+            400152,
+            400153,
+            400509,
+            400514,
+            400544,
+            400545
+          ],
+          "n_leaked_records": 6,
+          "stratum": "lead2_unreliable",
+          "beat": {
+            "n_beats": 1271,
+            "n_abnormal": 1271,
+            "theta": 0.5,
+            "tp": 571,
+            "fp": 0,
+            "tn": 0,
+            "fn": 700,
+            "sensitivity": 0.4492525570416995,
+            "precision": 1.0,
+            "f1": 0.6199782844733985,
+            "auc": null
+          }
+        },
+        "MI antero-septal": {
+          "n_records": 13,
+          "records": [
+            400005,
+            400006,
+            400032,
+            400033,
+            400034,
+            400071,
+            400072,
+            400073,
+            400167,
+            400247,
+            400248,
+            400249,
+            400250
+          ],
+          "n_leaked_records": 7,
+          "stratum": "lead2_unreliable",
+          "beat": {
+            "n_beats": 1874,
+            "n_abnormal": 1874,
+            "theta": 0.5,
+            "tp": 373,
+            "fp": 0,
+            "tn": 0,
+            "fn": 1501,
+            "sensitivity": 0.19903948772678762,
+            "precision": 1.0,
+            "f1": 0.33199821984868716,
+            "auc": null
+          }
+        },
+        "MI inferior": {
+          "n_records": 12,
+          "records": [
+            400120,
+            400121,
+            400122,
+            400123,
+            400259,
+            400260,
+            400261,
+            400262,
+            400351,
+            400415,
+            400505,
+            400548
+          ],
+          "n_leaked_records": 9,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 1631,
+            "n_abnormal": 1631,
+            "theta": 0.5,
+            "tp": 308,
+            "fp": 0,
+            "tn": 0,
+            "fn": 1323,
+            "sensitivity": 0.1888412017167382,
+            "precision": 1.0,
+            "f1": 0.3176895306859206,
+            "auc": null
+          }
+        },
+        "MI infero-latera": {
+          "n_records": 3,
+          "records": [
+            400000,
+            400001,
+            400002
+          ],
+          "n_leaked_records": 2,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 367,
+            "n_abnormal": 367,
+            "theta": 0.5,
+            "tp": 294,
+            "fp": 0,
+            "tn": 0,
+            "fn": 73,
+            "sensitivity": 0.8010899182561307,
+            "precision": 1.0,
+            "f1": 0.8895612708018154,
+            "auc": null
+          }
+        },
+        "MI infero-lateral": {
+          "n_records": 15,
+          "records": [
+            400166,
+            400176,
+            400189,
+            400190,
+            400191,
+            400199,
+            400200,
+            400201,
+            400202,
+            400207,
+            400208,
+            400209,
+            400210,
+            400255,
+            400529
+          ],
+          "n_leaked_records": 11,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 2174,
+            "n_abnormal": 2174,
+            "theta": 0.5,
+            "tp": 659,
+            "fp": 0,
+            "tn": 0,
+            "fn": 1515,
+            "sensitivity": 0.3031278748850046,
+            "precision": 1.0,
+            "f1": 0.4652312036710201,
+            "auc": null
+          }
+        },
+        "MI infero-posterior": {
+          "n_records": 2,
+          "records": [
+            400320,
+            400354
+          ],
+          "n_leaked_records": 1,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 204,
+            "n_abnormal": 204,
+            "theta": 0.5,
+            "tp": 139,
+            "fp": 0,
+            "tn": 0,
+            "fn": 65,
+            "sensitivity": 0.6813725490196079,
+            "precision": 1.0,
+            "f1": 0.8104956268221575,
+            "auc": null
+          }
+        },
+        "MI infero-postero-lateral": {
+          "n_records": 1,
+          "records": [
+            400004
+          ],
+          "n_leaked_records": 0,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 138,
+            "n_abnormal": 138,
+            "theta": 0.5,
+            "tp": 21,
+            "fp": 0,
+            "tn": 0,
+            "fn": 117,
+            "sensitivity": 0.15217391304347827,
+            "precision": 1.0,
+            "f1": 0.2641509433962264,
+            "auc": null
+          }
+        },
+        "MI postero-lateral": {
+          "n_records": 4,
+          "records": [
+            400227,
+            400228,
+            400229,
+            400230
+          ],
+          "n_leaked_records": 3,
+          "stratum": "lead2_unreliable",
+          "beat": {
+            "n_beats": 604,
+            "n_abnormal": 604,
+            "theta": 0.5,
+            "tp": 264,
+            "fp": 0,
+            "tn": 0,
+            "fn": 340,
+            "sensitivity": 0.4370860927152318,
+            "precision": 1.0,
+            "f1": 0.6082949308755761,
+            "auc": null
+          }
+        },
+        "n/a": {
+          "n_records": 3,
+          "records": [
+            400421,
+            400519,
+            400530
+          ],
+          "n_leaked_records": 1,
+          "stratum": "lead2_unreliable",
+          "beat": {
+            "n_beats": 442,
+            "n_abnormal": 442,
+            "theta": 0.5,
+            "tp": 206,
+            "fp": 0,
+            "tn": 0,
+            "fn": 236,
+            "sensitivity": 0.4660633484162896,
+            "precision": 1.0,
+            "f1": 0.6358024691358024,
+            "auc": null
+          }
+        }
+      },
+      "identity_probe": {
+        "n_records": 95,
+        "raw_mean_ovr_auc": 0.5,
+        "shuffled_mean_ovr_auc": 0.5525195968645017,
+        "probe_delta": -0.052519596864501694,
+        "max_ovr_auc": 1.0,
+        "worst_ovr_auc": 0.0
+      },
+      "leakage_memory_probe": {
+        "n_leaked": 64,
+        "n_total": 95,
+        "mean_prob_leaked": 0.39560234546661377,
+        "mean_prob_clean": 0.41900232434272766,
+        "leak_vs_clean_auc": 0.4873991935483871,
+        "memory_gap": -0.02339997887611389
+      }
+    },
+    "exp7c": {
+      "file": "best_resnet_large_exp7c.h5",
+      "kind": "h5",
+      "n_leaked_test_records": 64,
+      "overall_beat": {
+        "n_beats": 13058,
+        "n_abnormal": 10204,
+        "theta": 0.5,
+        "tp": 4318,
+        "fp": 337,
+        "tn": 2517,
+        "fn": 5886,
+        "sensitivity": 0.4231673853390827,
+        "precision": 0.9276047261009667,
+        "f1": 0.5811965811965812,
+        "auc": 0.8015097305781951
+      },
+      "overall_event": {
+        "event_recall": 0.773333,
+        "event_precision": 0.931298,
+        "event_f1": 0.844996,
+        "fp_per_record": 0.094737,
+        "fp_per_1000_beats": 0.689233,
+        "alert_rate": 0.52688,
+        "gt_events": 75,
+        "alert_blocks": 131,
+        "false_alarm_blocks": 9,
+        "matched_gt_events": 58,
+        "matched_pred_blocks": 122
+      },
+      "strata": {
+        "lead2_favorable": {
+          "n_records": 37,
+          "records": [
+            400000,
+            400001,
+            400002,
+            400004,
+            400120,
+            400121,
+            400122,
+            400123,
+            400166,
+            400176,
+            400189,
+            400190,
+            400191,
+            400199,
+            400200,
+            400201,
+            400202,
+            400207,
+            400208,
+            400209,
+            400210,
+            400255,
+            400259,
+            400260,
+            400261,
+            400262,
+            400320,
+            400351,
+            400354,
+            400370,
+            400413,
+            400415,
+            400444,
+            400449,
+            400505,
+            400529,
+            400548
+          ],
+          "n_patients": 21,
+          "beat": {
+            "n_beats": 4916,
+            "n_abnormal": 4916,
+            "theta": 0.5,
+            "tp": 1758,
+            "fp": 0,
+            "tn": 0,
+            "fn": 3158,
+            "sensitivity": 0.35760781122864116,
+            "precision": 1.0,
+            "f1": 0.5268204974528019,
+            "auc": null
+          },
+          "event": {
+            "skipped": "single-class labels (AUC undefined)"
+          }
+        },
+        "lead2_unreliable": {
+          "n_records": 38,
+          "records": [
+            400005,
+            400006,
+            400032,
+            400033,
+            400034,
+            400054,
+            400055,
+            400056,
+            400071,
+            400072,
+            400073,
+            400079,
+            400080,
+            400081,
+            400150,
+            400151,
+            400152,
+            400153,
+            400167,
+            400227,
+            400228,
+            400229,
+            400230,
+            400247,
+            400248,
+            400249,
+            400250,
+            400376,
+            400382,
+            400421,
+            400447,
+            400501,
+            400509,
+            400514,
+            400519,
+            400530,
+            400544,
+            400545
+          ],
+          "n_patients": 19,
+          "beat": {
+            "n_beats": 5288,
+            "n_abnormal": 5288,
+            "theta": 0.5,
+            "tp": 2560,
+            "fp": 0,
+            "tn": 0,
+            "fn": 2728,
+            "sensitivity": 0.48411497730711045,
+            "precision": 1.0,
+            "f1": 0.6523955147808359,
+            "auc": null
+          },
+          "event": {
+            "skipped": "single-class labels (AUC undefined)"
+          }
+        },
+        "control": {
+          "n_records": 20,
+          "records": [
+            400316,
+            400329,
+            400336,
+            400345,
+            400390,
+            400391,
+            400392,
+            400393,
+            400408,
+            400410,
+            400446,
+            400475,
+            400476,
+            400478,
+            400479,
+            400484,
+            400485,
+            400504,
+            400511,
+            400520
+          ],
+          "n_patients": 17,
+          "beat": {
+            "n_beats": 2854,
+            "n_abnormal": 0,
+            "theta": 0.5,
+            "tp": 0,
+            "fp": 337,
+            "tn": 2517,
+            "fn": 0,
+            "sensitivity": null,
+            "precision": 0.0,
+            "f1": null,
+            "auc": null
+          },
+          "event": {
+            "skipped": "single-class labels (AUC undefined)"
+          }
+        }
+      },
+      "diagnoses": {
+        "Bundle branch block": {
+          "n_records": 1,
+          "records": [
+            400449
+          ],
+          "n_leaked_records": 1,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 127,
+            "n_abnormal": 127,
+            "theta": 0.5,
+            "tp": 116,
+            "fp": 0,
+            "tn": 0,
+            "fn": 11,
+            "sensitivity": 0.9133858267716536,
+            "precision": 1.0,
+            "f1": 0.9547325102880658,
+            "auc": null
+          }
+        },
+        "Cardiomyopathy": {
+          "n_records": 3,
+          "records": [
+            400382,
+            400447,
+            400501
+          ],
+          "n_leaked_records": 3,
+          "stratum": "lead2_unreliable",
+          "beat": {
+            "n_beats": 379,
+            "n_abnormal": 379,
+            "theta": 0.5,
+            "tp": 217,
+            "fp": 0,
+            "tn": 0,
+            "fn": 162,
+            "sensitivity": 0.5725593667546174,
+            "precision": 1.0,
+            "f1": 0.7281879194630873,
+            "auc": null
+          }
+        },
+        "Dysrhythmia": {
+          "n_records": 2,
+          "records": [
+            400370,
+            400413
+          ],
+          "n_leaked_records": 1,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 120,
+            "n_abnormal": 120,
+            "theta": 0.5,
+            "tp": 36,
+            "fp": 0,
+            "tn": 0,
+            "fn": 84,
+            "sensitivity": 0.3,
+            "precision": 1.0,
+            "f1": 0.4615384615384615,
+            "auc": null
+          }
+        },
+        "Healthy control": {
+          "n_records": 20,
+          "records": [
+            400316,
+            400329,
+            400336,
+            400345,
+            400390,
+            400391,
+            400392,
+            400393,
+            400408,
+            400410,
+            400446,
+            400475,
+            400476,
+            400478,
+            400479,
+            400484,
+            400485,
+            400504,
+            400511,
+            400520
+          ],
+          "n_leaked_records": 16,
+          "stratum": "control",
+          "beat": {
+            "n_beats": 2854,
+            "n_abnormal": 0,
+            "theta": 0.5,
+            "tp": 0,
+            "fp": 337,
+            "tn": 2517,
+            "fn": 0,
+            "sensitivity": null,
+            "precision": 0.0,
+            "f1": null,
+            "auc": null
+          }
+        },
+        "Hypertrophy": {
+          "n_records": 1,
+          "records": [
+            400444
+          ],
+          "n_leaked_records": 0,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 155,
+            "n_abnormal": 155,
+            "theta": 0.5,
+            "tp": 0,
+            "fp": 0,
+            "tn": 0,
+            "fn": 155,
+            "sensitivity": 0.0,
+            "precision": null,
+            "f1": null,
+            "auc": null
+          }
+        },
+        "MI anterior": {
+          "n_records": 7,
+          "records": [
+            400054,
+            400055,
+            400056,
+            400079,
+            400080,
+            400081,
+            400376
+          ],
+          "n_leaked_records": 3,
+          "stratum": "lead2_unreliable",
+          "beat": {
+            "n_beats": 718,
+            "n_abnormal": 718,
+            "theta": 0.5,
+            "tp": 649,
+            "fp": 0,
+            "tn": 0,
+            "fn": 69,
+            "sensitivity": 0.903899721448468,
+            "precision": 1.0,
+            "f1": 0.9495245062179956,
+            "auc": null
+          }
+        },
+        "MI antero-lateral": {
+          "n_records": 8,
+          "records": [
+            400150,
+            400151,
+            400152,
+            400153,
+            400509,
+            400514,
+            400544,
+            400545
+          ],
+          "n_leaked_records": 6,
+          "stratum": "lead2_unreliable",
+          "beat": {
+            "n_beats": 1271,
+            "n_abnormal": 1271,
+            "theta": 0.5,
+            "tp": 685,
+            "fp": 0,
+            "tn": 0,
+            "fn": 586,
+            "sensitivity": 0.5389457120377655,
+            "precision": 1.0,
+            "f1": 0.7004089979550102,
+            "auc": null
+          }
+        },
+        "MI antero-septal": {
+          "n_records": 13,
+          "records": [
+            400005,
+            400006,
+            400032,
+            400033,
+            400034,
+            400071,
+            400072,
+            400073,
+            400167,
+            400247,
+            400248,
+            400249,
+            400250
+          ],
+          "n_leaked_records": 7,
+          "stratum": "lead2_unreliable",
+          "beat": {
+            "n_beats": 1874,
+            "n_abnormal": 1874,
+            "theta": 0.5,
+            "tp": 426,
+            "fp": 0,
+            "tn": 0,
+            "fn": 1448,
+            "sensitivity": 0.22732123799359658,
+            "precision": 1.0,
+            "f1": 0.37043478260869567,
+            "auc": null
+          }
+        },
+        "MI inferior": {
+          "n_records": 12,
+          "records": [
+            400120,
+            400121,
+            400122,
+            400123,
+            400259,
+            400260,
+            400261,
+            400262,
+            400351,
+            400415,
+            400505,
+            400548
+          ],
+          "n_leaked_records": 9,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 1631,
+            "n_abnormal": 1631,
+            "theta": 0.5,
+            "tp": 412,
+            "fp": 0,
+            "tn": 0,
+            "fn": 1219,
+            "sensitivity": 0.25260576333537704,
+            "precision": 1.0,
+            "f1": 0.40332843857072925,
+            "auc": null
+          }
+        },
+        "MI infero-latera": {
+          "n_records": 3,
+          "records": [
+            400000,
+            400001,
+            400002
+          ],
+          "n_leaked_records": 2,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 367,
+            "n_abnormal": 367,
+            "theta": 0.5,
+            "tp": 279,
+            "fp": 0,
+            "tn": 0,
+            "fn": 88,
+            "sensitivity": 0.7602179836512262,
+            "precision": 1.0,
+            "f1": 0.8637770897832817,
+            "auc": null
+          }
+        },
+        "MI infero-lateral": {
+          "n_records": 15,
+          "records": [
+            400166,
+            400176,
+            400189,
+            400190,
+            400191,
+            400199,
+            400200,
+            400201,
+            400202,
+            400207,
+            400208,
+            400209,
+            400210,
+            400255,
+            400529
+          ],
+          "n_leaked_records": 11,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 2174,
+            "n_abnormal": 2174,
+            "theta": 0.5,
+            "tp": 718,
+            "fp": 0,
+            "tn": 0,
+            "fn": 1456,
+            "sensitivity": 0.33026678932842685,
+            "precision": 1.0,
+            "f1": 0.49654218533886585,
+            "auc": null
+          }
+        },
+        "MI infero-posterior": {
+          "n_records": 2,
+          "records": [
+            400320,
+            400354
+          ],
+          "n_leaked_records": 1,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 204,
+            "n_abnormal": 204,
+            "theta": 0.5,
+            "tp": 164,
+            "fp": 0,
+            "tn": 0,
+            "fn": 40,
+            "sensitivity": 0.803921568627451,
+            "precision": 1.0,
+            "f1": 0.891304347826087,
+            "auc": null
+          }
+        },
+        "MI infero-postero-lateral": {
+          "n_records": 1,
+          "records": [
+            400004
+          ],
+          "n_leaked_records": 0,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 138,
+            "n_abnormal": 138,
+            "theta": 0.5,
+            "tp": 33,
+            "fp": 0,
+            "tn": 0,
+            "fn": 105,
+            "sensitivity": 0.2391304347826087,
+            "precision": 1.0,
+            "f1": 0.3859649122807018,
+            "auc": null
+          }
+        },
+        "MI postero-lateral": {
+          "n_records": 4,
+          "records": [
+            400227,
+            400228,
+            400229,
+            400230
+          ],
+          "n_leaked_records": 3,
+          "stratum": "lead2_unreliable",
+          "beat": {
+            "n_beats": 604,
+            "n_abnormal": 604,
+            "theta": 0.5,
+            "tp": 337,
+            "fp": 0,
+            "tn": 0,
+            "fn": 267,
+            "sensitivity": 0.5579470198675497,
+            "precision": 1.0,
+            "f1": 0.7162592986184909,
+            "auc": null
+          }
+        },
+        "n/a": {
+          "n_records": 3,
+          "records": [
+            400421,
+            400519,
+            400530
+          ],
+          "n_leaked_records": 1,
+          "stratum": "lead2_unreliable",
+          "beat": {
+            "n_beats": 442,
+            "n_abnormal": 442,
+            "theta": 0.5,
+            "tp": 246,
+            "fp": 0,
+            "tn": 0,
+            "fn": 196,
+            "sensitivity": 0.5565610859728507,
+            "precision": 1.0,
+            "f1": 0.7151162790697675,
+            "auc": null
+          }
+        }
+      },
+      "identity_probe": {
+        "n_records": 95,
+        "raw_mean_ovr_auc": 0.5000000000000001,
+        "shuffled_mean_ovr_auc": 0.5530795072788355,
+        "probe_delta": -0.05307950727883537,
+        "max_ovr_auc": 1.0,
+        "worst_ovr_auc": 0.0
+      },
+      "leakage_memory_probe": {
+        "n_leaked": 64,
+        "n_total": 95,
+        "mean_prob_leaked": 0.41752129793167114,
+        "mean_prob_clean": 0.45030713081359863,
+        "leak_vs_clean_auc": 0.4742943548387097,
+        "memory_gap": -0.03278583288192749
+      }
+    },
+    "exp7c_v4": {
+      "file": "best_resnet_large_exp7c_v4.h5",
+      "kind": "h5",
+      "n_leaked_test_records": 0,
+      "overall_beat": {
+        "n_beats": 13058,
+        "n_abnormal": 10204,
+        "theta": 0.5,
+        "tp": 3783,
+        "fp": 344,
+        "tn": 2510,
+        "fn": 6421,
+        "sensitivity": 0.3707369658957272,
+        "precision": 0.9166464744366368,
+        "f1": 0.5279464098806782,
+        "auc": 0.7954402748746867
+      },
+      "overall_event": {
+        "event_recall": 0.76,
+        "event_precision": 0.947712,
+        "event_f1": 0.843539,
+        "fp_per_record": 0.084211,
+        "fp_per_1000_beats": 0.612651,
+        "alert_rate": 0.47649,
+        "gt_events": 75,
+        "alert_blocks": 153,
+        "false_alarm_blocks": 8,
+        "matched_gt_events": 57,
+        "matched_pred_blocks": 145
+      },
+      "strata": {
+        "lead2_favorable": {
+          "n_records": 37,
+          "records": [
+            400000,
+            400001,
+            400002,
+            400004,
+            400120,
+            400121,
+            400122,
+            400123,
+            400166,
+            400176,
+            400189,
+            400190,
+            400191,
+            400199,
+            400200,
+            400201,
+            400202,
+            400207,
+            400208,
+            400209,
+            400210,
+            400255,
+            400259,
+            400260,
+            400261,
+            400262,
+            400320,
+            400351,
+            400354,
+            400370,
+            400413,
+            400415,
+            400444,
+            400449,
+            400505,
+            400529,
+            400548
+          ],
+          "n_patients": 21,
+          "beat": {
+            "n_beats": 4916,
+            "n_abnormal": 4916,
+            "theta": 0.5,
+            "tp": 1420,
+            "fp": 0,
+            "tn": 0,
+            "fn": 3496,
+            "sensitivity": 0.28885272579332794,
+            "precision": 1.0,
+            "f1": 0.44823232323232326,
+            "auc": null
+          },
+          "event": {
+            "skipped": "single-class labels (AUC undefined)"
+          }
+        },
+        "lead2_unreliable": {
+          "n_records": 38,
+          "records": [
+            400005,
+            400006,
+            400032,
+            400033,
+            400034,
+            400054,
+            400055,
+            400056,
+            400071,
+            400072,
+            400073,
+            400079,
+            400080,
+            400081,
+            400150,
+            400151,
+            400152,
+            400153,
+            400167,
+            400227,
+            400228,
+            400229,
+            400230,
+            400247,
+            400248,
+            400249,
+            400250,
+            400376,
+            400382,
+            400421,
+            400447,
+            400501,
+            400509,
+            400514,
+            400519,
+            400530,
+            400544,
+            400545
+          ],
+          "n_patients": 19,
+          "beat": {
+            "n_beats": 5288,
+            "n_abnormal": 5288,
+            "theta": 0.5,
+            "tp": 2363,
+            "fp": 0,
+            "tn": 0,
+            "fn": 2925,
+            "sensitivity": 0.4468608169440242,
+            "precision": 1.0,
+            "f1": 0.6176970330675728,
+            "auc": null
+          },
+          "event": {
+            "skipped": "single-class labels (AUC undefined)"
+          }
+        },
+        "control": {
+          "n_records": 20,
+          "records": [
+            400316,
+            400329,
+            400336,
+            400345,
+            400390,
+            400391,
+            400392,
+            400393,
+            400408,
+            400410,
+            400446,
+            400475,
+            400476,
+            400478,
+            400479,
+            400484,
+            400485,
+            400504,
+            400511,
+            400520
+          ],
+          "n_patients": 17,
+          "beat": {
+            "n_beats": 2854,
+            "n_abnormal": 0,
+            "theta": 0.5,
+            "tp": 0,
+            "fp": 344,
+            "tn": 2510,
+            "fn": 0,
+            "sensitivity": null,
+            "precision": 0.0,
+            "f1": null,
+            "auc": null
+          },
+          "event": {
+            "skipped": "single-class labels (AUC undefined)"
+          }
+        }
+      },
+      "diagnoses": {
+        "Bundle branch block": {
+          "n_records": 1,
+          "records": [
+            400449
+          ],
+          "n_leaked_records": 0,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 127,
+            "n_abnormal": 127,
+            "theta": 0.5,
+            "tp": 120,
+            "fp": 0,
+            "tn": 0,
+            "fn": 7,
+            "sensitivity": 0.9448818897637795,
+            "precision": 1.0,
+            "f1": 0.97165991902834,
+            "auc": null
+          }
+        },
+        "Cardiomyopathy": {
+          "n_records": 3,
+          "records": [
+            400382,
+            400447,
+            400501
+          ],
+          "n_leaked_records": 0,
+          "stratum": "lead2_unreliable",
+          "beat": {
+            "n_beats": 379,
+            "n_abnormal": 379,
+            "theta": 0.5,
+            "tp": 199,
+            "fp": 0,
+            "tn": 0,
+            "fn": 180,
+            "sensitivity": 0.525065963060686,
+            "precision": 1.0,
+            "f1": 0.6885813148788927,
+            "auc": null
+          }
+        },
+        "Dysrhythmia": {
+          "n_records": 2,
+          "records": [
+            400370,
+            400413
+          ],
+          "n_leaked_records": 0,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 120,
+            "n_abnormal": 120,
+            "theta": 0.5,
+            "tp": 30,
+            "fp": 0,
+            "tn": 0,
+            "fn": 90,
+            "sensitivity": 0.25,
+            "precision": 1.0,
+            "f1": 0.4,
+            "auc": null
+          }
+        },
+        "Healthy control": {
+          "n_records": 20,
+          "records": [
+            400316,
+            400329,
+            400336,
+            400345,
+            400390,
+            400391,
+            400392,
+            400393,
+            400408,
+            400410,
+            400446,
+            400475,
+            400476,
+            400478,
+            400479,
+            400484,
+            400485,
+            400504,
+            400511,
+            400520
+          ],
+          "n_leaked_records": 0,
+          "stratum": "control",
+          "beat": {
+            "n_beats": 2854,
+            "n_abnormal": 0,
+            "theta": 0.5,
+            "tp": 0,
+            "fp": 344,
+            "tn": 2510,
+            "fn": 0,
+            "sensitivity": null,
+            "precision": 0.0,
+            "f1": null,
+            "auc": null
+          }
+        },
+        "Hypertrophy": {
+          "n_records": 1,
+          "records": [
+            400444
+          ],
+          "n_leaked_records": 0,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 155,
+            "n_abnormal": 155,
+            "theta": 0.5,
+            "tp": 0,
+            "fp": 0,
+            "tn": 0,
+            "fn": 155,
+            "sensitivity": 0.0,
+            "precision": null,
+            "f1": null,
+            "auc": null
+          }
+        },
+        "MI anterior": {
+          "n_records": 7,
+          "records": [
+            400054,
+            400055,
+            400056,
+            400079,
+            400080,
+            400081,
+            400376
+          ],
+          "n_leaked_records": 0,
+          "stratum": "lead2_unreliable",
+          "beat": {
+            "n_beats": 718,
+            "n_abnormal": 718,
+            "theta": 0.5,
+            "tp": 652,
+            "fp": 0,
+            "tn": 0,
+            "fn": 66,
+            "sensitivity": 0.9080779944289693,
+            "precision": 1.0,
+            "f1": 0.9518248175182481,
+            "auc": null
+          }
+        },
+        "MI antero-lateral": {
+          "n_records": 8,
+          "records": [
+            400150,
+            400151,
+            400152,
+            400153,
+            400509,
+            400514,
+            400544,
+            400545
+          ],
+          "n_leaked_records": 0,
+          "stratum": "lead2_unreliable",
+          "beat": {
+            "n_beats": 1271,
+            "n_abnormal": 1271,
+            "theta": 0.5,
+            "tp": 616,
+            "fp": 0,
+            "tn": 0,
+            "fn": 655,
+            "sensitivity": 0.4846577498033045,
+            "precision": 1.0,
+            "f1": 0.652888182299947,
+            "auc": null
+          }
+        },
+        "MI antero-septal": {
+          "n_records": 13,
+          "records": [
+            400005,
+            400006,
+            400032,
+            400033,
+            400034,
+            400071,
+            400072,
+            400073,
+            400167,
+            400247,
+            400248,
+            400249,
+            400250
+          ],
+          "n_leaked_records": 0,
+          "stratum": "lead2_unreliable",
+          "beat": {
+            "n_beats": 1874,
+            "n_abnormal": 1874,
+            "theta": 0.5,
+            "tp": 408,
+            "fp": 0,
+            "tn": 0,
+            "fn": 1466,
+            "sensitivity": 0.21771611526147278,
+            "precision": 1.0,
+            "f1": 0.35758106923751093,
+            "auc": null
+          }
+        },
+        "MI inferior": {
+          "n_records": 12,
+          "records": [
+            400120,
+            400121,
+            400122,
+            400123,
+            400259,
+            400260,
+            400261,
+            400262,
+            400351,
+            400415,
+            400505,
+            400548
+          ],
+          "n_leaked_records": 0,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 1631,
+            "n_abnormal": 1631,
+            "theta": 0.5,
+            "tp": 206,
+            "fp": 0,
+            "tn": 0,
+            "fn": 1425,
+            "sensitivity": 0.12630288166768852,
+            "precision": 1.0,
+            "f1": 0.22427871529667934,
+            "auc": null
+          }
+        },
+        "MI infero-latera": {
+          "n_records": 3,
+          "records": [
+            400000,
+            400001,
+            400002
+          ],
+          "n_leaked_records": 0,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 367,
+            "n_abnormal": 367,
+            "theta": 0.5,
+            "tp": 259,
+            "fp": 0,
+            "tn": 0,
+            "fn": 108,
+            "sensitivity": 0.7057220708446866,
+            "precision": 1.0,
+            "f1": 0.8274760383386581,
+            "auc": null
+          }
+        },
+        "MI infero-lateral": {
+          "n_records": 15,
+          "records": [
+            400166,
+            400176,
+            400189,
+            400190,
+            400191,
+            400199,
+            400200,
+            400201,
+            400202,
+            400207,
+            400208,
+            400209,
+            400210,
+            400255,
+            400529
+          ],
+          "n_leaked_records": 0,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 2174,
+            "n_abnormal": 2174,
+            "theta": 0.5,
+            "tp": 615,
+            "fp": 0,
+            "tn": 0,
+            "fn": 1559,
+            "sensitivity": 0.2828886844526219,
+            "precision": 1.0,
+            "f1": 0.44101828612405874,
+            "auc": null
+          }
+        },
+        "MI infero-posterior": {
+          "n_records": 2,
+          "records": [
+            400320,
+            400354
+          ],
+          "n_leaked_records": 0,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 204,
+            "n_abnormal": 204,
+            "theta": 0.5,
+            "tp": 167,
+            "fp": 0,
+            "tn": 0,
+            "fn": 37,
+            "sensitivity": 0.8186274509803921,
+            "precision": 1.0,
+            "f1": 0.9002695417789758,
+            "auc": null
+          }
+        },
+        "MI infero-postero-lateral": {
+          "n_records": 1,
+          "records": [
+            400004
+          ],
+          "n_leaked_records": 0,
+          "stratum": "lead2_favorable",
+          "beat": {
+            "n_beats": 138,
+            "n_abnormal": 138,
+            "theta": 0.5,
+            "tp": 23,
+            "fp": 0,
+            "tn": 0,
+            "fn": 115,
+            "sensitivity": 0.16666666666666666,
+            "precision": 1.0,
+            "f1": 0.2857142857142857,
+            "auc": null
+          }
+        },
+        "MI postero-lateral": {
+          "n_records": 4,
+          "records": [
+            400227,
+            400228,
+            400229,
+            400230
+          ],
+          "n_leaked_records": 0,
+          "stratum": "lead2_unreliable",
+          "beat": {
+            "n_beats": 604,
+            "n_abnormal": 604,
+            "theta": 0.5,
+            "tp": 317,
+            "fp": 0,
+            "tn": 0,
+            "fn": 287,
+            "sensitivity": 0.5248344370860927,
+            "precision": 1.0,
+            "f1": 0.6883821932681867,
+            "auc": null
+          }
+        },
+        "n/a": {
+          "n_records": 3,
+          "records": [
+            400421,
+            400519,
+            400530
+          ],
+          "n_leaked_records": 0,
+          "stratum": "lead2_unreliable",
+          "beat": {
+            "n_beats": 442,
+            "n_abnormal": 442,
+            "theta": 0.5,
+            "tp": 171,
+            "fp": 0,
+            "tn": 0,
+            "fn": 271,
+            "sensitivity": 0.38687782805429866,
+            "precision": 1.0,
+            "f1": 0.5579119086460033,
+            "auc": null
+          }
+        }
+      },
+      "identity_probe": {
+        "n_records": 95,
+        "raw_mean_ovr_auc": 0.5,
+        "shuffled_mean_ovr_auc": 0.5537513997760359,
+        "probe_delta": -0.053751399776035935,
+        "max_ovr_auc": 1.0,
+        "worst_ovr_auc": 0.0
+      },
+      "leakage_memory_probe": {
+        "n_leaked": 0,
+        "n_total": 95,
+        "probe": "all_or_none_leaked"
+      }
+    }
+  }
+}

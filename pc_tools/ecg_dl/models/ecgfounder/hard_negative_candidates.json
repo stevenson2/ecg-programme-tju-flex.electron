@@ -1,0 +1,2149 @@
+{
+  "method": "ECGFounder 1-lead 10s segment embedding, cosine distance to real AFE normal segments",
+  "metric": "cosine",
+  "n_real_afe_segments": 24,
+  "n_ptbxl_records": 432,
+  "n_abnormal_candidates": 216,
+  "n_normal_controls": 216,
+  "hard_negative_top": [
+    {
+      "index": 77,
+      "ecg_id": 7079,
+      "patient_id": "18366.0",
+      "filename_hr": "records500/07000/07079_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "dist_min": 0.3851036556304136,
+      "dist_mean": 0.4583742480915134,
+      "dist_median": 0.4688128956329364,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9949304461479187
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9885348677635193
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9412190318107605
+        },
+        {
+          "task": "LEFT VENTRICULAR HYPERTROPHY",
+          "prob": 0.803054690361023
+        },
+        {
+          "task": "UNDETERMINED RHYTHM",
+          "prob": 0.5735701322555542
+        }
+      ]
+    },
+    {
+      "index": 118,
+      "ecg_id": 11886,
+      "patient_id": "8855.0",
+      "filename_hr": "records500/11000/11886_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0,
+        "AFIB": 0.0
+      },
+      "dist_min": 0.4028513115829996,
+      "dist_mean": 0.4716169681488764,
+      "dist_median": 0.4680143676171784,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9994460940361023
+        },
+        {
+          "task": "ATRIAL FIBRILLATION",
+          "prob": 0.9807641506195068
+        },
+        {
+          "task": "UNDETERMINED RHYTHM",
+          "prob": 0.8605391383171082
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.8324794173240662
+        },
+        {
+          "task": "ATRIAL FLUTTER",
+          "prob": 0.800463080406189
+        }
+      ]
+    },
+    {
+      "index": 148,
+      "ecg_id": 13906,
+      "patient_id": "2731.0",
+      "filename_hr": "records500/13000/13906_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "1AVB": 100.0
+      },
+      "dist_min": 0.4185457941551127,
+      "dist_mean": 0.49457653668877954,
+      "dist_median": 0.46985017531208195,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9989677667617798
+        },
+        {
+          "task": "ATRIAL FLUTTER",
+          "prob": 0.972510039806366
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.8874447345733643
+        },
+        {
+          "task": "LEFT VENTRICULAR HYPERTROPHY",
+          "prob": 0.8579829335212708
+        },
+        {
+          "task": "ATRIAL FIBRILLATION",
+          "prob": 0.7831704616546631
+        }
+      ]
+    },
+    {
+      "index": 196,
+      "ecg_id": 18109,
+      "patient_id": "5744.0",
+      "filename_hr": "records500/18000/18109_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "dist_min": 0.42732165174133385,
+      "dist_mean": 0.5128557019926266,
+      "dist_median": 0.4986680800534085,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9996798038482666
+        },
+        {
+          "task": "ATRIAL FIBRILLATION",
+          "prob": 0.9927327036857605
+        },
+        {
+          "task": "LEFT VENTRICULAR HYPERTROPHY",
+          "prob": 0.6828659176826477
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.641550600528717
+        },
+        {
+          "task": "UNDETERMINED RHYTHM",
+          "prob": 0.42102229595184326
+        }
+      ]
+    },
+    {
+      "index": 27,
+      "ecg_id": 2051,
+      "patient_id": "389.0",
+      "filename_hr": "records500/02000/02051_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PSVT": 100.0
+      },
+      "dist_min": 0.4375768964969813,
+      "dist_mean": 0.48949824764328653,
+      "dist_median": 0.49103038034909385,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9957036375999451
+        },
+        {
+          "task": "SINUS TACHYCARDIA",
+          "prob": 0.9641081690788269
+        },
+        {
+          "task": "LATERAL INFARCT",
+          "prob": 0.9618455171585083
+        },
+        {
+          "task": "VENTRICULAR TACHYCARDIA",
+          "prob": 0.769241452217102
+        },
+        {
+          "task": "SUPRAVENTRICULAR TACHYCARDIA",
+          "prob": 0.7559712529182434
+        }
+      ]
+    },
+    {
+      "index": 143,
+      "ecg_id": 12986,
+      "patient_id": "1711.0",
+      "filename_hr": "records500/12000/12986_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "dist_min": 0.4382604291130412,
+      "dist_mean": 0.5373381424263441,
+      "dist_median": 0.54508242881273,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9915000796318054
+        },
+        {
+          "task": "SINUS TACHYCARDIA",
+          "prob": 0.9726540446281433
+        },
+        {
+          "task": "RIGHT SUPERIOR AXIS DEVIATION",
+          "prob": 0.856793999671936
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.8155633211135864
+        },
+        {
+          "task": "RIGHT AXIS DEVIATION",
+          "prob": 0.7621265053749084
+        }
+      ]
+    },
+    {
+      "index": 97,
+      "ecg_id": 9312,
+      "patient_id": "11103.0",
+      "filename_hr": "records500/09000/09312_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "STACH": 0.0
+      },
+      "dist_min": 0.43870753579412325,
+      "dist_mean": 0.6062550770482967,
+      "dist_median": 0.6172921632608698,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9960816502571106
+        },
+        {
+          "task": "SINUS TACHYCARDIA",
+          "prob": 0.9932618737220764
+        },
+        {
+          "task": "LEFT ATRIAL ENLARGEMENT",
+          "prob": 0.8701552152633667
+        },
+        {
+          "task": "LEFT AXIS DEVIATION",
+          "prob": 0.5006676316261292
+        },
+        {
+          "task": "LEFT VENTRICULAR HYPERTROPHY",
+          "prob": 0.467149019241333
+        }
+      ]
+    },
+    {
+      "index": 207,
+      "ecg_id": 20085,
+      "patient_id": "14180.0",
+      "filename_hr": "records500/20000/20085_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0,
+        "AFIB": 0.0
+      },
+      "dist_min": 0.4389981982853475,
+      "dist_mean": 0.5491804278951329,
+      "dist_median": 0.5411770558780877,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9985513091087341
+        },
+        {
+          "task": "ATRIAL FLUTTER",
+          "prob": 0.9586558938026428
+        },
+        {
+          "task": "ATRIAL FIBRILLATION",
+          "prob": 0.9444345831871033
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.8581664562225342
+        },
+        {
+          "task": "LEFT AXIS DEVIATION",
+          "prob": 0.3206794857978821
+        }
+      ]
+    },
+    {
+      "index": 24,
+      "ecg_id": 1773,
+      "patient_id": "9503.0",
+      "filename_hr": "records500/01000/01773_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "dist_min": 0.44269354931112426,
+      "dist_mean": 0.5300129477052984,
+      "dist_median": 0.531504569644116,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9990367889404297
+        },
+        {
+          "task": "ATRIAL FLUTTER",
+          "prob": 0.953978955745697
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.8506873250007629
+        },
+        {
+          "task": "ATRIAL FIBRILLATION",
+          "prob": 0.8435595035552979
+        },
+        {
+          "task": "UNDETERMINED RHYTHM",
+          "prob": 0.7108458280563354
+        }
+      ]
+    },
+    {
+      "index": 142,
+      "ecg_id": 12948,
+      "patient_id": "13538.0",
+      "filename_hr": "records500/12000/12948_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "dist_min": 0.44335678418970803,
+      "dist_mean": 0.5422391377458563,
+      "dist_median": 0.5332797513115355,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9989835619926453
+        },
+        {
+          "task": "ATRIAL FIBRILLATION",
+          "prob": 0.9093508720397949
+        },
+        {
+          "task": "ATRIAL FLUTTER",
+          "prob": 0.9060495495796204
+        },
+        {
+          "task": "WITH RAPID VENTRICULAR RESPONSE",
+          "prob": 0.9035394787788391
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.7922282814979553
+        }
+      ]
+    },
+    {
+      "index": 81,
+      "ecg_id": 7567,
+      "patient_id": "9048.0",
+      "filename_hr": "records500/07000/07567_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "dist_min": 0.44370608726802596,
+      "dist_mean": 0.5408161306693282,
+      "dist_median": 0.5378129892419702,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9976602792739868
+        },
+        {
+          "task": "ATRIAL FLUTTER",
+          "prob": 0.9658123850822449
+        },
+        {
+          "task": "ATRIAL FIBRILLATION",
+          "prob": 0.8907970190048218
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.8661943674087524
+        },
+        {
+          "task": "RIGHT BUNDLE BRANCH BLOCK",
+          "prob": 0.39487338066101074
+        }
+      ]
+    },
+    {
+      "index": 135,
+      "ecg_id": 12489,
+      "patient_id": "544.0",
+      "filename_hr": "records500/12000/12489_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PSVT": 100.0,
+        "SVTAC": 0.0
+      },
+      "dist_min": 0.4455212523073244,
+      "dist_mean": 0.5318037891294544,
+      "dist_median": 0.5336183019010821,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9991917014122009
+        },
+        {
+          "task": "SINUS TACHYCARDIA",
+          "prob": 0.9878436326980591
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9414376020431519
+        },
+        {
+          "task": "UNDETERMINED RHYTHM",
+          "prob": 0.9103637933731079
+        },
+        {
+          "task": "ECTOPIC ATRIAL RHYTHM",
+          "prob": 0.7860864996910095
+        }
+      ]
+    },
+    {
+      "index": 191,
+      "ecg_id": 17386,
+      "patient_id": "13134.0",
+      "filename_hr": "records500/17000/17386_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "dist_min": 0.44688451668666906,
+      "dist_mean": 0.5078483624972462,
+      "dist_median": 0.511544319228097,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9994717240333557
+        },
+        {
+          "task": "ATRIAL FIBRILLATION",
+          "prob": 0.9529514908790588
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.7822011113166809
+        },
+        {
+          "task": "UNDETERMINED RHYTHM",
+          "prob": 0.7792832851409912
+        },
+        {
+          "task": "NONSPECIFIC ST ABNORMALITY",
+          "prob": 0.5711352229118347
+        }
+      ]
+    },
+    {
+      "index": 113,
+      "ecg_id": 11520,
+      "patient_id": "9005.0",
+      "filename_hr": "records500/11000/11520_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SVARR": 0.0
+      },
+      "dist_min": 0.44801790603508507,
+      "dist_mean": 0.5062151773829823,
+      "dist_median": 0.49884396102640455,
+      "ecgfounder_top5": [
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9947612881660461
+        },
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9940787553787231
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9301061630249023
+        },
+        {
+          "task": "NONSPECIFIC ST ABNORMALITY",
+          "prob": 0.7061725854873657
+        },
+        {
+          "task": "LEFT ATRIAL ENLARGEMENT",
+          "prob": 0.43212881684303284
+        }
+      ]
+    },
+    {
+      "index": 36,
+      "ecg_id": 2509,
+      "patient_id": "16689.0",
+      "filename_hr": "records500/02000/02509_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "dist_min": 0.45085992041175416,
+      "dist_mean": 0.5105083362076855,
+      "dist_median": 0.5209831732801032,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9971442818641663
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9934362173080444
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9408218264579773
+        },
+        {
+          "task": "RIGHT AXIS DEVIATION",
+          "prob": 0.9255042672157288
+        },
+        {
+          "task": "RIGHT BUNDLE BRANCH BLOCK",
+          "prob": 0.7520681619644165
+        }
+      ]
+    },
+    {
+      "index": 52,
+      "ecg_id": 3793,
+      "patient_id": "16721.0",
+      "filename_hr": "records500/03000/03793_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "dist_min": 0.45258661779368037,
+      "dist_mean": 0.5626515959591373,
+      "dist_median": 0.56596938691429,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9947770833969116
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9891679286956787
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9716619253158569
+        },
+        {
+          "task": "PREMATURE VENTRICULAR COMPLEXES",
+          "prob": 0.9230136275291443
+        },
+        {
+          "task": "UNDETERMINED RHYTHM",
+          "prob": 0.6814677715301514
+        }
+      ]
+    },
+    {
+      "index": 132,
+      "ecg_id": 12346,
+      "patient_id": "21604.0",
+      "filename_hr": "records500/12000/12346_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PSVT": 100.0
+      },
+      "dist_min": 0.4526617973198088,
+      "dist_mean": 0.5369493474222978,
+      "dist_median": 0.5303461143811957,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9985454082489014
+        },
+        {
+          "task": "SINUS TACHYCARDIA",
+          "prob": 0.9803605675697327
+        },
+        {
+          "task": "RIGHT AXIS DEVIATION",
+          "prob": 0.9387524127960205
+        },
+        {
+          "task": "ATRIAL FLUTTER",
+          "prob": 0.8239197731018066
+        },
+        {
+          "task": "RIGHT BUNDLE BRANCH BLOCK",
+          "prob": 0.7828851342201233
+        }
+      ]
+    },
+    {
+      "index": 178,
+      "ecg_id": 16245,
+      "patient_id": "7015.0",
+      "filename_hr": "records500/16000/16245_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "dist_min": 0.4569162928736894,
+      "dist_mean": 0.5037355608655729,
+      "dist_median": 0.4995862014295946,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9991050362586975
+        },
+        {
+          "task": "RIGHT BUNDLE BRANCH BLOCK",
+          "prob": 0.9815389513969421
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9580994248390198
+        },
+        {
+          "task": "ATRIAL FIBRILLATION",
+          "prob": 0.916358232498169
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.8956819772720337
+        }
+      ]
+    },
+    {
+      "index": 193,
+      "ecg_id": 17623,
+      "patient_id": "10058.0",
+      "filename_hr": "records500/17000/17623_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SVARR": 0.0
+      },
+      "dist_min": 0.45845781028225674,
+      "dist_mean": 0.5480969212738972,
+      "dist_median": 0.5507928596004703,
+      "ecgfounder_top5": [
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9983516931533813
+        },
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9977858066558838
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9556716084480286
+        },
+        {
+          "task": "ECTOPIC ATRIAL RHYTHM",
+          "prob": 0.8802490830421448
+        },
+        {
+          "task": "LEFT VENTRICULAR HYPERTROPHY",
+          "prob": 0.5580881834030151
+        }
+      ]
+    },
+    {
+      "index": 200,
+      "ecg_id": 18855,
+      "patient_id": "15223.0",
+      "filename_hr": "records500/18000/18855_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SVARR": 0.0
+      },
+      "dist_min": 0.45845809075969035,
+      "dist_mean": 0.5177104494579347,
+      "dist_median": 0.5169886386771158,
+      "ecgfounder_top5": [
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9957292675971985
+        },
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9880623817443848
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.974797248840332
+        },
+        {
+          "task": "BORDERLINE ECG",
+          "prob": 0.6333943605422974
+        },
+        {
+          "task": "LEFT ATRIAL ENLARGEMENT",
+          "prob": 0.43338051438331604
+        }
+      ]
+    },
+    {
+      "index": 115,
+      "ecg_id": 11604,
+      "patient_id": "17601.0",
+      "filename_hr": "records500/11000/11604_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "dist_min": 0.45942644391844,
+      "dist_mean": 0.5422730190022147,
+      "dist_median": 0.5476606127111754,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9963823556900024
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9830046892166138
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9715520739555359
+        },
+        {
+          "task": "LEFT VENTRICULAR HYPERTROPHY",
+          "prob": 0.8161929845809937
+        },
+        {
+          "task": "BORDERLINE ECG",
+          "prob": 0.8161869049072266
+        }
+      ]
+    },
+    {
+      "index": 190,
+      "ecg_id": 17214,
+      "patient_id": "11570.0",
+      "filename_hr": "records500/17000/17214_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "SVARR": 0.0
+      },
+      "dist_min": 0.4596934503326384,
+      "dist_mean": 0.5045582945680663,
+      "dist_median": 0.49341370416588176,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.997227132320404
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9961491823196411
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9663559198379517
+        },
+        {
+          "task": "LEFT VENTRICULAR HYPERTROPHY",
+          "prob": 0.4198867380619049
+        },
+        {
+          "task": "PREMATURE VENTRICULAR COMPLEXES",
+          "prob": 0.4000428318977356
+        }
+      ]
+    },
+    {
+      "index": 33,
+      "ecg_id": 2251,
+      "patient_id": "16654.0",
+      "filename_hr": "records500/02000/02251_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "dist_min": 0.4618437810034308,
+      "dist_mean": 0.5750558153257267,
+      "dist_median": 0.5885048711154673,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9992178678512573
+        },
+        {
+          "task": "LEFT VENTRICULAR HYPERTROPHY",
+          "prob": 0.9966920614242554
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9725539088249207
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.964486837387085
+        },
+        {
+          "task": "VOLTAGE CRITERIA FOR LEFT VENTRICULAR HYPERTROPHY",
+          "prob": 0.8660054206848145
+        }
+      ]
+    },
+    {
+      "index": 72,
+      "ecg_id": 6205,
+      "patient_id": "12129.0",
+      "filename_hr": "records500/06000/06205_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "dist_min": 0.4633307842662182,
+      "dist_mean": 0.5134444015845996,
+      "dist_median": 0.5115889227847394,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9996803998947144
+        },
+        {
+          "task": "LATERAL INFARCT",
+          "prob": 0.9899076223373413
+        },
+        {
+          "task": "SINUS TACHYCARDIA",
+          "prob": 0.9775002598762512
+        },
+        {
+          "task": "LEFT AXIS DEVIATION",
+          "prob": 0.9539384245872498
+        },
+        {
+          "task": "VENTRICULAR TACHYCARDIA",
+          "prob": 0.8097627758979797
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "ecg_id": 218,
+      "patient_id": "13925.0",
+      "filename_hr": "records500/00000/00218_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "dist_min": 0.4637416690615003,
+      "dist_mean": 0.540248339271571,
+      "dist_median": 0.5444949905196084,
+      "ecgfounder_top5": [
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.996626615524292
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9857204556465149
+        },
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9841442108154297
+        },
+        {
+          "task": "LEFT VENTRICULAR HYPERTROPHY",
+          "prob": 0.8330329656600952
+        },
+        {
+          "task": "BORDERLINE ECG",
+          "prob": 0.8060446977615356
+        }
+      ]
+    },
+    {
+      "index": 159,
+      "ecg_id": 14963,
+      "patient_id": "630.0",
+      "filename_hr": "records500/14000/14963_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0,
+        "SR": 0.0
+      },
+      "dist_min": 0.46446268970618876,
+      "dist_mean": 0.6027491339782335,
+      "dist_median": 0.613914473007265,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9975919723510742
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.990445613861084
+        },
+        {
+          "task": "PREMATURE VENTRICULAR COMPLEXES",
+          "prob": 0.9897068738937378
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9803292751312256
+        },
+        {
+          "task": "RIGHT AXIS DEVIATION",
+          "prob": 0.9555118680000305
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "ecg_id": 382,
+      "patient_id": "10186.0",
+      "filename_hr": "records500/00000/00382_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "dist_min": 0.4653365852919893,
+      "dist_mean": 0.5600009164265642,
+      "dist_median": 0.5523276295591799,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9982361793518066
+        },
+        {
+          "task": "ATRIAL FIBRILLATION",
+          "prob": 0.992007851600647
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.6912298798561096
+        },
+        {
+          "task": "NONSPECIFIC T WAVE ABNORMALITY",
+          "prob": 0.6580647230148315
+        },
+        {
+          "task": "WITH A COMPETING JUNCTIONAL PACEMAKER",
+          "prob": 0.6209253072738647
+        }
+      ]
+    },
+    {
+      "index": 71,
+      "ecg_id": 6179,
+      "patient_id": "3547.0",
+      "filename_hr": "records500/06000/06179_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "dist_min": 0.4662437280882221,
+      "dist_mean": 0.5664550189597164,
+      "dist_median": 0.5636184476259289,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9990973472595215
+        },
+        {
+          "task": "ATRIAL FLUTTER",
+          "prob": 0.9724707007408142
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9666146636009216
+        },
+        {
+          "task": "WITH RAPID VENTRICULAR RESPONSE",
+          "prob": 0.9355860948562622
+        },
+        {
+          "task": "ATRIAL FIBRILLATION",
+          "prob": 0.885380744934082
+        }
+      ]
+    },
+    {
+      "index": 91,
+      "ecg_id": 8265,
+      "patient_id": "12688.0",
+      "filename_hr": "records500/08000/08265_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0,
+        "SR": 0.0
+      },
+      "dist_min": 0.46660644975788423,
+      "dist_mean": 0.5303820579765642,
+      "dist_median": 0.5278932298856656,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9980962872505188
+        },
+        {
+          "task": "SINUS TACHYCARDIA",
+          "prob": 0.9828375577926636
+        },
+        {
+          "task": "VENTRICULAR TACHYCARDIA",
+          "prob": 0.94162917137146
+        },
+        {
+          "task": "SUPRAVENTRICULAR TACHYCARDIA",
+          "prob": 0.9043647646903992
+        },
+        {
+          "task": "ST NOW DEPRESSED IN",
+          "prob": 0.6060363054275513
+        }
+      ]
+    },
+    {
+      "index": 88,
+      "ecg_id": 8215,
+      "patient_id": "14026.0",
+      "filename_hr": "records500/08000/08215_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "dist_min": 0.4675285404765015,
+      "dist_mean": 0.5670540756406615,
+      "dist_median": 0.5677088205126828,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9988961219787598
+        },
+        {
+          "task": "ATRIAL FIBRILLATION",
+          "prob": 0.9813944101333618
+        },
+        {
+          "task": "ATRIAL FLUTTER",
+          "prob": 0.6328613758087158
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.5706971883773804
+        },
+        {
+          "task": "SEPTAL INFARCT",
+          "prob": 0.4901202917098999
+        }
+      ]
+    },
+    {
+      "index": 68,
+      "ecg_id": 5923,
+      "patient_id": "20812.0",
+      "filename_hr": "records500/05000/05923_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "dist_min": 0.46816556488515715,
+      "dist_mean": 0.5573595453863319,
+      "dist_median": 0.5571986556450496,
+      "ecgfounder_top5": [
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9973656535148621
+        },
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9971110820770264
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9709075093269348
+        },
+        {
+          "task": "LEFT ATRIAL ENLARGEMENT",
+          "prob": 0.8854197263717651
+        },
+        {
+          "task": "LEFT VENTRICULAR HYPERTROPHY",
+          "prob": 0.7491024732589722
+        }
+      ]
+    },
+    {
+      "index": 173,
+      "ecg_id": 16076,
+      "patient_id": "4808.0",
+      "filename_hr": "records500/16000/16076_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "dist_min": 0.46899203915347254,
+      "dist_mean": 0.5664815638123588,
+      "dist_median": 0.5676850830646197,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.998197615146637
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9851542115211487
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9658111929893494
+        },
+        {
+          "task": "UNDETERMINED RHYTHM",
+          "prob": 0.9007427096366882
+        },
+        {
+          "task": "PREMATURE VENTRICULAR COMPLEXES",
+          "prob": 0.7312902808189392
+        }
+      ]
+    },
+    {
+      "index": 58,
+      "ecg_id": 4181,
+      "patient_id": "19221.0",
+      "filename_hr": "records500/04000/04181_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "dist_min": 0.4696178053558999,
+      "dist_mean": 0.5238472576585025,
+      "dist_median": 0.5261954415781656,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9996030926704407
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9944920539855957
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.991854190826416
+        },
+        {
+          "task": "RIGHT BUNDLE BRANCH BLOCK",
+          "prob": 0.9902308583259583
+        },
+        {
+          "task": "LEFT AXIS DEVIATION",
+          "prob": 0.8933737277984619
+        }
+      ]
+    },
+    {
+      "index": 48,
+      "ecg_id": 3496,
+      "patient_id": "9503.0",
+      "filename_hr": "records500/03000/03496_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "dist_min": 0.4697339687494365,
+      "dist_mean": 0.5289860292400674,
+      "dist_median": 0.5269217037209841,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9981947541236877
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9931233525276184
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.8875784873962402
+        },
+        {
+          "task": "NONSPECIFIC ST ABNORMALITY",
+          "prob": 0.7470687031745911
+        },
+        {
+          "task": "ATRIAL FLUTTER",
+          "prob": 0.5869556665420532
+        }
+      ]
+    },
+    {
+      "index": 165,
+      "ecg_id": 15796,
+      "patient_id": "10943.0",
+      "filename_hr": "records500/15000/15796_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "dist_min": 0.47141112081697223,
+      "dist_mean": 0.5489301349441328,
+      "dist_median": 0.552768730945579,
+      "ecgfounder_top5": [
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9977160692214966
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9969621300697327
+        },
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9780222177505493
+        },
+        {
+          "task": "LEFT ATRIAL ENLARGEMENT",
+          "prob": 0.7311618328094482
+        },
+        {
+          "task": "NORMAL ECG",
+          "prob": 0.5897404551506042
+        }
+      ]
+    },
+    {
+      "index": 46,
+      "ecg_id": 3134,
+      "patient_id": "349.0",
+      "filename_hr": "records500/03000/03134_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PSVT": 100.0
+      },
+      "dist_min": 0.47170932342804994,
+      "dist_mean": 0.6110022818986199,
+      "dist_median": 0.6116063533923585,
+      "ecgfounder_top5": [
+        {
+          "task": "SINUS TACHYCARDIA",
+          "prob": 0.9972418546676636
+        },
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9958012700080872
+        },
+        {
+          "task": "VENTRICULAR TACHYCARDIA",
+          "prob": 0.814784824848175
+        },
+        {
+          "task": "SUPRAVENTRICULAR TACHYCARDIA",
+          "prob": 0.5835564136505127
+        },
+        {
+          "task": "LATERAL INFARCT",
+          "prob": 0.5590656399726868
+        }
+      ]
+    },
+    {
+      "index": 210,
+      "ecg_id": 20889,
+      "patient_id": "9878.0",
+      "filename_hr": "records500/20000/20889_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "dist_min": 0.47227045608932505,
+      "dist_mean": 0.5486391878889115,
+      "dist_median": 0.5529765016239001,
+      "ecgfounder_top5": [
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9950823783874512
+        },
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9914404153823853
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9469752907752991
+        },
+        {
+          "task": "BORDERLINE ECG",
+          "prob": 0.8484140038490295
+        },
+        {
+          "task": "LEFT ATRIAL ENLARGEMENT",
+          "prob": 0.6762548089027405
+        }
+      ]
+    },
+    {
+      "index": 194,
+      "ecg_id": 17794,
+      "patient_id": "6472.0",
+      "filename_hr": "records500/17000/17794_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "AFIB": 0.0
+      },
+      "dist_min": 0.4725533313915511,
+      "dist_mean": 0.556247838140302,
+      "dist_median": 0.5604178550725977,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9992403984069824
+        },
+        {
+          "task": "ATRIAL FIBRILLATION",
+          "prob": 0.9836611151695251
+        },
+        {
+          "task": "RIGHT AXIS DEVIATION",
+          "prob": 0.9797512888908386
+        },
+        {
+          "task": "RIGHTWARD AXIS",
+          "prob": 0.6380261182785034
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.545265257358551
+        }
+      ]
+    },
+    {
+      "index": 161,
+      "ecg_id": 15249,
+      "patient_id": "9744.0",
+      "filename_hr": "records500/15000/15249_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "dist_min": 0.47296936318390226,
+      "dist_mean": 0.5588093872499987,
+      "dist_median": 0.5649220754028614,
+      "ecgfounder_top5": [
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9953183531761169
+        },
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9813026785850525
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9694312810897827
+        },
+        {
+          "task": "LEFT ATRIAL ENLARGEMENT",
+          "prob": 0.8358915448188782
+        },
+        {
+          "task": "otherwise normal ecg",
+          "prob": 0.807549774646759
+        }
+      ]
+    },
+    {
+      "index": 134,
+      "ecg_id": 12464,
+      "patient_id": "4945.0",
+      "filename_hr": "records500/12000/12464_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "dist_min": 0.47341938468654476,
+      "dist_mean": 0.53234081678831,
+      "dist_median": 0.5345162269417657,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9981467723846436
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9523876905441284
+        },
+        {
+          "task": "LEFT BUNDLE BRANCH BLOCK",
+          "prob": 0.9118303060531616
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.8091107606887817
+        },
+        {
+          "task": "LEFT AXIS DEVIATION",
+          "prob": 0.8062328696250916
+        }
+      ]
+    },
+    {
+      "index": 92,
+      "ecg_id": 8461,
+      "patient_id": "741.0",
+      "filename_hr": "records500/08000/08461_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PSVT": 100.0
+      },
+      "dist_min": 0.4736753878620973,
+      "dist_mean": 0.5742304441735718,
+      "dist_median": 0.5795940796221009,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.99583899974823
+        },
+        {
+          "task": "SINUS TACHYCARDIA",
+          "prob": 0.9795350432395935
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.6993656754493713
+        },
+        {
+          "task": "SUPRAVENTRICULAR TACHYCARDIA",
+          "prob": 0.5627989172935486
+        },
+        {
+          "task": "ATRIAL FLUTTER",
+          "prob": 0.5378611087799072
+        }
+      ]
+    },
+    {
+      "index": 0,
+      "ecg_id": 18,
+      "patient_id": "13619.0",
+      "filename_hr": "records500/00000/00018_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "dist_min": 0.473820718381495,
+      "dist_mean": 0.5655551378964964,
+      "dist_median": 0.5741458958240986,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9977506995201111
+        },
+        {
+          "task": "ATRIAL FLUTTER",
+          "prob": 0.9794654250144958
+        },
+        {
+          "task": "RIGHT BUNDLE BRANCH BLOCK",
+          "prob": 0.9727884531021118
+        },
+        {
+          "task": "ATRIAL FIBRILLATION",
+          "prob": 0.8906962275505066
+        },
+        {
+          "task": "WITH RAPID VENTRICULAR RESPONSE",
+          "prob": 0.781256914138794
+        }
+      ]
+    },
+    {
+      "index": 168,
+      "ecg_id": 15857,
+      "patient_id": "19454.0",
+      "filename_hr": "records500/15000/15857_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "dist_min": 0.4745263908187778,
+      "dist_mean": 0.5189568341231107,
+      "dist_median": 0.518943215126655,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9992873072624207
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9913574457168579
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9439775943756104
+        },
+        {
+          "task": "LEFT AXIS DEVIATION",
+          "prob": 0.9286237955093384
+        },
+        {
+          "task": "LEFT BUNDLE BRANCH BLOCK",
+          "prob": 0.8867928385734558
+        }
+      ]
+    },
+    {
+      "index": 164,
+      "ecg_id": 15632,
+      "patient_id": "8511.0",
+      "filename_hr": "records500/15000/15632_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "dist_min": 0.4766318948870797,
+      "dist_mean": 0.5328449932280687,
+      "dist_median": 0.5314429346914492,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9986360669136047
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9813933968544006
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9690790772438049
+        },
+        {
+          "task": "LEFT VENTRICULAR HYPERTROPHY",
+          "prob": 0.9629537463188171
+        },
+        {
+          "task": "VOLTAGE CRITERIA FOR LEFT VENTRICULAR HYPERTROPHY",
+          "prob": 0.8098840117454529
+        }
+      ]
+    },
+    {
+      "index": 100,
+      "ecg_id": 9619,
+      "patient_id": "12771.0",
+      "filename_hr": "records500/09000/09619_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "dist_min": 0.47789372298630606,
+      "dist_mean": 0.5342242408461214,
+      "dist_median": 0.5359107120436504,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9984952211380005
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.995276689529419
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9091998934745789
+        },
+        {
+          "task": "LEFT VENTRICULAR HYPERTROPHY",
+          "prob": 0.7474595308303833
+        },
+        {
+          "task": "ATRIAL FLUTTER",
+          "prob": 0.7113950848579407
+        }
+      ]
+    },
+    {
+      "index": 79,
+      "ecg_id": 7321,
+      "patient_id": "20677.0",
+      "filename_hr": "records500/07000/07321_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "dist_min": 0.478627067354362,
+      "dist_mean": 0.5344644572713377,
+      "dist_median": 0.5287612860813012,
+      "ecgfounder_top5": [
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.996625542640686
+        },
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9965922236442566
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.977562427520752
+        },
+        {
+          "task": "LEFT VENTRICULAR HYPERTROPHY",
+          "prob": 0.7942484021186829
+        },
+        {
+          "task": "LEFT ATRIAL ENLARGEMENT",
+          "prob": 0.5308016538619995
+        }
+      ]
+    },
+    {
+      "index": 153,
+      "ecg_id": 14221,
+      "patient_id": "20143.0",
+      "filename_hr": "records500/14000/14221_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "dist_min": 0.4790387023492767,
+      "dist_mean": 0.5441830647244447,
+      "dist_median": 0.5381267005945728,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9994210004806519
+        },
+        {
+          "task": "ATRIAL FIBRILLATION",
+          "prob": 0.9934234619140625
+        },
+        {
+          "task": "UNDETERMINED RHYTHM",
+          "prob": 0.9020603895187378
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.6986482739448547
+        },
+        {
+          "task": "LEFT AXIS DEVIATION",
+          "prob": 0.4206874966621399
+        }
+      ]
+    },
+    {
+      "index": 26,
+      "ecg_id": 2035,
+      "patient_id": "6743.0",
+      "filename_hr": "records500/02000/02035_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "AFIB": 0.0
+      },
+      "dist_min": 0.4792997620874295,
+      "dist_mean": 0.5482526854452363,
+      "dist_median": 0.5452752291233689,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9992983341217041
+        },
+        {
+          "task": "ATRIAL FIBRILLATION",
+          "prob": 0.987888514995575
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.7697089910507202
+        },
+        {
+          "task": "ATRIAL FLUTTER",
+          "prob": 0.44512081146240234
+        },
+        {
+          "task": "NONSPECIFIC ST ABNORMALITY",
+          "prob": 0.3887964189052582
+        }
+      ]
+    },
+    {
+      "index": 103,
+      "ecg_id": 10356,
+      "patient_id": "16512.0",
+      "filename_hr": "records500/10000/10356_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SVTAC": 0.0
+      },
+      "dist_min": 0.480700527570164,
+      "dist_mean": 0.5975433203715353,
+      "dist_median": 0.6009757426158925,
+      "ecgfounder_top5": [
+        {
+          "task": "SINUS TACHYCARDIA",
+          "prob": 0.9932877421379089
+        },
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9877381324768066
+        },
+        {
+          "task": "NONSPECIFIC ST ABNORMALITY",
+          "prob": 0.5495407581329346
+        },
+        {
+          "task": "otherwise normal ecg",
+          "prob": 0.5261167287826538
+        },
+        {
+          "task": "LEFT ATRIAL ENLARGEMENT",
+          "prob": 0.4245852828025818
+        }
+      ]
+    },
+    {
+      "index": 31,
+      "ecg_id": 2205,
+      "patient_id": "4376.0",
+      "filename_hr": "records500/02000/02205_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "dist_min": 0.4812696466570099,
+      "dist_mean": 0.5490702813551508,
+      "dist_median": 0.5445855282756412,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9962634444236755
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9811378717422485
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9324454069137573
+        },
+        {
+          "task": "RIGHT BUNDLE BRANCH BLOCK",
+          "prob": 0.898592472076416
+        },
+        {
+          "task": "LATERAL INFARCT",
+          "prob": 0.788957417011261
+        }
+      ]
+    },
+    {
+      "index": 107,
+      "ecg_id": 10736,
+      "patient_id": "4971.0",
+      "filename_hr": "records500/10000/10736_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "dist_min": 0.48285897707849124,
+      "dist_mean": 0.5741505947802592,
+      "dist_median": 0.5770916430460592,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9980711340904236
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9730361700057983
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9627847671508789
+        },
+        {
+          "task": "UNDETERMINED RHYTHM",
+          "prob": 0.9179458618164062
+        },
+        {
+          "task": "PREMATURE VENTRICULAR COMPLEXES",
+          "prob": 0.9157909750938416
+        }
+      ]
+    },
+    {
+      "index": 76,
+      "ecg_id": 6910,
+      "patient_id": "18854.0",
+      "filename_hr": "records500/06000/06910_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "dist_min": 0.48342016586197367,
+      "dist_mean": 0.5652466694199804,
+      "dist_median": 0.5792829077727566,
+      "ecgfounder_top5": [
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9955940842628479
+        },
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.991405725479126
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9809003472328186
+        },
+        {
+          "task": "RIGHT AXIS DEVIATION",
+          "prob": 0.8225962519645691
+        },
+        {
+          "task": "RIGHT BUNDLE BRANCH BLOCK",
+          "prob": 0.7516937851905823
+        }
+      ]
+    },
+    {
+      "index": 214,
+      "ecg_id": 21594,
+      "patient_id": "10108.0",
+      "filename_hr": "records500/21000/21594_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "dist_min": 0.4852598035862792,
+      "dist_mean": 0.561545792035273,
+      "dist_median": 0.5607830009439831,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9974013566970825
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9807739853858948
+        },
+        {
+          "task": "LATERAL INFARCT",
+          "prob": 0.9511480927467346
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9303027987480164
+        },
+        {
+          "task": "RIGHT BUNDLE BRANCH BLOCK",
+          "prob": 0.9192132949829102
+        }
+      ]
+    },
+    {
+      "index": 49,
+      "ecg_id": 3658,
+      "patient_id": "21032.0",
+      "filename_hr": "records500/03000/03658_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "dist_min": 0.4865841421007787,
+      "dist_mean": 0.5568090841090343,
+      "dist_median": 0.565276882125967,
+      "ecgfounder_top5": [
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9969377517700195
+        },
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9695771336555481
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9694939255714417
+        },
+        {
+          "task": "BORDERLINE ECG",
+          "prob": 0.8461779356002808
+        },
+        {
+          "task": "LEFT ATRIAL ENLARGEMENT",
+          "prob": 0.7925575971603394
+        }
+      ]
+    },
+    {
+      "index": 152,
+      "ecg_id": 14147,
+      "patient_id": "8267.0",
+      "filename_hr": "records500/14000/14147_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "dist_min": 0.4884831910446126,
+      "dist_mean": 0.5877569153300907,
+      "dist_median": 0.5988215091483623,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9969654679298401
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9965566396713257
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9703015089035034
+        },
+        {
+          "task": "LEFT VENTRICULAR HYPERTROPHY",
+          "prob": 0.8022927045822144
+        },
+        {
+          "task": "LEFT ATRIAL ENLARGEMENT",
+          "prob": 0.7928609251976013
+        }
+      ]
+    },
+    {
+      "index": 121,
+      "ecg_id": 11915,
+      "patient_id": "12403.0",
+      "filename_hr": "records500/11000/11915_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "dist_min": 0.48871181767847194,
+      "dist_mean": 0.5452966741515681,
+      "dist_median": 0.5392348232771289,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9966809153556824
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9890811443328857
+        },
+        {
+          "task": "LEFT BUNDLE BRANCH BLOCK",
+          "prob": 0.9730103015899658
+        },
+        {
+          "task": "LEFT AXIS DEVIATION",
+          "prob": 0.9705519676208496
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.9047551155090332
+        }
+      ]
+    },
+    {
+      "index": 47,
+      "ecg_id": 3319,
+      "patient_id": "911.0",
+      "filename_hr": "records500/03000/03319_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0,
+        "AFIB": 0.0
+      },
+      "dist_min": 0.4887966563469307,
+      "dist_mean": 0.5788407662231717,
+      "dist_median": 0.581882831082071,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9991106390953064
+        },
+        {
+          "task": "LATERAL INFARCT",
+          "prob": 0.9557263255119324
+        },
+        {
+          "task": "UNDETERMINED RHYTHM",
+          "prob": 0.9270028471946716
+        },
+        {
+          "task": "PREMATURE VENTRICULAR COMPLEXES",
+          "prob": 0.8910764455795288
+        },
+        {
+          "task": "ATRIAL FIBRILLATION",
+          "prob": 0.8712878823280334
+        }
+      ]
+    },
+    {
+      "index": 126,
+      "ecg_id": 12056,
+      "patient_id": "1303.0",
+      "filename_hr": "records500/12000/12056_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "dist_min": 0.489135220205288,
+      "dist_mean": 0.569969744221471,
+      "dist_median": 0.5685150397924496,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9995250701904297
+        },
+        {
+          "task": "ATRIAL FIBRILLATION",
+          "prob": 0.9924855828285217
+        },
+        {
+          "task": "LEFT VENTRICULAR HYPERTROPHY",
+          "prob": 0.9533162117004395
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.756460964679718
+        },
+        {
+          "task": "VOLTAGE CRITERIA FOR LEFT VENTRICULAR HYPERTROPHY",
+          "prob": 0.6264580488204956
+        }
+      ]
+    },
+    {
+      "index": 90,
+      "ecg_id": 8263,
+      "patient_id": "17826.0",
+      "filename_hr": "records500/08000/08263_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "dist_min": 0.490390557438809,
+      "dist_mean": 0.6071940576471349,
+      "dist_median": 0.6222073989568455,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9968145489692688
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9939501285552979
+        },
+        {
+          "task": "NORMAL SINUS RHYTHM",
+          "prob": 0.97264164686203
+        },
+        {
+          "task": "RIGHT BUNDLE BRANCH BLOCK",
+          "prob": 0.8888995051383972
+        },
+        {
+          "task": "RIGHT AXIS DEVIATION",
+          "prob": 0.8363768458366394
+        }
+      ]
+    },
+    {
+      "index": 66,
+      "ecg_id": 5390,
+      "patient_id": "8169.0",
+      "filename_hr": "records500/05000/05390_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0,
+        "AFIB": 0.0
+      },
+      "dist_min": 0.49064636214544466,
+      "dist_mean": 0.5555400785709718,
+      "dist_median": 0.5536744349334117,
+      "ecgfounder_top5": [
+        {
+          "task": "ABNORMAL ECG",
+          "prob": 0.9993333220481873
+        },
+        {
+          "task": "SINUS TACHYCARDIA",
+          "prob": 0.9594131708145142
+        },
+        {
+          "task": "SINUS RHYTHM",
+          "prob": 0.9165900349617004
+        },
+        {
+          "task": "WITH RAPID VENTRICULAR RESPONSE",
+          "prob": 0.9088289737701416
+        },
+        {
+          "task": "ATRIAL FIBRILLATION",
+          "prob": 0.8992912173271179
+        }
+      ]
+    }
+  ],
+  "note": "这些是公共异常记录，仅作为代理硬负样本候选；禁止直接当作真实 AFE 负样本。"
+}

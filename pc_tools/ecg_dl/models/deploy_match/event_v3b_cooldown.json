@@ -1,0 +1,70 @@
+{
+  "theta": 0.85,
+  "gt_gap": 5,
+  "results": [
+    {
+      "alert_cooldown": 3,
+      "event_recall": 0.930541,
+      "event_precision": 0.816802,
+      "event_f1": 0.86997,
+      "false_alarm_blocks": 181,
+      "fp_per_record": 7.869565,
+      "fp_per_1000_beats": 3.488619
+    },
+    {
+      "alert_cooldown": 4,
+      "event_recall": 0.930541,
+      "event_precision": 0.813348,
+      "event_f1": 0.868007,
+      "false_alarm_blocks": 165,
+      "fp_per_record": 7.173913,
+      "fp_per_1000_beats": 3.180232
+    },
+    {
+      "alert_cooldown": 5,
+      "event_recall": 0.930541,
+      "event_precision": 0.811465,
+      "event_f1": 0.866933,
+      "false_alarm_blocks": 148,
+      "fp_per_record": 6.434783,
+      "fp_per_1000_beats": 2.852572
+    },
+    {
+      "alert_cooldown": 6,
+      "event_recall": 0.930541,
+      "event_precision": 0.822535,
+      "event_f1": 0.873211,
+      "false_alarm_blocks": 126,
+      "fp_per_record": 5.478261,
+      "fp_per_1000_beats": 2.428541
+    },
+    {
+      "alert_cooldown": 7,
+      "event_recall": 0.930541,
+      "event_precision": 0.807267,
+      "event_f1": 0.864532,
+      "false_alarm_blocks": 122,
+      "fp_per_record": 5.304348,
+      "fp_per_1000_beats": 2.351445
+    },
+    {
+      "alert_cooldown": 8,
+      "event_recall": 0.931563,
+      "event_precision": 0.813036,
+      "event_f1": 0.868273,
+      "false_alarm_blocks": 109,
+      "fp_per_record": 4.73913,
+      "fp_per_1000_beats": 2.100881
+    },
+    {
+      "alert_cooldown": 10,
+      "event_recall": 0.933606,
+      "event_precision": 0.81405,
+      "event_f1": 0.869738,
+      "false_alarm_blocks": 90,
+      "fp_per_record": 3.913043,
+      "fp_per_1000_beats": 1.734672
+    }
+  ],
+  "elapsed_s": 280.8
+}

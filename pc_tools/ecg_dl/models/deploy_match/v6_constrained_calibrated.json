@@ -1,0 +1,176 @@
+{
+  "date": "2026-08-25 11:04:13",
+  "patient_stats": {
+    "n_patients": 79,
+    "n_train": 49,
+    "n_val": 15,
+    "n_test": 15
+  },
+  "constraints": {
+    "fp_per_record": [
+      5.0,
+      3.0
+    ],
+    "alert_rate_max": 0.1
+  },
+  "calibration": {
+    "temperature": 3.450000000000003,
+    "platt_a": 0.2865312993526459,
+    "platt_b": -1.8933981657028198
+  },
+  "summary": {
+    "v6_raw_fp5": {
+      "selected": null,
+      "test": null
+    },
+    "v6_raw_fp3": {
+      "selected": null,
+      "test": null
+    },
+    "v6_temp_fp5": {
+      "selected_on_validation": {
+        "theta": 0.84,
+        "policy": "1-of-1",
+        "cooldown": 5,
+        "recall": 0.0,
+        "precision": 0.0,
+        "f1": 0.0,
+        "fp_per_record": 0.0,
+        "fp_per_1000": 0.0,
+        "alert_rate": 0.0
+      },
+      "test_frozen": {
+        "theta": 0.84,
+        "policy": "1-of-1",
+        "cooldown": 5,
+        "recall": 0.0,
+        "precision": 0.0,
+        "f1": 0.0,
+        "fp_per_record": 0.0,
+        "fp_per_1000": 0.0,
+        "alert_rate": 0.0
+      }
+    },
+    "v6_temp_fp3": {
+      "selected_on_validation": {
+        "theta": 0.84,
+        "policy": "1-of-1",
+        "cooldown": 5,
+        "recall": 0.0,
+        "precision": 0.0,
+        "f1": 0.0,
+        "fp_per_record": 0.0,
+        "fp_per_1000": 0.0,
+        "alert_rate": 0.0
+      },
+      "test_frozen": {
+        "theta": 0.84,
+        "policy": "1-of-1",
+        "cooldown": 5,
+        "recall": 0.0,
+        "precision": 0.0,
+        "f1": 0.0,
+        "fp_per_record": 0.0,
+        "fp_per_1000": 0.0,
+        "alert_rate": 0.0
+      }
+    },
+    "v6_platt_fp5": {
+      "selected_on_validation": {
+        "theta": 0.55,
+        "policy": "1-of-1",
+        "cooldown": 5,
+        "recall": 0.0,
+        "precision": 0.0,
+        "f1": 0.0,
+        "fp_per_record": 0.0,
+        "fp_per_1000": 0.0,
+        "alert_rate": 0.0
+      },
+      "test_frozen": {
+        "theta": 0.55,
+        "policy": "1-of-1",
+        "cooldown": 5,
+        "recall": 0.0,
+        "precision": 0.0,
+        "f1": 0.0,
+        "fp_per_record": 0.0,
+        "fp_per_1000": 0.0,
+        "alert_rate": 0.0
+      }
+    },
+    "v6_platt_fp3": {
+      "selected_on_validation": {
+        "theta": 0.55,
+        "policy": "1-of-1",
+        "cooldown": 5,
+        "recall": 0.0,
+        "precision": 0.0,
+        "f1": 0.0,
+        "fp_per_record": 0.0,
+        "fp_per_1000": 0.0,
+        "alert_rate": 0.0
+      },
+      "test_frozen": {
+        "theta": 0.55,
+        "policy": "1-of-1",
+        "cooldown": 5,
+        "recall": 0.0,
+        "precision": 0.0,
+        "f1": 0.0,
+        "fp_per_record": 0.0,
+        "fp_per_1000": 0.0,
+        "alert_rate": 0.0
+      }
+    },
+    "exp7c_raw_fp5": {
+      "selected_on_validation": {
+        "theta": 0.65,
+        "policy": "1-of-1",
+        "cooldown": 10,
+        "recall": 0.541254,
+        "precision": 0.843091,
+        "f1": 0.659267,
+        "fp_per_record": 4.962963,
+        "fp_per_1000": 1.893618,
+        "alert_rate": 0.06581
+      },
+      "test_frozen": {
+        "theta": 0.65,
+        "policy": "1-of-1",
+        "cooldown": 10,
+        "recall": 0.713994,
+        "precision": 0.796226,
+        "f1": 0.752871,
+        "fp_per_record": 7.043478,
+        "fp_per_1000": 3.12241,
+        "alert_rate": 0.088044
+      }
+    },
+    "exp7c_raw_fp3": {
+      "selected_on_validation": {
+        "theta": 0.84,
+        "policy": "1-of-3",
+        "cooldown": 10,
+        "recall": 0.359736,
+        "precision": 0.852459,
+        "f1": 0.505958,
+        "fp_per_record": 3.0,
+        "fp_per_1000": 1.14465,
+        "alert_rate": 0.078825
+      },
+      "test_frozen": {
+        "theta": 0.84,
+        "policy": "1-of-3",
+        "cooldown": 10,
+        "recall": 0.494382,
+        "precision": 0.80396,
+        "f1": 0.612263,
+        "fp_per_record": 4.304348,
+        "fp_per_1000": 1.908139,
+        "alert_rate": 0.102172
+      }
+    }
+  },
+  "note": "约束选参只在 validation；test 仅为冻结报告。"
+}

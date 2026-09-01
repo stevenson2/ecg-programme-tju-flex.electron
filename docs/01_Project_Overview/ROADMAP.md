@@ -86,16 +86,30 @@
 **验收标准**：
 - 所有架构条件 B 的 AUC 下降均与本项目 ΔAUC ≈ −0.105 可比 → 失配为架构无关的系统性问题
 - 条件 A 为阴性对照，排除“部署链数据本身更难”的解释
+- ⚠️ 实测未通过该验收标准：失配仅在 PTB 域纯 CNN/ResNet 上显著，LSTM+CNN 与 MIT/INCART 域不满足“架构无关”假设，结论已按实际证据修正。
 
 **当前进度**：
-- 脚本已就绪：`train_cross_arch.py` / `eval_cross_arch.py` / `run_cross_arch_all.sh` / `models/external_architectures.py`
-- 训练已启动：`lstm_cnn/baseline` 已开始（2026-08-21）
-- 尚未产出：`models/cross_arch/*.h5`、`models/cross_arch_eval.json`
+- 已完成 3 架构 × 2 链训练：`models/cross_arch/{lstm_cnn,cnn_standard,resnet1d}_{baseline,deploy}.h5` + meta/history
+- 已完成 `eval_cross_arch.py`，输出 `models/cross_arch_eval.json`（A/B/C AUC + 患者级 bootstrap CI）
+- 结果摘要（Δ=B−A，负值表示部署链测试上 AUC 下降）：
+  | 架构 | MIT Δ | PTB Δ |
+  |---|---|---|
+  | `lstm_cnn` | +0.025 | −0.001 |
+  | `cnn_standard` | +0.005 | −0.181 |
+  | `resnet1d` | +0.005 | −0.103 |
+- 注意：MIT 域未出现 B 下降；PTB 域 `cnn_standard`/`resnet1d` 有下降，`lstm_cnn` 无显著下降。根因分析已完成（TUNING_HISTORY 第六十六章 §7）：cross_arch 的 D3 链是“因果 0.05Hz+LP40+梳状+抽取”，4Hz 仅显示链；当前固件 AI 链另有最终 0.5Hz 因果高通。部署链群延迟两域相同（δ*≈−6），PTB 的 MI 诊断依赖 0.5–5Hz ST/T 形态，对因果滤波相位/时移敏感；MIT/INCART 心律失常主要依赖 5–40Hz QRS 形态，因果链影响小甚至因梳状去噪而提升。纯 CNN 局部模板对相位/时间错位敏感，LSTM 分支提供时序鲁棒性。
+- 已完成 AAMI 部署链逐类矩阵：`eval_aami_matrix.py` → `models/aami_matrix_deploy_patient.{json,csv}`；包含 exp5/exp6-SGD/exp7b/**exp7c float32/INT8**/P2A 与六个 cross-arch 模型。结论：aggregate AUC 会掩盖阈值和类别效应；exp7c INT8 在 PC @0.60 下 FAR 更低但 recall 更低，应作为 deployment anchor 单独讨论（TUNING_HISTORY 第六十七章）。
 
 **下一步**：
-- [ ] 完成 3 架构 × 2 链（baseline/deploy）训练
-- [ ] 运行 `eval_cross_arch.py`，输出 A/B/C AUC + 患者级 bootstrap CI
-- [ ] 将结果写入论文“普适性对照实验”章节
+- [x] 完成 3 架构 × 2 链（baseline/deploy）训练
+- [x] 运行 `eval_cross_arch.py`，输出 A/B/C AUC + 患者级 bootstrap CI
+- [x] 分析 MIT vs PTB 不一致原因（部署链测试集构成、模型容量/训练收敛、domain-balanced 影响）→ 根因已写入 TUNING_HISTORY 第六十六章 §7：任务频段（PTB 低频 ST/T vs MIT/INCART 高频 QRS）+ 模型归纳偏置（纯 CNN 局部模板敏感、LSTM 分支时序鲁棒）
+- [x] 加入 exp7c 部署锚点与 AAMI 逐类矩阵；已确认当前 AAMI matrix 与 FINAL_RESULTS noaug causal cache 不是同一测试集口径，不能直接横比
+- [x] 完成 exp7c `θ × K-of-N` 报警策略扫描：当前 INT8 `θ=0.60 + 5-of-5` 在 MIT/INCART 序列上几乎无事件召回；降阈值可提高事件召回但 alert rate / FP 同步上升（TUNING_HISTORY 第六十八章）
+- [x] 补充多拍 episode 口径与 `1-of-N` 策略：GT 异常拍按 ≤5 拍间隙回并 episode；`θ=0.50, 1-of-5/1-of-7` 在 test 上达到 event recall 0.87–0.88、event precision 0.77–0.78，且 FP/record 较单拍下降（TUNING_HISTORY 第六十九章）
+- [x] 在显式约束下选出 PC 候选报警操作点：约束 `false_alarm_blocks/record <= 10` 最大化 event F1，推荐 **INT8 θ=0.50, 1-of-5**（test event recall 0.874 / precision 0.770；TUNING_HISTORY 第七十一章）。真实 AFE 长时 FP/hour 验证待硬件阶段执行
+- [x] 补 noaug / non-augmented AAMI 矩阵：`eval_aami_matrix_noaug.py` → `models/aami_matrix_deploy_patient_noaug.{json,csv}`；exp7c INT8 AUC 0.8894 与历史 causal-cache 口径一致（TUNING_HISTORY 第七十章）
+- [ ] 将结果写入论文章节：按“architecture-, domain-, and operating-point-dependent deployment-chain sensitivity”表述，不再声称架构无关普适失配
 
 ### 4.2 目标 2：关卡 + 双专家部署
 
@@ -104,8 +118,8 @@
 | 里程碑 | 内容 | 状态 |
 |---|---|---|
 | M0 | KD a070_t1 验证 / INT8 导出 | ✅ 完成 |
-| M1 | 关卡模型训练（A1） | ⏳ 进行中 |
-| M2 | PC 级联模拟（A2/A3/A4） | ⏳ 进行中 |
+| M1 | 关卡模型训练（A1） | ❌ 初版未过门槛（二分类/三分类均未达标，TUNING_HISTORY 第七十二/七十三章） |
+| M2 | PC 级联模拟（A2/A3/A4） | ❌ 初版未过门槛（MIT E_A>18%，PTB-R<45%） |
 | M3 | INT8 导出与 Flash/SRAM 预算（B1/B2） | 待办 |
 | M4 | 固件分诊状态机（B3/C1） | 待办 |
 | M5 | 板级与真实 AFE 验收（C2/C3） | 待办 |

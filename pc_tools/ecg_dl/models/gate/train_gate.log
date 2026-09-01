@@ -1,0 +1,289 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1787489319.638323    3799 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1787489319.675851    3799 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1787489320.659535    3799 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+W0000 00:00:1787489322.194896    3799 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+[数据集] npz 后缀切换: '_deploy' (部署链数据源)
+======================================================================
+[GateTrain] arch=resnet_medium epochs=80 patience=25 optimizer=sgd lr=0.01
+======================================================================
+[数据集] 加载 (mmap): mit_bih_processed_deploy_beats.npy
+[数据集] 加载数据: /home/devcontainers/ecg_data/mit_bih_processed_deploy.npz
+[数据集]   心拍数: 658962
+[数据集]   形状: (658962, 250)
+[数据集]   类别分布:
+[数据集]     Normal: 543786 (82.5%)
+[数据集]     Abnormal: 115176 (17.5%)
+[数据集] 加载 (mmap): incart_processed_deploy_beats.npy
+[INCART] 加载: 175779 心拍, 形状: (175779, 250)
+[INCART]   Normal: 153596 (87.4%)
+[INCART]   Abnormal: 22183 (12.6%)
+
+[合并数据集] MIT-BIH + INCART
+  总心拍: 834741
+  Normal: 697382 (83.5%)
+  Abnormal: 137359 (16.5%)
+[数据集] 加载 (mmap): mit_bih_processed_deploy_beats.npy
+[数据集] 加载数据: /home/devcontainers/ecg_data/mit_bih_processed_deploy.npz
+[数据集]   心拍数: 658962
+[数据集]   形状: (658962, 250)
+[数据集]   类别分布:
+[数据集]     Normal: 543786 (82.5%)
+[数据集]     Abnormal: 115176 (17.5%)
+[数据集] 患者级划分 (seed=42): 患者 79 = train 49 / val 15 / test 15
+[数据集]   拍数: train 512,369 / val 159,294 / test 163,078
+[数据集] 加载 (mmap): ptb_processed_deploy_beats.npy
+[PTB] 加载: 69482 心拍, 形状: (69482, 250)
+[PTB]   Normal: 10416 (15.0%)
+[PTB]   Abnormal: 59066 (85.0%)
+[数据集] 患者级清洁: PTB 训练拍仅取 train 患者 (172/286 患者, 剩 41,730 拍)
+[数据集] 域平衡采样: A域(MIT+INCART) 512369 拍, B域(PTB) 15159 拍 (正常5159+异常10000)
+[数据集] 每 batch 20% PTB, PTB loss 权重 0.5
+W0000 00:00:1787489324.195007    3799 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+I0000 00:00:1787489324.370900    3799 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 5199 MB memory:  -> device: 0, name: NVIDIA GeForce RTX 5070 Laptop GPU, pci bus id: 0000:01:00.0, compute capability: 12.0a
+
+=======================================================
+  模型: ecg_resnet_lite
+=======================================================
+  Layer                        Output             Params    
+  -------------------------------------------------------
+  ecg_input                    -                  0         
+  stem                         -                  112       
+  stem_bn                      -                  64        
+  stem_rl                      -                  0         
+  b0_dw                        -                  80        
+  b0_dwbn                      -                  64        
+  b0_dwrl                      -                  0         
+  b0_pw                        -                  256       
+  b0_pwbn                      -                  64        
+  b0_se_gap                    -                  0         
+  b0_se_d1                     -                  68        
+  b0_se_d2                     -                  80        
+  b0_se_rs                     -                  0         
+  b0_se_mul                    -                  0         
+  b0_add                       -                  0         
+  b0_out                       -                  0         
+  b1_dw                        -                  80        
+  b1_dwbn                      -                  64        
+  b1_dwrl                      -                  0         
+  b1_pw                        -                  256       
+  b1_pwbn                      -                  64        
+  b1_se_gap                    -                  0         
+  b1_se_d1                     -                  68        
+  b1_se_d2                     -                  80        
+  b1_se_rs                     -                  0         
+  b1_se_mul                    -                  0         
+  b1_add                       -                  0         
+  b1_out                       -                  0         
+  b2_dw                        -                  80        
+  b2_dwbn                      -                  64        
+  b2_dwrl                      -                  0         
+  b2_pw                        -                  512       
+  b2_pwbn                      -                  128       
+  b2_se_gap                    -                  0         
+  b2_se_d1                     -                  264       
+  b2_se_d2                     -                  288       
+  b2_se_rs                     -                  0         
+  b2_sk                        -                  512       
+  b2_se_mul                    -                  0         
+  b2_skbn                      -                  128       
+  b2_add                       -                  0         
+  b2_out                       -                  0         
+  b3_dw                        -                  160       
+  b3_dwbn                      -                  128       
+  b3_dwrl                      -                  0         
+  b3_pw                        -                  1,024     
+  b3_pwbn                      -                  128       
+  b3_se_gap                    -                  0         
+  b3_se_d1                     -                  264       
+  b3_se_d2                     -                  288       
+  b3_se_rs                     -                  0         
+  b3_se_mul                    -                  0         
+  b3_add                       -                  0         
+  b3_out                       -                  0         
+  b4_dw                        -                  96        
+  b4_dwbn                      -                  128       
+  b4_dwrl                      -                  0         
+  b4_pw                        -                  2,048     
+  b4_pwbn                      -                  256       
+  b4_se_gap                    -                  0         
+  b4_se_d1                     -                  1,040     
+  b4_se_d2                     -                  1,088     
+  b4_se_rs                     -                  0         
+  b4_sk                        -                  2,048     
+  b4_se_mul                    -                  0         
+  b4_skbn                      -                  256       
+  b4_add                       -                  0         
+  b4_out                       -                  0         
+  b5_dw                        -                  192       
+  b5_dwbn                      -                  256       
+  b5_dwrl                      -                  0         
+  b5_pw                        -                  4,096     
+  b5_pwbn                      -                  256       
+  b5_se_gap                    -                  0         
+  b5_se_d1                     -                  1,040     
+  b5_se_d2                     -                  1,088     
+  b5_se_rs                     -                  0         
+  b5_se_mul                    -                  0         
+  b5_add                       -                  0         
+  b5_out                       -                  0         
+  b6_dw                        -                  192       
+  b6_dwbn                      -                  256       
+  b6_dwrl                      -                  0         
+  b6_pw                        -                  8,192     
+  b6_pwbn                      -                  512       
+  b6_se_gap                    -                  0         
+  b6_se_d1                     -                  4,128     
+  b6_se_d2                     -                  4,224     
+  b6_se_rs                     -                  0         
+  b6_sk                        -                  8,192     
+  b6_se_mul                    -                  0         
+  b6_skbn                      -                  512       
+  b6_add                       -                  0         
+  b6_out                       -                  0         
+  gap                          -                  0         
+  fc1                          -                  8,256     
+  do                           -                  0         
+  out                          -                  130       
+  -------------------------------------------------------
+  总参数:       53,850
+  可训练:       52,186
+  FP32 预估:     210.4 KB
+  INT8 预估:      52.6 KB
+=======================================================
+
+[编译] 使用 FocalLoss (γ=1.0, α=0.75, LS=0.0)
+[编译] SGD+Nesterov (lr=0.01, momentum=0.9, wd=1e-4)
+/usr/local/lib/python3.12/dist-packages/keras/src/trainers/epoch_iterator.py:74: UserWarning: `shuffle=True` was passed, but will be ignored since the data `x` was provided as a tf.data.Dataset. The Dataset is expected to already be shuffled (via `.shuffle(buffer_size)`).
+  self.data_adapter = data_adapters.get_data_adapter(
+Epoch 1/80
+I0000 00:00:1787489330.377258    3882 service.cc:153] XLA service 0x760a58053190 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1787489330.377721    3882 service.cc:161]   StreamExecutor [0]: NVIDIA GeForce RTX 5070 Laptop GPU, Compute Capability 12.0a (Driver: 13.2.0; Runtime: 12.9.0; Toolkit: 12.5.0; DNN: 9.24.0)
+I0000 00:00:1787489330.500925    3882 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1787489330.996839    3882 cuda_dnn.cc:461] Loaded cuDNN version 92400
+I0000 00:00:1787489331.133577    3882 dot_merger.cc:481] Merging Dots in computation: a_inference_one_step_on_data_11643__.128
+I0000 00:00:1787489333.651126    3963 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_1_62', 8 bytes spill stores, 8 bytes spill loads
+
+I0000 00:00:1787489333.925532    3964 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_94', 4 bytes spill stores, 4 bytes spill loads
+
+I0000 00:00:1787489348.826664    3882 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+I0000 00:00:1787489364.486575    4881 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_fusion_2', 4 bytes spill stores, 4 bytes spill loads
+
+
+Epoch 1: val_auc improved from None to 0.79585, saving model to models/gate/gate_model_resnet_medium.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+
+Epoch 1: finished saving model to models/gate/gate_model_resnet_medium.h5
+500/500 - 40s - 79ms/step - accuracy: 0.9301 - auc: 0.9810 - loss: 0.0451 - precision: 0.9301 - recall: 0.9301 - val_accuracy: 0.7399 - val_auc: 0.7958 - val_loss: 0.2931 - val_precision: 0.7399 - val_recall: 0.7399 - learning_rate: 0.0100
+Epoch 2/80
+
+Epoch 2: val_auc did not improve from 0.79585
+500/500 - 9s - 18ms/step - accuracy: 0.9537 - auc: 0.9908 - loss: 0.0294 - precision: 0.9537 - recall: 0.9537 - val_accuracy: 0.2743 - val_auc: 0.2243 - val_loss: 1.3961 - val_precision: 0.2743 - val_recall: 0.2743 - learning_rate: 0.0100
+Epoch 3/80
+
+Epoch 3: val_auc did not improve from 0.79585
+500/500 - 7s - 14ms/step - accuracy: 0.9452 - auc: 0.9864 - loss: 0.0417 - precision: 0.9452 - recall: 0.9452 - val_accuracy: 0.2635 - val_auc: 0.2224 - val_loss: 0.9791 - val_precision: 0.2635 - val_recall: 0.2635 - learning_rate: 0.0100
+Epoch 4/80
+
+Epoch 4: val_auc did not improve from 0.79585
+500/500 - 8s - 17ms/step - accuracy: 0.9599 - auc: 0.9921 - loss: 0.0290 - precision: 0.9599 - recall: 0.9599 - val_accuracy: 0.3315 - val_auc: 0.3033 - val_loss: 0.6965 - val_precision: 0.3315 - val_recall: 0.3315 - learning_rate: 0.0100
+Epoch 5/80
+
+Epoch 5: val_auc did not improve from 0.79585
+500/500 - 10s - 21ms/step - accuracy: 0.9144 - auc: 0.9714 - loss: 0.0644 - precision: 0.9144 - recall: 0.9144 - val_accuracy: 0.6376 - val_auc: 0.7190 - val_loss: 0.3057 - val_precision: 0.6376 - val_recall: 0.6376 - learning_rate: 0.0100
+Epoch 6/80
+
+Epoch 6: val_auc did not improve from 0.79585
+500/500 - 9s - 17ms/step - accuracy: 0.9667 - auc: 0.9946 - loss: 0.0224 - precision: 0.9667 - recall: 0.9667 - val_accuracy: 0.5704 - val_auc: 0.5920 - val_loss: 0.4252 - val_precision: 0.5704 - val_recall: 0.5704 - learning_rate: 0.0100
+Epoch 7/80
+
+Epoch 7: val_auc did not improve from 0.79585
+500/500 - 6s - 13ms/step - accuracy: 0.9708 - auc: 0.9954 - loss: 0.0207 - precision: 0.9708 - recall: 0.9708 - val_accuracy: 0.1944 - val_auc: 0.1786 - val_loss: 1.3536 - val_precision: 0.1944 - val_recall: 0.1944 - learning_rate: 0.0100
+Epoch 8/80
+
+Epoch 8: val_auc did not improve from 0.79585
+500/500 - 8s - 17ms/step - accuracy: 0.9621 - auc: 0.9922 - loss: 0.0318 - precision: 0.9621 - recall: 0.9621 - val_accuracy: 0.3910 - val_auc: 0.3256 - val_loss: 0.9957 - val_precision: 0.3910 - val_recall: 0.3910 - learning_rate: 0.0100
+Epoch 9/80
+
+Epoch 9: ReduceLROnPlateau reducing learning rate to 0.004999999888241291.
+
+Epoch 9: val_auc did not improve from 0.79585
+500/500 - 8s - 17ms/step - accuracy: 0.9718 - auc: 0.9955 - loss: 0.0218 - precision: 0.9718 - recall: 0.9718 - val_accuracy: 0.3799 - val_auc: 0.3382 - val_loss: 0.7881 - val_precision: 0.3799 - val_recall: 0.3799 - learning_rate: 0.0100
+Epoch 10/80
+
+Epoch 10: val_auc did not improve from 0.79585
+500/500 - 8s - 16ms/step - accuracy: 0.9295 - auc: 0.9793 - loss: 0.0558 - precision: 0.9295 - recall: 0.9295 - val_accuracy: 0.5944 - val_auc: 0.6420 - val_loss: 0.4154 - val_precision: 0.5944 - val_recall: 0.5944 - learning_rate: 0.0050
+Epoch 11/80
+
+Epoch 11: val_auc did not improve from 0.79585
+500/500 - 6s - 12ms/step - accuracy: 0.9722 - auc: 0.9961 - loss: 0.0192 - precision: 0.9722 - recall: 0.9722 - val_accuracy: 0.4260 - val_auc: 0.3981 - val_loss: 0.8190 - val_precision: 0.4260 - val_recall: 0.4260 - learning_rate: 0.0050
+Epoch 12/80
+
+Epoch 12: val_auc did not improve from 0.79585
+500/500 - 8s - 17ms/step - accuracy: 0.9753 - auc: 0.9962 - loss: 0.0188 - precision: 0.9753 - recall: 0.9753 - val_accuracy: 0.2920 - val_auc: 0.2650 - val_loss: 1.3012 - val_precision: 0.2920 - val_recall: 0.2920 - learning_rate: 0.0050
+Epoch 13/80
+
+Epoch 13: val_auc did not improve from 0.79585
+500/500 - 9s - 18ms/step - accuracy: 0.9675 - auc: 0.9938 - loss: 0.0289 - precision: 0.9675 - recall: 0.9675 - val_accuracy: 0.4756 - val_auc: 0.4528 - val_loss: 0.9780 - val_precision: 0.4756 - val_recall: 0.4756 - learning_rate: 0.0050
+Epoch 14/80
+
+Epoch 14: val_auc did not improve from 0.79585
+500/500 - 7s - 13ms/step - accuracy: 0.9752 - auc: 0.9962 - loss: 0.0198 - precision: 0.9752 - recall: 0.9752 - val_accuracy: 0.5374 - val_auc: 0.5558 - val_loss: 0.6166 - val_precision: 0.5374 - val_recall: 0.5374 - learning_rate: 0.0050
+Epoch 15/80
+
+Epoch 15: val_auc did not improve from 0.79585
+500/500 - 9s - 18ms/step - accuracy: 0.9406 - auc: 0.9838 - loss: 0.0498 - precision: 0.9406 - recall: 0.9406 - val_accuracy: 0.6407 - val_auc: 0.6904 - val_loss: 0.3751 - val_precision: 0.6407 - val_recall: 0.6407 - learning_rate: 0.0050
+Epoch 16/80
+
+Epoch 16: val_auc did not improve from 0.79585
+500/500 - 9s - 18ms/step - accuracy: 0.9756 - auc: 0.9967 - loss: 0.0175 - precision: 0.9756 - recall: 0.9756 - val_accuracy: 0.3949 - val_auc: 0.3555 - val_loss: 0.9046 - val_precision: 0.3949 - val_recall: 0.3949 - learning_rate: 0.0050
+Epoch 17/80
+
+Epoch 17: ReduceLROnPlateau reducing learning rate to 0.0024999999441206455.
+
+Epoch 17: val_auc did not improve from 0.79585
+500/500 - 9s - 17ms/step - accuracy: 0.9792 - auc: 0.9972 - loss: 0.0159 - precision: 0.9792 - recall: 0.9792 - val_accuracy: 0.2402 - val_auc: 0.2176 - val_loss: 1.6206 - val_precision: 0.2402 - val_recall: 0.2402 - learning_rate: 0.0050
+Epoch 18/80
+
+Epoch 18: val_auc did not improve from 0.79585
+500/500 - 6s - 12ms/step - accuracy: 0.9667 - auc: 0.9934 - loss: 0.0304 - precision: 0.9667 - recall: 0.9667 - val_accuracy: 0.4415 - val_auc: 0.4048 - val_loss: 0.9910 - val_precision: 0.4415 - val_recall: 0.4415 - learning_rate: 0.0025
+Epoch 19/80
+
+Epoch 19: val_auc did not improve from 0.79585
+500/500 - 8s - 17ms/step - accuracy: 0.9732 - auc: 0.9955 - loss: 0.0220 - precision: 0.9732 - recall: 0.9732 - val_accuracy: 0.5451 - val_auc: 0.5615 - val_loss: 0.6648 - val_precision: 0.5451 - val_recall: 0.5451 - learning_rate: 0.0025
+Epoch 20/80
+
+Epoch 20: val_auc did not improve from 0.79585
+500/500 - 9s - 17ms/step - accuracy: 0.9423 - auc: 0.9848 - loss: 0.0484 - precision: 0.9423 - recall: 0.9423 - val_accuracy: 0.6386 - val_auc: 0.6768 - val_loss: 0.3919 - val_precision: 0.6386 - val_recall: 0.6386 - learning_rate: 0.0025
+Epoch 21/80
+
+Epoch 21: val_auc did not improve from 0.79585
+500/500 - 9s - 18ms/step - accuracy: 0.9744 - auc: 0.9965 - loss: 0.0182 - precision: 0.9744 - recall: 0.9744 - val_accuracy: 0.3612 - val_auc: 0.3216 - val_loss: 0.9710 - val_precision: 0.3612 - val_recall: 0.3612 - learning_rate: 0.0025
+Epoch 22/80
+
+Epoch 22: val_auc did not improve from 0.79585
+500/500 - 7s - 13ms/step - accuracy: 0.9801 - auc: 0.9976 - loss: 0.0149 - precision: 0.9801 - recall: 0.9801 - val_accuracy: 0.5041 - val_auc: 0.4884 - val_loss: 0.8034 - val_precision: 0.5041 - val_recall: 0.5041 - learning_rate: 0.0025
+Epoch 23/80
+
+Epoch 23: val_auc did not improve from 0.79585
+500/500 - 9s - 18ms/step - accuracy: 0.9698 - auc: 0.9941 - loss: 0.0284 - precision: 0.9698 - recall: 0.9698 - val_accuracy: 0.4318 - val_auc: 0.4033 - val_loss: 1.0093 - val_precision: 0.4318 - val_recall: 0.4318 - learning_rate: 0.0025
+Epoch 24/80
+
+Epoch 24: val_auc did not improve from 0.79585
+500/500 - 9s - 18ms/step - accuracy: 0.9761 - auc: 0.9962 - loss: 0.0199 - precision: 0.9761 - recall: 0.9761 - val_accuracy: 0.5436 - val_auc: 0.5621 - val_loss: 0.6517 - val_precision: 0.5436 - val_recall: 0.5436 - learning_rate: 0.0025
+Epoch 25/80
+
+Epoch 25: ReduceLROnPlateau reducing learning rate to 0.0012499999720603228.
+
+Epoch 25: val_auc did not improve from 0.79585
+500/500 - 9s - 18ms/step - accuracy: 0.9477 - auc: 0.9871 - loss: 0.0447 - precision: 0.9477 - recall: 0.9477 - val_accuracy: 0.5920 - val_auc: 0.6061 - val_loss: 0.4904 - val_precision: 0.5920 - val_recall: 0.5920 - learning_rate: 0.0025
+Epoch 26/80
+
+Epoch 26: val_auc did not improve from 0.79585
+500/500 - 6s - 12ms/step - accuracy: 0.9697 - auc: 0.9952 - loss: 0.0219 - precision: 0.9697 - recall: 0.9697 - val_accuracy: 0.3731 - val_auc: 0.3164 - val_loss: 0.9504 - val_precision: 0.3731 - val_recall: 0.3731 - learning_rate: 0.0012
+Epoch 26: early stopping
+Restoring model weights from the end of the best epoch: 1.
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+[GateTrain] done best_val_auc=0.7958 elapsed=241.9s

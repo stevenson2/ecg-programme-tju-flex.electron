@@ -1,0 +1,567 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1787489726.228194    7138 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1787489726.276560    7138 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1787489727.373289    7138 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+W0000 00:00:1787489728.895445    7138 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+[数据集] npz 后缀切换: '_deploy' (部署链数据源)
+======================================================================
+[GateTrain] arch=resnet_large epochs=80 patience=30 optimizer=adamw lr=0.0005
+======================================================================
+[数据集] 加载 (mmap): mit_bih_processed_deploy_beats.npy
+[数据集] 加载数据: /home/devcontainers/ecg_data/mit_bih_processed_deploy.npz
+[数据集]   心拍数: 658962
+[数据集]   形状: (658962, 250)
+[数据集]   类别分布:
+[数据集]     Normal: 543786 (82.5%)
+[数据集]     Abnormal: 115176 (17.5%)
+[数据集] 加载 (mmap): incart_processed_deploy_beats.npy
+[INCART] 加载: 175779 心拍, 形状: (175779, 250)
+[INCART]   Normal: 153596 (87.4%)
+[INCART]   Abnormal: 22183 (12.6%)
+
+[合并数据集] MIT-BIH + INCART
+  总心拍: 834741
+  Normal: 697382 (83.5%)
+  Abnormal: 137359 (16.5%)
+[数据集] 加载 (mmap): mit_bih_processed_deploy_beats.npy
+[数据集] 加载数据: /home/devcontainers/ecg_data/mit_bih_processed_deploy.npz
+[数据集]   心拍数: 658962
+[数据集]   形状: (658962, 250)
+[数据集]   类别分布:
+[数据集]     Normal: 543786 (82.5%)
+[数据集]     Abnormal: 115176 (17.5%)
+[数据集] 患者级划分 (seed=42): 患者 79 = train 49 / val 15 / test 15
+[数据集]   拍数: train 512,369 / val 159,294 / test 163,078
+[数据集] 加载 (mmap): ptb_processed_deploy_beats.npy
+[PTB] 加载: 69482 心拍, 形状: (69482, 250)
+[PTB]   Normal: 10416 (15.0%)
+[PTB]   Abnormal: 59066 (85.0%)
+[数据集] 患者级清洁: PTB 训练拍仅取 train 患者 (172/286 患者, 剩 41,730 拍)
+[数据集] 域平衡采样: A域(MIT+INCART) 512369 拍, B域(PTB) 15159 拍 (正常5159+异常10000)
+[数据集] 每 batch 20% PTB, PTB loss 权重 0.5
+W0000 00:00:1787489730.907187    7138 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+I0000 00:00:1787489731.050564    7138 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 5199 MB memory:  -> device: 0, name: NVIDIA GeForce RTX 5070 Laptop GPU, pci bus id: 0000:01:00.0, compute capability: 12.0a
+
+=======================================================
+  模型: ecg_resnet_lite
+=======================================================
+  Layer                        Output             Params    
+  -------------------------------------------------------
+  ecg_input                    -                  0         
+  stem                         -                  112       
+  stem_bn                      -                  64        
+  stem_rl                      -                  0         
+  b0_dw                        -                  112       
+  b0_dwbn                      -                  64        
+  b0_dwrl                      -                  0         
+  b0_pw                        -                  256       
+  b0_pwbn                      -                  64        
+  b0_se_gap                    -                  0         
+  b0_se_d1                     -                  68        
+  b0_se_d2                     -                  80        
+  b0_se_rs                     -                  0         
+  b0_se_mul                    -                  0         
+  b0_add                       -                  0         
+  b0_out                       -                  0         
+  b1_dw                        -                  112       
+  b1_dwbn                      -                  64        
+  b1_dwrl                      -                  0         
+  b1_pw                        -                  256       
+  b1_pwbn                      -                  64        
+  b1_se_gap                    -                  0         
+  b1_se_d1                     -                  68        
+  b1_se_d2                     -                  80        
+  b1_se_rs                     -                  0         
+  b1_se_mul                    -                  0         
+  b1_add                       -                  0         
+  b1_out                       -                  0         
+  b2_dw                        -                  80        
+  b2_dwbn                      -                  64        
+  b2_dwrl                      -                  0         
+  b2_pw                        -                  512       
+  b2_pwbn                      -                  128       
+  b2_se_gap                    -                  0         
+  b2_se_d1                     -                  264       
+  b2_se_d2                     -                  288       
+  b2_se_rs                     -                  0         
+  b2_sk                        -                  512       
+  b2_se_mul                    -                  0         
+  b2_skbn                      -                  128       
+  b2_add                       -                  0         
+  b2_out                       -                  0         
+  b3_dw                        -                  160       
+  b3_dwbn                      -                  128       
+  b3_dwrl                      -                  0         
+  b3_pw                        -                  1,024     
+  b3_pwbn                      -                  128       
+  b3_se_gap                    -                  0         
+  b3_se_d1                     -                  264       
+  b3_se_d2                     -                  288       
+  b3_se_rs                     -                  0         
+  b3_se_mul                    -                  0         
+  b3_add                       -                  0         
+  b3_out                       -                  0         
+  b4_dw                        -                  160       
+  b4_dwbn                      -                  128       
+  b4_dwrl                      -                  0         
+  b4_pw                        -                  1,024     
+  b4_pwbn                      -                  128       
+  b4_se_gap                    -                  0         
+  b4_se_d1                     -                  264       
+  b4_se_d2                     -                  288       
+  b4_se_rs                     -                  0         
+  b4_se_mul                    -                  0         
+  b4_add                       -                  0         
+  b4_out                       -                  0         
+  b5_dw                        -                  96        
+  b5_dwbn                      -                  128       
+  b5_dwrl                      -                  0         
+  b5_pw                        -                  2,048     
+  b5_pwbn                      -                  256       
+  b5_se_gap                    -                  0         
+  b5_se_d1                     -                  1,040     
+  b5_se_d2                     -                  1,088     
+  b5_se_rs                     -                  0         
+  b5_sk                        -                  2,048     
+  b5_se_mul                    -                  0         
+  b5_skbn                      -                  256       
+  b5_add                       -                  0         
+  b5_out                       -                  0         
+  b6_dw                        -                  192       
+  b6_dwbn                      -                  256       
+  b6_dwrl                      -                  0         
+  b6_pw                        -                  4,096     
+  b6_pwbn                      -                  256       
+  b6_se_gap                    -                  0         
+  b6_se_d1                     -                  1,040     
+  b6_se_d2                     -                  1,088     
+  b6_se_rs                     -                  0         
+  b6_se_mul                    -                  0         
+  b6_add                       -                  0         
+  b6_out                       -                  0         
+  b7_dw                        -                  192       
+  b7_dwbn                      -                  256       
+  b7_dwrl                      -                  0         
+  b7_pw                        -                  4,096     
+  b7_pwbn                      -                  256       
+  b7_se_gap                    -                  0         
+  b7_se_d1                     -                  1,040     
+  b7_se_d2                     -                  1,088     
+  b7_se_rs                     -                  0         
+  b7_se_mul                    -                  0         
+  b7_add                       -                  0         
+  b7_out                       -                  0         
+  b8_dw                        -                  192       
+  b8_dwbn                      -                  256       
+  b8_dwrl                      -                  0         
+  b8_pw                        -                  8,192     
+  b8_pwbn                      -                  512       
+  b8_se_gap                    -                  0         
+  b8_se_d1                     -                  4,128     
+  b8_se_d2                     -                  4,224     
+  b8_se_rs                     -                  0         
+  b8_sk                        -                  8,192     
+  b8_se_mul                    -                  0         
+  b8_skbn                      -                  512       
+  b8_add                       -                  0         
+  b8_out                       -                  0         
+  gap                          -                  0         
+  fc1                          -                  8,256     
+  do                           -                  0         
+  out                          -                  130       
+  -------------------------------------------------------
+  总参数:       62,834
+  可训练:       60,786
+  FP32 预估:     245.4 KB
+  INT8 预估:      61.4 KB
+=======================================================
+
+[编译] 使用 FocalLoss (γ=1.0, α=0.75, LS=0.0)
+/usr/local/lib/python3.12/dist-packages/keras/src/trainers/epoch_iterator.py:74: UserWarning: `shuffle=True` was passed, but will be ignored since the data `x` was provided as a tf.data.Dataset. The Dataset is expected to already be shuffled (via `.shuffle(buffer_size)`).
+  self.data_adapter = data_adapters.get_data_adapter(
+Epoch 1/80
+I0000 00:00:1787489739.780414    7223 service.cc:153] XLA service 0x7bb81806f590 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1787489739.780807    7223 service.cc:161]   StreamExecutor [0]: NVIDIA GeForce RTX 5070 Laptop GPU, Compute Capability 12.0a (Driver: 13.2.0; Runtime: 12.9.0; Toolkit: 12.5.0; DNN: 9.24.0)
+I0000 00:00:1787489740.008886    7223 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1787489741.379585    7223 cuda_dnn.cc:461] Loaded cuDNN version 92400
+I0000 00:00:1787489741.592257    7223 dot_merger.cc:481] Merging Dots in computation: a_inference_one_step_on_data_21669__.152
+I0000 00:00:1787489742.280638    7299 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_118', 4 bytes spill stores, 4 bytes spill loads
+
+I0000 00:00:1787489745.882207    7301 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_1_78', 8 bytes spill stores, 8 bytes spill loads
+
+I0000 00:00:1787489750.679552    7295 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_1', 8 bytes spill stores, 16 bytes spill loads
+
+I0000 00:00:1787489763.774153    7223 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+I0000 00:00:1787489783.566718    8216 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_fusion_2', 4 bytes spill stores, 4 bytes spill loads
+
+
+Epoch 1: val_auc improved from None to 0.16388, saving model to models/gate/gate_model_resnet_large.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+
+Epoch 1: finished saving model to models/gate/gate_model_resnet_large.h5
+1000/1000 - 52s - 52ms/step - accuracy: 0.9623 - auc: 0.9940 - loss: 0.0255 - precision: 0.9623 - recall: 0.9623 - val_accuracy: 0.1782 - val_auc: 0.1639 - val_loss: 1.4351 - val_precision: 0.1782 - val_recall: 0.1782 - learning_rate: 5.0000e-04
+Epoch 2/80
+
+Epoch 2: val_auc improved from 0.16388 to 0.19893, saving model to models/gate/gate_model_resnet_large.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+
+Epoch 2: finished saving model to models/gate/gate_model_resnet_large.h5
+1000/1000 - 16s - 16ms/step - accuracy: 0.9760 - auc: 0.9964 - loss: 0.0205 - precision: 0.9760 - recall: 0.9760 - val_accuracy: 0.2311 - val_auc: 0.1989 - val_loss: 1.5709 - val_precision: 0.2311 - val_recall: 0.2311 - learning_rate: 5.0000e-04
+Epoch 3/80
+
+Epoch 3: val_auc improved from 0.19893 to 0.36459, saving model to models/gate/gate_model_resnet_large.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+
+Epoch 3: finished saving model to models/gate/gate_model_resnet_large.h5
+1000/1000 - 14s - 14ms/step - accuracy: 0.9688 - auc: 0.9951 - loss: 0.0254 - precision: 0.9688 - recall: 0.9688 - val_accuracy: 0.4181 - val_auc: 0.3646 - val_loss: 1.0346 - val_precision: 0.4181 - val_recall: 0.4181 - learning_rate: 5.0000e-04
+Epoch 4/80
+
+Epoch 4: val_auc did not improve from 0.36459
+1000/1000 - 17s - 17ms/step - accuracy: 0.9831 - auc: 0.9981 - loss: 0.0145 - precision: 0.9831 - recall: 0.9831 - val_accuracy: 0.2617 - val_auc: 0.2049 - val_loss: 1.8675 - val_precision: 0.2617 - val_recall: 0.2617 - learning_rate: 5.0000e-04
+Epoch 5/80
+
+Epoch 5: val_auc improved from 0.36459 to 0.51510, saving model to models/gate/gate_model_resnet_large.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+
+Epoch 5: finished saving model to models/gate/gate_model_resnet_large.h5
+1000/1000 - 15s - 15ms/step - accuracy: 0.9781 - auc: 0.9971 - loss: 0.0195 - precision: 0.9781 - recall: 0.9781 - val_accuracy: 0.4902 - val_auc: 0.5151 - val_loss: 0.8146 - val_precision: 0.4902 - val_recall: 0.4902 - learning_rate: 5.0000e-04
+Epoch 6/80
+
+Epoch 6: val_auc did not improve from 0.51510
+1000/1000 - 16s - 16ms/step - accuracy: 0.9903 - auc: 0.9993 - loss: 0.0077 - precision: 0.9903 - recall: 0.9903 - val_accuracy: 0.2484 - val_auc: 0.2147 - val_loss: 1.4210 - val_precision: 0.2484 - val_recall: 0.2484 - learning_rate: 5.0000e-04
+Epoch 7/80
+
+Epoch 7: val_auc did not improve from 0.51510
+1000/1000 - 14s - 14ms/step - accuracy: 0.9884 - auc: 0.9989 - loss: 0.0111 - precision: 0.9884 - recall: 0.9884 - val_accuracy: 0.4054 - val_auc: 0.3593 - val_loss: 1.3564 - val_precision: 0.4054 - val_recall: 0.4054 - learning_rate: 5.0000e-04
+Epoch 8/80
+
+Epoch 8: val_auc did not improve from 0.51510
+1000/1000 - 16s - 16ms/step - accuracy: 0.9839 - auc: 0.9983 - loss: 0.0143 - precision: 0.9839 - recall: 0.9839 - val_accuracy: 0.4262 - val_auc: 0.4102 - val_loss: 1.1074 - val_precision: 0.4262 - val_recall: 0.4262 - learning_rate: 5.0000e-04
+Epoch 9/80
+
+Epoch 9: val_auc did not improve from 0.51510
+1000/1000 - 14s - 14ms/step - accuracy: 0.9912 - auc: 0.9994 - loss: 0.0082 - precision: 0.9912 - recall: 0.9912 - val_accuracy: 0.2801 - val_auc: 0.2298 - val_loss: 2.3340 - val_precision: 0.2801 - val_recall: 0.2801 - learning_rate: 5.0000e-04
+Epoch 10/80
+
+Epoch 10: val_auc improved from 0.51510 to 0.61635, saving model to models/gate/gate_model_resnet_large.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+
+Epoch 10: finished saving model to models/gate/gate_model_resnet_large.h5
+1000/1000 - 17s - 17ms/step - accuracy: 0.9863 - auc: 0.9986 - loss: 0.0131 - precision: 0.9863 - recall: 0.9863 - val_accuracy: 0.5555 - val_auc: 0.6164 - val_loss: 0.5568 - val_precision: 0.5555 - val_recall: 0.5555 - learning_rate: 5.0000e-04
+Epoch 11/80
+
+Epoch 11: val_auc did not improve from 0.61635
+1000/1000 - 14s - 14ms/step - accuracy: 0.9942 - auc: 0.9997 - loss: 0.0049 - precision: 0.9942 - recall: 0.9942 - val_accuracy: 0.1543 - val_auc: 0.1331 - val_loss: 2.9484 - val_precision: 0.1543 - val_recall: 0.1543 - learning_rate: 5.0000e-04
+Epoch 12/80
+
+Epoch 12: val_auc did not improve from 0.61635
+1000/1000 - 16s - 16ms/step - accuracy: 0.9918 - auc: 0.9994 - loss: 0.0081 - precision: 0.9918 - recall: 0.9918 - val_accuracy: 0.3444 - val_auc: 0.2900 - val_loss: 2.2917 - val_precision: 0.3444 - val_recall: 0.3444 - learning_rate: 5.0000e-04
+Epoch 13/80
+
+Epoch 13: val_auc did not improve from 0.61635
+1000/1000 - 14s - 14ms/step - accuracy: 0.9886 - auc: 0.9991 - loss: 0.0105 - precision: 0.9886 - recall: 0.9886 - val_accuracy: 0.4033 - val_auc: 0.3769 - val_loss: 1.3876 - val_precision: 0.4033 - val_recall: 0.4033 - learning_rate: 5.0000e-04
+Epoch 14/80
+
+Epoch 14: val_auc did not improve from 0.61635
+1000/1000 - 17s - 17ms/step - accuracy: 0.9934 - auc: 0.9997 - loss: 0.0062 - precision: 0.9934 - recall: 0.9934 - val_accuracy: 0.5454 - val_auc: 0.5430 - val_loss: 1.3359 - val_precision: 0.5454 - val_recall: 0.5454 - learning_rate: 5.0000e-04
+Epoch 15/80
+
+Epoch 15: val_auc did not improve from 0.61635
+1000/1000 - 13s - 13ms/step - accuracy: 0.9889 - auc: 0.9991 - loss: 0.0105 - precision: 0.9889 - recall: 0.9889 - val_accuracy: 0.4562 - val_auc: 0.4556 - val_loss: 1.1574 - val_precision: 0.4562 - val_recall: 0.4562 - learning_rate: 5.0000e-04
+Epoch 16/80
+
+Epoch 16: val_auc did not improve from 0.61635
+1000/1000 - 16s - 16ms/step - accuracy: 0.9959 - auc: 0.9999 - loss: 0.0033 - precision: 0.9959 - recall: 0.9959 - val_accuracy: 0.2270 - val_auc: 0.1872 - val_loss: 2.3252 - val_precision: 0.2270 - val_recall: 0.2270 - learning_rate: 5.0000e-04
+Epoch 17/80
+
+Epoch 17: val_auc did not improve from 0.61635
+1000/1000 - 14s - 14ms/step - accuracy: 0.9933 - auc: 0.9996 - loss: 0.0067 - precision: 0.9933 - recall: 0.9933 - val_accuracy: 0.4103 - val_auc: 0.3769 - val_loss: 1.7295 - val_precision: 0.4103 - val_recall: 0.4103 - learning_rate: 5.0000e-04
+Epoch 18/80
+
+Epoch 18: val_auc did not improve from 0.61635
+1000/1000 - 14s - 14ms/step - accuracy: 0.9909 - auc: 0.9993 - loss: 0.0088 - precision: 0.9909 - recall: 0.9909 - val_accuracy: 0.3479 - val_auc: 0.3187 - val_loss: 1.7241 - val_precision: 0.3479 - val_recall: 0.3479 - learning_rate: 5.0000e-04
+Epoch 19/80
+
+Epoch 19: val_auc did not improve from 0.61635
+1000/1000 - 12s - 12ms/step - accuracy: 0.9951 - auc: 0.9998 - loss: 0.0047 - precision: 0.9951 - recall: 0.9951 - val_accuracy: 0.4118 - val_auc: 0.3702 - val_loss: 2.0038 - val_precision: 0.4118 - val_recall: 0.4118 - learning_rate: 5.0000e-04
+Epoch 20/80
+
+Epoch 20: ReduceLROnPlateau reducing learning rate to 0.0002500000118743628.
+
+Epoch 20: val_auc did not improve from 0.61635
+1000/1000 - 16s - 16ms/step - accuracy: 0.9910 - auc: 0.9993 - loss: 0.0088 - precision: 0.9910 - recall: 0.9910 - val_accuracy: 0.5323 - val_auc: 0.5374 - val_loss: 0.9399 - val_precision: 0.5323 - val_recall: 0.5323 - learning_rate: 5.0000e-04
+Epoch 21/80
+
+Epoch 21: val_auc did not improve from 0.61635
+1000/1000 - 14s - 14ms/step - accuracy: 0.9960 - auc: 0.9999 - loss: 0.0034 - precision: 0.9960 - recall: 0.9960 - val_accuracy: 0.3189 - val_auc: 0.2763 - val_loss: 2.0633 - val_precision: 0.3189 - val_recall: 0.3189 - learning_rate: 2.5000e-04
+Epoch 22/80
+
+Epoch 22: val_auc did not improve from 0.61635
+1000/1000 - 16s - 16ms/step - accuracy: 0.9955 - auc: 0.9998 - loss: 0.0045 - precision: 0.9955 - recall: 0.9955 - val_accuracy: 0.4377 - val_auc: 0.4090 - val_loss: 1.7177 - val_precision: 0.4377 - val_recall: 0.4377 - learning_rate: 2.5000e-04
+Epoch 23/80
+
+Epoch 23: val_auc did not improve from 0.61635
+1000/1000 - 14s - 14ms/step - accuracy: 0.9929 - auc: 0.9995 - loss: 0.0071 - precision: 0.9929 - recall: 0.9929 - val_accuracy: 0.4920 - val_auc: 0.4784 - val_loss: 1.4390 - val_precision: 0.4920 - val_recall: 0.4920 - learning_rate: 2.5000e-04
+Epoch 24/80
+
+Epoch 24: val_auc did not improve from 0.61635
+1000/1000 - 16s - 16ms/step - accuracy: 0.9965 - auc: 0.9999 - loss: 0.0034 - precision: 0.9965 - recall: 0.9965 - val_accuracy: 0.5027 - val_auc: 0.4696 - val_loss: 1.7279 - val_precision: 0.5027 - val_recall: 0.5027 - learning_rate: 2.5000e-04
+Epoch 25/80
+
+Epoch 25: val_auc did not improve from 0.61635
+1000/1000 - 14s - 14ms/step - accuracy: 0.9933 - auc: 0.9996 - loss: 0.0069 - precision: 0.9933 - recall: 0.9933 - val_accuracy: 0.5118 - val_auc: 0.5372 - val_loss: 0.9473 - val_precision: 0.5118 - val_recall: 0.5118 - learning_rate: 2.5000e-04
+Epoch 26/80
+
+Epoch 26: val_auc did not improve from 0.61635
+1000/1000 - 16s - 16ms/step - accuracy: 0.9978 - auc: 1.0000 - loss: 0.0019 - precision: 0.9978 - recall: 0.9978 - val_accuracy: 0.4045 - val_auc: 0.3757 - val_loss: 1.9880 - val_precision: 0.4045 - val_recall: 0.4045 - learning_rate: 2.5000e-04
+Epoch 27/80
+
+Epoch 27: val_auc did not improve from 0.61635
+1000/1000 - 14s - 14ms/step - accuracy: 0.9966 - auc: 0.9999 - loss: 0.0034 - precision: 0.9966 - recall: 0.9966 - val_accuracy: 0.3937 - val_auc: 0.3654 - val_loss: 2.1802 - val_precision: 0.3937 - val_recall: 0.3937 - learning_rate: 2.5000e-04
+Epoch 28/80
+
+Epoch 28: val_auc did not improve from 0.61635
+1000/1000 - 17s - 17ms/step - accuracy: 0.9938 - auc: 0.9997 - loss: 0.0063 - precision: 0.9938 - recall: 0.9938 - val_accuracy: 0.4965 - val_auc: 0.4778 - val_loss: 1.5888 - val_precision: 0.4965 - val_recall: 0.4965 - learning_rate: 2.5000e-04
+Epoch 29/80
+
+Epoch 29: val_auc did not improve from 0.61635
+1000/1000 - 14s - 14ms/step - accuracy: 0.9973 - auc: 0.9999 - loss: 0.0027 - precision: 0.9973 - recall: 0.9973 - val_accuracy: 0.4863 - val_auc: 0.4584 - val_loss: 1.8236 - val_precision: 0.4863 - val_recall: 0.4863 - learning_rate: 2.5000e-04
+Epoch 30/80
+
+Epoch 30: ReduceLROnPlateau reducing learning rate to 0.0001250000059371814.
+
+Epoch 30: val_auc did not improve from 0.61635
+1000/1000 - 16s - 16ms/step - accuracy: 0.9938 - auc: 0.9997 - loss: 0.0061 - precision: 0.9938 - recall: 0.9938 - val_accuracy: 0.5151 - val_auc: 0.5304 - val_loss: 1.0659 - val_precision: 0.5151 - val_recall: 0.5151 - learning_rate: 2.5000e-04
+Epoch 31/80
+
+Epoch 31: val_auc did not improve from 0.61635
+1000/1000 - 13s - 13ms/step - accuracy: 0.9978 - auc: 1.0000 - loss: 0.0019 - precision: 0.9978 - recall: 0.9978 - val_accuracy: 0.4527 - val_auc: 0.4427 - val_loss: 1.6912 - val_precision: 0.4527 - val_recall: 0.4527 - learning_rate: 1.2500e-04
+Epoch 32/80
+
+Epoch 32: val_auc did not improve from 0.61635
+1000/1000 - 16s - 16ms/step - accuracy: 0.9973 - auc: 0.9999 - loss: 0.0027 - precision: 0.9973 - recall: 0.9973 - val_accuracy: 0.4711 - val_auc: 0.4538 - val_loss: 1.7290 - val_precision: 0.4711 - val_recall: 0.4711 - learning_rate: 1.2500e-04
+Epoch 33/80
+
+Epoch 33: val_auc did not improve from 0.61635
+1000/1000 - 15s - 15ms/step - accuracy: 0.9942 - auc: 0.9997 - loss: 0.0057 - precision: 0.9942 - recall: 0.9942 - val_accuracy: 0.3570 - val_auc: 0.3263 - val_loss: 2.2415 - val_precision: 0.3570 - val_recall: 0.3570 - learning_rate: 1.2500e-04
+Epoch 34/80
+
+Epoch 34: val_auc did not improve from 0.61635
+1000/1000 - 17s - 17ms/step - accuracy: 0.9977 - auc: 1.0000 - loss: 0.0022 - precision: 0.9977 - recall: 0.9977 - val_accuracy: 0.5708 - val_auc: 0.5860 - val_loss: 1.5266 - val_precision: 0.5708 - val_recall: 0.5708 - learning_rate: 1.2500e-04
+Epoch 35/80
+
+Epoch 35: val_auc improved from 0.61635 to 0.62715, saving model to models/gate/gate_model_resnet_large.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+
+Epoch 35: finished saving model to models/gate/gate_model_resnet_large.h5
+1000/1000 - 15s - 15ms/step - accuracy: 0.9943 - auc: 0.9998 - loss: 0.0055 - precision: 0.9943 - recall: 0.9943 - val_accuracy: 0.5792 - val_auc: 0.6271 - val_loss: 0.8810 - val_precision: 0.5792 - val_recall: 0.5792 - learning_rate: 1.2500e-04
+Epoch 36/80
+
+Epoch 36: val_auc did not improve from 0.62715
+1000/1000 - 15s - 15ms/step - accuracy: 0.9982 - auc: 1.0000 - loss: 0.0015 - precision: 0.9982 - recall: 0.9982 - val_accuracy: 0.5731 - val_auc: 0.5932 - val_loss: 1.2473 - val_precision: 0.5731 - val_recall: 0.5731 - learning_rate: 1.2500e-04
+Epoch 37/80
+
+Epoch 37: val_auc did not improve from 0.62715
+1000/1000 - 12s - 12ms/step - accuracy: 0.9976 - auc: 1.0000 - loss: 0.0023 - precision: 0.9976 - recall: 0.9976 - val_accuracy: 0.5072 - val_auc: 0.5085 - val_loss: 1.5306 - val_precision: 0.5072 - val_recall: 0.5072 - learning_rate: 1.2500e-04
+Epoch 38/80
+
+Epoch 38: val_auc did not improve from 0.62715
+1000/1000 - 15s - 15ms/step - accuracy: 0.9948 - auc: 0.9998 - loss: 0.0052 - precision: 0.9948 - recall: 0.9948 - val_accuracy: 0.4062 - val_auc: 0.3794 - val_loss: 2.0648 - val_precision: 0.4062 - val_recall: 0.4062 - learning_rate: 1.2500e-04
+Epoch 39/80
+
+Epoch 39: val_auc improved from 0.62715 to 0.63616, saving model to models/gate/gate_model_resnet_large.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+
+Epoch 39: finished saving model to models/gate/gate_model_resnet_large.h5
+1000/1000 - 14s - 14ms/step - accuracy: 0.9982 - auc: 1.0000 - loss: 0.0017 - precision: 0.9982 - recall: 0.9982 - val_accuracy: 0.6095 - val_auc: 0.6362 - val_loss: 1.3994 - val_precision: 0.6095 - val_recall: 0.6095 - learning_rate: 1.2500e-04
+Epoch 40/80
+
+Epoch 40: ReduceLROnPlateau reducing learning rate to 6.25000029685907e-05.
+
+Epoch 40: val_auc improved from 0.63616 to 0.65118, saving model to models/gate/gate_model_resnet_large.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+
+Epoch 40: finished saving model to models/gate/gate_model_resnet_large.h5
+1000/1000 - 18s - 18ms/step - accuracy: 0.9951 - auc: 0.9998 - loss: 0.0048 - precision: 0.9951 - recall: 0.9951 - val_accuracy: 0.6008 - val_auc: 0.6512 - val_loss: 0.8213 - val_precision: 0.6008 - val_recall: 0.6008 - learning_rate: 1.2500e-04
+Epoch 41/80
+
+Epoch 41: val_auc did not improve from 0.65118
+1000/1000 - 13s - 13ms/step - accuracy: 0.9981 - auc: 1.0000 - loss: 0.0017 - precision: 0.9981 - recall: 0.9981 - val_accuracy: 0.5909 - val_auc: 0.6094 - val_loss: 1.2094 - val_precision: 0.5909 - val_recall: 0.5909 - learning_rate: 6.2500e-05
+Epoch 42/80
+
+Epoch 42: val_auc did not improve from 0.65118
+1000/1000 - 16s - 16ms/step - accuracy: 0.9979 - auc: 1.0000 - loss: 0.0020 - precision: 0.9979 - recall: 0.9979 - val_accuracy: 0.5809 - val_auc: 0.5976 - val_loss: 1.3365 - val_precision: 0.5809 - val_recall: 0.5809 - learning_rate: 6.2500e-05
+Epoch 43/80
+
+Epoch 43: val_auc did not improve from 0.65118
+1000/1000 - 13s - 13ms/step - accuracy: 0.9948 - auc: 0.9998 - loss: 0.0052 - precision: 0.9948 - recall: 0.9948 - val_accuracy: 0.4628 - val_auc: 0.4570 - val_loss: 1.5956 - val_precision: 0.4628 - val_recall: 0.4628 - learning_rate: 6.2500e-05
+Epoch 44/80
+
+Epoch 44: val_auc did not improve from 0.65118
+1000/1000 - 16s - 16ms/step - accuracy: 0.9984 - auc: 1.0000 - loss: 0.0016 - precision: 0.9984 - recall: 0.9984 - val_accuracy: 0.5561 - val_auc: 0.5783 - val_loss: 1.6313 - val_precision: 0.5561 - val_recall: 0.5561 - learning_rate: 6.2500e-05
+Epoch 45/80
+
+Epoch 45: val_auc improved from 0.65118 to 0.72597, saving model to models/gate/gate_model_resnet_large.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+
+Epoch 45: finished saving model to models/gate/gate_model_resnet_large.h5
+1000/1000 - 15s - 15ms/step - accuracy: 0.9953 - auc: 0.9998 - loss: 0.0047 - precision: 0.9953 - recall: 0.9953 - val_accuracy: 0.6657 - val_auc: 0.7260 - val_loss: 0.6915 - val_precision: 0.6657 - val_recall: 0.6657 - learning_rate: 6.2500e-05
+Epoch 46/80
+
+Epoch 46: val_auc did not improve from 0.72597
+1000/1000 - 17s - 17ms/step - accuracy: 0.9985 - auc: 1.0000 - loss: 0.0013 - precision: 0.9985 - recall: 0.9985 - val_accuracy: 0.5463 - val_auc: 0.5599 - val_loss: 1.4373 - val_precision: 0.5463 - val_recall: 0.5463 - learning_rate: 6.2500e-05
+Epoch 47/80
+
+Epoch 47: val_auc did not improve from 0.72597
+1000/1000 - 14s - 14ms/step - accuracy: 0.9983 - auc: 1.0000 - loss: 0.0017 - precision: 0.9983 - recall: 0.9983 - val_accuracy: 0.5769 - val_auc: 0.6028 - val_loss: 1.3101 - val_precision: 0.5769 - val_recall: 0.5769 - learning_rate: 6.2500e-05
+Epoch 48/80
+
+Epoch 48: val_auc did not improve from 0.72597
+1000/1000 - 17s - 17ms/step - accuracy: 0.9952 - auc: 0.9998 - loss: 0.0046 - precision: 0.9952 - recall: 0.9952 - val_accuracy: 0.4686 - val_auc: 0.4600 - val_loss: 1.6771 - val_precision: 0.4686 - val_recall: 0.4686 - learning_rate: 6.2500e-05
+Epoch 49/80
+
+Epoch 49: val_auc did not improve from 0.72597
+1000/1000 - 14s - 14ms/step - accuracy: 0.9986 - auc: 1.0000 - loss: 0.0014 - precision: 0.9986 - recall: 0.9986 - val_accuracy: 0.5626 - val_auc: 0.5842 - val_loss: 1.6663 - val_precision: 0.5626 - val_recall: 0.5626 - learning_rate: 6.2500e-05
+Epoch 50/80
+
+Epoch 50: ReduceLROnPlateau reducing learning rate to 3.125000148429535e-05.
+
+Epoch 50: val_auc did not improve from 0.72597
+1000/1000 - 16s - 16ms/step - accuracy: 0.9953 - auc: 0.9998 - loss: 0.0045 - precision: 0.9953 - recall: 0.9953 - val_accuracy: 0.6645 - val_auc: 0.7220 - val_loss: 0.7400 - val_precision: 0.6645 - val_recall: 0.6645 - learning_rate: 6.2500e-05
+Epoch 51/80
+
+Epoch 51: val_auc did not improve from 0.72597
+1000/1000 - 13s - 13ms/step - accuracy: 0.9982 - auc: 1.0000 - loss: 0.0016 - precision: 0.9982 - recall: 0.9982 - val_accuracy: 0.5604 - val_auc: 0.5725 - val_loss: 1.3418 - val_precision: 0.5604 - val_recall: 0.5604 - learning_rate: 3.1250e-05
+Epoch 52/80
+
+Epoch 52: val_auc did not improve from 0.72597
+1000/1000 - 16s - 16ms/step - accuracy: 0.9983 - auc: 1.0000 - loss: 0.0017 - precision: 0.9983 - recall: 0.9983 - val_accuracy: 0.5924 - val_auc: 0.6197 - val_loss: 1.2339 - val_precision: 0.5924 - val_recall: 0.5924 - learning_rate: 3.1250e-05
+Epoch 53/80
+
+Epoch 53: val_auc did not improve from 0.72597
+1000/1000 - 15s - 15ms/step - accuracy: 0.9950 - auc: 0.9998 - loss: 0.0049 - precision: 0.9950 - recall: 0.9950 - val_accuracy: 0.4911 - val_auc: 0.4924 - val_loss: 1.4462 - val_precision: 0.4911 - val_recall: 0.4911 - learning_rate: 3.1250e-05
+Epoch 54/80
+
+Epoch 54: val_auc did not improve from 0.72597
+1000/1000 - 17s - 17ms/step - accuracy: 0.9985 - auc: 1.0000 - loss: 0.0015 - precision: 0.9985 - recall: 0.9985 - val_accuracy: 0.5559 - val_auc: 0.5777 - val_loss: 1.5957 - val_precision: 0.5559 - val_recall: 0.5559 - learning_rate: 3.1250e-05
+Epoch 55/80
+
+Epoch 55: val_auc improved from 0.72597 to 0.76043, saving model to models/gate/gate_model_resnet_large.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+
+Epoch 55: finished saving model to models/gate/gate_model_resnet_large.h5
+1000/1000 - 14s - 14ms/step - accuracy: 0.9956 - auc: 0.9998 - loss: 0.0045 - precision: 0.9956 - recall: 0.9956 - val_accuracy: 0.6981 - val_auc: 0.7604 - val_loss: 0.6527 - val_precision: 0.6981 - val_recall: 0.6981 - learning_rate: 3.1250e-05
+Epoch 56/80
+
+Epoch 56: val_auc did not improve from 0.76043
+1000/1000 - 17s - 17ms/step - accuracy: 0.9985 - auc: 1.0000 - loss: 0.0013 - precision: 0.9985 - recall: 0.9985 - val_accuracy: 0.5801 - val_auc: 0.6008 - val_loss: 1.2114 - val_precision: 0.5801 - val_recall: 0.5801 - learning_rate: 3.1250e-05
+Epoch 57/80
+
+Epoch 57: val_auc did not improve from 0.76043
+1000/1000 - 14s - 14ms/step - accuracy: 0.9986 - auc: 1.0000 - loss: 0.0015 - precision: 0.9986 - recall: 0.9986 - val_accuracy: 0.5958 - val_auc: 0.6251 - val_loss: 1.2604 - val_precision: 0.5958 - val_recall: 0.5958 - learning_rate: 3.1250e-05
+Epoch 58/80
+
+Epoch 58: val_auc did not improve from 0.76043
+1000/1000 - 17s - 17ms/step - accuracy: 0.9954 - auc: 0.9998 - loss: 0.0046 - precision: 0.9954 - recall: 0.9954 - val_accuracy: 0.4852 - val_auc: 0.4885 - val_loss: 1.4270 - val_precision: 0.4852 - val_recall: 0.4852 - learning_rate: 3.1250e-05
+Epoch 59/80
+
+Epoch 59: val_auc did not improve from 0.76043
+1000/1000 - 14s - 14ms/step - accuracy: 0.9985 - auc: 1.0000 - loss: 0.0015 - precision: 0.9985 - recall: 0.9985 - val_accuracy: 0.5505 - val_auc: 0.5683 - val_loss: 1.6461 - val_precision: 0.5505 - val_recall: 0.5505 - learning_rate: 3.1250e-05
+Epoch 60/80
+
+Epoch 60: ReduceLROnPlateau reducing learning rate to 1.5625000742147677e-05.
+
+Epoch 60: val_auc did not improve from 0.76043
+1000/1000 - 15s - 15ms/step - accuracy: 0.9959 - auc: 0.9999 - loss: 0.0042 - precision: 0.9959 - recall: 0.9959 - val_accuracy: 0.6776 - val_auc: 0.7419 - val_loss: 0.7217 - val_precision: 0.6776 - val_recall: 0.6776 - learning_rate: 3.1250e-05
+Epoch 61/80
+
+Epoch 61: val_auc did not improve from 0.76043
+1000/1000 - 16s - 16ms/step - accuracy: 0.9981 - auc: 1.0000 - loss: 0.0016 - precision: 0.9981 - recall: 0.9981 - val_accuracy: 0.5752 - val_auc: 0.5906 - val_loss: 1.2385 - val_precision: 0.5752 - val_recall: 0.5752 - learning_rate: 1.5625e-05
+Epoch 62/80
+
+Epoch 62: val_auc did not improve from 0.76043
+1000/1000 - 16s - 16ms/step - accuracy: 0.9983 - auc: 1.0000 - loss: 0.0017 - precision: 0.9983 - recall: 0.9983 - val_accuracy: 0.6097 - val_auc: 0.6401 - val_loss: 1.1434 - val_precision: 0.6097 - val_recall: 0.6097 - learning_rate: 1.5625e-05
+Epoch 63/80
+
+Epoch 63: val_auc did not improve from 0.76043
+1000/1000 - 14s - 14ms/step - accuracy: 0.9955 - auc: 0.9998 - loss: 0.0046 - precision: 0.9955 - recall: 0.9955 - val_accuracy: 0.5337 - val_auc: 0.5529 - val_loss: 1.2419 - val_precision: 0.5337 - val_recall: 0.5337 - learning_rate: 1.5625e-05
+Epoch 64/80
+
+Epoch 64: val_auc did not improve from 0.76043
+1000/1000 - 16s - 16ms/step - accuracy: 0.9984 - auc: 1.0000 - loss: 0.0016 - precision: 0.9984 - recall: 0.9984 - val_accuracy: 0.5452 - val_auc: 0.5679 - val_loss: 1.5288 - val_precision: 0.5452 - val_recall: 0.5452 - learning_rate: 1.5625e-05
+Epoch 65/80
+
+Epoch 65: val_auc improved from 0.76043 to 0.76211, saving model to models/gate/gate_model_resnet_large.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+
+Epoch 65: finished saving model to models/gate/gate_model_resnet_large.h5
+1000/1000 - 14s - 14ms/step - accuracy: 0.9958 - auc: 0.9998 - loss: 0.0044 - precision: 0.9958 - recall: 0.9958 - val_accuracy: 0.6984 - val_auc: 0.7621 - val_loss: 0.7229 - val_precision: 0.6984 - val_recall: 0.6984 - learning_rate: 1.5625e-05
+Epoch 66/80
+
+Epoch 66: val_auc did not improve from 0.76211
+1000/1000 - 13s - 13ms/step - accuracy: 0.9985 - auc: 1.0000 - loss: 0.0013 - precision: 0.9985 - recall: 0.9985 - val_accuracy: 0.5636 - val_auc: 0.5756 - val_loss: 1.3451 - val_precision: 0.5636 - val_recall: 0.5636 - learning_rate: 1.5625e-05
+Epoch 67/80
+
+Epoch 67: val_auc did not improve from 0.76211
+1000/1000 - 16s - 16ms/step - accuracy: 0.9986 - auc: 1.0000 - loss: 0.0015 - precision: 0.9986 - recall: 0.9986 - val_accuracy: 0.5991 - val_auc: 0.6250 - val_loss: 1.2144 - val_precision: 0.5991 - val_recall: 0.5991 - learning_rate: 1.5625e-05
+Epoch 68/80
+
+Epoch 68: val_auc did not improve from 0.76211
+1000/1000 - 16s - 16ms/step - accuracy: 0.9954 - auc: 0.9998 - loss: 0.0045 - precision: 0.9954 - recall: 0.9954 - val_accuracy: 0.5336 - val_auc: 0.5535 - val_loss: 1.2463 - val_precision: 0.5336 - val_recall: 0.5336 - learning_rate: 1.5625e-05
+Epoch 69/80
+
+Epoch 69: val_auc did not improve from 0.76211
+1000/1000 - 13s - 13ms/step - accuracy: 0.9985 - auc: 1.0000 - loss: 0.0015 - precision: 0.9985 - recall: 0.9985 - val_accuracy: 0.5598 - val_auc: 0.5849 - val_loss: 1.4856 - val_precision: 0.5598 - val_recall: 0.5598 - learning_rate: 1.5625e-05
+Epoch 70/80
+
+Epoch 70: ReduceLROnPlateau reducing learning rate to 7.812500371073838e-06.
+
+Epoch 70: val_auc did not improve from 0.76211
+1000/1000 - 16s - 16ms/step - accuracy: 0.9960 - auc: 0.9998 - loss: 0.0042 - precision: 0.9960 - recall: 0.9960 - val_accuracy: 0.6910 - val_auc: 0.7531 - val_loss: 0.7597 - val_precision: 0.6910 - val_recall: 0.6910 - learning_rate: 1.5625e-05
+Epoch 71/80
+
+Epoch 71: val_auc did not improve from 0.76211
+1000/1000 - 14s - 14ms/step - accuracy: 0.9981 - auc: 1.0000 - loss: 0.0016 - precision: 0.9981 - recall: 0.9981 - val_accuracy: 0.5722 - val_auc: 0.5842 - val_loss: 1.2977 - val_precision: 0.5722 - val_recall: 0.5722 - learning_rate: 7.8125e-06
+Epoch 72/80
+
+Epoch 72: val_auc did not improve from 0.76211
+1000/1000 - 18s - 18ms/step - accuracy: 0.9983 - auc: 1.0000 - loss: 0.0018 - precision: 0.9983 - recall: 0.9983 - val_accuracy: 0.5976 - val_auc: 0.6233 - val_loss: 1.1366 - val_precision: 0.5976 - val_recall: 0.5976 - learning_rate: 7.8125e-06
+Epoch 73/80
+
+Epoch 73: val_auc did not improve from 0.76211
+1000/1000 - 17s - 17ms/step - accuracy: 0.9955 - auc: 0.9998 - loss: 0.0044 - precision: 0.9955 - recall: 0.9955 - val_accuracy: 0.5722 - val_auc: 0.5966 - val_loss: 1.1325 - val_precision: 0.5722 - val_recall: 0.5722 - learning_rate: 7.8125e-06
+Epoch 74/80
+
+Epoch 74: val_auc did not improve from 0.76211
+1000/1000 - 14s - 14ms/step - accuracy: 0.9982 - auc: 1.0000 - loss: 0.0016 - precision: 0.9982 - recall: 0.9982 - val_accuracy: 0.5480 - val_auc: 0.5705 - val_loss: 1.4577 - val_precision: 0.5480 - val_recall: 0.5480 - learning_rate: 7.8125e-06
+Epoch 75/80
+
+Epoch 75: val_auc did not improve from 0.76211
+1000/1000 - 16s - 16ms/step - accuracy: 0.9958 - auc: 0.9998 - loss: 0.0042 - precision: 0.9958 - recall: 0.9958 - val_accuracy: 0.6965 - val_auc: 0.7572 - val_loss: 0.7728 - val_precision: 0.6965 - val_recall: 0.6965 - learning_rate: 7.8125e-06
+Epoch 76/80
+
+Epoch 76: val_auc did not improve from 0.76211
+1000/1000 - 14s - 14ms/step - accuracy: 0.9983 - auc: 1.0000 - loss: 0.0015 - precision: 0.9983 - recall: 0.9983 - val_accuracy: 0.5576 - val_auc: 0.5647 - val_loss: 1.3745 - val_precision: 0.5576 - val_recall: 0.5576 - learning_rate: 7.8125e-06
+Epoch 77/80
+
+Epoch 77: val_auc did not improve from 0.76211
+1000/1000 - 17s - 17ms/step - accuracy: 0.9984 - auc: 1.0000 - loss: 0.0015 - precision: 0.9984 - recall: 0.9984 - val_accuracy: 0.6011 - val_auc: 0.6287 - val_loss: 1.1328 - val_precision: 0.6011 - val_recall: 0.6011 - learning_rate: 7.8125e-06
+Epoch 78/80
+
+Epoch 78: val_auc did not improve from 0.76211
+1000/1000 - 14s - 14ms/step - accuracy: 0.9956 - auc: 0.9998 - loss: 0.0044 - precision: 0.9956 - recall: 0.9956 - val_accuracy: 0.5651 - val_auc: 0.5889 - val_loss: 1.1599 - val_precision: 0.5651 - val_recall: 0.5651 - learning_rate: 7.8125e-06
+Epoch 79/80
+
+Epoch 79: val_auc did not improve from 0.76211
+1000/1000 - 16s - 16ms/step - accuracy: 0.9983 - auc: 1.0000 - loss: 0.0016 - precision: 0.9983 - recall: 0.9983 - val_accuracy: 0.5540 - val_auc: 0.5773 - val_loss: 1.4444 - val_precision: 0.5540 - val_recall: 0.5540 - learning_rate: 7.8125e-06
+Epoch 80/80
+
+Epoch 80: ReduceLROnPlateau reducing learning rate to 3.906250185536919e-06.
+
+Epoch 80: val_auc did not improve from 0.76211
+1000/1000 - 12s - 12ms/step - accuracy: 0.9959 - auc: 0.9998 - loss: 0.0043 - precision: 0.9959 - recall: 0.9959 - val_accuracy: 0.7002 - val_auc: 0.7619 - val_loss: 0.7616 - val_precision: 0.7002 - val_recall: 0.7002 - learning_rate: 7.8125e-06
+Restoring model weights from the end of the best epoch: 65.
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+[GateTrain] done best_val_auc=0.7621 elapsed=1246.4s

@@ -6109,3 +6109,172 @@ PC 侧模型与策略均已确定。剩余为板端一致性、长时真实 AFE 
 - 本轮仅评估 float H5，未导出 INT8 TFLite；因此**不直接替换当前板上 exp7c**。
 - PTB 事件级评估基于 PTB 记录级标签展开的拍级标签，参考意义强于临床事件口径；仍需在正式论文/部署中明确口径。
 - 未进行真实人体实验/烧录；下一步应做 INT8 QAT/PTQ 导出、PC↔板端一致性、长时真实 AFE FP/hour 验证。
+
+## 第九十七章 患者级泄漏全面审计：12 个历史脚本判定 LEAKED，守卫体系上线（2026-09-01）
+
+### 1. 动机
+
+§94 只审计了 qat v3b/v4/v5 三个脚本，留下一个未决问题：**板上 exp7c 的出身（finetune_exp7c.py）以及其他历史训练脚本是否同样混入测试患者**。本章用 RNG 流复放（逐脚本重放 seed=42 的抽样顺序）给出完整答案。
+
+### 2. 审计方法与判定
+
+`pc_tools/ecg_dl/audit_provenance.py` 对 12 个历史脚本逐一复放其确切抽样规格（tag 顺序、n_abn/n_norm、rng.choice 调用序），重建历史采样记录，对照从实际 `record_ids` 数组重算的患者级划分（从不信任留存的 patient_split.json；经核验该 JSON 已过期）。合成硬负样本脚本（hardneg）先复放 `synth_hard` 的 RNG 消耗再续放抽样流。划分口径：MIT+INCART 合并（INCART rid +100000）+ PTB 独立，seed=42，60/20/20。
+
+**总判定：LEAKED——12 个脚本全部混入测试患者数据。** 关键数字（泄漏拍数/该类抽样总数）：
+
+| 脚本 | MIT | INCART | PTB |
+|---|---|---|---|
+| finetune_exp7c.py（板上模型出身） | 282/1600 | 53/400 | 107/600 |
+| finetune_exp7c_hardneg.py | 288/1600 | 55/400 | 115/600 |
+| finetune_exp7c_mild.py | 同规格（1200/400,300/100,500/100）同样泄漏 | | |
+| qat_exp7c.py | 206/1300 | 70/400 | 107/600 |
+| qat_exp7c_v3.py | — | — | 208/1000 |
+| qat_exp7c_v3b/v4/v5 | 282/1600 | 53/400 | 123/650 |
+| ecgfounder 系列（v1–v4） | 161/1000 | 32/300 | 89/400 |
+
+finetune_exp7c.py 另混入 219 条 MIT 验证患者记录。完整逐脚本明细见 `pc_tools/ecg_dl/models/deploy_match/provenance_leakage_audit.json`。
+
+### 3. 附带发现并修复：finetune_exp7c_v4.py 的 INCART 掩码错位
+
+v4 曾被认为"干净"，实际 `sample_domain` 用 `train_mask[:len(l)]` 截取合并掩码——对 INCART 取到的是 MIT 段的前 175,779 项，等于随机过滤，放行了 INCART 测试记录 [1,2,12,13,14,68,69,74,75]。已修复：`get_mit_incart_masks()` 返回按域切片 `{"mit_bih": (0, n_mit), "incart": (n_mit, n_mit+n_inc)}`，`sample_domain` 按切片取掩码并断言长度一致。**§96 中 v4 的验收数字同样作废。**
+
+### 4. 守卫体系（永久性基础设施）
+
+- `pc_tools/ecg_dl/data/split_guard.py`：从实际数组重算划分的唯一权威。`SplitGuard.assert_train_only(record_ids, context)` 在取数混入测试/验证患者时抛 `LeakError` 并列出涉事记录；提供 `sample_train_beats()` 安全采样器与 `check_saved_registry()` 过期检测；自带 CLI 自检（已通过）。
+- 12 个历史脚本的 `load_domain` 已全部回填守卫断言：再次运行将直接以 `LeakError` 失败（已实测：finetune_exp7c.py 报 "训练取数含 282 条测试患者记录 / 219 条验证患者记录"）。
+- 铁律（写入代码）：**今后任何训练/评估脚本取公共库数据，必须经由 SplitGuard；不得自行对全量数组做无约束抽样，不得信任留存的划分 JSON。**
+
+### 5. 后果与口径变更
+
+1. **作废**：由上述 12 个脚本得出的全部患者级指标，包括板上 exp7c（INT8, θ=0.60）的训练/验证出身数字，以及 §96 的 exp7c_v4 验收数字。这些数字是在"测试集已参与训练"的口径下得到的，不能作为泛化能力证据。
+2. **保留**：数据资产本身（拍级数组、真实 AFE 留出集）不受污染影响；划分经重算后继续有效。MIT+INCART 79 患者→49/15/15（拍 512,369/159,294/163,078）；PTB 286 患者→172/57/57。
+3. 板上模型暂不下线（无替代件），但其报告指标须标注"泄漏口径，待重评"。
+
+### 6. 下一步
+
+在干净划分上重训/重评候选模型（exp7c 复训或 v4 重训），通过 SplitGuard 取样，重跑事件级测试集冻结对比后，才允许进入下一阶段（蒸馏/重预训练）。
+
+## 第九十八章 干净测试集重评：14 个模型双口径记分表（2026-09-01）
+
+### 1. 方法
+
+`pc_tools/ecg_dl/eval_clean_test.py` 对 exp7c 谱系全部 14 个模型（8 个 float32 H5 + 板上部署 INT8 + 5 个候选 INT8）在患者级测试集上重评，双口径：
+
+- **full**：完整测试集（MIT+INCART 51,883 拍 / 23 记录；PTB 13,058 拍 / 95 记录），与 §96 同口径；
+- **clean**：从测试集中剔除曾被抽进该模型训练的记录（按 §97 的 RNG 复放重建泄漏记录清单；exp7c_v4 按掩码错位审计重建）。
+
+指标：拍级 AUC、θ=0.5 混淆矩阵 / Sens / Prec / F1；事件级 θ=0.5、1-of-5、cooldown=5（与 §96 参考操作点一致）。输出 `models/deploy_match/clean_test_reeval.json`。
+
+### 2. 第一个硬结论：MIT+INCART 测试集在记录级已被整体污染
+
+RNG 复放显示：旧管线每个脚本抽 1,300~2,200 拍，覆盖面足以触及**全部 10 条 MIT 测试记录与 13 条 INCART 测试记录中的 12 条**。剔除后 MIT+INCART clean 子集只剩 1 条记录（1,453 拍、仅 1 个异常拍）——**对旧管线模型，MIT+INCART 不存在可用的诚实评估子集**，full 口径数字全部偏乐观，且无法通过"剔除"补救。
+
+唯一例外是 exp7c_v4（只经掩码错位泄漏 9 条 INCART 记录），其诚实口径首次可测：
+
+| exp7c_v4（MIT+INCART） | AUC | 事件 F1 | 事件 recall | FP/record |
+|---|---:|---:|---:|---:|
+| full（§96 口径，含泄漏） | 0.900 | 0.864 | 0.902 | 5.74 |
+| **clean（诚实）** | **0.848** | **0.697** | 0.823 | 7.93 |
+
+§96 声称的 v4 验收数字被高估约 0.17 事件 F1。
+
+### 3. PTB 诚实口径（clean 子集 1,303~5,617 拍，27 个真值事件为主）
+
+| 模型 | PTB AUC full→clean | 事件 F1 full→clean |
+|---|---|---|
+| **DEPLOYED_exp7c_int8（板上）** | 0.788 → **0.900** | 0.857 → **0.898**（FP/record=0） |
+| exp7c（float 基座） | 0.802 → 0.935 | 0.845 → 0.875 |
+| ecgfounder_v4_qat_int8 | 0.829 → 0.959 | 0.869 → 1.000 ⚠ |
+| ecgfounder_v3b_qat_int8 | 0.806 → 0.902 | 0.887 → 0.959 |
+| exp7c_qat_int8 | 0.749 → 0.735 | 0.876 → 0.854 |
+| exp7c_v4 | 0.795（无泄漏，口径一致） | 0.844 |
+
+注意：clean 普遍**高于** full——被训练见过的测试记录反而拉低了模型表现（过拟合扭曲），同时干净子集存在构成偏差（哪些记录"幸存"是随机的）。部分 clean 事件 F1 达 1.000 属小样本退化（27 个事件、0 误报块），**不得当作能力证据**。
+
+### 4. 记分表的正确读法
+
+1. **板上部署 INT8 的真实水平**：在患者从未见过的 PTB 数据上 AUC≈0.90、事件 F1≈0.90、零误报块——这是目前唯一可信的公开库数字；其 MIT+INCART 数字（旧论文/文档中全部患者级指标）**不可用**。
+2. 旧管线 12 个脚本出身的任何模型，在 MIT+INCART 上都无法给出诚实数字——不是"打折"，是**无测量**。
+3. 模型间在 clean 口径的排序（PTB）大致为：ecgfounder_qat 系列 ≥ exp7c 谱系 > exp7c_qat，但小样本下不构成选型依据。
+
+### 5. 产物
+
+- `pc_tools/ecg_dl/eval_clean_test.py`
+- `pc_tools/ecg_dl/models/deploy_match/clean_test_reeval.json`（14 模型 × 2 域 × full/clean 全指标）
+
+### 6. 结论与下一步
+
+泄漏不是个别脚本的失误，而是旧抽样方式的系统性后果（广抽样 → 记录级全覆盖）。**在干净划分上用 SplitGuard 取数重训，是获得任何有效 MIT+INCART 数字的唯一路径**；重训基线（建议从 exp7c 配方 + 干净采样开始）出来之前，不应启动蒸馏/重预训练的对比实验。已知限制：clean 子集未剔除祖先模型（exp7/exp7b，未审计）可能见过的记录；板上 INT8 的 PTQ 校准集出处未审计。
+
+---
+
+## 第九十九章 干净基线从零重训（clean-split baseline from scratch）：MIT+INCART 首个无泄漏数字
+
+日期：2026-09-01。承接 §98 结论——旧管线 12 脚本在 MIT+INCART 上**无测量**（记录级全覆盖泄漏），本章给出该域第一个诚实的从零训练数字。
+
+### 1. 方法与合规声明
+
+- 脚本：`pc_tools/ecg_dl/train_clean_baseline.py`（训练）、`pc_tools/ecg_dl/eval_clean_baseline.py`（评估，复用 §98 的 `eval_clean_test.make_predictor` 口径）。
+- 架构：`models/resnet_lite_1d.py` 的 `build_ecg_resnet_lite_large`（62,834 参数），**随机初始化从零训练，未加载任何现有 checkpoint/.h5/fine-tune 权重**。
+- 取数全部经 `data/split_guard.py`（`assert_train_only`/`sample_train_beats`），seed=42，患者级划分；验证集仅取 `val_mask` 患者；真 AFE holdout 用 `np.setdiff1d` 保证与训练不相交。
+- 训练配比沿用 `finetune_exp7c_v4.py`：MIT (1500 abn, 500 norm)、INCART (400, 150)、PTB (600, 200)，另加真 AFE 训练拍 542（271 条去重后重复采样）与合成硬负例 600；合计 4,492 拍（2,500 abn / 1,992 norm）。class_weight {0:2.0, 1:1.0}，Adam + cosine decay，batch 32，epochs 80，早停 patience 20（监控 val AUC），按最佳 val AUC 存档。
+- 评估口径：θ=0.5、1-of-5、cooldown=5；测试集为 SplitGuard 患者级 test 划分（MIT+INCART 23 条记录 / 51,883 拍；PTB 100 条记录 / 13,058 拍），模型从未见过。
+
+环境：WSL2 Ubuntu，TensorFlow 2.21.0，RTX 5070 Laptop（CC 12.0a）。v2 训练 24 epoch 早停，耗时 158 s。
+
+### 2. 划分统计（SplitGuard, seed=42）
+
+| 域 | 患者 | train/val/test | 拍数 train/val/test |
+|---|---|---|---|
+| MIT+INCART（合并划分） | 79 | 49/15/15 | 512,369 / 159,294 / 163,078 |
+| PTB | 286 | 172/57/57 | 41,730 / 14,694 / 13,058 |
+
+### 3. v1（lr=1e-3）：恒报警退化，不可用
+
+训练早停于 epoch 23（cosine 计划跨 80 epoch，学习率从未显著衰减，全程近峰值学习率记忆训练集）。测试集表现：
+
+| 域 | AUC | 拍级 sens/prec/F1 | evF1 | FP/rec | 误报块/GT 事件 |
+|---|---|---|---|---|---|
+| MIT+INCART | 0.876 | 0.997 / 0.112 / 0.201 | 0.978 ⚠ | 0.043 ⚠ | 1 / 979 |
+| PTB | 0.669 | 0.997 / 0.781 / 0.876 | 0.882 | 0.211 | 20 / 75 |
+
+MIT+INCART 的 evF1=0.978 是**假象**：整条测试集坍缩为 1 个报警块（正常拍 44,787/46,247 被判异常），所有 979 个 GT 事件自然"全中"。这是恒报警退化，不是能力。
+
+### 4. v2（lr=3e-4）：坍缩模式翻转，成为采纳基线
+
+降学习率后坍缩模式翻转为"几乎全判正常"（真 AFE holdout 均值概率 0.050，无一超过 0.5），公共库拍仍过度报警。best val AUC 0.7627，早停于 epoch 24。
+
+| 域 | AUC | 拍级 sens/prec/F1 | evF1 | evRec/evPrec | FP/rec | 误报块/GT 事件 |
+|---|---|---|---|---|---|---|
+| MIT+INCART | **0.851** | 0.971 / 0.164 / 0.281 | **0.643** | 0.997 / 0.475 | 4.522 | 104 / 979 |
+| PTB | 0.716 | 0.789 / 0.865 / 0.825 | 0.789 | 0.987 / 0.658 | — | 52 / 75 |
+
+v2 混淆矩阵：MIT+INCART TP=5,474 FP=27,878 TN=18,369 FN=162（报警块 198，匹配 976/979 事件）；PTB TP=8,056 FP=1,260 TN=1,594 FN=2,148（报警块 152，匹配 74/75）。
+
+### 5. 锚点对比（§98 口径）
+
+| 指标 | v2（本章，从零，无泄漏） | 锚点 | 判定 |
+|---|---|---|---|
+| MIT+INCART AUC（clean） | **0.851** | v4 clean 0.848 | **复现**（该域首个诚实从零数字） |
+| MIT+INCART evF1 | 0.643 | v4 clean 0.697 | 接近，θ=0.5 过度报警拖累精度 |
+| MIT+INCART beat F1 | 0.281 | v4 clean 0.498 | 明显落后（精度 0.164） |
+| PTB AUC（clean） | 0.716 | 板上 INT8 0.900 | 落后，与逐拍 z-score 抹 ST 幅度的已知结构性限制一致 |
+| PTB evF1 | 0.789 | 板上 INT8 0.898 | 落后，同上 |
+
+### 6. 诊断
+
+1. **数据管线干净**：逐项核实训练仅取训练患者（SplitGuard 断言通过）、验证仅取 val 患者、真 AFE holdout 与训练不相交、各类计数与预期一致。问题不在取数。
+2. **从零训练的结构性坍缩**：4,492 拍 / 62,834 参数的小数据下，两个相差 3 倍的学习率产生两种相反的常数预测坍缩（恒报警 ↔ 恒正常），说明学习率不是根因。域构成捷径是诱因：训练集中公共库拍 75% 为异常（2,500 abn vs 850 norm 公共库正常），正常拍多数来自真 AFE + 合成；class_weight 只纠正全局不平衡，不纠正域内不平衡。
+3. **评估脚本口径修正**：`eval_clean_baseline.py` 原断言 `alert_blocks >= matched_gt_events` 误报——核实 `eval_exp7c_policy_sweep.py:164-168` 匹配语义后确认一个报警块可匹配多个 GT 事件，该不变量不成立，已改为两条子集断言（匹配块 ≤ 总块、匹配事件 ≤ 总事件）。
+
+### 7. 产物
+
+- `pc_tools/ecg_dl/train_clean_baseline.py`、`pc_tools/ecg_dl/eval_clean_baseline.py`
+- `models/best_resnet_large_clean_baseline.h5`（v2，采纳）；v1 备份 `models/best_resnet_large_clean_baseline_v1_lr1e-3.h5`
+- `models/deploy_match/train_clean_baseline.json`（v2 训练记录）+ `train_clean_baseline_v1_lr1e-3.json`
+- `models/deploy_match/clean_baseline_eval.json`（v2 全指标）+ `clean_baseline_eval_v1_lr1e-3.json`
+- 训练曲线 `train_history_clean_baseline*.csv`
+
+### 8. 结论与下一步
+
+**采纳 v2 为诚实干净基线**：MIT+INCART AUC 0.851 复现 v4 clean 锚点 0.848，证明 §98 的泄漏结论成立——旧管线的高分数字确实来自泄漏，干净口径下从零训练即可达到相近的判别力。两个遗留缺陷：(a) θ=0.5 下公共库过度报警（拍级精度 0.164、4.5 误报/记录），(b) PTB AUC 0.716 显著落后板上 INT8 0.900（与已知的逐拍 z-score 抹 ST 幅度一致）。**模型不可部署，仅作诚实测量基线**。下一步候选（须拍板后执行）：提高公共库正常拍配比 / 更强正则或数据增广后重训；修复预处理逐拍归一化以解锁 PTB 上限；或在该基线上蒸馏对比（§98 禁令至此解除）。

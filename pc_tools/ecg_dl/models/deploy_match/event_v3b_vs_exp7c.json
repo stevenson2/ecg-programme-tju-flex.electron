@@ -1,0 +1,87 @@
+{
+  "date": "2026-08-24 15:45:35",
+  "note": "direct dequantized abnormal probability; no second softmax; MIT+INCART patient-level test",
+  "models": [
+    "exp7c_int8",
+    "v3b_qat_int8"
+  ],
+  "results": {
+    "exp7c_int8": [
+      {
+        "split": "test",
+        "theta": 0.5,
+        "k": 1,
+        "n_window": 5,
+        "policy": "1-of-5",
+        "gt_gap_beats": 5,
+        "alert_cooldown_beats": 5,
+        "global_auc": 0.88894,
+        "beat_tp": 4598,
+        "beat_fp": 15379,
+        "beat_tn": 30868,
+        "beat_fn": 1038,
+        "beat_precision": 0.230165,
+        "beat_recall": 0.815827,
+        "beat_far": 0.33254,
+        "beat_f1": 0.359036,
+        "alert_rate": 0.385039,
+        "gt_events": 979,
+        "alert_blocks": 842,
+        "matched_gt_events": 854,
+        "false_alarm_blocks": 185,
+        "event_precision": 0.780285,
+        "event_recall": 0.872319,
+        "event_f1": 0.823739,
+        "fp_per_record": 8.043478,
+        "fp_per_1000_beats": 3.565715,
+        "median_latency_beats": 0.0,
+        "per_class_confirmed_event_recall": {
+          "N": 0.798319,
+          "S": 0.736842,
+          "V": 0.595745,
+          "F": 0.5,
+          "Q": null
+        }
+      }
+    ],
+    "v3b_qat_int8": [
+      {
+        "split": "test",
+        "theta": 0.5,
+        "k": 1,
+        "n_window": 5,
+        "policy": "1-of-5",
+        "gt_gap_beats": 5,
+        "alert_cooldown_beats": 5,
+        "global_auc": 0.926305,
+        "beat_tp": 5590,
+        "beat_fp": 29193,
+        "beat_tn": 17054,
+        "beat_fn": 46,
+        "beat_precision": 0.160711,
+        "beat_recall": 0.991838,
+        "beat_far": 0.631241,
+        "beat_f1": 0.276603,
+        "alert_rate": 0.670412,
+        "gt_events": 979,
+        "alert_blocks": 803,
+        "matched_gt_events": 970,
+        "false_alarm_blocks": 345,
+        "event_precision": 0.570361,
+        "event_recall": 0.990807,
+        "event_f1": 0.723968,
+        "fp_per_record": 15.0,
+        "fp_per_1000_beats": 6.649577,
+        "median_latency_beats": 0.0,
+        "per_class_confirmed_event_recall": {
+          "N": 1.0,
+          "S": 0.947368,
+          "V": 0.971631,
+          "F": 0.833333,
+          "Q": null
+        }
+      }
+    ]
+  },
+  "elapsed_s": 490.7
+}

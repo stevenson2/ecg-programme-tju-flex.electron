@@ -1,0 +1,767 @@
+{
+  "n_beats": 841,
+  "n_records": 60,
+  "failed": 0,
+  "chain": "corrected_deployment_chain + XQRS @250 + extract_beats_deploy(ptb)",
+  "label_meaning": "record-level global rhythm abnormal -> weak beat-level abnormal; not gold",
+  "records": [
+    {
+      "ecg_id": 7079,
+      "patient_id": "18366.0",
+      "filename_hr": "records500/07000/07079_hr",
+      "n_beats": 15,
+      "dist_min": 0.3851036556304136,
+      "dist_mean": 0.4583742480915134,
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 11886,
+      "patient_id": "8855.0",
+      "filename_hr": "records500/11000/11886_hr",
+      "n_beats": 13,
+      "dist_min": 0.4028513115829996,
+      "dist_mean": 0.4716169681488764,
+      "scp_codes": {
+        "AFLT": 100.0,
+        "AFIB": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 13906,
+      "patient_id": "2731.0",
+      "filename_hr": "records500/13000/13906_hr",
+      "n_beats": 11,
+      "dist_min": 0.4185457941551127,
+      "dist_mean": 0.49457653668877954,
+      "scp_codes": {
+        "NORM": 80.0,
+        "1AVB": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 18109,
+      "patient_id": "5744.0",
+      "filename_hr": "records500/18000/18109_hr",
+      "n_beats": 12,
+      "dist_min": 0.42732165174133385,
+      "dist_mean": 0.5128557019926266,
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 2051,
+      "patient_id": "389.0",
+      "filename_hr": "records500/02000/02051_hr",
+      "n_beats": 23,
+      "dist_min": 0.4375768964969813,
+      "dist_mean": 0.48949824764328653,
+      "scp_codes": {
+        "PSVT": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 12986,
+      "patient_id": "1711.0",
+      "filename_hr": "records500/12000/12986_hr",
+      "n_beats": 22,
+      "dist_min": 0.4382604291130412,
+      "dist_mean": 0.5373381424263441,
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 9312,
+      "patient_id": "11103.0",
+      "filename_hr": "records500/09000/09312_hr",
+      "n_beats": 16,
+      "dist_min": 0.43870753579412325,
+      "dist_mean": 0.6062550770482967,
+      "scp_codes": {
+        "1AVB": 100.0,
+        "STACH": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 20085,
+      "patient_id": "14180.0",
+      "filename_hr": "records500/20000/20085_hr",
+      "n_beats": 14,
+      "dist_min": 0.4389981982853475,
+      "dist_mean": 0.5491804278951329,
+      "scp_codes": {
+        "AFLT": 100.0,
+        "AFIB": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 1773,
+      "patient_id": "9503.0",
+      "filename_hr": "records500/01000/01773_hr",
+      "n_beats": 8,
+      "dist_min": 0.44269354931112426,
+      "dist_mean": 0.5300129477052984,
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 12948,
+      "patient_id": "13538.0",
+      "filename_hr": "records500/12000/12948_hr",
+      "n_beats": 25,
+      "dist_min": 0.44335678418970803,
+      "dist_mean": 0.5422391377458563,
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 7567,
+      "patient_id": "9048.0",
+      "filename_hr": "records500/07000/07567_hr",
+      "n_beats": 13,
+      "dist_min": 0.44370608726802596,
+      "dist_mean": 0.5408161306693282,
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 12489,
+      "patient_id": "544.0",
+      "filename_hr": "records500/12000/12489_hr",
+      "n_beats": 16,
+      "dist_min": 0.4455212523073244,
+      "dist_mean": 0.5318037891294544,
+      "scp_codes": {
+        "PSVT": 100.0,
+        "SVTAC": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 17386,
+      "patient_id": "13134.0",
+      "filename_hr": "records500/17000/17386_hr",
+      "n_beats": 14,
+      "dist_min": 0.44688451668666906,
+      "dist_mean": 0.5078483624972462,
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 11520,
+      "patient_id": "9005.0",
+      "filename_hr": "records500/11000/11520_hr",
+      "n_beats": 12,
+      "dist_min": 0.44801790603508507,
+      "dist_mean": 0.5062151773829823,
+      "scp_codes": {
+        "NORM": 80.0,
+        "SVARR": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 2509,
+      "patient_id": "16689.0",
+      "filename_hr": "records500/02000/02509_hr",
+      "n_beats": 14,
+      "dist_min": 0.45085992041175416,
+      "dist_mean": 0.5105083362076855,
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 3793,
+      "patient_id": "16721.0",
+      "filename_hr": "records500/03000/03793_hr",
+      "n_beats": 10,
+      "dist_min": 0.45258661779368037,
+      "dist_mean": 0.5626515959591373,
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 12346,
+      "patient_id": "21604.0",
+      "filename_hr": "records500/12000/12346_hr",
+      "n_beats": 20,
+      "dist_min": 0.4526617973198088,
+      "dist_mean": 0.5369493474222978,
+      "scp_codes": {
+        "PSVT": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 16245,
+      "patient_id": "7015.0",
+      "filename_hr": "records500/16000/16245_hr",
+      "n_beats": 12,
+      "dist_min": 0.4569162928736894,
+      "dist_mean": 0.5037355608655729,
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 17623,
+      "patient_id": "10058.0",
+      "filename_hr": "records500/17000/17623_hr",
+      "n_beats": 13,
+      "dist_min": 0.45845781028225674,
+      "dist_mean": 0.5480969212738972,
+      "scp_codes": {
+        "NORM": 100.0,
+        "SVARR": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 18855,
+      "patient_id": "15223.0",
+      "filename_hr": "records500/18000/18855_hr",
+      "n_beats": 12,
+      "dist_min": 0.45845809075969035,
+      "dist_mean": 0.5177104494579347,
+      "scp_codes": {
+        "NORM": 100.0,
+        "SVARR": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 11604,
+      "patient_id": "17601.0",
+      "filename_hr": "records500/11000/11604_hr",
+      "n_beats": 11,
+      "dist_min": 0.45942644391844,
+      "dist_mean": 0.5422730190022147,
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 17214,
+      "patient_id": "11570.0",
+      "filename_hr": "records500/17000/17214_hr",
+      "n_beats": 11,
+      "dist_min": 0.4596934503326384,
+      "dist_mean": 0.5045582945680663,
+      "scp_codes": {
+        "NORM": 50.0,
+        "SVARR": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 2251,
+      "patient_id": "16654.0",
+      "filename_hr": "records500/02000/02251_hr",
+      "n_beats": 10,
+      "dist_min": 0.4618437810034308,
+      "dist_mean": 0.5750558153257267,
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 6205,
+      "patient_id": "12129.0",
+      "filename_hr": "records500/06000/06205_hr",
+      "n_beats": 21,
+      "dist_min": 0.4633307842662182,
+      "dist_mean": 0.5134444015845996,
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 218,
+      "patient_id": "13925.0",
+      "filename_hr": "records500/00000/00218_hr",
+      "n_beats": 13,
+      "dist_min": 0.4637416690615003,
+      "dist_mean": 0.540248339271571,
+      "scp_codes": {
+        "NORM": 80.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 14963,
+      "patient_id": "630.0",
+      "filename_hr": "records500/14000/14963_hr",
+      "n_beats": 13,
+      "dist_min": 0.46446268970618876,
+      "dist_mean": 0.6027491339782335,
+      "scp_codes": {
+        "PACE": 100.0,
+        "SR": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 382,
+      "patient_id": "10186.0",
+      "filename_hr": "records500/00000/00382_hr",
+      "n_beats": 12,
+      "dist_min": 0.4653365852919893,
+      "dist_mean": 0.5600009164265642,
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 6179,
+      "patient_id": "3547.0",
+      "filename_hr": "records500/06000/06179_hr",
+      "n_beats": 16,
+      "dist_min": 0.4662437280882221,
+      "dist_mean": 0.5664550189597164,
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 8265,
+      "patient_id": "12688.0",
+      "filename_hr": "records500/08000/08265_hr",
+      "n_beats": 24,
+      "dist_min": 0.46660644975788423,
+      "dist_mean": 0.5303820579765642,
+      "scp_codes": {
+        "AFLT": 100.0,
+        "SR": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 8215,
+      "patient_id": "14026.0",
+      "filename_hr": "records500/08000/08215_hr",
+      "n_beats": 12,
+      "dist_min": 0.4675285404765015,
+      "dist_mean": 0.5670540756406615,
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 5923,
+      "patient_id": "20812.0",
+      "filename_hr": "records500/05000/05923_hr",
+      "n_beats": 10,
+      "dist_min": 0.46816556488515715,
+      "dist_mean": 0.5573595453863319,
+      "scp_codes": {
+        "NORM": 80.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 16076,
+      "patient_id": "4808.0",
+      "filename_hr": "records500/16000/16076_hr",
+      "n_beats": 9,
+      "dist_min": 0.46899203915347254,
+      "dist_mean": 0.5664815638123588,
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 4181,
+      "patient_id": "19221.0",
+      "filename_hr": "records500/04000/04181_hr",
+      "n_beats": 12,
+      "dist_min": 0.4696178053558999,
+      "dist_mean": 0.5238472576585025,
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 3496,
+      "patient_id": "9503.0",
+      "filename_hr": "records500/03000/03496_hr",
+      "n_beats": 11,
+      "dist_min": 0.4697339687494365,
+      "dist_mean": 0.5289860292400674,
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 15796,
+      "patient_id": "10943.0",
+      "filename_hr": "records500/15000/15796_hr",
+      "n_beats": 13,
+      "dist_min": 0.47141112081697223,
+      "dist_mean": 0.5489301349441328,
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 3134,
+      "patient_id": "349.0",
+      "filename_hr": "records500/03000/03134_hr",
+      "n_beats": 26,
+      "dist_min": 0.47170932342804994,
+      "dist_mean": 0.6110022818986199,
+      "scp_codes": {
+        "PSVT": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 20889,
+      "patient_id": "9878.0",
+      "filename_hr": "records500/20000/20889_hr",
+      "n_beats": 14,
+      "dist_min": 0.47227045608932505,
+      "dist_mean": 0.5486391878889115,
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 17794,
+      "patient_id": "6472.0",
+      "filename_hr": "records500/17000/17794_hr",
+      "n_beats": 11,
+      "dist_min": 0.4725533313915511,
+      "dist_mean": 0.556247838140302,
+      "scp_codes": {
+        "NORM": 80.0,
+        "AFIB": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 15249,
+      "patient_id": "9744.0",
+      "filename_hr": "records500/15000/15249_hr",
+      "n_beats": 13,
+      "dist_min": 0.47296936318390226,
+      "dist_mean": 0.5588093872499987,
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 12464,
+      "patient_id": "4945.0",
+      "filename_hr": "records500/12000/12464_hr",
+      "n_beats": 10,
+      "dist_min": 0.47341938468654476,
+      "dist_mean": 0.53234081678831,
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 8461,
+      "patient_id": "741.0",
+      "filename_hr": "records500/08000/08461_hr",
+      "n_beats": 23,
+      "dist_min": 0.4736753878620973,
+      "dist_mean": 0.5742304441735718,
+      "scp_codes": {
+        "PSVT": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 18,
+      "patient_id": "13619.0",
+      "filename_hr": "records500/00000/00018_hr",
+      "n_beats": 20,
+      "dist_min": 0.473820718381495,
+      "dist_mean": 0.5655551378964964,
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 15857,
+      "patient_id": "19454.0",
+      "filename_hr": "records500/15000/15857_hr",
+      "n_beats": 11,
+      "dist_min": 0.4745263908187778,
+      "dist_mean": 0.5189568341231107,
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 15632,
+      "patient_id": "8511.0",
+      "filename_hr": "records500/15000/15632_hr",
+      "n_beats": 11,
+      "dist_min": 0.4766318948870797,
+      "dist_mean": 0.5328449932280687,
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 9619,
+      "patient_id": "12771.0",
+      "filename_hr": "records500/09000/09619_hr",
+      "n_beats": 11,
+      "dist_min": 0.47789372298630606,
+      "dist_mean": 0.5342242408461214,
+      "scp_codes": {
+        "NORM": 50.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 7321,
+      "patient_id": "20677.0",
+      "filename_hr": "records500/07000/07321_hr",
+      "n_beats": 11,
+      "dist_min": 0.478627067354362,
+      "dist_mean": 0.5344644572713377,
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 14221,
+      "patient_id": "20143.0",
+      "filename_hr": "records500/14000/14221_hr",
+      "n_beats": 9,
+      "dist_min": 0.4790387023492767,
+      "dist_mean": 0.5441830647244447,
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 2035,
+      "patient_id": "6743.0",
+      "filename_hr": "records500/02000/02035_hr",
+      "n_beats": 13,
+      "dist_min": 0.4792997620874295,
+      "dist_mean": 0.5482526854452363,
+      "scp_codes": {
+        "NORM": 50.0,
+        "AFIB": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 10356,
+      "patient_id": "16512.0",
+      "filename_hr": "records500/10000/10356_hr",
+      "n_beats": 23,
+      "dist_min": 0.480700527570164,
+      "dist_mean": 0.5975433203715353,
+      "scp_codes": {
+        "NORM": 80.0,
+        "SVTAC": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 2205,
+      "patient_id": "4376.0",
+      "filename_hr": "records500/02000/02205_hr",
+      "n_beats": 11,
+      "dist_min": 0.4812696466570099,
+      "dist_mean": 0.5490702813551508,
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 10736,
+      "patient_id": "4971.0",
+      "filename_hr": "records500/10000/10736_hr",
+      "n_beats": 11,
+      "dist_min": 0.48285897707849124,
+      "dist_mean": 0.5741505947802592,
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 6910,
+      "patient_id": "18854.0",
+      "filename_hr": "records500/06000/06910_hr",
+      "n_beats": 12,
+      "dist_min": 0.48342016586197367,
+      "dist_mean": 0.5652466694199804,
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 21594,
+      "patient_id": "10108.0",
+      "filename_hr": "records500/21000/21594_hr",
+      "n_beats": 14,
+      "dist_min": 0.4852598035862792,
+      "dist_mean": 0.561545792035273,
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 3658,
+      "patient_id": "21032.0",
+      "filename_hr": "records500/03000/03658_hr",
+      "n_beats": 12,
+      "dist_min": 0.4865841421007787,
+      "dist_mean": 0.5568090841090343,
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 14147,
+      "patient_id": "8267.0",
+      "filename_hr": "records500/14000/14147_hr",
+      "n_beats": 13,
+      "dist_min": 0.4884831910446126,
+      "dist_mean": 0.5877569153300907,
+      "scp_codes": {
+        "NORM": 80.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 11915,
+      "patient_id": "12403.0",
+      "filename_hr": "records500/11000/11915_hr",
+      "n_beats": 12,
+      "dist_min": 0.48871181767847194,
+      "dist_mean": 0.5452966741515681,
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 3319,
+      "patient_id": "911.0",
+      "filename_hr": "records500/03000/03319_hr",
+      "n_beats": 14,
+      "dist_min": 0.4887966563469307,
+      "dist_mean": 0.5788407662231717,
+      "scp_codes": {
+        "PACE": 100.0,
+        "AFIB": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 12056,
+      "patient_id": "1303.0",
+      "filename_hr": "records500/12000/12056_hr",
+      "n_beats": 11,
+      "dist_min": 0.489135220205288,
+      "dist_mean": 0.569969744221471,
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 8263,
+      "patient_id": "17826.0",
+      "filename_hr": "records500/08000/08263_hr",
+      "n_beats": 15,
+      "dist_min": 0.490390557438809,
+      "dist_mean": 0.6071940576471349,
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "label": "abnormal_weak"
+    },
+    {
+      "ecg_id": 5390,
+      "patient_id": "8169.0",
+      "filename_hr": "records500/05000/05390_hr",
+      "n_beats": 17,
+      "dist_min": 0.49064636214544466,
+      "dist_mean": 0.5555400785709718,
+      "scp_codes": {
+        "AFLT": 100.0,
+        "AFIB": 0.0
+      },
+      "label": "abnormal_weak"
+    }
+  ]
+}

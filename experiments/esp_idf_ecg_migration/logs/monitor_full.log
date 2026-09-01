@@ -1,0 +1,87 @@
+--- Warning: GDB cannot open serial ports accessed as COMx
+--- Using \\.\COM3 instead...
+--- esp-idf-monitor 1.9.0 on \\.\COM3 115200
+--- Quit: Ctrl+] | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H
+Executing action: monitor
+Running idf_monitor in directory C:\esp\esp_idf_ecg_migration
+Executing "C:\Users\cai\.espressif\python_env\idf6.0_py3.13_env\Scripts\python.exe C:\esp\v6.0.1\esp-idf\tools/idf_monitor.py -p COM3 -b 115200 --toolchain-prefix xtensa-esp32s3-elf- --target esp32s3 --revision 0 C:\esp\esp_idf_ecg_migration\build\esp_idf_ecg_migration.elf C:\esp\esp_idf_ecg_migration\build\bootloader\bootloader.elf --timestamps --force-color -m 'C:\Users\cai\.espressif\python_env\idf6.0_py3.13_env\Scripts\python.exe' 'C:\esp\v6.0.1\esp-idf\tools\idf.py' '-p' 'COM3'"...
+2026-08-24 11:05:48 ESP-ROM:esp32s3-20210327
+2026-08-24 11:05:48 Build:Mar 27 2021
+2026-08-24 11:05:48 rst:0x1 (POWERON),boot:0x9 (SPI_FAST_FLASH_BOOT)
+2026-08-24 11:05:48 SPIWP:0xee
+2026-08-24 11:05:48 mode:DIO, clock div:1
+2026-08-24 11:05:48 load:0x3fce2820,len:0x14f0
+2026-08-24 11:05:48 load:0x403c8700,len:0xda0
+2026-08-24 11:05:48 --- 0x403c8700: _stext at ??:?
+load:0x403cb700,len:0x2f58
+2026-08-24 11:05:48 entry 0x403c8908
+2026-08-24 11:05:48 --- 0x403c8908: call_start_cpu0 at C:/esp/v6.0.1/esp-idf/components/bootloader/subproject/main/bootloader_start.c:27
+I (24) boot: ESP-IDF v6.0.1 2nd stage bootloader
+2026-08-24 11:05:48 I (25) boot: compile time Aug 24 2026 10:46:05
+2026-08-24 11:05:48 I (25) boot: Multicore bootloader
+2026-08-24 11:05:48 I (25) boot: chip revision: v0.2
+2026-08-24 11:05:48 I (28) boot: efuse block revision: v1.4
+2026-08-24 11:05:48 I (31) boot.esp32s3: Boot SPI Speed : 80MHz
+2026-08-24 11:05:48 I (35) boot.esp32s3: SPI Mode       : DIO
+2026-08-24 11:05:48 I (39) boot.esp32s3: SPI Flash Size : 16MB
+2026-08-24 11:05:48 I (43) boot: Enabling RNG early entropy source...
+2026-08-24 11:05:48 I (47) boot: Partition Table:
+2026-08-24 11:05:48 I (50) boot: ## Label            Usage          Type ST Offset   Length
+2026-08-24 11:05:48 I (56) boot:  0 nvs              WiFi data        01 02 00009000 00006000
+2026-08-24 11:05:48 I (63) boot:  1 phy_init         RF data          01 01 0000f000 00001000
+2026-08-24 11:05:48 I (69) boot:  2 factory          factory app      00 00 00010000 00200000
+2026-08-24 11:05:48 I (76) boot:  3 storage          Unknown data     01 82 00210000 00c00000
+2026-08-24 11:05:48 I (82) boot: End of partition table
+2026-08-24 11:05:48 I (86) esp_image: segment 0: paddr=00010020 vaddr=3c0f0020 size=29c08h (171016) map
+2026-08-24 11:05:48 I (124) esp_image: segment 1: paddr=00039c30 vaddr=3fc9da00 size=063e8h ( 25576) load
+2026-08-24 11:05:48 I (129) esp_image: segment 2: paddr=00040020 vaddr=42000020 size=e44bch (935100) map
+2026-08-24 11:05:48 I (297) esp_image: segment 3: paddr=001244e4 vaddr=3fca3de8 size=283d0h (164816) load
+2026-08-24 11:05:48 I (330) esp_image: segment 4: paddr=0014c8bc vaddr=40374000 size=19988h (104840) load
+2026-08-24 11:05:48 I (354) esp_image: segment 5: paddr=0016624c vaddr=50000000 size=00024h (    36) load
+2026-08-24 11:05:48 I (373) boot: Loaded app from partition at offset 0x10000
+2026-08-24 11:05:48 I (374) boot: Disabling RNG early entropy source...
+2026-08-24 11:05:48 I (384) octal_psram: vendor id    : 0x0d (AP)
+2026-08-24 11:05:48 I (384) octal_psram: dev id       : 0x02 (generation 3)
+2026-08-24 11:05:48 I (384) octal_psram: density      : 0x03 (64 Mbit)
+2026-08-24 11:05:48 I (386) octal_psram: good-die     : 0x01 (Pass)
+2026-08-24 11:05:48 I (390) octal_psram: Latency      : 0x01 (Fixed)
+2026-08-24 11:05:48 I (395) octal_psram: VCC          : 0x01 (3V)
+2026-08-24 11:05:48 I (399) octal_psram: SRF          : 0x01 (Fast Refresh)
+2026-08-24 11:05:48 I (404) octal_psram: BurstType    : 0x01 (Hybrid Wrap)
+2026-08-24 11:05:48 I (409) octal_psram: BurstLen     : 0x01 (32 Byte)
+2026-08-24 11:05:48 I (413) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)
+2026-08-24 11:05:48 I (418) octal_psram: DriveStrength: 0x00 (1/1)
+2026-08-24 11:05:48 I (423) MSPI Timing: Enter psram timing tuning
+2026-08-24 11:05:48 I (427) esp_psram: Found 8MB PSRAM device
+2026-08-24 11:05:48 I (430) esp_psram: Speed: 80MHz
+2026-08-24 11:05:48 I (433) cpu_start: Multicore app
+2026-08-24 11:05:49 I (869) esp_psram: SPI SRAM memory test OK
+2026-08-24 11:05:49 I (877) cpu_start: GPIO 44 and 43 are used as console UART I/O pins
+2026-08-24 11:05:49 I (878) cpu_start: Pro cpu start user code
+2026-08-24 11:05:49 I (878) cpu_start: cpu freq: 240000000 Hz
+2026-08-24 11:05:49 I (880) app_init: Application information:
+2026-08-24 11:05:49 I (883) app_init: Project name:     esp_idf_ecg_migration
+2026-08-24 11:05:49 I (889) app_init: App version:      1
+2026-08-24 11:05:49 I (892) app_init: Compile time:     Aug 24 2026 10:56:41
+2026-08-24 11:05:49 I (897) app_init: ELF file SHA256:  f7b4c82f5...
+2026-08-24 11:05:49 I (901) app_init: ESP-IDF:          v6.0.1
+2026-08-24 11:05:49 I (905) efuse_init: Min chip rev:     v0.0
+2026-08-24 11:05:49 I (909) efuse_init: Max chip rev:     v0.99 
+2026-08-24 11:05:49 I (913) efuse_init: Chip rev:         v0.2
+2026-08-24 11:05:49 I (917) heap_init: Initializing. RAM available for dynamic allocation:
+2026-08-24 11:05:49 I (923) heap_init: At 3FCD2CD0 len 00016A40 (90 KiB): RAM
+2026-08-24 11:05:49 I (928) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM
+2026-08-24 11:05:49 I (933) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM
+2026-08-24 11:05:49 I (938) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM
+2026-08-24 11:05:49 I (944) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator
+2026-08-24 11:05:49 I (951) spi_flash: detected chip: gd
+2026-08-24 11:05:49 I (954) spi_flash: flash io: dio
+2026-08-24 11:05:49 I (957) sleep_gpio: Configure to isolate all GPIO pins in sleep state
+2026-08-24 11:05:49 I (963) sleep_gpio: Enable automatic switching of GPIO sleep configuration
+2026-08-24 11:05:49 I (969) coexist: coex firmware version: b00e8cb
+2026-08-24 11:05:49 I (974) coexist: coexist rom version e7ae62f
+2026-08-24 11:05:49 I (978) main_task: Started on CPU0
+2026-08-24 11:05:49 I (994) esp_psram: Reserving pool of 32K of internal memory for DMA/internal allocations
+2026-08-24 11:05:49 I (995) main_task: Calling app_main()
+2026-08-24 11:05:49 [ecg_ai] init OK, arena used=50948, in_scale=0.06390853 zp=6
+2026-08-24 11:05:49 W (1139) SPIFFS: mount failed, -10025. formatting...

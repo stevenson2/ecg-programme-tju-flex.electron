@@ -1,0 +1,208 @@
+[1/109] Building C object esp-idf/esp_driver_cam/CMakeFiles/__idf_esp_driver_cam.dir/dvp_share_ctrl.c.obj
+[2/109] Building C object esp-idf/esp_driver_cam/CMakeFiles/__idf_esp_driver_cam.dir/dvp/src/esp_cam_ctlr_dvp_gdma.c.obj
+[3/109] Building CXX object esp-idf/ecg_ble/CMakeFiles/__idf_ecg_ble.dir/src/ble.cpp.obj
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:81:9: warning: missing initializer for member 'ble_gatt_chr_def::access_cb' [-Wmissing-field-initializers]
+   81 |         },
+      |         ^
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:81:9: warning: missing initializer for member 'ble_gatt_chr_def::arg' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:81:9: warning: missing initializer for member 'ble_gatt_chr_def::descriptors' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:81:9: warning: missing initializer for member 'ble_gatt_chr_def::min_key_size' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:81:9: warning: missing initializer for member 'ble_gatt_chr_def::cpfd' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:81:9: warning: missing initializer for member 'ble_gatt_chr_def::arg' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:81:9: warning: missing initializer for member 'ble_gatt_chr_def::descriptors' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:81:9: warning: missing initializer for member 'ble_gatt_chr_def::min_key_size' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:81:9: warning: missing initializer for member 'ble_gatt_chr_def::cpfd' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:81:9: warning: missing initializer for member 'ble_gatt_chr_def::access_cb' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:81:9: warning: missing initializer for member 'ble_gatt_chr_def::arg' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:81:9: warning: missing initializer for member 'ble_gatt_chr_def::descriptors' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:81:9: warning: missing initializer for member 'ble_gatt_chr_def::flags' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:81:9: warning: missing initializer for member 'ble_gatt_chr_def::min_key_size' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:81:9: warning: missing initializer for member 'ble_gatt_chr_def::val_handle' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:81:9: warning: missing initializer for member 'ble_gatt_chr_def::cpfd' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:84:1: warning: missing initializer for member 'ble_gatt_svc_def::includes' [-Wmissing-field-initializers]
+   84 | };
+      | ^
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:84:1: warning: missing initializer for member 'ble_gatt_svc_def::uuid' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:84:1: warning: missing initializer for member 'ble_gatt_svc_def::includes' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:84:1: warning: missing initializer for member 'ble_gatt_svc_def::characteristics' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp: In function 'void start_advertising()':
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::uuids16' [-Wmissing-field-initializers]
+   87 |     struct ble_hs_adv_fields fields = {0};
+      |                                         ^
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::num_uuids16' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::uuids16_is_complete' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::uuids32' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::num_uuids32' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::uuids32_is_complete' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::uuids128' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::num_uuids128' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::uuids128_is_complete' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::name' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::name_len' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::name_is_complete' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::tx_pwr_lvl' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::tx_pwr_lvl_is_present' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::slave_itvl_range' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::sm_tk_value' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::sm_tk_value_is_present' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::sm_oob_flag' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::sm_oob_flag_is_present' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::sol_uuids16' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::sol_num_uuids16' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::sol_uuids128' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::sol_num_uuids128' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid16' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid16_len' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::public_tgt_addr' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::num_public_tgt_addrs' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::random_tgt_addr' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::num_random_tgt_addrs' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::appearance' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::appearance_is_present' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::adv_itvl' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::adv_itvl_is_present' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::device_addr' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::device_addr_type' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::device_addr_is_present' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::sol_uuids32' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::sol_num_uuids32' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::le_role' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::le_role_is_present' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid32' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid32_len' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid128' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid128_len' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::uri' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::uri_len' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::le_supp_feat' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::le_supp_feat_is_present' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::adv_itvl_long' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::adv_itvl_long_is_present' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::mfg_data' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:87:41: warning: missing initializer for member 'ble_hs_adv_fields::mfg_data_len' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:88:46: warning: missing initializer for member 'ble_gap_adv_params::disc_mode' [-Wmissing-field-initializers]
+   88 |     struct ble_gap_adv_params adv_params = {0};
+      |                                              ^
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:88:46: warning: missing initializer for member 'ble_gap_adv_params::itvl_min' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:88:46: warning: missing initializer for member 'ble_gap_adv_params::itvl_max' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:88:46: warning: missing initializer for member 'ble_gap_adv_params::channel_map' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:88:46: warning: missing initializer for member 'ble_gap_adv_params::filter_policy' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:88:46: warning: missing initializer for member 'ble_gap_adv_params::high_duty_cycle' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp: At global scope:
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:104:12: warning: 'int gap_event(ble_gap_event*, void*)' defined but not used [-Wunused-function]
+  104 | static int gap_event(struct ble_gap_event *event, void *arg) {
+      |            ^~~~~~~~~
+[4/109] Building C object esp-idf/esp_driver_cam/CMakeFiles/__idf_esp_driver_cam.dir/dvp/src/esp_cam_ctlr_dvp_cam.c.obj
+[5/109] Linking C static library esp-idf\esp_driver_i2c\libesp_driver_i2c.a
+[6/109] Linking C static library esp-idf\esp_hal_ledc\libesp_hal_ledc.a
+[7/109] Linking C static library esp-idf\esp_hal_mcpwm\libesp_hal_mcpwm.a
+[8/109] Building C object esp-idf/esp_driver_ledc/CMakeFiles/__idf_esp_driver_ledc.dir/src/ledc.c.obj
+[9/109] Building C object esp-idf/esp_driver_mcpwm/CMakeFiles/__idf_esp_driver_mcpwm.dir/src/mcpwm_cap.c.obj
+[10/109] Building C object esp-idf/esp_driver_mcpwm/CMakeFiles/__idf_esp_driver_mcpwm.dir/src/mcpwm_cmpr.c.obj
+[11/109] Building C object esp-idf/esp_driver_mcpwm/CMakeFiles/__idf_esp_driver_mcpwm.dir/src/mcpwm_com.c.obj
+[12/109] Building C object esp-idf/esp_driver_mcpwm/CMakeFiles/__idf_esp_driver_mcpwm.dir/src/mcpwm_fault.c.obj
+[13/109] Building C object esp-idf/esp_driver_mcpwm/CMakeFiles/__idf_esp_driver_mcpwm.dir/src/mcpwm_gen.c.obj
+[14/109] Building C object esp-idf/esp_driver_mcpwm/CMakeFiles/__idf_esp_driver_mcpwm.dir/src/mcpwm_oper.c.obj
+[15/109] Building C object esp-idf/esp_driver_mcpwm/CMakeFiles/__idf_esp_driver_mcpwm.dir/src/mcpwm_sync.c.obj
+[16/109] Linking C static library esp-idf\esp_hal_pcnt\libesp_hal_pcnt.a
+[17/109] Building C object esp-idf/esp_driver_mcpwm/CMakeFiles/__idf_esp_driver_mcpwm.dir/src/mcpwm_timer.c.obj
+[18/109] Linking C static library esp-idf\esp_hal_rmt\libesp_hal_rmt.a
+[19/109] Building C object esp-idf/esp_driver_pcnt/CMakeFiles/__idf_esp_driver_pcnt.dir/src/pulse_cnt.c.obj
+[20/109] Building C object esp-idf/esp_driver_rmt/CMakeFiles/__idf_esp_driver_rmt.dir/src/rmt_common.c.obj
+[21/109] Building C object esp-idf/esp_driver_rmt/CMakeFiles/__idf_esp_driver_rmt.dir/src/rmt_encoder.c.obj
+[22/109] Building C object esp-idf/esp_driver_rmt/CMakeFiles/__idf_esp_driver_rmt.dir/src/rmt_encoder_bytes.c.obj
+[23/109] Building C object esp-idf/esp_driver_rmt/CMakeFiles/__idf_esp_driver_rmt.dir/src/rmt_encoder_copy.c.obj
+[24/109] Building C object esp-idf/esp_driver_rmt/CMakeFiles/__idf_esp_driver_rmt.dir/src/rmt_encoder_simple.c.obj
+[25/109] Building C object esp-idf/esp_driver_rmt/CMakeFiles/__idf_esp_driver_rmt.dir/src/rmt_rx.c.obj
+[26/109] Building C object esp-idf/esp_driver_rmt/CMakeFiles/__idf_esp_driver_rmt.dir/src/rmt_tx.c.obj
+[27/109] Building C object esp-idf/esp_driver_sdm/CMakeFiles/__idf_esp_driver_sdm.dir/src/sdm.c.obj
+[28/109] Linking C static library esp-idf\esp_driver_sdmmc\libesp_driver_sdmmc.a
+[29/109] Linking C static library esp-idf\esp_driver_sdspi\libesp_driver_sdspi.a
+[30/109] Building C object esp-idf/esp_driver_touch_sens/CMakeFiles/__idf_esp_driver_touch_sens.dir/common/touch_sens_common.c.obj
+[31/109] Building C object esp-idf/esp_driver_touch_sens/CMakeFiles/__idf_esp_driver_touch_sens.dir/hw_ver2/touch_version_specific.c.obj
+[32/109] Building C object esp-idf/esp_driver_tsens/CMakeFiles/__idf_esp_driver_tsens.dir/src/temperature_sensor.c.obj
+[33/109] Building C object esp-idf/esp_driver_twai/CMakeFiles/__idf_esp_driver_twai.dir/esp_twai.c.obj
+[34/109] Building C object esp-idf/esp_driver_twai/CMakeFiles/__idf_esp_driver_twai.dir/esp_twai_onchip.c.obj
+[35/109] Building C object esp-idf/esp_eth/CMakeFiles/__idf_esp_eth.dir/src/esp_eth.c.obj
+[36/109] Building C object esp-idf/esp_eth/CMakeFiles/__idf_esp_eth.dir/src/phy/esp_eth_phy_802_3.c.obj
+[37/109] Building C object esp-idf/esp_eth/CMakeFiles/__idf_esp_eth.dir/src/esp_eth_netif_glue.c.obj
+[38/109] Linking C static library esp-idf\esp_hal_lcd\libesp_hal_lcd.a
+[39/109] Building C object esp-idf/esp_hid/CMakeFiles/__idf_esp_hid.dir/src/esp_hidd.c.obj
+[40/109] Building C object esp-idf/esp_hid/CMakeFiles/__idf_esp_hid.dir/src/esp_hid_common.c.obj
+[41/109] Building C object esp-idf/esp_hid/CMakeFiles/__idf_esp_hid.dir/src/esp_hidh.c.obj
+[42/109] Building C object esp-idf/esp_hid/CMakeFiles/__idf_esp_hid.dir/src/nimble_hidd.c.obj
+[43/109] Building C object esp-idf/esp_hid/CMakeFiles/__idf_esp_hid.dir/src/nimble_hidh.c.obj
+[44/109] Linking C static library esp-idf\esp_https_server\libesp_https_server.a
+[45/109] Building C object esp-idf/esp_lcd/CMakeFiles/__idf_esp_lcd.dir/src/esp_lcd_common.c.obj
+[46/109] Building C object esp-idf/esp_lcd/CMakeFiles/__idf_esp_lcd.dir/src/esp_lcd_panel_io.c.obj
+[47/109] Building C object esp-idf/esp_lcd/CMakeFiles/__idf_esp_lcd.dir/src/esp_lcd_panel_ssd1306.c.obj
+[48/109] Building C object esp-idf/esp_lcd/CMakeFiles/__idf_esp_lcd.dir/src/esp_lcd_panel_st7789.c.obj
+[49/109] Building C object esp-idf/esp_lcd/CMakeFiles/__idf_esp_lcd.dir/src/esp_lcd_panel_ops.c.obj
+[50/109] Building C object esp-idf/esp_lcd/CMakeFiles/__idf_esp_lcd.dir/i2c/esp_lcd_panel_io_i2c.c.obj
+[51/109] Building C object esp-idf/esp_lcd/CMakeFiles/__idf_esp_lcd.dir/spi/esp_lcd_panel_io_spi.c.obj
+[52/109] Building C object esp-idf/esp_lcd/CMakeFiles/__idf_esp_lcd.dir/i80/esp_lcd_panel_io_i80.c.obj
+[53/109] Linking C static library esp-idf\protocomm\libprotocomm.a
+[54/109] Building C object esp-idf/esp_lcd/CMakeFiles/__idf_esp_lcd.dir/rgb/esp_lcd_panel_rgb.c.obj
+[55/109] Building C object esp-idf/esp_local_ctrl/CMakeFiles/__idf_esp_local_ctrl.dir/src/esp_local_ctrl.c.obj
+[56/109] Building C object esp-idf/esp_local_ctrl/CMakeFiles/__idf_esp_local_ctrl.dir/src/esp_local_ctrl_handler.c.obj
+[57/109] Building C object esp-idf/esp_local_ctrl/CMakeFiles/__idf_esp_local_ctrl.dir/proto-c/esp_local_ctrl.pb-c.c.obj
+[58/109] Building C object esp-idf/esp_local_ctrl/CMakeFiles/__idf_esp_local_ctrl.dir/src/esp_local_ctrl_transport_httpd.c.obj
+[59/109] Building C object esp-idf/esp_local_ctrl/CMakeFiles/__idf_esp_local_ctrl.dir/src/esp_local_ctrl_transport_ble.c.obj
+[60/109] Linking C static library esp-idf\wear_levelling\libwear_levelling.a
+[61/109] Building C object esp-idf/fatfs/CMakeFiles/__idf_fatfs.dir/diskio/diskio_rawflash.c.obj
+[62/109] Building C object esp-idf/fatfs/CMakeFiles/__idf_fatfs.dir/diskio/diskio.c.obj
+[63/109] Building C object esp-idf/fatfs/CMakeFiles/__idf_fatfs.dir/diskio/diskio_wl.c.obj
+[64/109] Building C object esp-idf/fatfs/CMakeFiles/__idf_fatfs.dir/src/ff.c.obj
+[65/109] Building C object esp-idf/fatfs/CMakeFiles/__idf_fatfs.dir/src/ffunicode.c.obj
+[66/109] Building C object esp-idf/fatfs/CMakeFiles/__idf_fatfs.dir/port/freertos/ffsystem.c.obj
+[67/109] Building C object esp-idf/fatfs/CMakeFiles/__idf_fatfs.dir/diskio/diskio_sdmmc.c.obj
+[68/109] Building C object esp-idf/fatfs/CMakeFiles/__idf_fatfs.dir/vfs/vfs_fat.c.obj
+[69/109] Building C object esp-idf/fatfs/CMakeFiles/__idf_fatfs.dir/vfs/vfs_fat_sdmmc.c.obj
+[70/109] Building C object esp-idf/fatfs/CMakeFiles/__idf_fatfs.dir/vfs/vfs_fat_spiflash.c.obj
+[71/109] Building C object esp-idf/perfmon/CMakeFiles/__idf_perfmon.dir/xtensa_perfmon_access.c.obj
+[72/109] Building C object esp-idf/perfmon/CMakeFiles/__idf_perfmon.dir/xtensa_perfmon_apis.c.obj
+[73/109] Building C object esp-idf/perfmon/CMakeFiles/__idf_perfmon.dir/xtensa_perfmon_masks.c.obj
+[74/109] Building C object esp-idf/rt/CMakeFiles/__idf_rt.dir/FreeRTOS_POSIX_mqueue.c.obj
+[75/109] Linking C static library esp-idf\ecg_ai\libecg_ai.a
+[76/109] Building C object esp-idf/rt/CMakeFiles/__idf_rt.dir/FreeRTOS_POSIX_utils.c.obj
+[77/109] Linking C static library esp-idf\ecg_wifi\libecg_wifi.a
+[78/109] Linking C static library esp-idf\ecg_core\libecg_core.a
+[79/109] Linking C static library esp-idf\ecg_ble\libecg_ble.a
+[80/109] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/model.cc.obj
+[81/109] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/main.cc.obj
+[82/109] Linking C static library esp-idf\esp_driver_gptimer\libesp_driver_gptimer.a
+[83/109] Linking C static library esp-idf\cmock\libcmock.a
+[84/109] Linking C static library esp-idf\esp_blockdev_util\libesp_blockdev_util.a
+[85/109] Linking C static library esp-idf\esp_driver_cam\libesp_driver_cam.a
+[86/109] Linking C static library esp-idf\esp_driver_ledc\libesp_driver_ledc.a
+[87/109] Linking C static library esp-idf\esp_driver_mcpwm\libesp_driver_mcpwm.a
+[88/109] Linking C static library esp-idf\esp_driver_pcnt\libesp_driver_pcnt.a
+[89/109] Linking C static library esp-idf\esp_driver_rmt\libesp_driver_rmt.a
+[90/109] Linking C static library esp-idf\esp_driver_sdm\libesp_driver_sdm.a
+[91/109] Linking C static library esp-idf\esp_driver_touch_sens\libesp_driver_touch_sens.a
+[92/109] Linking C static library esp-idf\esp_driver_tsens\libesp_driver_tsens.a
+[93/109] Linking C static library esp-idf\esp_driver_twai\libesp_driver_twai.a
+[94/109] Linking C static library esp-idf\esp_eth\libesp_eth.a
+[95/109] Linking C static library esp-idf\esp_hid\libesp_hid.a
+[96/109] Linking C static library esp-idf\esp_lcd\libesp_lcd.a
+[97/109] Linking C static library esp-idf\esp_local_ctrl\libesp_local_ctrl.a
+[98/109] Linking C static library esp-idf\fatfs\libfatfs.a
+[99/109] Linking C static library esp-idf\perfmon\libperfmon.a
+[100/109] Linking C static library esp-idf\rt\librt.a
+[101/109] Linking C static library esp-idf\main\libmain.a
+[102/109] Performing build step for 'bootloader'
+[1/1] C:\Windows\system32\cmd.exe /C "cd /D C:\esp\esp_idf_ecg_migration\build\bootloader && C:\Users\cai\.espressif\python_env\idf6.0_py3.13_env\Scripts\python.exe C:/esp/v6.0.1/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 C:/esp/esp_idf_ecg_migration/build/bootloader/bootloader.bin"
+Bootloader binary size 0x5240 bytes. 0x2dc0 bytes (36%) free.
+[103/109] No install step for 'bootloader'
+[104/109] Completed 'bootloader'
+[105/109] Generating esp-idf/esp_system/ld/sections.ld
+[106/109] Building C object CMakeFiles/esp_idf_ecg_migration.elf.dir/project_elf_src_esp32s3.c.obj
+[107/109] Linking CXX executable esp_idf_ecg_migration.elf
+[108/109] Generating binary image from built executable
+esptool v5.3.0
+Creating ESP32-S3 image...
+Merged 3 ELF sections.
+Successfully created ESP32-S3 image.
+Generated C:/esp/esp_idf_ecg_migration/build/esp_idf_ecg_migration.bin
+[109/109] C:\Windows\system32\cmd.exe /C "cd /D C:\esp\esp_idf_ecg_migration\build && C:\Users\cai\.espressif\python_env\idf6.0_py3.13_env\Scripts\python.exe C:/esp/v6.0.1/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app C:/esp/esp_idf_ecg_migration/build/partition_table/partition-table.bin C:/esp/esp_idf_ecg_migration/build/esp_idf_ecg_migration.bin"
+esp_idf_ecg_migration.bin binary size 0x88d70 bytes. Smallest app partition is 0x100000 bytes. 0x77290 bytes (47%) free.

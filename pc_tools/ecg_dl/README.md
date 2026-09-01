@@ -203,3 +203,22 @@
 2. 移动/删除任何脚本前，先全仓库 grep 文件名（md/sh/py/json）确认零引用。
 3. 被 FINAL_RESULTS/TUNING_HISTORY 点名的脚本永久保留（证据链）。
 4. 一次性真机调试脚本用完即移入 `_archive_oneoff/` 并登记 MANIFEST。
+
+## O. ECGFounder 离线特征 / 硬负样本挖掘（2026-08-24 起）
+
+| 脚本 | 用途 | 状态 |
+|---|---|---|
+| `ecgfounder_embed_1lead.py` | 用 ECGFounder 1-lead checkpoint 提取 PTB-XL/真实 AFE 10s 段 1024 维特征 | 🟢 |
+| `ecgfounder_hardmine.py` | 计算真实 AFE↔公共异常/正常距离，输出硬负样本候选 JSON/CSV | 🟢 |
+| `ecgfounder_hardneg_beats.py` | 将 top 异常候选映射为 exp7c 部署链 250 点拍 | 🟢 |
+| `ecgfounder_normal_beats.py` | 将 top 真实相似正常候选映射为 250 点拍 | 🟢 |
+| `finetune_exp7c_ecgfounder*.py` | ECGFounder 候选数据 + exp7c 后训练实验 | 🟢 实验中 |
+
+依赖：ECGFounder 权重位于 `项目根/../ECGFounder/checkpoint/`，使用 CPU PyTorch 2.4。
+
+| `qat_exp7c_v3.py` / `qat_exp7c_v3b.py` | ECGFounder v3 路线 QAT 导出 | 🟢 |
+| `eval_int8_ecgfounder_v3.py` | ECGFounder v3 QAT INT8 评估 | 🟢 |
+
+| `audit_v3b_leakage.py` | v3b/v4/v5 患者级泄漏审计 | 🔵 |
+| `qat_exp7c_v6_clean.py` | 无泄漏 clean QAT（exp7b base + train-only） | 🟢 |
+| `eval_event_clean_v6_val_test.py` | clean v6 验证选参/测试冻结事件评估 | 🟢 |

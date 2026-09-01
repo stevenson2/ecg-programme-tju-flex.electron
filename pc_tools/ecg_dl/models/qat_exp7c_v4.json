@@ -1,0 +1,13 @@
+{
+  "date": "2026-08-25 00:50:01",
+  "purpose": "exp7c_ecgfounder_v3 QAT -> INT8",
+  "data": {
+    "train": 5424,
+    "real": 311,
+    "pub_normal": 2360,
+    "hard_normal": 103,
+    "epochs": 10
+  },
+  "tflite_size": 127600,
+  "tflite_path": "models/ecg_model_exp7c_ecgfounder_v4_qat_int8.tflite"
+}

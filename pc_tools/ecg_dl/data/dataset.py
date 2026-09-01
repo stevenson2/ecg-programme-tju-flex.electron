@@ -375,9 +375,9 @@ def train_val_test_split(
         val_recs = set(unique_records[n_test:n_test+n_val])
         train_recs = set(unique_records[n_test+n_val:])
         
-        train_mask = np.array([rid in train_recs for rid in record_ids])
-        val_mask = np.array([rid in val_recs for rid in record_ids])
-        test_mask = np.array([rid in test_recs for rid in record_ids])
+        train_mask = np.isin(record_ids, list(train_recs))
+        val_mask = np.isin(record_ids, list(val_recs))
+        test_mask = np.isin(record_ids, list(test_recs))
         
         x_train, y_train = beats[train_mask], labels[train_mask]
         x_val, y_val = beats[val_mask], labels[val_mask]
@@ -531,8 +531,8 @@ def make_domain_balanced_dataset(
     if nb >= batch_size or na <= 0:
         raise ValueError(f"frac_b={frac_b} 导致 batch 划分无效")
 
-    x_a = add_channel_dim(x_a.astype(np.float32))
-    x_b = add_channel_dim(x_b.astype(np.float32))
+    x_a = add_channel_dim(np.asarray(x_a, dtype=np.float32))
+    x_b = add_channel_dim(np.asarray(x_b, dtype=np.float32))
     y_a = tf.keras.utils.to_categorical(y_a, num_classes=2)
     y_b = tf.keras.utils.to_categorical(y_b, num_classes=2)
 
@@ -591,8 +591,8 @@ def make_domain_balanced_dataset_kd(
     if nb >= batch_size or na <= 0:
         raise ValueError(f"frac_b={frac_b} 导致 batch 划分无效")
 
-    x_a = add_channel_dim(x_a.astype(np.float32))
-    x_b = add_channel_dim(x_b.astype(np.float32))
+    x_a = add_channel_dim(np.asarray(x_a, dtype=np.float32))
+    x_b = add_channel_dim(np.asarray(x_b, dtype=np.float32))
     # y_a/y_b 已是 (N,2) onehot (caller 已 to_categorical), 不再次 one-hot; cast float32 后
     # 与 z_a/z_b (N,2) concat 产出 (N,4) KD 目标: [onehot(2) | teacher_logits(2)]
     y_a = np.concatenate(
@@ -901,6 +901,11 @@ def prepare_datasets(
     else:
         splits = train_val_test_split(data["beats"], data["labels"],
                                        record_ids=data.get("record_ids"))
+
+
+    # 划分结果已按布尔掩码拷贝成独立数组；尽快释放合并后的全量数组，
+    # 再加载 PTB / 构建 tf.data，避免约 512MB+ 的同 dtype 峰值内存。
+    del data
 
     if use_ptb_beat and not domain_balanced:
         # PTB 受控配比进训练集: val/test 保持 MIT+INCART 原协议。

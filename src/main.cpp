@@ -6,6 +6,9 @@
 #include "signal_generator/ecg_simulator.h"
 #include "signal_generator/ecg_replay.h"
 #include "adc_afe/afe_hal.h"
+#include "ads1292r/ads1292r.h"
+#include "respiration/respiration.h"
+#include "respiration_ecg/respiration_ecg.h"
 #include "heartrate/heartrate.h"
 #include "rhythm_safety/rhythm_safety.h"
 #include "af_detect/af_detect.h"
@@ -93,6 +96,30 @@
 #define AFE_LOD_P_PIN       GPIO_NUM_5   /* LOD+ (+IN 导联脱落检测) */
 #define AFE_LOD_N_PIN       GPIO_NUM_6   /* LOD- (-IN 导联脱落检测) */
 
+/* ======================== ADS1292R 引脚接口 (ESP32-S3) ======================== */
+/* 替换 AD8232 后的 ADS1292R 数字引脚映射:
+ *   ADS_START  -> IO8
+ *   ADS_RST    -> IO9   (PWDN/RESET# 低有效)
+ *   ADS_DRDY   -> IO14
+ *   SPI_MISO   -> IO13
+ *   SPI_SCLK   -> IO12
+ *   SPI_MOSI   -> IO11
+ *   SPI_CS     -> IO10
+ * 这些宏同时是 ads1292r.h 中的物理定义，此处保留别名便于主程序引用。
+ */
+#define ADS_START_PIN       ADS1292R_START_PIN
+#define ADS_RST_PIN         ADS1292R_RESET_PIN
+#define ADS_RESET_PIN       ADS1292R_RESET_PIN
+#define ADS_DRDY_PIN        ADS1292R_DRDY_PIN
+#define ADS_SPI_MISO_PIN    ADS1292R_SPI_MISO
+#define ADS_SPI_SCLK_PIN    ADS1292R_SPI_SCLK
+#define ADS_SPI_MOSI_PIN    ADS1292R_SPI_MOSI
+#define ADS_SPI_CS_PIN      ADS1292R_SPI_CS
+#define SPI_MISO_PIN        ADS1292R_SPI_MISO
+#define SPI_SCLK_PIN        ADS1292R_SPI_SCLK
+#define SPI_MOSI_PIN        ADS1292R_SPI_MOSI
+#define SPI_CS_PIN          ADS1292R_SPI_CS
+
 /* ======================== 输入模式枚举 ======================== */
 typedef enum {
     SOURCE_SIMULATOR = 0,    /**< 模拟发生器模式 (默认, 无硬件也可运行) */
@@ -100,11 +127,22 @@ typedef enum {
     SOURCE_AFE_REAL  = 2     /**< 真实 AFE 采集模式 */
 } InputSource;
 
+/* ======================== 真实 AFE 芯片类型 ======================== */
+typedef enum {
+    AFE_TYPE_AD8232   = 0,   /**< AD8232 模拟前端: ESP32 ADC 读模拟输出 */
+    AFE_TYPE_ADS1292R = 1    /**< ADS1292R 数字前端: SPI 读双通道 + 呼吸阻抗 */
+} AfeType;
+
+/* 默认使用的真实 AFE 类型; 运行时可用 AFE AD8232 / AFE ADS1292R 命令切换 */
+#ifndef DEFAULT_AFE_TYPE
+#define DEFAULT_AFE_TYPE AFE_TYPE_AD8232
+#endif
+
 /* ======================== BLE 批量打包 ======================== */
 /* 2026-08-10: 9 列帧后 4 帧/包达 25KB/s 超 BLE 4.2 实际吞吐 → 波形错乱;
  * 改为 2 帧/包 (12.5KB/s 安全区), 保留 9 列报警链路 */
 #define BLE_BATCH_SIZE   2            /* 每2帧合包一次 */
-#define BLE_BUF_SIZE     (64 * BLE_BATCH_SIZE + 4)  /* 约 132 字节 buffer */
+#define BLE_BUF_SIZE     (96 * BLE_BATCH_SIZE + 4)  /* 约 196 字节 buffer (含呼吸列) */
 static char s_bleBuf[BLE_BUF_SIZE];
 static int  s_bleBufLen = 0;
 
@@ -167,6 +205,7 @@ static bool  s_flatline = false; /* 停搏/无信号标志 */
 
 /* 输入模式与按键状态 */
 static InputSource  s_inputMode     = SOURCE_SIMULATOR;
+static AfeType      s_afeType       = DEFAULT_AFE_TYPE;
 static unsigned long s_lastBtnPress = 0;
 static bool         s_btnLastState  = HIGH;   /* 上拉, 默认高电平 */
 
@@ -348,6 +387,53 @@ static bool parseRecorderCommand(const char* cmd, char* reply, size_t replyLen,
         snprintf(reply, replyLen, "WIFI_OFF ok");
         return true;
     }
+    /* AFE 类型切换: AFE AD8232 | AFE ADS1292R | AFE?
+     * 串口和 BLE 共用此解析器, 切换后不影响 WiFi/AI/BLE 数据通路。 */
+    if (strStartsWithIgnoreCase(cmd, "AFE")) {
+        const char* arg = cmd + 3;
+        while (*arg == ' ') arg++;
+        if (strEqualsIgnoreCase(arg, "") || strEqualsIgnoreCase(arg, "?")) {
+            snprintf(reply, replyLen, "AFE %s",
+                     s_afeType == AFE_TYPE_ADS1292R ? "ADS1292R" : "AD8232");
+            return true;
+        }
+        if (strEqualsIgnoreCase(arg, "AD8232")) {
+            s_afeType = AFE_TYPE_AD8232;
+            respReset();
+            respEcgCancelReset();
+            filterReset();
+            aiFilterReset();
+            hrFullReset();
+            ai_inference_reset();
+            for (int i = 0; i < COMB_TAPS; i++) {
+                s_combBuf1[i] = 0.0f;
+                s_combBuf2[i] = 0.0f;
+            }
+            s_combIdx1 = 0; s_combSum1 = 0.0f;
+            s_combIdx2 = 0; s_combSum2 = 0.0f;
+            snprintf(reply, replyLen, "AFE AD8232 ok");
+            return true;
+        }
+        if (strEqualsIgnoreCase(arg, "ADS1292R")) {
+            s_afeType = AFE_TYPE_ADS1292R;
+            respReset();
+            respEcgCancelReset();
+            filterReset();
+            aiFilterReset();
+            hrFullReset();
+            ai_inference_reset();
+            for (int i = 0; i < COMB_TAPS; i++) {
+                s_combBuf1[i] = 0.0f;
+                s_combBuf2[i] = 0.0f;
+            }
+            s_combIdx1 = 0; s_combSum1 = 0.0f;
+            s_combIdx2 = 0; s_combSum2 = 0.0f;
+            snprintf(reply, replyLen, "AFE ADS1292R ok");
+            return true;
+        }
+        snprintf(reply, replyLen, "AFE fail (用法: AFE AD8232 | AFE ADS1292R | AFE?)");
+        return true;
+    }
     /* DIAG 诊断命令 (WiFi beacon 专项, 2026-08-10) — 一次烧录, 运行时切换单变量:
      *   DIAG              → 打印当前诊断配置
      *   DIAG TXP <v>      → AP 发射功率 (0=跳过 setTxPower, 34=8.5dBm, 60=15dBm, 78=19.5dBm)
@@ -364,12 +450,13 @@ static bool parseRecorderCommand(const char* cmd, char* reply, size_t replyLen,
         if (strEqualsIgnoreCase(arg, "") || strEqualsIgnoreCase(arg, "STATUS")) {
             char ip[24];
             ecgWifiDiagStaIp(ip, sizeof(ip));
-            snprintf(reply, replyLen, "DIAG txp=%d ch=%d seq=%d notify=%d ai=%d ovs=%d mode=%d sta=%d ip=%s",
+            snprintf(reply, replyLen, "DIAG txp=%d ch=%d seq=%d notify=%d ai=%d ovs=%d mode=%d sta=%d ip=%s afe=%s",
                      ecgWifiDiagGetTxPower(), ecgWifiDiagGetChannel(),
                      ecgWifiDiagGetSeqSlow() ? 1 : 0, s_bleNotifyDivider,
                      ai_inference_is_enabled() ? 1 : 0,
                      (int)afeHalGetOversample(),
-                     ecgWifiDiagGetMode(), ecgWifiDiagStaStatus(), ip);
+                     ecgWifiDiagGetMode(), ecgWifiDiagStaStatus(), ip,
+                     s_afeType == AFE_TYPE_ADS1292R ? "ADS1292R" : "AD8232");
             return true;
         }
         /* DIAG STA <ssid> <pass> — STA 连接测试 (候选D, 2026-08-10): AP_STA 共存,
@@ -497,6 +584,9 @@ void setup()
 {
     Serial.begin(460800);
 #if ARDUINO_USB_CDC_ON_BOOT
+    /* 同时打开 UART0 (CH343/COM13) 作为调试口 */
+    Serial0.begin(460800);
+    Serial0.println("[系统] UART0 调试口已就绪 (COM13)");
     /* USB-Serial-JTAG 枚举较慢, 等待就绪 (最长 3 秒) */
     unsigned long usbStart = millis();
     while (!Serial && (millis() - usbStart) < 3000) {
@@ -526,7 +616,7 @@ void setup()
     Serial.println("[系统] 心电信号生成器已初始化");
     ecgReplayInit();   /* 数据库回放模式 (MIT-BIH) */
 
-    /* 初始化真实 AFE 模块 (即使当前是模拟模式, 也准备好) */
+    /* 旧 AD8232 ESP32-ADC 初始化保留作诊断/兼容; 真实采样已切换为下方 ADS1292R */
     AFE_HAL_Config afeCfg = {
         .adcPin     = AFE_ADC_PIN,
         .dcBias     = AFE_DC_BIAS,
@@ -547,6 +637,21 @@ void setup()
 
     hrInit();
     Serial.println("[系统] 心率监测器已启动");
+
+    /* 初始化 ADS1292R (真实模式数据源: CH1=呼吸, CH2=ECG) */
+    if (ads1292rInit()) {
+        Serial.println("[系统] ADS1292R 已初始化 (SPI + 呼吸阻抗)");
+    } else {
+        Serial.println("[系统] ADS1292R 初始化失败 — 真实模式下将无数据");
+    }
+    respInit();
+    Serial.println("[系统] 呼吸率检测器已启动");
+    respEcgCancelInit();
+    Serial.println("[系统] 呼吸阻抗辅助 ECG 抗呼吸漂移已启用");
+    Serial.printf("[系统] 默认真实 AFE: %s (命令: AFE AD8232 / AFE ADS1292R)\n",
+                  s_afeType == AFE_TYPE_ADS1292R ? "ADS1292R" : "AD8232");
+    Serial0.printf("[系统] 默认真实 AFE: %s (命令: AFE AD8232 / AFE ADS1292R)\n",
+                   s_afeType == AFE_TYPE_ADS1292R ? "ADS1292R" : "AD8232");
 
     rsInit();   /* T4-8 模块1: 心律安全逻辑 */
     afInit();   /* T4-8 模块3: AF RR 不规则度检测 */
@@ -671,6 +776,8 @@ static void toggleInputMode(void)
     filterReset();
     aiFilterReset();   /* AI 输入链 0.5Hz 高通同步重置 (2026-08-10) */
     hrFullReset();
+    respReset();             /* 重置呼吸率检测器 */
+    respEcgCancelReset();    /* 重置呼吸阻抗 ECG 自适应消除器 */
     ai_inference_reset();  /* 重置 AI 推理缓冲 */
     
     /* v2.2: 复位双级梳状滤波器状态 */
@@ -821,6 +928,9 @@ void loop()
         /* 根据当前输入模式选择数据源 */
         float noisySample;      /* 含 DC 偏置的原始信号 */
         float cleanSample;      /* 纯净/去偏置信号 */
+        float respSample = 0.0f;          /* ADS1292R 呼吸阻抗通道 (V) */
+        float respCancelEst = 0.0f;       /* 本次从 ECG 中减去的呼吸估计分量 (V) */
+        Resp_Result resp = {0, 0.0f, 0, false};  /* 呼吸率检测结果 */
 
         if (s_inputMode == SOURCE_SIMULATOR) {
             /* 模拟模式: ecg_simulator 生成 */
@@ -830,14 +940,35 @@ void loop()
             /* 回放模式: MIT-BIH 数据库段 (2026-08-08) */
             noisySample = ecgReplayNextSample();   /* 真实心电, ±2V */
             cleanSample = noisySample;
+        } else if (s_afeType == AFE_TYPE_ADS1292R) {
+            /* 真实模式-ADS1292R: SPI 读取
+             * CH1 = 呼吸阻抗解调信号, CH2 = ECG。
+             * 若 DRDY 尚未就绪则保留上一帧有效值, 避免因 SPI 时序略抖动产生断崖。
+             */
+            static float s_lastAdsEcg      = 0.0f;
+            static float s_lastAdsResp     = 0.0f;
+            static float s_lastEcgCorrect  = 0.0f;
+            static float s_lastCancelEst   = 0.0f;
+            ADS1292R_Data ads;
+            if (ads1292rRead(&ads)) {
+                s_lastAdsEcg  = ads.ecgVolts;
+                s_lastAdsResp = ads.respVolts;
+                /* 用呼吸阻抗参考对 ECG 做自适应呼吸漂移抑制 */
+                RespEcgCancelResult cancel = respEcgCancelProcess(s_lastAdsEcg, s_lastAdsResp);
+                s_lastEcgCorrect = cancel.correctedEcg;
+                s_lastCancelEst  = cancel.estimate;
+                respCancelEst    = cancel.estimate;
+                resp = respProcess(s_lastAdsResp);   /* 仅对新数据做呼吸率/周期检测 */
+            }
+            noisySample = s_lastEcgCorrect + DC_OFFSET_REMOVE; /* 已做呼吸抑制 */
+            cleanSample = s_lastEcgCorrect;
+            respSample  = s_lastAdsResp;
         } else {
-            /* 真实模式: ADC 采集 — 单次读取 (2026-08-14 根治 336Hz):
-             * 原 afeHalReadSample + afeHalReadECG 双重读取 = 每帧 2×4=8 次
-             * analogRead, 拖慢主循环致 ~336Hz; 改为单次读取, clean 由同一
-             * 采样值减 dcBias 导出 (与 afeHalReadECG 语义等价, 且 noisy/clean
-             * 严格同源更正确)。 */
+            /* 真实模式-AD8232: 原 ESP32 ADC 采集路径 */
             noisySample = afeHalReadSample();        /* 含 dcBias */
             cleanSample = noisySample - AFE_DC_BIAS; /* 已去偏置 */
+            respSample  = 0.0f;
+            respCancelEst = 0.0f;
         }
 
         /* ======== 步骤2：去除直流偏置，统一显示基准 ======== */
@@ -960,8 +1091,10 @@ void loop()
         ecgWifiProcess();
 
         /* ======== 步骤4：通过 BLE 发送 (默认 125Hz, 1帧/Notify; DIAG NOTIFY 可调) ======== */
-        /* 每帧格式: clean,noisy,filtered,bpm,true_bpm,sqi,motion,abnormal,confidence;
-         * 与串口 9 列一致 (2026-08-10 修复: 原仅 5 列, App 收不到 abnormal 致报警永不触发);
+        /* 每帧格式: clean,noisy,filtered,bpm,true_bpm,sqi,motion,abnormal,confidence,
+         *           resp,resp_bpm,lead_off,resp_cancel；
+         * 前 9 列与串口/旧 App 兼容，后 4 列为 ADS1292R 呼吸阻抗、导联脱落与呼吸抑制量
+         * (2026-08-10 修复: 原仅 5 列, App 收不到 abnormal 致报警永不触发);
          * abnormal/confidence 只读统一锁存 (updateUnifiedAlarm 每帧合并 AI/VF/AF/停搏/
          * 过缓过速/flatline; AI 结果仅由 updateUnifiedAlarm 消费, 锁存 5 秒两路径同口径)
          * 2026-08-10 修复2: 发送率 500Hz→250Hz (每 2 帧发 1 帧)。
@@ -975,12 +1108,16 @@ void loop()
             uint8_t trueBPM = (s_inputMode == SOURCE_SIMULATOR)
                               ? ecgSimulatorGetTrueBPM() : 0;
             int len = snprintf(s_bleBuf, sizeof(s_bleBuf),
-                               "%.3f,%.3f,%.3f,%u,%u,%.2f,%u,%u,%.2f;",
+                               "%.3f,%.3f,%.3f,%u,%u,%.2f,%u,%u,%.2f,%.4f,%u,%u,%.5f;",
                                cleanSample, noisyNoDC, displaySample,
                                hr.bpm, (unsigned)trueBPM, hr.sqi,
                                hr.motionActive ? 1u : 0u,
                                (s_alarmHold > 0) ? 1u : 0u,
-                               (s_alarmHold > 0) ? s_alarmHoldConf : 0.0f);
+                               (s_alarmHold > 0) ? s_alarmHoldConf : 0.0f,
+                               respSample,
+                               resp.valid ? (unsigned)(resp.bpm + 0.5f) : 0u,
+                               (s_inputMode == SOURCE_AFE_REAL) ? ads1292rGetLeadOffMask() : 0u,
+                               respCancelEst);
             if (len > 0) {
                 sendBLEMessage(s_bleBuf);
             }
@@ -990,7 +1127,8 @@ void loop()
         /* 2026-08-08: 输出率 25Hz→100Hz (每 5 帧) — 提升波形分辨率
          * (25Hz 下 QRS 峰仅 2 采样点, 锯齿感强)。带宽: 55B×100Hz = 44kbps
          * < 115200 ✅。原 25Hz 注释: 降低 USB PHY 功耗 (100Hz 仍远低于上限) */
-        /* 格式: clean,noisy,filtered,bpm,true_bpm,sqi,motion,abnormal_flag,confidence */
+        /* 格式: clean,noisy,filtered,bpm,true_bpm,sqi,motion,abnormal_flag,confidence,
+         *        resp,resp_bpm,lead_off,resp_cancel (后 4 列为呼吸/导联/呼吸抑制状态) */
         if (frameCount % 5 == 0)
         {
             uint8_t trueBPM = (s_inputMode == SOURCE_SIMULATOR)
@@ -1038,7 +1176,16 @@ void loop()
             Serial.print(",");
             Serial.print(abnormFlag);
             Serial.print(",");
-            Serial.println(abnormConf, 3);
+            Serial.print(abnormConf, 3);
+            /* 追加: 呼吸阻抗波形, 呼吸率(bpm), 导联脱落掩码 (旧PC/App解析前9列不受影响) */
+            Serial.print(",");
+            Serial.print(respSample, 5);
+            Serial.print(",");
+            Serial.print(resp.valid ? (unsigned)(resp.bpm + 0.5f) : 0);
+            Serial.print(",");
+            Serial.print((s_inputMode == SOURCE_AFE_REAL) ? ads1292rGetLeadOffMask() : 0);
+            Serial.print(",");
+            Serial.println(respCancelEst, 5);
         }
 
         /* ======== 步骤6：实时削顶预警 (仅真实模式) ======== */
@@ -1174,6 +1321,44 @@ void loop()
                 Serial.print("[心率] 等待心拍... | SQI: ");
                 Serial.println(hr.sqi, 2);
             }
+
+                          /* 真实 AFE 状态/呼吸检测 (仅真实模式) */
+              if (s_inputMode == SOURCE_AFE_REAL) {
+                  if (s_afeType == AFE_TYPE_ADS1292R) {
+                      Serial.printf("[ADS1292R] ID=0x%02X DRDY=%d readOk=%lu readFail=%lu\n",
+                                    (unsigned)ads1292rGetId(),
+                                    ads1292rIsDataReady() ? 1 : 0,
+                                    (unsigned long)ads1292rGetReadOk(),
+                                    (unsigned long)ads1292rGetReadFail());
+                      Serial0.printf("[ADS1292R] ID=0x%02X DRDY=%d readOk=%lu readFail=%lu\n",
+                                     (unsigned)ads1292rGetId(),
+                                     ads1292rIsDataReady() ? 1 : 0,
+                                     (unsigned long)ads1292rGetReadOk(),
+                                     (unsigned long)ads1292rGetReadFail());
+                      Serial.print("[呼吸] ");
+                      Serial0.print("[呼吸] ");
+                      if (resp.valid) {
+                          Serial.print(resp.bpm, 1);
+                          Serial.print(" 次/分 | 检测周期: ");
+                          Serial.print(resp.breathCount);
+                          Serial.print(" | 幅度: ");
+                          Serial.println(resp.amplitude, 5);
+                          Serial0.print(resp.bpm, 1);
+                          Serial0.print(" 次/分 | 检测周期: ");
+                          Serial0.print(resp.breathCount);
+                          Serial0.print(" | 幅度: ");
+                          Serial0.println(resp.amplitude, 5);
+                      } else {
+                          Serial.print("学习中/无有效呼吸波 | 呼吸计数: ");
+                          Serial.println(resp.breathCount);
+                          Serial0.print("学习中/无有效呼吸波 | 呼吸计数: ");
+                          Serial0.println(resp.breathCount);
+                      }
+                  } else {
+                      Serial.println("[AFE] 当前为 AD8232 模拟输入模式");
+                      Serial0.println("[AFE] 当前为 AD8232 模拟输入模式");
+                  }
+              }
         }
 
         /* ======== 串口指令处理 ======== */

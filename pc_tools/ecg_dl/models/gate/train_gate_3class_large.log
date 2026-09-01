@@ -1,0 +1,328 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1787496248.433379   15607 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1787496248.619760   15607 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1787496250.346354   15607 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+W0000 00:00:1787496252.727007   15607 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+[数据集] npz 后缀切换: '_deploy' (部署链数据源)
+Loading A (MIT+INCART) ...
+[数据集] 加载 (mmap): mit_bih_processed_deploy_beats.npy
+[数据集] 加载数据: /home/devcontainers/ecg_data/mit_bih_processed_deploy.npz
+[数据集]   心拍数: 658962
+[数据集]   形状: (658962, 250)
+[数据集]   类别分布:
+[数据集]     Normal: 543786 (82.5%)
+[数据集]     Abnormal: 115176 (17.5%)
+[数据集] 加载 (mmap): incart_processed_deploy_beats.npy
+[INCART] 加载: 175779 心拍, 形状: (175779, 250)
+[INCART]   Normal: 153596 (87.4%)
+[INCART]   Abnormal: 22183 (12.6%)
+
+[合并数据集] MIT-BIH + INCART
+  总心拍: 834741
+  Normal: 697382 (83.5%)
+  Abnormal: 137359 (16.5%)
+[数据集] 加载 (mmap): mit_bih_processed_deploy_beats.npy
+[数据集] 加载数据: /home/devcontainers/ecg_data/mit_bih_processed_deploy.npz
+[数据集]   心拍数: 658962
+[数据集]   形状: (658962, 250)
+[数据集]   类别分布:
+[数据集]     Normal: 543786 (82.5%)
+[数据集]     Abnormal: 115176 (17.5%)
+Loading PTB ...
+[数据集] 加载 (mmap): ptb_processed_deploy_beats.npy
+[PTB] 加载: 69482 心拍, 形状: (69482, 250)
+[PTB]   Normal: 10416 (15.0%)
+[PTB]   Abnormal: 59066 (85.0%)
+Train counts: [80000 80000 36571]
+Val counts: [140312  21385  12291]
+Test counts: [145041  20891  10204]
+W0000 00:00:1787496263.166952   15607 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+I0000 00:00:1787496263.733518   15607 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 5199 MB memory:  -> device: 0, name: NVIDIA GeForce RTX 5070 Laptop GPU, pci bus id: 0000:01:00.0, compute capability: 12.0a
+
+=======================================================
+  模型: ecg_resnet_lite
+=======================================================
+  Layer                        Output             Params    
+  -------------------------------------------------------
+  ecg_input                    -                  0         
+  stem                         -                  112       
+  stem_bn                      -                  64        
+  stem_rl                      -                  0         
+  b0_dw                        -                  112       
+  b0_dwbn                      -                  64        
+  b0_dwrl                      -                  0         
+  b0_pw                        -                  256       
+  b0_pwbn                      -                  64        
+  b0_se_gap                    -                  0         
+  b0_se_d1                     -                  68        
+  b0_se_d2                     -                  80        
+  b0_se_rs                     -                  0         
+  b0_se_mul                    -                  0         
+  b0_add                       -                  0         
+  b0_out                       -                  0         
+  b1_dw                        -                  112       
+  b1_dwbn                      -                  64        
+  b1_dwrl                      -                  0         
+  b1_pw                        -                  256       
+  b1_pwbn                      -                  64        
+  b1_se_gap                    -                  0         
+  b1_se_d1                     -                  68        
+  b1_se_d2                     -                  80        
+  b1_se_rs                     -                  0         
+  b1_se_mul                    -                  0         
+  b1_add                       -                  0         
+  b1_out                       -                  0         
+  b2_dw                        -                  80        
+  b2_dwbn                      -                  64        
+  b2_dwrl                      -                  0         
+  b2_pw                        -                  512       
+  b2_pwbn                      -                  128       
+  b2_se_gap                    -                  0         
+  b2_se_d1                     -                  264       
+  b2_se_d2                     -                  288       
+  b2_se_rs                     -                  0         
+  b2_sk                        -                  512       
+  b2_se_mul                    -                  0         
+  b2_skbn                      -                  128       
+  b2_add                       -                  0         
+  b2_out                       -                  0         
+  b3_dw                        -                  160       
+  b3_dwbn                      -                  128       
+  b3_dwrl                      -                  0         
+  b3_pw                        -                  1,024     
+  b3_pwbn                      -                  128       
+  b3_se_gap                    -                  0         
+  b3_se_d1                     -                  264       
+  b3_se_d2                     -                  288       
+  b3_se_rs                     -                  0         
+  b3_se_mul                    -                  0         
+  b3_add                       -                  0         
+  b3_out                       -                  0         
+  b4_dw                        -                  160       
+  b4_dwbn                      -                  128       
+  b4_dwrl                      -                  0         
+  b4_pw                        -                  1,024     
+  b4_pwbn                      -                  128       
+  b4_se_gap                    -                  0         
+  b4_se_d1                     -                  264       
+  b4_se_d2                     -                  288       
+  b4_se_rs                     -                  0         
+  b4_se_mul                    -                  0         
+  b4_add                       -                  0         
+  b4_out                       -                  0         
+  b5_dw                        -                  96        
+  b5_dwbn                      -                  128       
+  b5_dwrl                      -                  0         
+  b5_pw                        -                  2,048     
+  b5_pwbn                      -                  256       
+  b5_se_gap                    -                  0         
+  b5_se_d1                     -                  1,040     
+  b5_se_d2                     -                  1,088     
+  b5_se_rs                     -                  0         
+  b5_sk                        -                  2,048     
+  b5_se_mul                    -                  0         
+  b5_skbn                      -                  256       
+  b5_add                       -                  0         
+  b5_out                       -                  0         
+  b6_dw                        -                  192       
+  b6_dwbn                      -                  256       
+  b6_dwrl                      -                  0         
+  b6_pw                        -                  4,096     
+  b6_pwbn                      -                  256       
+  b6_se_gap                    -                  0         
+  b6_se_d1                     -                  1,040     
+  b6_se_d2                     -                  1,088     
+  b6_se_rs                     -                  0         
+  b6_se_mul                    -                  0         
+  b6_add                       -                  0         
+  b6_out                       -                  0         
+  b7_dw                        -                  192       
+  b7_dwbn                      -                  256       
+  b7_dwrl                      -                  0         
+  b7_pw                        -                  4,096     
+  b7_pwbn                      -                  256       
+  b7_se_gap                    -                  0         
+  b7_se_d1                     -                  1,040     
+  b7_se_d2                     -                  1,088     
+  b7_se_rs                     -                  0         
+  b7_se_mul                    -                  0         
+  b7_add                       -                  0         
+  b7_out                       -                  0         
+  b8_dw                        -                  192       
+  b8_dwbn                      -                  256       
+  b8_dwrl                      -                  0         
+  b8_pw                        -                  8,192     
+  b8_pwbn                      -                  512       
+  b8_se_gap                    -                  0         
+  b8_se_d1                     -                  4,128     
+  b8_se_d2                     -                  4,224     
+  b8_se_rs                     -                  0         
+  b8_sk                        -                  8,192     
+  b8_se_mul                    -                  0         
+  b8_skbn                      -                  512       
+  b8_add                       -                  0         
+  b8_out                       -                  0         
+  gap                          -                  0         
+  fc1                          -                  8,256     
+  do                           -                  0         
+  out                          -                  195       
+  -------------------------------------------------------
+  总参数:       62,899
+  可训练:       60,851
+  FP32 预估:     245.7 KB
+  INT8 预估:      61.4 KB
+=======================================================
+
+/usr/local/lib/python3.12/dist-packages/keras/src/trainers/epoch_iterator.py:74: UserWarning: `shuffle=True` was passed, but will be ignored since the data `x` was provided as a tf.data.Dataset. The Dataset is expected to already be shuffled (via `.shuffle(buffer_size)`).
+  self.data_adapter = data_adapters.get_data_adapter(
+Epoch 1/80
+I0000 00:00:1787496273.395264   15693 service.cc:153] XLA service 0x7b41a006dba0 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1787496273.395734   15693 service.cc:161]   StreamExecutor [0]: NVIDIA GeForce RTX 5070 Laptop GPU, Compute Capability 12.0a (Driver: 13.2.0; Runtime: 12.9.0; Toolkit: 12.5.0; DNN: 9.24.0)
+I0000 00:00:1787496273.626721   15693 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1787496274.993068   15693 cuda_dnn.cc:461] Loaded cuDNN version 92400
+I0000 00:00:1787496275.267385   15693 dot_merger.cc:481] Merging Dots in computation: a_inference_one_step_on_data_22500__.193
+I0000 00:00:1787496280.932634   15761 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_1_40', 4 bytes spill stores, 4 bytes spill loads
+
+I0000 00:00:1787496281.428171   15772 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_118', 4 bytes spill stores, 4 bytes spill loads
+
+I0000 00:00:1787496285.817210   15761 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_1', 8 bytes spill stores, 16 bytes spill loads
+
+I0000 00:00:1787496293.818677   15693 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+
+Epoch 1: val_loss improved from None to 0.91504, saving model to models/gate/gate_model_3class_resnet_large.h5
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+
+Epoch 1: finished saving model to models/gate/gate_model_3class_resnet_large.h5
+1000/1000 - 50s - 50ms/step - accuracy: 0.9137 - auc: 0.9843 - loss: 0.2385 - val_accuracy: 0.7280 - val_auc: 0.8706 - val_loss: 0.9150 - learning_rate: 5.0000e-04
+Epoch 2/80
+
+Epoch 2: val_loss did not improve from 0.91504
+1000/1000 - 12s - 12ms/step - accuracy: 0.9677 - auc: 0.9963 - loss: 0.0987 - val_accuracy: 0.6384 - val_auc: 0.8134 - val_loss: 1.3673 - learning_rate: 5.0000e-04
+Epoch 3/80
+
+Epoch 3: val_loss did not improve from 0.91504
+1000/1000 - 14s - 14ms/step - accuracy: 0.9761 - auc: 0.9977 - loss: 0.0742 - val_accuracy: 0.6133 - val_auc: 0.7782 - val_loss: 1.5432 - learning_rate: 5.0000e-04
+Epoch 4/80
+
+Epoch 4: val_loss did not improve from 0.91504
+1000/1000 - 12s - 12ms/step - accuracy: 0.9804 - auc: 0.9984 - loss: 0.0599 - val_accuracy: 0.5888 - val_auc: 0.7588 - val_loss: 1.9594 - learning_rate: 5.0000e-04
+Epoch 5/80
+
+Epoch 5: val_loss did not improve from 0.91504
+1000/1000 - 14s - 14ms/step - accuracy: 0.9835 - auc: 0.9986 - loss: 0.0511 - val_accuracy: 0.5582 - val_auc: 0.7237 - val_loss: 2.2403 - learning_rate: 5.0000e-04
+Epoch 6/80
+
+Epoch 6: val_loss did not improve from 0.91504
+1000/1000 - 13s - 13ms/step - accuracy: 0.9854 - auc: 0.9989 - loss: 0.0446 - val_accuracy: 0.6060 - val_auc: 0.7669 - val_loss: 1.8638 - learning_rate: 5.0000e-04
+Epoch 7/80
+
+Epoch 7: val_loss did not improve from 0.91504
+1000/1000 - 14s - 14ms/step - accuracy: 0.9872 - auc: 0.9991 - loss: 0.0400 - val_accuracy: 0.6213 - val_auc: 0.7671 - val_loss: 2.0136 - learning_rate: 5.0000e-04
+Epoch 8/80
+
+Epoch 8: val_loss did not improve from 0.91504
+1000/1000 - 14s - 14ms/step - accuracy: 0.9878 - auc: 0.9992 - loss: 0.0370 - val_accuracy: 0.5440 - val_auc: 0.7144 - val_loss: 2.3189 - learning_rate: 5.0000e-04
+Epoch 9/80
+
+Epoch 9: val_loss did not improve from 0.91504
+1000/1000 - 11s - 11ms/step - accuracy: 0.9892 - auc: 0.9993 - loss: 0.0328 - val_accuracy: 0.6881 - val_auc: 0.8202 - val_loss: 1.8344 - learning_rate: 5.0000e-04
+Epoch 10/80
+
+Epoch 10: val_loss did not improve from 0.91504
+1000/1000 - 13s - 13ms/step - accuracy: 0.9903 - auc: 0.9994 - loss: 0.0301 - val_accuracy: 0.4806 - val_auc: 0.6539 - val_loss: 2.7948 - learning_rate: 5.0000e-04
+Epoch 11/80
+
+Epoch 11: ReduceLROnPlateau reducing learning rate to 0.0002500000118743628.
+
+Epoch 11: val_loss did not improve from 0.91504
+1000/1000 - 12s - 12ms/step - accuracy: 0.9908 - auc: 0.9994 - loss: 0.0283 - val_accuracy: 0.6010 - val_auc: 0.7614 - val_loss: 2.1681 - learning_rate: 5.0000e-04
+Epoch 12/80
+
+Epoch 12: val_loss did not improve from 0.91504
+1000/1000 - 14s - 14ms/step - accuracy: 0.9941 - auc: 0.9997 - loss: 0.0182 - val_accuracy: 0.5896 - val_auc: 0.7384 - val_loss: 2.8118 - learning_rate: 2.5000e-04
+Epoch 13/80
+
+Epoch 13: val_loss did not improve from 0.91504
+1000/1000 - 14s - 14ms/step - accuracy: 0.9949 - auc: 0.9997 - loss: 0.0160 - val_accuracy: 0.6535 - val_auc: 0.7884 - val_loss: 2.5411 - learning_rate: 2.5000e-04
+Epoch 14/80
+
+Epoch 14: val_loss did not improve from 0.91504
+1000/1000 - 11s - 11ms/step - accuracy: 0.9951 - auc: 0.9997 - loss: 0.0154 - val_accuracy: 0.6265 - val_auc: 0.7693 - val_loss: 2.6780 - learning_rate: 2.5000e-04
+Epoch 15/80
+
+Epoch 15: val_loss did not improve from 0.91504
+1000/1000 - 14s - 14ms/step - accuracy: 0.9956 - auc: 0.9998 - loss: 0.0139 - val_accuracy: 0.5975 - val_auc: 0.7463 - val_loss: 2.9003 - learning_rate: 2.5000e-04
+Epoch 16/80
+
+Epoch 16: val_loss did not improve from 0.91504
+1000/1000 - 12s - 12ms/step - accuracy: 0.9958 - auc: 0.9998 - loss: 0.0131 - val_accuracy: 0.6075 - val_auc: 0.7490 - val_loss: 3.0578 - learning_rate: 2.5000e-04
+Epoch 17/80
+
+Epoch 17: val_loss did not improve from 0.91504
+1000/1000 - 14s - 14ms/step - accuracy: 0.9960 - auc: 0.9998 - loss: 0.0123 - val_accuracy: 0.6672 - val_auc: 0.7973 - val_loss: 2.6247 - learning_rate: 2.5000e-04
+Epoch 18/80
+
+Epoch 18: val_loss did not improve from 0.91504
+1000/1000 - 12s - 12ms/step - accuracy: 0.9960 - auc: 0.9998 - loss: 0.0122 - val_accuracy: 0.5971 - val_auc: 0.7398 - val_loss: 3.3026 - learning_rate: 2.5000e-04
+Epoch 19/80
+
+Epoch 19: val_loss did not improve from 0.91504
+1000/1000 - 15s - 15ms/step - accuracy: 0.9963 - auc: 0.9998 - loss: 0.0115 - val_accuracy: 0.5364 - val_auc: 0.6822 - val_loss: 4.1224 - learning_rate: 2.5000e-04
+Epoch 20/80
+
+Epoch 20: val_loss did not improve from 0.91504
+1000/1000 - 12s - 12ms/step - accuracy: 0.9964 - auc: 0.9998 - loss: 0.0109 - val_accuracy: 0.5291 - val_auc: 0.6826 - val_loss: 3.9468 - learning_rate: 2.5000e-04
+Epoch 21/80
+
+Epoch 21: ReduceLROnPlateau reducing learning rate to 0.0001250000059371814.
+
+Epoch 21: val_loss did not improve from 0.91504
+1000/1000 - 14s - 14ms/step - accuracy: 0.9968 - auc: 0.9999 - loss: 0.0098 - val_accuracy: 0.6402 - val_auc: 0.7746 - val_loss: 2.9611 - learning_rate: 2.5000e-04
+Epoch 22/80
+
+Epoch 22: val_loss did not improve from 0.91504
+1000/1000 - 14s - 14ms/step - accuracy: 0.9980 - auc: 0.9999 - loss: 0.0065 - val_accuracy: 0.5769 - val_auc: 0.7192 - val_loss: 3.7920 - learning_rate: 1.2500e-04
+Epoch 23/80
+
+Epoch 23: val_loss did not improve from 0.91504
+1000/1000 - 12s - 12ms/step - accuracy: 0.9984 - auc: 0.9999 - loss: 0.0055 - val_accuracy: 0.6161 - val_auc: 0.7512 - val_loss: 3.4037 - learning_rate: 1.2500e-04
+Epoch 24/80
+
+Epoch 24: val_loss did not improve from 0.91504
+1000/1000 - 15s - 15ms/step - accuracy: 0.9983 - auc: 0.9999 - loss: 0.0052 - val_accuracy: 0.5825 - val_auc: 0.7211 - val_loss: 3.9879 - learning_rate: 1.2500e-04
+Epoch 25/80
+
+Epoch 25: val_loss did not improve from 0.91504
+1000/1000 - 12s - 12ms/step - accuracy: 0.9985 - auc: 0.9999 - loss: 0.0051 - val_accuracy: 0.6178 - val_auc: 0.7515 - val_loss: 3.4523 - learning_rate: 1.2500e-04
+Epoch 26/80
+
+Epoch 26: val_loss did not improve from 0.91504
+1000/1000 - 14s - 14ms/step - accuracy: 0.9985 - auc: 0.9999 - loss: 0.0047 - val_accuracy: 0.5970 - val_auc: 0.7312 - val_loss: 3.9159 - learning_rate: 1.2500e-04
+Epoch 27/80
+
+Epoch 27: val_loss did not improve from 0.91504
+1000/1000 - 13s - 13ms/step - accuracy: 0.9986 - auc: 0.9999 - loss: 0.0044 - val_accuracy: 0.6402 - val_auc: 0.7680 - val_loss: 3.4089 - learning_rate: 1.2500e-04
+Epoch 28/80
+
+Epoch 28: val_loss did not improve from 0.91504
+1000/1000 - 14s - 14ms/step - accuracy: 0.9987 - auc: 0.9999 - loss: 0.0045 - val_accuracy: 0.6125 - val_auc: 0.7462 - val_loss: 3.5825 - learning_rate: 1.2500e-04
+Epoch 29/80
+
+Epoch 29: val_loss did not improve from 0.91504
+1000/1000 - 14s - 14ms/step - accuracy: 0.9986 - auc: 0.9999 - loss: 0.0043 - val_accuracy: 0.5978 - val_auc: 0.7333 - val_loss: 3.9038 - learning_rate: 1.2500e-04
+Epoch 30/80
+
+Epoch 30: val_loss did not improve from 0.91504
+1000/1000 - 13s - 13ms/step - accuracy: 0.9987 - auc: 0.9999 - loss: 0.0043 - val_accuracy: 0.6133 - val_auc: 0.7454 - val_loss: 3.8363 - learning_rate: 1.2500e-04
+Epoch 31/80
+
+Epoch 31: ReduceLROnPlateau reducing learning rate to 6.25000029685907e-05.
+
+Epoch 31: val_loss did not improve from 0.91504
+1000/1000 - 14s - 14ms/step - accuracy: 0.9988 - auc: 1.0000 - loss: 0.0039 - val_accuracy: 0.6345 - val_auc: 0.7613 - val_loss: 3.5831 - learning_rate: 1.2500e-04
+Epoch 31: early stopping
+Restoring model weights from the end of the best epoch: 1.
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+[3class gate] done {'task': 'three_class_gate_A1', 'arch': 'resnet_large', 'epochs_run': 31, 'best_val_loss': 0.915039598941803, 'best_val_accuracy': 0.7279524803161621, 'optimizer': 'adamw', 'lr': 0.0005, 'batch_size': 256, 'max_per_class': 80000, 'model_path': 'models/gate/gate_model_3class_resnet_large.h5', 'history_csv': 'models/gate/gate_model_3class_resnet_large_history.csv', 'elapsed_s': 447.2}

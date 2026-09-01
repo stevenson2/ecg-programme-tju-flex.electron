@@ -1,0 +1,36 @@
+{
+  "date": "2026-08-24",
+  "purpose": "exp7c + ECGFounder proxy hard positive weak-label finetune v2 (low weight)",
+  "data": {
+    "real_normal_beats": 311,
+    "ecgfounder_weak_abn_beats": null,
+    "ecgfounder_topk_records": 20,
+    "gold_mix_abn": 1300,
+    "gold_mix_norm": 400,
+    "held_out_real": 40
+  },
+  "config": {
+    "base": "best_resnet_large_exp7c.h5",
+    "freeze": "backbone except fc1/out",
+    "lr": 1e-05,
+    "optimizer": "adam",
+    "loss": "sparse CE",
+    "sample_weight": {
+      "real_normal": 2.0,
+      "ecgfounder_weak_abn": 0.3
+    }
+  },
+  "evaluation_after": {
+    "mit_auc": 0.880190678702532,
+    "ptb_auc": 0.7762833364054439,
+    "real_normal": {
+      "mean": 0.50577116,
+      "frac_gt_0.5": 0.3536977491961415
+    },
+    "ecgfounder_weak_abn": {
+      "mean": 0.49331844,
+      "frac_gt_0.5": 0.37098692033293695
+    }
+  },
+  "verdict": "Not adopted: real AFE normal remains higher than baseline; MIT/PTB AUC regress."
+}

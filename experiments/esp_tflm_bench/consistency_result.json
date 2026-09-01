@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "date": "2026-08-24 00:54:56",
+    "pc_json": "experiments/esp_tflm_bench/consistency_pc.json",
+    "board_log": "experiments/esp_tflm_bench/logs/monitor_consistency.log",
+    "n_beats": 200,
+    "n_normal": 100,
+    "n_abnormal": 100,
+    "pc_semantics": "single dequantized output (no second softmax)",
+    "pc_op_resolver": "BUILTIN_REF (XNNPACK disabled; matches TFLM integer kernel family)",
+    "note": "PC reference resolver is used to match MCU TFLM integer kernel family; default XNNPACK is not used for acceptance comparison."
+  },
+  "raw_q_exact_matches": 184,
+  "raw_q_mismatches": 16,
+  "p_single": {
+    "mean_abs_delta": 0.0006252187500000012,
+    "max_abs_delta": 0.02734375,
+    "pearson": 0.9999531273769539,
+    "spearman": 0.999886728662135,
+    "auc_pc": 0.8874500000000001,
+    "auc_board": 0.8876000000000002,
+    "delta_auc": 0.0001500000000000945
+  },
+  "p_double": {
+    "mean_abs_delta": 0.00028082384921073925,
+    "max_abs_delta": 0.012159626943588242,
+    "spearman": 0.999886728662135
+  },
+  "agreement": {
+    "thr_0.35": 1.0,
+    "thr_0.50": 0.995,
+    "thr_0.60": 1.0
+  },
+  "accept": {
+    "delta_auc_ok": true,
+    "mean_dp_recorded": 0.0006252187500000012,
+    "mean_dp_target": 0.01,
+    "mean_dp_ok": true,
+    "max_dp_recorded": 0.02734375,
+    "verdict": "PASS"
+  }
+}

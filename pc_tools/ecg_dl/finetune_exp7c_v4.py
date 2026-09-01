@@ -73,13 +73,21 @@ def add_channel(x):
     return x[..., np.newaxis]
 
 
-def sample_domain(tag, n_abn, n_norm, train_mask):
+def sample_domain(tag, n_abn, n_norm, train_mask, sl=None):
     b, l, r = load_arrays(tag)
-    mask = train_mask[:len(l)]
+    if sl is not None:
+        mask = train_mask[sl[0]:sl[1]]
+    else:
+        mask = train_mask[:len(l)]
+    assert len(mask) == len(l), f"{tag}: train 掩码对齐错误 ({len(mask)} vs {len(l)})"
     ia = np.where(mask & (l == 1))[0]
     inn = np.where(mask & (l == 0))[0]
     sa = rng.choice(ia, min(n_abn, len(ia)), replace=False)
     sn = rng.choice(inn, min(n_norm, len(inn)), replace=False)
+    # 守卫: 抽样结果必须全部来自训练患者 (防泄漏回潮)
+    from data.split_guard import get_guard
+    get_guard(tag).assert_train_only(np.concatenate([r[sa], r[sn]]),
+                                     context="finetune_exp7c_v4.sample_domain")
     return (
         np.asarray(b[sa], dtype=np.float32), np.ones(len(sa), dtype=np.int32),
         np.asarray(b[sn], dtype=np.float32), np.zeros(len(sn), dtype=np.int32),
@@ -93,7 +101,10 @@ def get_mit_incart_masks():
     pmap = {}
     pmap.update(build_mit_patient_map())
     pmap.update({rid + 100000: "inc_" + pat for rid, pat in build_incart_patient_map().items()})
-    return patient_level_split(rids, pmap, seed=SEED)
+    tr_m, va_m, te_m, stats = patient_level_split(rids, pmap, seed=SEED)
+    n_mit = len(mit_r)
+    slices = {"mit_bih": (0, n_mit), "incart": (n_mit, n_mit + len(inc_r))}
+    return tr_m, va_m, te_m, stats, slices
 
 
 def synth_hard(real_train):
@@ -135,7 +146,7 @@ def select_public_hard_normal(n_select=150):
     data = load_mit_incart_merged()
     beats, labels, rids = data["beats"], data["labels"], data["record_ids"]
     beats, labels, rids, kept_idx = reduce_mit_augmentation(beats, labels, rids)
-    tr_m, _, _, _ = get_mit_incart_masks()
+    tr_m, _, _, _, _ = get_mit_incart_masks()
     tr_red = tr_m[kept_idx]
     probs = np.load(CACHE / "exp7c_causal_probs_full.npy")
     if len(probs) != len(labels):
@@ -154,15 +165,15 @@ def main():
     CACHE.mkdir(parents=True, exist_ok=True)
 
     # ---------- 患者级划分 ----------
-    tr_m, va_m, te_m, mi_stats = get_mit_incart_masks()
+    tr_m, va_m, te_m, mi_stats, mi_slices = get_mit_incart_masks()
     ptb_b, ptb_l, ptb_r = load_arrays("ptb")
     ptr, pva, pte, ptb_stats = patient_level_split(ptb_r, build_ptb_patient_map(), seed=SEED)
     print(f"[FTv4] MIT+INCART patients: tr={mi_stats['n_train']} va={mi_stats['n_val']} te={mi_stats['n_test']}", flush=True)
     print(f"[FTv4] PTB patients: tr={ptb_stats['n_train']} va={ptb_stats['n_val']} te={ptb_stats['n_test']}", flush=True)
 
     # ---------- 主数据（train 患者） ----------
-    mit_a, mit_al, mit_n, mit_nl = sample_domain("mit_bih", *MAIN_RATIO["mit_bih"], tr_m)
-    inc_a, inc_al, inc_n, inc_nl = sample_domain("incart", *MAIN_RATIO["incart"], tr_m)
+    mit_a, mit_al, mit_n, mit_nl = sample_domain("mit_bih", *MAIN_RATIO["mit_bih"], tr_m, mi_slices["mit_bih"])
+    inc_a, inc_al, inc_n, inc_nl = sample_domain("incart", *MAIN_RATIO["incart"], tr_m, mi_slices["incart"])
     ptb_a, ptb_al, ptb_n, ptb_nl = sample_domain("ptb", *MAIN_RATIO["ptb"], ptr)
     x_main = np.concatenate([mit_a, inc_a, ptb_a, mit_n, inc_n, ptb_n])[..., np.newaxis]
     y_main = np.concatenate([mit_al, inc_al, ptb_al, mit_nl, inc_nl, ptb_nl])

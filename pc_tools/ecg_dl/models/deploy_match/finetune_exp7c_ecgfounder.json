@@ -1,0 +1,40 @@
+{
+  "date": "2026-08-24 15:02:05",
+  "purpose": "exp7c + ECGFounder proxy hard negative weak-label finetune",
+  "data": {
+    "real_normal_beats": 311,
+    "ecgfounder_weak_abn_beats": 841,
+    "gold_mix_abn": 1300,
+    "gold_mix_norm": 400,
+    "held_out_real": 40
+  },
+  "config": {
+    "base": "best_resnet_large_exp7c.h5",
+    "freeze": "backbone except fc1/out",
+    "lr": 1e-05,
+    "optimizer": "adam",
+    "loss": "sparse CE",
+    "class_weight": {
+      "0": 2.0,
+      "1": 1.0
+    },
+    "epochs": 26
+  },
+  "confidence_real_normal": {
+    "before_exp7c": {
+      "mean": 0.449370414018631,
+      "frac_gt_0.5": 0.24437299035369775
+    },
+    "after_all": {
+      "mean": 0.5622099041938782,
+      "frac_gt_0.5": 0.5627009646302251
+    },
+    "after_heldout40": {
+      "mean": 0.5426191091537476
+    },
+    "after_ecgfounder_weak_abn": {
+      "mean": 0.5242432951927185,
+      "frac_gt_0.5": 0.4780023781212842
+    }
+  }
+}

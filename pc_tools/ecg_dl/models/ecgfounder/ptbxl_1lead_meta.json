@@ -1,0 +1,4806 @@
+{
+  "n": 432,
+  "feature_dim": 1024,
+  "records": [
+    {
+      "ecg_id": 18,
+      "patient_id": "13619.0",
+      "filename_hr": "records500/00000/00018_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 23,
+      "patient_id": "13619.0",
+      "filename_hr": "records500/00000/00023_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 34,
+      "patient_id": "13619.0",
+      "filename_hr": "records500/00000/00034_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 143,
+      "patient_id": "16914.0",
+      "filename_hr": "records500/00000/00143_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 144,
+      "patient_id": "16914.0",
+      "filename_hr": "records500/00000/00144_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 190,
+      "patient_id": "10782.0",
+      "filename_hr": "records500/00000/00190_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 218,
+      "patient_id": "13925.0",
+      "filename_hr": "records500/00000/00218_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 330,
+      "patient_id": "4807.0",
+      "filename_hr": "records500/00000/00330_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 382,
+      "patient_id": "10186.0",
+      "filename_hr": "records500/00000/00382_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 385,
+      "patient_id": "16064.0",
+      "filename_hr": "records500/00000/00385_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 449,
+      "patient_id": "20057.0",
+      "filename_hr": "records500/00000/00449_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 498,
+      "patient_id": "16911.0",
+      "filename_hr": "records500/00000/00498_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 759,
+      "patient_id": "4296.0",
+      "filename_hr": "records500/00000/00759_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 858,
+      "patient_id": "4520.0",
+      "filename_hr": "records500/00000/00858_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 866,
+      "patient_id": "6697.0",
+      "filename_hr": "records500/00000/00866_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 1135,
+      "patient_id": "10745.0",
+      "filename_hr": "records500/01000/01135_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 1173,
+      "patient_id": "653.0",
+      "filename_hr": "records500/01000/01173_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0,
+        "SVTAC": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 1299,
+      "patient_id": "14503.0",
+      "filename_hr": "records500/01000/01299_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PSVT": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 1399,
+      "patient_id": "12213.0",
+      "filename_hr": "records500/01000/01399_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 1461,
+      "patient_id": "13388.0",
+      "filename_hr": "records500/01000/01461_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 1484,
+      "patient_id": "14886.0",
+      "filename_hr": "records500/01000/01484_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SARRH": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 1641,
+      "patient_id": "2379.0",
+      "filename_hr": "records500/01000/01641_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 1674,
+      "patient_id": "3940.0",
+      "filename_hr": "records500/01000/01674_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 1717,
+      "patient_id": "20306.0",
+      "filename_hr": "records500/01000/01717_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0,
+        "SBRAD": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 1773,
+      "patient_id": "9503.0",
+      "filename_hr": "records500/01000/01773_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 2032,
+      "patient_id": "6637.0",
+      "filename_hr": "records500/02000/02032_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 2035,
+      "patient_id": "6743.0",
+      "filename_hr": "records500/02000/02035_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 2051,
+      "patient_id": "389.0",
+      "filename_hr": "records500/02000/02051_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PSVT": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 2078,
+      "patient_id": "4507.0",
+      "filename_hr": "records500/02000/02078_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 2090,
+      "patient_id": "6282.0",
+      "filename_hr": "records500/02000/02090_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 2146,
+      "patient_id": "5629.0",
+      "filename_hr": "records500/02000/02146_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 2205,
+      "patient_id": "4376.0",
+      "filename_hr": "records500/02000/02205_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 2218,
+      "patient_id": "4012.0",
+      "filename_hr": "records500/02000/02218_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 2251,
+      "patient_id": "16654.0",
+      "filename_hr": "records500/02000/02251_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 2430,
+      "patient_id": "21181.0",
+      "filename_hr": "records500/02000/02430_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 2486,
+      "patient_id": "2848.0",
+      "filename_hr": "records500/02000/02486_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 2509,
+      "patient_id": "16689.0",
+      "filename_hr": "records500/02000/02509_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 2587,
+      "patient_id": "19654.0",
+      "filename_hr": "records500/02000/02587_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 2592,
+      "patient_id": "19654.0",
+      "filename_hr": "records500/02000/02592_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 2648,
+      "patient_id": "10895.0",
+      "filename_hr": "records500/02000/02648_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 2664,
+      "patient_id": "5503.0",
+      "filename_hr": "records500/02000/02664_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 2673,
+      "patient_id": "4581.0",
+      "filename_hr": "records500/02000/02673_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 2739,
+      "patient_id": "21167.0",
+      "filename_hr": "records500/02000/02739_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 2828,
+      "patient_id": "4849.0",
+      "filename_hr": "records500/02000/02828_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 3017,
+      "patient_id": "19603.0",
+      "filename_hr": "records500/03000/03017_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 3070,
+      "patient_id": "13967.0",
+      "filename_hr": "records500/03000/03070_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 3134,
+      "patient_id": "349.0",
+      "filename_hr": "records500/03000/03134_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PSVT": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 3319,
+      "patient_id": "911.0",
+      "filename_hr": "records500/03000/03319_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 3496,
+      "patient_id": "9503.0",
+      "filename_hr": "records500/03000/03496_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 3658,
+      "patient_id": "21032.0",
+      "filename_hr": "records500/03000/03658_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 3672,
+      "patient_id": "9611.0",
+      "filename_hr": "records500/03000/03672_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 3723,
+      "patient_id": "8287.0",
+      "filename_hr": "records500/03000/03723_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 3793,
+      "patient_id": "16721.0",
+      "filename_hr": "records500/03000/03793_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 3893,
+      "patient_id": "17201.0",
+      "filename_hr": "records500/03000/03893_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 3948,
+      "patient_id": "12209.0",
+      "filename_hr": "records500/03000/03948_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 3990,
+      "patient_id": "6017.0",
+      "filename_hr": "records500/03000/03990_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 4054,
+      "patient_id": "5727.0",
+      "filename_hr": "records500/04000/04054_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 4117,
+      "patient_id": "19574.0",
+      "filename_hr": "records500/04000/04117_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 4181,
+      "patient_id": "19221.0",
+      "filename_hr": "records500/04000/04181_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 4387,
+      "patient_id": "11646.0",
+      "filename_hr": "records500/04000/04387_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 4440,
+      "patient_id": "15343.0",
+      "filename_hr": "records500/04000/04440_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 4498,
+      "patient_id": "9997.0",
+      "filename_hr": "records500/04000/04498_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SVARR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 4780,
+      "patient_id": "4108.0",
+      "filename_hr": "records500/04000/04780_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 4922,
+      "patient_id": "8287.0",
+      "filename_hr": "records500/04000/04922_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 5114,
+      "patient_id": "19159.0",
+      "filename_hr": "records500/05000/05114_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SBRAD": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 5252,
+      "patient_id": "11132.0",
+      "filename_hr": "records500/05000/05252_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 5390,
+      "patient_id": "8169.0",
+      "filename_hr": "records500/05000/05390_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 5544,
+      "patient_id": "21048.0",
+      "filename_hr": "records500/05000/05544_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 5923,
+      "patient_id": "20812.0",
+      "filename_hr": "records500/05000/05923_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 6033,
+      "patient_id": "5309.0",
+      "filename_hr": "records500/06000/06033_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 6152,
+      "patient_id": "4119.0",
+      "filename_hr": "records500/06000/06152_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 35.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 6179,
+      "patient_id": "3547.0",
+      "filename_hr": "records500/06000/06179_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 6205,
+      "patient_id": "12129.0",
+      "filename_hr": "records500/06000/06205_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 6491,
+      "patient_id": "4422.0",
+      "filename_hr": "records500/06000/06491_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 6713,
+      "patient_id": "4756.0",
+      "filename_hr": "records500/06000/06713_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 6727,
+      "patient_id": "11932.0",
+      "filename_hr": "records500/06000/06727_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 6910,
+      "patient_id": "18854.0",
+      "filename_hr": "records500/06000/06910_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 7079,
+      "patient_id": "18366.0",
+      "filename_hr": "records500/07000/07079_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 7221,
+      "patient_id": "12081.0",
+      "filename_hr": "records500/07000/07221_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 7321,
+      "patient_id": "20677.0",
+      "filename_hr": "records500/07000/07321_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 7445,
+      "patient_id": "11898.0",
+      "filename_hr": "records500/07000/07445_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 7567,
+      "patient_id": "9048.0",
+      "filename_hr": "records500/07000/07567_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 7782,
+      "patient_id": "14850.0",
+      "filename_hr": "records500/07000/07782_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 7828,
+      "patient_id": "5773.0",
+      "filename_hr": "records500/07000/07828_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 7834,
+      "patient_id": "8831.0",
+      "filename_hr": "records500/07000/07834_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "1AVB": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 7866,
+      "patient_id": "20484.0",
+      "filename_hr": "records500/07000/07866_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 7889,
+      "patient_id": "8189.0",
+      "filename_hr": "records500/07000/07889_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PSVT": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 8060,
+      "patient_id": "5196.0",
+      "filename_hr": "records500/08000/08060_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 8215,
+      "patient_id": "14026.0",
+      "filename_hr": "records500/08000/08215_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 8237,
+      "patient_id": "19993.0",
+      "filename_hr": "records500/08000/08237_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 8263,
+      "patient_id": "17826.0",
+      "filename_hr": "records500/08000/08263_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 8265,
+      "patient_id": "12688.0",
+      "filename_hr": "records500/08000/08265_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 8461,
+      "patient_id": "741.0",
+      "filename_hr": "records500/08000/08461_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PSVT": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 8543,
+      "patient_id": "2284.0",
+      "filename_hr": "records500/08000/08543_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 8967,
+      "patient_id": "21654.0",
+      "filename_hr": "records500/08000/08967_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 9082,
+      "patient_id": "19203.0",
+      "filename_hr": "records500/09000/09082_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 9108,
+      "patient_id": "11385.0",
+      "filename_hr": "records500/09000/09108_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 9312,
+      "patient_id": "11103.0",
+      "filename_hr": "records500/09000/09312_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "STACH": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 9391,
+      "patient_id": "12667.0",
+      "filename_hr": "records500/09000/09391_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SBRAD": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 9557,
+      "patient_id": "16196.0",
+      "filename_hr": "records500/09000/09557_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 9619,
+      "patient_id": "12771.0",
+      "filename_hr": "records500/09000/09619_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 9657,
+      "patient_id": "12771.0",
+      "filename_hr": "records500/09000/09657_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 10286,
+      "patient_id": "13423.0",
+      "filename_hr": "records500/10000/10286_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "1AVB": 100.0,
+        "SBRAD": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 10356,
+      "patient_id": "16512.0",
+      "filename_hr": "records500/10000/10356_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SVTAC": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 10407,
+      "patient_id": "4409.0",
+      "filename_hr": "records500/10000/10407_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 10605,
+      "patient_id": "11139.0",
+      "filename_hr": "records500/10000/10605_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 10706,
+      "patient_id": "2465.0",
+      "filename_hr": "records500/10000/10706_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 10736,
+      "patient_id": "4971.0",
+      "filename_hr": "records500/10000/10736_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 11080,
+      "patient_id": "4380.0",
+      "filename_hr": "records500/11000/11080_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 11371,
+      "patient_id": "17181.0",
+      "filename_hr": "records500/11000/11371_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 11462,
+      "patient_id": "9041.0",
+      "filename_hr": "records500/11000/11462_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 11468,
+      "patient_id": "8336.0",
+      "filename_hr": "records500/11000/11468_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 11487,
+      "patient_id": "12517.0",
+      "filename_hr": "records500/11000/11487_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 11520,
+      "patient_id": "9005.0",
+      "filename_hr": "records500/11000/11520_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SVARR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 11586,
+      "patient_id": "20791.0",
+      "filename_hr": "records500/11000/11586_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 11604,
+      "patient_id": "17601.0",
+      "filename_hr": "records500/11000/11604_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 11865,
+      "patient_id": "20063.0",
+      "filename_hr": "records500/11000/11865_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 11879,
+      "patient_id": "15704.0",
+      "filename_hr": "records500/11000/11879_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 11886,
+      "patient_id": "8855.0",
+      "filename_hr": "records500/11000/11886_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 11911,
+      "patient_id": "12403.0",
+      "filename_hr": "records500/11000/11911_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 11914,
+      "patient_id": "12403.0",
+      "filename_hr": "records500/11000/11914_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 11915,
+      "patient_id": "12403.0",
+      "filename_hr": "records500/11000/11915_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 11921,
+      "patient_id": "14359.0",
+      "filename_hr": "records500/11000/11921_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 11982,
+      "patient_id": "357.0",
+      "filename_hr": "records500/11000/11982_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12000,
+      "patient_id": "658.0",
+      "filename_hr": "records500/12000/12000_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12027,
+      "patient_id": "16783.0",
+      "filename_hr": "records500/12000/12027_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12056,
+      "patient_id": "1303.0",
+      "filename_hr": "records500/12000/12056_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12083,
+      "patient_id": "6766.0",
+      "filename_hr": "records500/12000/12083_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12085,
+      "patient_id": "658.0",
+      "filename_hr": "records500/12000/12085_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12147,
+      "patient_id": "5173.0",
+      "filename_hr": "records500/12000/12147_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12155,
+      "patient_id": "6529.0",
+      "filename_hr": "records500/12000/12155_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12292,
+      "patient_id": "2671.0",
+      "filename_hr": "records500/12000/12292_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12346,
+      "patient_id": "21604.0",
+      "filename_hr": "records500/12000/12346_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PSVT": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12424,
+      "patient_id": "13192.0",
+      "filename_hr": "records500/12000/12424_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12464,
+      "patient_id": "4945.0",
+      "filename_hr": "records500/12000/12464_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12489,
+      "patient_id": "544.0",
+      "filename_hr": "records500/12000/12489_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PSVT": 100.0,
+        "SVTAC": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12516,
+      "patient_id": "7714.0",
+      "filename_hr": "records500/12000/12516_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12525,
+      "patient_id": "359.0",
+      "filename_hr": "records500/12000/12525_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12532,
+      "patient_id": "357.0",
+      "filename_hr": "records500/12000/12532_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12542,
+      "patient_id": "20143.0",
+      "filename_hr": "records500/12000/12542_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12869,
+      "patient_id": "13894.0",
+      "filename_hr": "records500/12000/12869_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12891,
+      "patient_id": "20980.0",
+      "filename_hr": "records500/12000/12891_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0,
+        "STACH": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12948,
+      "patient_id": "13538.0",
+      "filename_hr": "records500/12000/12948_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 12986,
+      "patient_id": "1711.0",
+      "filename_hr": "records500/12000/12986_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 13131,
+      "patient_id": "18608.0",
+      "filename_hr": "records500/13000/13131_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 13186,
+      "patient_id": "18592.0",
+      "filename_hr": "records500/13000/13186_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PSVT": 100.0,
+        "SVARR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 13214,
+      "patient_id": "10372.0",
+      "filename_hr": "records500/13000/13214_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SBRAD": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 13416,
+      "patient_id": "12790.0",
+      "filename_hr": "records500/13000/13416_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 13906,
+      "patient_id": "2731.0",
+      "filename_hr": "records500/13000/13906_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "1AVB": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 13911,
+      "patient_id": "2757.0",
+      "filename_hr": "records500/13000/13911_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 13976,
+      "patient_id": "4525.0",
+      "filename_hr": "records500/13000/13976_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 14009,
+      "patient_id": "8917.0",
+      "filename_hr": "records500/14000/14009_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "2AVB": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 14147,
+      "patient_id": "8267.0",
+      "filename_hr": "records500/14000/14147_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 14221,
+      "patient_id": "20143.0",
+      "filename_hr": "records500/14000/14221_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 14332,
+      "patient_id": "9102.0",
+      "filename_hr": "records500/14000/14332_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 14518,
+      "patient_id": "716.0",
+      "filename_hr": "records500/14000/14518_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 14609,
+      "patient_id": "3149.0",
+      "filename_hr": "records500/14000/14609_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 14692,
+      "patient_id": "563.0",
+      "filename_hr": "records500/14000/14692_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 14792,
+      "patient_id": "10286.0",
+      "filename_hr": "records500/14000/14792_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 14963,
+      "patient_id": "630.0",
+      "filename_hr": "records500/14000/14963_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 15106,
+      "patient_id": "2060.0",
+      "filename_hr": "records500/15000/15106_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 15249,
+      "patient_id": "9744.0",
+      "filename_hr": "records500/15000/15249_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 15444,
+      "patient_id": "13898.0",
+      "filename_hr": "records500/15000/15444_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 15513,
+      "patient_id": "17787.0",
+      "filename_hr": "records500/15000/15513_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 15632,
+      "patient_id": "8511.0",
+      "filename_hr": "records500/15000/15632_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 15796,
+      "patient_id": "10943.0",
+      "filename_hr": "records500/15000/15796_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 15834,
+      "patient_id": "8905.0",
+      "filename_hr": "records500/15000/15834_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 15841,
+      "patient_id": "15056.0",
+      "filename_hr": "records500/15000/15841_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 15857,
+      "patient_id": "19454.0",
+      "filename_hr": "records500/15000/15857_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 15867,
+      "patient_id": "16720.0",
+      "filename_hr": "records500/15000/15867_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 16016,
+      "patient_id": "342.0",
+      "filename_hr": "records500/16000/16016_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 16050,
+      "patient_id": "4896.0",
+      "filename_hr": "records500/16000/16050_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 16056,
+      "patient_id": "7541.0",
+      "filename_hr": "records500/16000/16056_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 16076,
+      "patient_id": "4808.0",
+      "filename_hr": "records500/16000/16076_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 16098,
+      "patient_id": "6248.0",
+      "filename_hr": "records500/16000/16098_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 16106,
+      "patient_id": "19430.0",
+      "filename_hr": "records500/16000/16106_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PSVT": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 16163,
+      "patient_id": "11942.0",
+      "filename_hr": "records500/16000/16163_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 16218,
+      "patient_id": "4092.0",
+      "filename_hr": "records500/16000/16218_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 16245,
+      "patient_id": "7015.0",
+      "filename_hr": "records500/16000/16245_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 16312,
+      "patient_id": "973.0",
+      "filename_hr": "records500/16000/16312_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 16319,
+      "patient_id": "16138.0",
+      "filename_hr": "records500/16000/16319_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 16401,
+      "patient_id": "5680.0",
+      "filename_hr": "records500/16000/16401_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0,
+        "2AVB": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 16445,
+      "patient_id": "19238.0",
+      "filename_hr": "records500/16000/16445_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 16518,
+      "patient_id": "6477.0",
+      "filename_hr": "records500/16000/16518_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 16582,
+      "patient_id": "4566.0",
+      "filename_hr": "records500/16000/16582_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 16605,
+      "patient_id": "2751.0",
+      "filename_hr": "records500/16000/16605_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 16834,
+      "patient_id": "18192.0",
+      "filename_hr": "records500/16000/16834_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 16879,
+      "patient_id": "8330.0",
+      "filename_hr": "records500/16000/16879_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 16995,
+      "patient_id": "7426.0",
+      "filename_hr": "records500/16000/16995_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 17133,
+      "patient_id": "20184.0",
+      "filename_hr": "records500/17000/17133_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "1AVB": 100.0,
+        "SBRAD": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 17214,
+      "patient_id": "11570.0",
+      "filename_hr": "records500/17000/17214_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "SVARR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 17386,
+      "patient_id": "13134.0",
+      "filename_hr": "records500/17000/17386_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 17523,
+      "patient_id": "10229.0",
+      "filename_hr": "records500/17000/17523_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "1AVB": 100.0,
+        "SARRH": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 17623,
+      "patient_id": "10058.0",
+      "filename_hr": "records500/17000/17623_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SVARR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 17794,
+      "patient_id": "6472.0",
+      "filename_hr": "records500/17000/17794_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 17899,
+      "patient_id": "15731.0",
+      "filename_hr": "records500/17000/17899_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 18109,
+      "patient_id": "5744.0",
+      "filename_hr": "records500/18000/18109_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 18398,
+      "patient_id": "5706.0",
+      "filename_hr": "records500/18000/18398_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 18458,
+      "patient_id": "15658.0",
+      "filename_hr": "records500/18000/18458_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 18485,
+      "patient_id": "14828.0",
+      "filename_hr": "records500/18000/18485_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 18855,
+      "patient_id": "15223.0",
+      "filename_hr": "records500/18000/18855_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SVARR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 19087,
+      "patient_id": "16550.0",
+      "filename_hr": "records500/19000/19087_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 19170,
+      "patient_id": "20840.0",
+      "filename_hr": "records500/19000/19170_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 19211,
+      "patient_id": "17850.0",
+      "filename_hr": "records500/19000/19211_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 19695,
+      "patient_id": "14363.0",
+      "filename_hr": "records500/19000/19695_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 19931,
+      "patient_id": "20094.0",
+      "filename_hr": "records500/19000/19931_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 19953,
+      "patient_id": "18220.0",
+      "filename_hr": "records500/19000/19953_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SBRAD": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 20085,
+      "patient_id": "14180.0",
+      "filename_hr": "records500/20000/20085_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFLT": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 20406,
+      "patient_id": "17065.0",
+      "filename_hr": "records500/20000/20406_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "AFIB": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 20834,
+      "patient_id": "10827.0",
+      "filename_hr": "records500/20000/20834_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "AFIB": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 20889,
+      "patient_id": "9878.0",
+      "filename_hr": "records500/20000/20889_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "1AVB": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 21071,
+      "patient_id": "14180.0",
+      "filename_hr": "records500/21000/21071_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 21522,
+      "patient_id": "9941.0",
+      "filename_hr": "records500/21000/21522_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 21541,
+      "patient_id": "10108.0",
+      "filename_hr": "records500/21000/21541_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0,
+        "SBRAD": 0.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 21594,
+      "patient_id": "10108.0",
+      "filename_hr": "records500/21000/21594_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 21817,
+      "patient_id": "18354.0",
+      "filename_hr": "records500/21000/21817_hr",
+      "label": "abnormal",
+      "scp_codes": {
+        "PACE": 100.0
+      },
+      "has_global_abn": true
+    },
+    {
+      "ecg_id": 9058,
+      "patient_id": "832.0",
+      "filename_hr": "records500/09000/09058_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 1509,
+      "patient_id": "3949.0",
+      "filename_hr": "records500/01000/01509_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 13428,
+      "patient_id": "20976.0",
+      "filename_hr": "records500/13000/13428_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 1124,
+      "patient_id": "8989.0",
+      "filename_hr": "records500/01000/01124_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SARRH": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 7464,
+      "patient_id": "19850.0",
+      "filename_hr": "records500/07000/07464_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 2820,
+      "patient_id": "4853.0",
+      "filename_hr": "records500/02000/02820_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 7656,
+      "patient_id": "10129.0",
+      "filename_hr": "records500/07000/07656_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 6003,
+      "patient_id": "17336.0",
+      "filename_hr": "records500/06000/06003_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "STACH": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 18129,
+      "patient_id": "6716.0",
+      "filename_hr": "records500/18000/18129_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 16394,
+      "patient_id": "5092.0",
+      "filename_hr": "records500/16000/16394_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 21361,
+      "patient_id": "9680.0",
+      "filename_hr": "records500/21000/21361_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 8979,
+      "patient_id": "4223.0",
+      "filename_hr": "records500/08000/08979_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 15921,
+      "patient_id": "16502.0",
+      "filename_hr": "records500/15000/15921_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 8061,
+      "patient_id": "6245.0",
+      "filename_hr": "records500/08000/08061_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 13080,
+      "patient_id": "1602.0",
+      "filename_hr": "records500/13000/13080_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 16585,
+      "patient_id": "3708.0",
+      "filename_hr": "records500/16000/16585_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "STACH": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 7995,
+      "patient_id": "3753.0",
+      "filename_hr": "records500/07000/07995_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 10232,
+      "patient_id": "19553.0",
+      "filename_hr": "records500/10000/10232_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 1283,
+      "patient_id": "14902.0",
+      "filename_hr": "records500/01000/01283_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 5735,
+      "patient_id": "6377.0",
+      "filename_hr": "records500/05000/05735_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 7245,
+      "patient_id": "10190.0",
+      "filename_hr": "records500/07000/07245_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 15140,
+      "patient_id": "5869.0",
+      "filename_hr": "records500/15000/15140_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 15538,
+      "patient_id": "18169.0",
+      "filename_hr": "records500/15000/15538_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 15488,
+      "patient_id": "15578.0",
+      "filename_hr": "records500/15000/15488_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SBRAD": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 7950,
+      "patient_id": "17165.0",
+      "filename_hr": "records500/07000/07950_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 5975,
+      "patient_id": "14975.0",
+      "filename_hr": "records500/05000/05975_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 925,
+      "patient_id": "5897.0",
+      "filename_hr": "records500/00000/00925_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 5929,
+      "patient_id": "18345.0",
+      "filename_hr": "records500/05000/05929_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 2337,
+      "patient_id": "15459.0",
+      "filename_hr": "records500/02000/02337_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SARRH": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 6323,
+      "patient_id": "2713.0",
+      "filename_hr": "records500/06000/06323_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 15396,
+      "patient_id": "16815.0",
+      "filename_hr": "records500/15000/15396_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 12457,
+      "patient_id": "2687.0",
+      "filename_hr": "records500/12000/12457_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 4295,
+      "patient_id": "11001.0",
+      "filename_hr": "records500/04000/04295_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 1300,
+      "patient_id": "14503.0",
+      "filename_hr": "records500/01000/01300_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 3848,
+      "patient_id": "12953.0",
+      "filename_hr": "records500/03000/03848_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 14664,
+      "patient_id": "9324.0",
+      "filename_hr": "records500/14000/14664_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 15.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 2203,
+      "patient_id": "7921.0",
+      "filename_hr": "records500/02000/02203_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 13922,
+      "patient_id": "10655.0",
+      "filename_hr": "records500/13000/13922_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 10408,
+      "patient_id": "473.0",
+      "filename_hr": "records500/10000/10408_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 71,
+      "patient_id": "15551.0",
+      "filename_hr": "records500/00000/00071_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 13476,
+      "patient_id": "17306.0",
+      "filename_hr": "records500/13000/13476_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 3187,
+      "patient_id": "1309.0",
+      "filename_hr": "records500/03000/03187_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 16005,
+      "patient_id": "16085.0",
+      "filename_hr": "records500/16000/16005_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 8176,
+      "patient_id": "21764.0",
+      "filename_hr": "records500/08000/08176_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 793,
+      "patient_id": "18105.0",
+      "filename_hr": "records500/00000/00793_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 18501,
+      "patient_id": "15991.0",
+      "filename_hr": "records500/18000/18501_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 9874,
+      "patient_id": "18144.0",
+      "filename_hr": "records500/09000/09874_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 15142,
+      "patient_id": "16515.0",
+      "filename_hr": "records500/15000/15142_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 441,
+      "patient_id": "6036.0",
+      "filename_hr": "records500/00000/00441_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 247,
+      "patient_id": "15351.0",
+      "filename_hr": "records500/00000/00247_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 21264,
+      "patient_id": "18332.0",
+      "filename_hr": "records500/21000/21264_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 1254,
+      "patient_id": "16135.0",
+      "filename_hr": "records500/01000/01254_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 11888,
+      "patient_id": "18953.0",
+      "filename_hr": "records500/11000/11888_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 1086,
+      "patient_id": "2172.0",
+      "filename_hr": "records500/01000/01086_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 18921,
+      "patient_id": "8280.0",
+      "filename_hr": "records500/18000/18921_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 4103,
+      "patient_id": "648.0",
+      "filename_hr": "records500/04000/04103_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 16320,
+      "patient_id": "8375.0",
+      "filename_hr": "records500/16000/16320_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 2729,
+      "patient_id": "7936.0",
+      "filename_hr": "records500/02000/02729_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 10078,
+      "patient_id": "13438.0",
+      "filename_hr": "records500/10000/10078_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 14866,
+      "patient_id": "16655.0",
+      "filename_hr": "records500/14000/14866_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 2341,
+      "patient_id": "14475.0",
+      "filename_hr": "records500/02000/02341_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 6787,
+      "patient_id": "4316.0",
+      "filename_hr": "records500/06000/06787_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 10069,
+      "patient_id": "11624.0",
+      "filename_hr": "records500/10000/10069_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 11907,
+      "patient_id": "19696.0",
+      "filename_hr": "records500/11000/11907_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 14227,
+      "patient_id": "10377.0",
+      "filename_hr": "records500/14000/14227_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 17680,
+      "patient_id": "9341.0",
+      "filename_hr": "records500/17000/17680_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 6899,
+      "patient_id": "7771.0",
+      "filename_hr": "records500/06000/06899_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 8914,
+      "patient_id": "16657.0",
+      "filename_hr": "records500/08000/08914_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 14098,
+      "patient_id": "2759.0",
+      "filename_hr": "records500/14000/14098_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 5681,
+      "patient_id": "9794.0",
+      "filename_hr": "records500/05000/05681_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SARRH": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 14749,
+      "patient_id": "7411.0",
+      "filename_hr": "records500/14000/14749_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 17991,
+      "patient_id": "15138.0",
+      "filename_hr": "records500/17000/17991_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 8645,
+      "patient_id": "10875.0",
+      "filename_hr": "records500/08000/08645_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 1204,
+      "patient_id": "18591.0",
+      "filename_hr": "records500/01000/01204_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 21245,
+      "patient_id": "8037.0",
+      "filename_hr": "records500/21000/21245_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 4000,
+      "patient_id": "5410.0",
+      "filename_hr": "records500/04000/04000_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 8856,
+      "patient_id": "18052.0",
+      "filename_hr": "records500/08000/08856_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SBRAD": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 406,
+      "patient_id": "11864.0",
+      "filename_hr": "records500/00000/00406_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 17185,
+      "patient_id": "20147.0",
+      "filename_hr": "records500/17000/17185_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 16601,
+      "patient_id": "4818.0",
+      "filename_hr": "records500/16000/16601_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 15358,
+      "patient_id": "16363.0",
+      "filename_hr": "records500/15000/15358_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 5784,
+      "patient_id": "17693.0",
+      "filename_hr": "records500/05000/05784_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 3489,
+      "patient_id": "21682.0",
+      "filename_hr": "records500/03000/03489_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "SARRH": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 2388,
+      "patient_id": "21744.0",
+      "filename_hr": "records500/02000/02388_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 4650,
+      "patient_id": "6628.0",
+      "filename_hr": "records500/04000/04650_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 13252,
+      "patient_id": "8240.0",
+      "filename_hr": "records500/13000/13252_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 2545,
+      "patient_id": "16676.0",
+      "filename_hr": "records500/02000/02545_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 12458,
+      "patient_id": "13113.0",
+      "filename_hr": "records500/12000/12458_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 2391,
+      "patient_id": "13524.0",
+      "filename_hr": "records500/02000/02391_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 6089,
+      "patient_id": "723.0",
+      "filename_hr": "records500/06000/06089_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 11936,
+      "patient_id": "12223.0",
+      "filename_hr": "records500/11000/11936_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 14064,
+      "patient_id": "1851.0",
+      "filename_hr": "records500/14000/14064_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SARRH": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 14571,
+      "patient_id": "10473.0",
+      "filename_hr": "records500/14000/14571_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 7764,
+      "patient_id": "9892.0",
+      "filename_hr": "records500/07000/07764_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 1265,
+      "patient_id": "21080.0",
+      "filename_hr": "records500/01000/01265_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 16222,
+      "patient_id": "644.0",
+      "filename_hr": "records500/16000/16222_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 6861,
+      "patient_id": "16483.0",
+      "filename_hr": "records500/06000/06861_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 19257,
+      "patient_id": "11548.0",
+      "filename_hr": "records500/19000/19257_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SARRH": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 13447,
+      "patient_id": "11451.0",
+      "filename_hr": "records500/13000/13447_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 13936,
+      "patient_id": "12622.0",
+      "filename_hr": "records500/13000/13936_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SARRH": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 7886,
+      "patient_id": "21548.0",
+      "filename_hr": "records500/07000/07886_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 548,
+      "patient_id": "21363.0",
+      "filename_hr": "records500/00000/00548_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 7086,
+      "patient_id": "15430.0",
+      "filename_hr": "records500/07000/07086_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 21425,
+      "patient_id": "19970.0",
+      "filename_hr": "records500/21000/21425_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 20934,
+      "patient_id": "18216.0",
+      "filename_hr": "records500/20000/20934_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 13866,
+      "patient_id": "20516.0",
+      "filename_hr": "records500/13000/13866_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 15116,
+      "patient_id": "13187.0",
+      "filename_hr": "records500/15000/15116_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 15037,
+      "patient_id": "17846.0",
+      "filename_hr": "records500/15000/15037_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 1988,
+      "patient_id": "2660.0",
+      "filename_hr": "records500/01000/01988_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 4017,
+      "patient_id": "18217.0",
+      "filename_hr": "records500/04000/04017_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 19255,
+      "patient_id": "17921.0",
+      "filename_hr": "records500/19000/19255_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 8896,
+      "patient_id": "14877.0",
+      "filename_hr": "records500/08000/08896_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 1345,
+      "patient_id": "14763.0",
+      "filename_hr": "records500/01000/01345_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 12409,
+      "patient_id": "5282.0",
+      "filename_hr": "records500/12000/12409_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 16057,
+      "patient_id": "16563.0",
+      "filename_hr": "records500/16000/16057_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 19624,
+      "patient_id": "20798.0",
+      "filename_hr": "records500/19000/19624_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 3203,
+      "patient_id": "10042.0",
+      "filename_hr": "records500/03000/03203_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 9825,
+      "patient_id": "20059.0",
+      "filename_hr": "records500/09000/09825_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 8995,
+      "patient_id": "1199.0",
+      "filename_hr": "records500/08000/08995_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 13512,
+      "patient_id": "16788.0",
+      "filename_hr": "records500/13000/13512_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 7568,
+      "patient_id": "21313.0",
+      "filename_hr": "records500/07000/07568_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 7532,
+      "patient_id": "15794.0",
+      "filename_hr": "records500/07000/07532_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 14245,
+      "patient_id": "16255.0",
+      "filename_hr": "records500/14000/14245_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "SBRAD": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 11673,
+      "patient_id": "14571.0",
+      "filename_hr": "records500/11000/11673_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 14600,
+      "patient_id": "16780.0",
+      "filename_hr": "records500/14000/14600_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 7602,
+      "patient_id": "15248.0",
+      "filename_hr": "records500/07000/07602_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 21589,
+      "patient_id": "16381.0",
+      "filename_hr": "records500/21000/21589_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 8100,
+      "patient_id": "6166.0",
+      "filename_hr": "records500/08000/08100_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 4504,
+      "patient_id": "12130.0",
+      "filename_hr": "records500/04000/04504_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 14482,
+      "patient_id": "21036.0",
+      "filename_hr": "records500/14000/14482_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 8167,
+      "patient_id": "12417.0",
+      "filename_hr": "records500/08000/08167_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 12546,
+      "patient_id": "6334.0",
+      "filename_hr": "records500/12000/12546_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 12040,
+      "patient_id": "1074.0",
+      "filename_hr": "records500/12000/12040_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 3941,
+      "patient_id": "5762.0",
+      "filename_hr": "records500/03000/03941_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SBRAD": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 17891,
+      "patient_id": "12507.0",
+      "filename_hr": "records500/17000/17891_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 10280,
+      "patient_id": "10768.0",
+      "filename_hr": "records500/10000/10280_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 2659,
+      "patient_id": "3415.0",
+      "filename_hr": "records500/02000/02659_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 5430,
+      "patient_id": "20240.0",
+      "filename_hr": "records500/05000/05430_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SARRH": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 7681,
+      "patient_id": "1441.0",
+      "filename_hr": "records500/07000/07681_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 10163,
+      "patient_id": "4033.0",
+      "filename_hr": "records500/10000/10163_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 15883,
+      "patient_id": "8285.0",
+      "filename_hr": "records500/15000/15883_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 8984,
+      "patient_id": "1067.0",
+      "filename_hr": "records500/08000/08984_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 6034,
+      "patient_id": "19507.0",
+      "filename_hr": "records500/06000/06034_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 10170,
+      "patient_id": "5745.0",
+      "filename_hr": "records500/10000/10170_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 2305,
+      "patient_id": "3371.0",
+      "filename_hr": "records500/02000/02305_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 17974,
+      "patient_id": "1571.0",
+      "filename_hr": "records500/17000/17974_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 370,
+      "patient_id": "10213.0",
+      "filename_hr": "records500/00000/00370_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 5001,
+      "patient_id": "6715.0",
+      "filename_hr": "records500/05000/05001_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 5592,
+      "patient_id": "17714.0",
+      "filename_hr": "records500/05000/05592_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 6845,
+      "patient_id": "19845.0",
+      "filename_hr": "records500/06000/06845_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 1841,
+      "patient_id": "7070.0",
+      "filename_hr": "records500/01000/01841_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 14251,
+      "patient_id": "3286.0",
+      "filename_hr": "records500/14000/14251_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 13871,
+      "patient_id": "16108.0",
+      "filename_hr": "records500/13000/13871_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 9338,
+      "patient_id": "18444.0",
+      "filename_hr": "records500/09000/09338_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "STACH": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 15461,
+      "patient_id": "8007.0",
+      "filename_hr": "records500/15000/15461_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 8024,
+      "patient_id": "3373.0",
+      "filename_hr": "records500/08000/08024_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 8192,
+      "patient_id": "8073.0",
+      "filename_hr": "records500/08000/08192_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 17727,
+      "patient_id": "2354.0",
+      "filename_hr": "records500/17000/17727_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 18174,
+      "patient_id": "5418.0",
+      "filename_hr": "records500/18000/18174_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 14669,
+      "patient_id": "4301.0",
+      "filename_hr": "records500/14000/14669_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 19738,
+      "patient_id": "13035.0",
+      "filename_hr": "records500/19000/19738_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SBRAD": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 17400,
+      "patient_id": "20969.0",
+      "filename_hr": "records500/17000/17400_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 3811,
+      "patient_id": "7953.0",
+      "filename_hr": "records500/03000/03811_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 16087,
+      "patient_id": "1565.0",
+      "filename_hr": "records500/16000/16087_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 2190,
+      "patient_id": "7925.0",
+      "filename_hr": "records500/02000/02190_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 12806,
+      "patient_id": "15218.0",
+      "filename_hr": "records500/12000/12806_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 1698,
+      "patient_id": "13248.0",
+      "filename_hr": "records500/01000/01698_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 3880,
+      "patient_id": "8344.0",
+      "filename_hr": "records500/03000/03880_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 1821,
+      "patient_id": "7238.0",
+      "filename_hr": "records500/01000/01821_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 14299,
+      "patient_id": "11888.0",
+      "filename_hr": "records500/14000/14299_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 7590,
+      "patient_id": "17834.0",
+      "filename_hr": "records500/07000/07590_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 11069,
+      "patient_id": "9534.0",
+      "filename_hr": "records500/11000/11069_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 2837,
+      "patient_id": "843.0",
+      "filename_hr": "records500/02000/02837_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 7771,
+      "patient_id": "14938.0",
+      "filename_hr": "records500/07000/07771_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 16033,
+      "patient_id": "7203.0",
+      "filename_hr": "records500/16000/16033_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 1631,
+      "patient_id": "2352.0",
+      "filename_hr": "records500/01000/01631_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 11887,
+      "patient_id": "21372.0",
+      "filename_hr": "records500/11000/11887_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 2003,
+      "patient_id": "3634.0",
+      "filename_hr": "records500/02000/02003_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 6007,
+      "patient_id": "17597.0",
+      "filename_hr": "records500/06000/06007_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 9964,
+      "patient_id": "8964.0",
+      "filename_hr": "records500/09000/09964_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 16060,
+      "patient_id": "5059.0",
+      "filename_hr": "records500/16000/16060_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 1285,
+      "patient_id": "15970.0",
+      "filename_hr": "records500/01000/01285_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 12932,
+      "patient_id": "18013.0",
+      "filename_hr": "records500/12000/12932_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "STACH": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 20627,
+      "patient_id": "15479.0",
+      "filename_hr": "records500/20000/20627_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 5200,
+      "patient_id": "12314.0",
+      "filename_hr": "records500/05000/05200_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SARRH": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 20253,
+      "patient_id": "11173.0",
+      "filename_hr": "records500/20000/20253_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 14728,
+      "patient_id": "4413.0",
+      "filename_hr": "records500/14000/14728_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 8077,
+      "patient_id": "6141.0",
+      "filename_hr": "records500/08000/08077_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 12243,
+      "patient_id": "17116.0",
+      "filename_hr": "records500/12000/12243_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 50.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 3988,
+      "patient_id": "7929.0",
+      "filename_hr": "records500/03000/03988_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 13587,
+      "patient_id": "16598.0",
+      "filename_hr": "records500/13000/13587_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 6567,
+      "patient_id": "13971.0",
+      "filename_hr": "records500/06000/06567_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 12505,
+      "patient_id": "15831.0",
+      "filename_hr": "records500/12000/12505_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 12696,
+      "patient_id": "2766.0",
+      "filename_hr": "records500/12000/12696_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 11727,
+      "patient_id": "18670.0",
+      "filename_hr": "records500/11000/11727_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "STACH": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 10251,
+      "patient_id": "17341.0",
+      "filename_hr": "records500/10000/10251_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 3048,
+      "patient_id": "757.0",
+      "filename_hr": "records500/03000/03048_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 12764,
+      "patient_id": "932.0",
+      "filename_hr": "records500/12000/12764_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 20091,
+      "patient_id": "13425.0",
+      "filename_hr": "records500/20000/20091_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 7406,
+      "patient_id": "8856.0",
+      "filename_hr": "records500/07000/07406_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 14840,
+      "patient_id": "20173.0",
+      "filename_hr": "records500/14000/14840_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 6341,
+      "patient_id": "6614.0",
+      "filename_hr": "records500/06000/06341_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 868,
+      "patient_id": "4909.0",
+      "filename_hr": "records500/00000/00868_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 14901,
+      "patient_id": "1075.0",
+      "filename_hr": "records500/14000/14901_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 3558,
+      "patient_id": "20283.0",
+      "filename_hr": "records500/03000/03558_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 5007,
+      "patient_id": "21110.0",
+      "filename_hr": "records500/05000/05007_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 19253,
+      "patient_id": "21741.0",
+      "filename_hr": "records500/19000/19253_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 16654,
+      "patient_id": "7333.0",
+      "filename_hr": "records500/16000/16654_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 80.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 13095,
+      "patient_id": "2914.0",
+      "filename_hr": "records500/13000/13095_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 3373,
+      "patient_id": "12034.0",
+      "filename_hr": "records500/03000/03373_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 3444,
+      "patient_id": "13383.0",
+      "filename_hr": "records500/03000/03444_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 15745,
+      "patient_id": "4747.0",
+      "filename_hr": "records500/15000/15745_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 11357,
+      "patient_id": "21043.0",
+      "filename_hr": "records500/11000/11357_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 4179,
+      "patient_id": "8459.0",
+      "filename_hr": "records500/04000/04179_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 8644,
+      "patient_id": "552.0",
+      "filename_hr": "records500/08000/08644_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SBRAD": 0.0
+      },
+      "has_global_abn": false
+    },
+    {
+      "ecg_id": 1793,
+      "patient_id": "4832.0",
+      "filename_hr": "records500/01000/01793_hr",
+      "label": "normal",
+      "scp_codes": {
+        "NORM": 100.0,
+        "SR": 0.0
+      },
+      "has_global_abn": false
+    }
+  ],
+  "tasks": [
+    "ABNORMAL ECG",
+    "NORMAL SINUS RHYTHM",
+    "NORMAL ECG",
+    "SINUS RHYTHM",
+    "SINUS BRADYCARDIA",
+    "ATRIAL FIBRILLATION",
+    "SINUS TACHYCARDIA",
+    "otherwise normal ecg",
+    "LEFT AXIS DEVIATION",
+    "PREMATURE VENTRICULAR COMPLEXES",
+    "BORDERLINE ECG",
+    "RIGHT BUNDLE BRANCH BLOCK",
+    "SEPTAL INFARCT",
+    "LEFT ATRIAL ENLARGEMENT",
+    "NONSPECIFIC T WAVE ABNORMALITY",
+    "LOW VOLTAGE QRS",
+    "PREMATURE ATRIAL COMPLEXES",
+    "ANTERIOR INFARCT",
+    "INCOMPLETE RIGHT BUNDLE BRANCH BLOCK",
+    "PREMATURE SUPRAVENTRICULAR COMPLEXES",
+    "LEFT BUNDLE BRANCH BLOCK",
+    "NONSPECIFIC T WAVE ABNORMALITY NOW EVIDENT IN",
+    "NONSPECIFIC T WAVE ABNORMALITY NO LONGER EVIDENT IN",
+    "T WAVE INVERSION NOW EVIDENT IN",
+    "LATERAL INFARCT",
+    "NONSPECIFIC ST ABNORMALITY",
+    "LEFT VENTRICULAR HYPERTROPHY",
+    "T WAVE INVERSION NO LONGER EVIDENT IN",
+    "WITH RAPID VENTRICULAR RESPONSE",
+    "QT HAS SHORTENED",
+    "QT HAS LENGTHENED",
+    "FUSION COMPLEXES",
+    "ATRIAL FLUTTER",
+    "MARKED SINUS BRADYCARDIA",
+    "WITH SINUS ARRHYTHMIA",
+    "NONSPECIFIC ST AND T WAVE ABNORMALITY",
+    "LEFT ANTERIOR FASCICULAR BLOCK",
+    "RIGHT AXIS DEVIATION",
+    "ECTOPIC ATRIAL RHYTHM",
+    "UNDETERMINED RHYTHM",
+    "ANTEROSEPTAL INFARCT",
+    "RIGHTWARD AXIS",
+    "ST NOW DEPRESSED IN",
+    "WITH SHORT PR",
+    "WITH MARKED SINUS ARRHYTHMIA",
+    "ST NO LONGER DEPRESSED IN",
+    "INVERTED T WAVES HAVE REPLACED NONSPECIFIC T WAVE ABNORMALITY IN",
+    "NON-SPECIFIC CHANGE IN ST SEGMENT IN",
+    "NONSPECIFIC T WAVE ABNORMALITY HAS REPLACED INVERTED T WAVES IN",
+    "JUNCTIONAL RHYTHM",
+    "ELECTRONIC ATRIAL PACEMAKER",
+    "ABERRANT CONDUCTION",
+    "ELECTRONIC VENTRICULAR PACEMAKER",
+    "T WAVE INVERSION LESS EVIDENT IN",
+    "ANTEROLATERAL INFARCT",
+    "WITH REPOLARIZATION ABNORMALITY",
+    "RSR' OR QR PATTERN IN V1 SUGGESTS RIGHT VENTRICULAR CONDUCTION DELAY",
+    "T WAVE INVERSION MORE EVIDENT IN",
+    "WIDE QRS RHYTHM",
+    "WITH PREMATURE VENTRICULAR OR ABERRANTLY CONDUCTED COMPLEXES",
+    "RIGHT ATRIAL ENLARGEMENT",
+    "INFERIOR INFARCT",
+    "INCOMPLETE LEFT BUNDLE BRANCH BLOCK",
+    "VOLTAGE CRITERIA FOR LEFT VENTRICULAR HYPERTROPHY",
+    "OR DIGITALIS EFFECT",
+    "BIFASCICULAR BLOCK",
+    "ST NO LONGER ELEVATED IN",
+    "WITH SLOW VENTRICULAR RESPONSE",
+    "ST ELEVATION NOW PRESENT IN",
+    "PREMATURE ECTOPIC COMPLEXES",
+    "LEFT POSTERIOR FASCICULAR BLOCK",
+    "T WAVE AMPLITUDE HAS DECREASED IN",
+    "WITH A COMPETING JUNCTIONAL PACEMAKER",
+    "RIGHT SUPERIOR AXIS DEVIATION",
+    "BIATRIAL ENLARGEMENT",
+    "VENTRICULAR-PACED RHYTHM",
+    "ATRIAL-PACED RHYTHM",
+    "T WAVE AMPLITUDE HAS INCREASED IN",
+    "WITH QRS WIDENING",
+    "WITH 1ST DEGREE AV BLOCK",
+    "PROLONGED QT",
+    "WITH PROLONGED AV CONDUCTION",
+    "RIGHT VENTRICULAR HYPERTROPHY",
+    "WITH QRS WIDENING AND REPOLARIZATION ABNORMALITY",
+    "ATRIAL-SENSED VENTRICULAR-PACED RHYTHM",
+    "AV SEQUENTIAL OR DUAL CHAMBER ELECTRONIC PACEMAKER",
+    "PULMONARY DISEASE PATTERN",
+    "ACUTE MI / STEMI",
+    "INFERIOR-POSTERIOR INFARCT",
+    "NONSPECIFIC INTRAVENTRICULAR CONDUCTION DELAY",
+    "PREMATURE VENTRICULAR AND FUSION COMPLEXES",
+    "IN A PATTERN OF BIGEMINY",
+    "AV DUAL-PACED RHYTHM",
+    "SUPRAVENTRICULAR TACHYCARDIA",
+    "VENTRICULAR-PACED COMPLEXES",
+    "WIDE QRS TACHYCARDIA",
+    "RSR' PATTERN IN V1",
+    "ST LESS DEPRESSED IN",
+    "VENTRICULAR TACHYCARDIA",
+    "EARLY REPOLARIZATION",
+    "ST MORE DEPRESSED IN",
+    "ANTEROLATERAL LEADS",
+    "ELECTRONIC DEMAND PACING",
+    "RBBB AND LEFT ANTERIOR FASCICULAR BLOCK",
+    "LATERAL INJURY PATTERN",
+    "BIVENTRICULAR PACEMAKER DETECTED",
+    "SUSPECT UNSPECIFIED PACEMAKER FAILURE",
+    "WOLFF-PARKINSON-WHITE",
+    "WITH VENTRICULAR ESCAPE COMPLEXES",
+    "INFERIOR INJURY PATTERN",
+    "CONSIDER RIGHT VENTRICULAR INVOLVEMENT IN ACUTE INFERIOR INFARCT",
+    "ST ELEVATION HAS REPLACED ST DEPRESSION IN",
+    "NONSPECIFIC INTRAVENTRICULAR BLOCK",
+    "MASKED BY FASCICULAR BLOCK",
+    "PEDIATRIC ECG ANALYSIS",
+    "BLOCKED",
+    "WITH UNDETERMINED RHYTHM IRREGULARITY",
+    "LEFTWARD AXIS",
+    "WITH 2ND DEGREE SA BLOCK MOBITZ I",
+    "ACUTE",
+    "ABNORMAL LEFT AXIS DEVIATION",
+    "WITH COMPLETE HEART BLOCK",
+    "NO P-WAVES FOUND",
+    "ST LESS ELEVATED IN",
+    "WITH RETROGRADE CONDUCTION",
+    "ST MORE ELEVATED IN",
+    "JUNCTIONAL BRADYCARDIA",
+    "WITH VARIABLE AV BLOCK",
+    "ANTERIOR INJURY PATTERN",
+    "WITH JUNCTIONAL ESCAPE COMPLEXES",
+    "ACUTE MI",
+    "ACUTE PERICARDITIS",
+    "POSTERIOR INFARCT",
+    "IDIOVENTRICULAR RHYTHM",
+    "WITH 2ND DEGREE SA BLOCK MOBITZ II",
+    "R IN AVL",
+    "SINUS/ATRIAL CAPTURE",
+    "AV DUAL-PACED COMPLEXES",
+    "INFEROLATERAL INJURY PATTERN",
+    "RBBB AND LEFT POSTERIOR FASCICULAR BLOCK",
+    "ANTEROLATERAL INJURY PATTERN",
+    "ATRIAL-PACED COMPLEXES",
+    "WITH SINUS PAUSE",
+    "BIVENTRICULAR HYPERTROPHY",
+    "ABNORMAL RIGHT AXIS DEVIATION",
+    "SUPRAVENTRICULAR COMPLEXES",
+    "WITH 2ND DEGREE AV BLOCK MOBITZ I",
+    "WITH 2:1 AV CONDUCTION",
+    "WITH AV DISSOCIATION",
+    "MULTIFOCAL ATRIAL TACHYCARDIA"
+  ]
+}

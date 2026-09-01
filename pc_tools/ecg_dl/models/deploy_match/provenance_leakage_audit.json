@@ -1,0 +1,499 @@
+{
+  "audit_date": "2026-09-01 13:12:18",
+  "method": "按各脚本原始 RNG 调用顺序重放 seed=42 抽样, 用 split_guard 权威患者级划分 (合并 MIT+INCART 患者 79: train 49/val 15/test 15; PTB 患者 286: train 172/val 57/test 57) 审计",
+  "scripts": [
+    {
+      "script": "finetune_exp7c.py",
+      "rng_replicated": true,
+      "pre_sampling_rng": null,
+      "per_tag": {
+        "mit_bih": {
+          "tag": "mit_bih",
+          "sampled": 1600,
+          "train": 1099,
+          "val": 219,
+          "test": 282,
+          "test_ratio": 0.17625,
+          "val_ratio": 0.136875,
+          "leaked": true
+        },
+        "incart": {
+          "tag": "incart",
+          "sampled": 400,
+          "train": 228,
+          "val": 119,
+          "test": 53,
+          "test_ratio": 0.1325,
+          "val_ratio": 0.2975,
+          "leaked": true
+        },
+        "ptb": {
+          "tag": "ptb",
+          "sampled": 600,
+          "train": 371,
+          "val": 122,
+          "test": 107,
+          "test_ratio": 0.17833333333333334,
+          "val_ratio": 0.20333333333333334,
+          "leaked": true
+        }
+      },
+      "leaked": true
+    },
+    {
+      "script": "finetune_exp7c_mild.py",
+      "rng_replicated": true,
+      "pre_sampling_rng": null,
+      "per_tag": {
+        "mit_bih": {
+          "tag": "mit_bih",
+          "sampled": 1600,
+          "train": 1099,
+          "val": 219,
+          "test": 282,
+          "test_ratio": 0.17625,
+          "val_ratio": 0.136875,
+          "leaked": true
+        },
+        "incart": {
+          "tag": "incart",
+          "sampled": 400,
+          "train": 228,
+          "val": 119,
+          "test": 53,
+          "test_ratio": 0.1325,
+          "val_ratio": 0.2975,
+          "leaked": true
+        },
+        "ptb": {
+          "tag": "ptb",
+          "sampled": 600,
+          "train": 371,
+          "val": 122,
+          "test": 107,
+          "test_ratio": 0.17833333333333334,
+          "val_ratio": 0.20333333333333334,
+          "leaked": true
+        }
+      },
+      "leaked": true
+    },
+    {
+      "script": "finetune_exp7c_hardneg.py",
+      "rng_replicated": true,
+      "pre_sampling_rng": "synth_hard",
+      "per_tag": {
+        "mit_bih": {
+          "tag": "mit_bih",
+          "sampled": 1600,
+          "train": 1086,
+          "val": 226,
+          "test": 288,
+          "test_ratio": 0.18,
+          "val_ratio": 0.14125,
+          "leaked": true
+        },
+        "incart": {
+          "tag": "incart",
+          "sampled": 400,
+          "train": 219,
+          "val": 126,
+          "test": 55,
+          "test_ratio": 0.1375,
+          "val_ratio": 0.315,
+          "leaked": true
+        },
+        "ptb": {
+          "tag": "ptb",
+          "sampled": 600,
+          "train": 367,
+          "val": 118,
+          "test": 115,
+          "test_ratio": 0.19166666666666668,
+          "val_ratio": 0.19666666666666666,
+          "leaked": true
+        }
+      },
+      "leaked": true
+    },
+    {
+      "script": "finetune_exp7c_ecgfounder.py",
+      "rng_replicated": true,
+      "pre_sampling_rng": null,
+      "per_tag": {
+        "mit_bih": {
+          "tag": "mit_bih",
+          "sampled": 1000,
+          "train": 697,
+          "val": 142,
+          "test": 161,
+          "test_ratio": 0.161,
+          "val_ratio": 0.142,
+          "leaked": true
+        },
+        "incart": {
+          "tag": "incart",
+          "sampled": 300,
+          "train": 169,
+          "val": 99,
+          "test": 32,
+          "test_ratio": 0.10666666666666667,
+          "val_ratio": 0.33,
+          "leaked": true
+        },
+        "ptb": {
+          "tag": "ptb",
+          "sampled": 400,
+          "train": 228,
+          "val": 83,
+          "test": 89,
+          "test_ratio": 0.2225,
+          "val_ratio": 0.2075,
+          "leaked": true
+        }
+      },
+      "leaked": true
+    },
+    {
+      "script": "finetune_exp7c_ecgfounder_v2.py",
+      "rng_replicated": true,
+      "pre_sampling_rng": null,
+      "per_tag": {
+        "mit_bih": {
+          "tag": "mit_bih",
+          "sampled": 1000,
+          "train": 697,
+          "val": 142,
+          "test": 161,
+          "test_ratio": 0.161,
+          "val_ratio": 0.142,
+          "leaked": true
+        },
+        "incart": {
+          "tag": "incart",
+          "sampled": 300,
+          "train": 169,
+          "val": 99,
+          "test": 32,
+          "test_ratio": 0.10666666666666667,
+          "val_ratio": 0.33,
+          "leaked": true
+        },
+        "ptb": {
+          "tag": "ptb",
+          "sampled": 400,
+          "train": 228,
+          "val": 83,
+          "test": 89,
+          "test_ratio": 0.2225,
+          "val_ratio": 0.2075,
+          "leaked": true
+        }
+      },
+      "leaked": true
+    },
+    {
+      "script": "finetune_exp7c_ecgfounder_v3.py",
+      "rng_replicated": true,
+      "pre_sampling_rng": null,
+      "per_tag": {
+        "mit_bih": {
+          "tag": "mit_bih",
+          "sampled": 1000,
+          "train": 697,
+          "val": 142,
+          "test": 161,
+          "test_ratio": 0.161,
+          "val_ratio": 0.142,
+          "leaked": true
+        },
+        "incart": {
+          "tag": "incart",
+          "sampled": 300,
+          "train": 169,
+          "val": 99,
+          "test": 32,
+          "test_ratio": 0.10666666666666667,
+          "val_ratio": 0.33,
+          "leaked": true
+        },
+        "ptb": {
+          "tag": "ptb",
+          "sampled": 400,
+          "train": 228,
+          "val": 83,
+          "test": 89,
+          "test_ratio": 0.2225,
+          "val_ratio": 0.2075,
+          "leaked": true
+        }
+      },
+      "leaked": true
+    },
+    {
+      "script": "finetune_exp7c_ecgfounder_v4.py",
+      "rng_replicated": true,
+      "pre_sampling_rng": null,
+      "per_tag": {
+        "mit_bih": {
+          "tag": "mit_bih",
+          "sampled": 1000,
+          "train": 697,
+          "val": 142,
+          "test": 161,
+          "test_ratio": 0.161,
+          "val_ratio": 0.142,
+          "leaked": true
+        },
+        "incart": {
+          "tag": "incart",
+          "sampled": 300,
+          "train": 169,
+          "val": 99,
+          "test": 32,
+          "test_ratio": 0.10666666666666667,
+          "val_ratio": 0.33,
+          "leaked": true
+        },
+        "ptb": {
+          "tag": "ptb",
+          "sampled": 400,
+          "train": 228,
+          "val": 83,
+          "test": 89,
+          "test_ratio": 0.2225,
+          "val_ratio": 0.2075,
+          "leaked": true
+        }
+      },
+      "leaked": true
+    },
+    {
+      "script": "qat_exp7c.py",
+      "rng_replicated": true,
+      "pre_sampling_rng": null,
+      "per_tag": {
+        "mit_bih": {
+          "tag": "mit_bih",
+          "sampled": 1300,
+          "train": 916,
+          "val": 178,
+          "test": 206,
+          "test_ratio": 0.15846153846153846,
+          "val_ratio": 0.13692307692307693,
+          "leaked": true
+        },
+        "incart": {
+          "tag": "incart",
+          "sampled": 400,
+          "train": 221,
+          "val": 109,
+          "test": 70,
+          "test_ratio": 0.175,
+          "val_ratio": 0.2725,
+          "leaked": true
+        },
+        "ptb": {
+          "tag": "ptb",
+          "sampled": 600,
+          "train": 359,
+          "val": 134,
+          "test": 107,
+          "test_ratio": 0.17833333333333334,
+          "val_ratio": 0.22333333333333333,
+          "leaked": true
+        }
+      },
+      "leaked": true
+    },
+    {
+      "script": "qat_exp7c_v3.py",
+      "rng_replicated": true,
+      "pre_sampling_rng": null,
+      "per_tag": {
+        "mit_bih": {
+          "tag": "mit_bih",
+          "sampled": 1000,
+          "train": 697,
+          "val": 142,
+          "test": 161,
+          "test_ratio": 0.161,
+          "val_ratio": 0.142,
+          "leaked": true
+        },
+        "incart": {
+          "tag": "incart",
+          "sampled": 300,
+          "train": 169,
+          "val": 99,
+          "test": 32,
+          "test_ratio": 0.10666666666666667,
+          "val_ratio": 0.33,
+          "leaked": true
+        },
+        "ptb": {
+          "tag": "ptb",
+          "sampled": 1000,
+          "train": 577,
+          "val": 215,
+          "test": 208,
+          "test_ratio": 0.208,
+          "val_ratio": 0.215,
+          "leaked": true
+        }
+      },
+      "leaked": true
+    },
+    {
+      "script": "qat_exp7c_v3b.py",
+      "rng_replicated": true,
+      "pre_sampling_rng": null,
+      "per_tag": {
+        "mit_bih": {
+          "tag": "mit_bih",
+          "sampled": 1600,
+          "train": 1099,
+          "val": 219,
+          "test": 282,
+          "test_ratio": 0.17625,
+          "val_ratio": 0.136875,
+          "leaked": true
+        },
+        "incart": {
+          "tag": "incart",
+          "sampled": 400,
+          "train": 228,
+          "val": 119,
+          "test": 53,
+          "test_ratio": 0.1325,
+          "val_ratio": 0.2975,
+          "leaked": true
+        },
+        "ptb": {
+          "tag": "ptb",
+          "sampled": 650,
+          "train": 388,
+          "val": 139,
+          "test": 123,
+          "test_ratio": 0.18923076923076923,
+          "val_ratio": 0.21384615384615385,
+          "leaked": true
+        }
+      },
+      "leaked": true
+    },
+    {
+      "script": "qat_exp7c_v4.py",
+      "rng_replicated": true,
+      "pre_sampling_rng": null,
+      "per_tag": {
+        "mit_bih": {
+          "tag": "mit_bih",
+          "sampled": 1600,
+          "train": 1099,
+          "val": 219,
+          "test": 282,
+          "test_ratio": 0.17625,
+          "val_ratio": 0.136875,
+          "leaked": true
+        },
+        "incart": {
+          "tag": "incart",
+          "sampled": 400,
+          "train": 228,
+          "val": 119,
+          "test": 53,
+          "test_ratio": 0.1325,
+          "val_ratio": 0.2975,
+          "leaked": true
+        },
+        "ptb": {
+          "tag": "ptb",
+          "sampled": 650,
+          "train": 388,
+          "val": 139,
+          "test": 123,
+          "test_ratio": 0.18923076923076923,
+          "val_ratio": 0.21384615384615385,
+          "leaked": true
+        }
+      },
+      "leaked": true
+    },
+    {
+      "script": "qat_exp7c_v5.py",
+      "rng_replicated": true,
+      "pre_sampling_rng": null,
+      "per_tag": {
+        "mit_bih": {
+          "tag": "mit_bih",
+          "sampled": 1600,
+          "train": 1099,
+          "val": 219,
+          "test": 282,
+          "test_ratio": 0.17625,
+          "val_ratio": 0.136875,
+          "leaked": true
+        },
+        "incart": {
+          "tag": "incart",
+          "sampled": 400,
+          "train": 228,
+          "val": 119,
+          "test": 53,
+          "test_ratio": 0.1325,
+          "val_ratio": 0.2975,
+          "leaked": true
+        },
+        "ptb": {
+          "tag": "ptb",
+          "sampled": 650,
+          "train": 388,
+          "val": 139,
+          "test": 123,
+          "test_ratio": 0.18923076923076923,
+          "val_ratio": 0.21384615384615385,
+          "leaked": true
+        }
+      },
+      "leaked": true
+    }
+  ],
+  "v4_mask_alignment": {
+    "script": "finetune_exp7c_v4.py",
+    "bug": "sample_domain 用合并掩码的 [:len(incart)] 前缀充当 INCART train 掩码; 合并数组前 658962 条是 MIT 心拍, 前缀截断取到的是 MIT 的患者划分状态, 对 INCART 等价于随机过滤",
+    "len_mit_beats": 658962,
+    "len_inc_beats": 175779,
+    "inc_records_wrongly_kept": 52,
+    "inc_records_correct_train": 42,
+    "inc_test_records_passing_filter": [
+      1,
+      2,
+      12,
+      13,
+      14,
+      68,
+      69,
+      74,
+      75
+    ],
+    "inc_val_records_passing_filter": [
+      10,
+      11,
+      15,
+      20,
+      21,
+      22,
+      27,
+      35,
+      36,
+      37,
+      72,
+      73
+    ],
+    "inc_beats_available_under_wrong_mask": 110643,
+    "leaked": true
+  },
+  "verdict": "LEAKED",
+  "implication": "板上 exp7c INT8 的训练数据出身如含测试患者, 则其 FINAL_RESULTS 患者级指标与论文数字需重评"
+}

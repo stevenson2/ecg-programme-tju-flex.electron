@@ -42,6 +42,17 @@ def load_domain(tag, n_abn, n_norm):
     ia = np.where(l == 1)[0]; inn = np.where(l == 0)[0]
     sa = rng.choice(ia, min(n_abn, len(ia)), replace=False)
     sn = rng.choice(inn, min(n_norm, len(inn)), replace=False)
+    # 患者级泄漏守卫 (2026-09 审计: 本脚本历史抽样混入测试患者, 见
+    # models/deploy_match/provenance_leakage_audit.json); 再次运行将直接失败。
+    from pathlib import Path as _P
+    import sys as _sys
+    _sys.path.insert(0, str(_P(__file__).resolve().parent))
+    from data.split_guard import get_guard
+    import os as _os
+    _ecg = _os.environ.get("ECG_PROCESSED_DIR", "/home/devcontainers/ecg_data")
+    r = np.load(str(_ecg) + "/" + tag + "_processed_deploy_causal_record_ids.npy")
+    get_guard(tag).assert_train_only(np.concatenate([r[sa], r[sn]]),
+                                     context="load_domain")
     return (np.asarray(b[sa], dtype=np.float32), np.ones(len(sa), dtype=np.int32),
             np.asarray(b[sn], dtype=np.float32), np.zeros(len(sn), dtype=np.int32))
 

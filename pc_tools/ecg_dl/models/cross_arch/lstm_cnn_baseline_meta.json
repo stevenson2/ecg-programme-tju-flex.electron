@@ -1,0 +1,11 @@
+{
+  "arch": "lstm_cnn",
+  "chain": "baseline",
+  "mixed_precision": "mixed_float16",
+  "epochs_run": 19,
+  "best_val_auc": 0.8590673804283142,
+  "best_val_loss": 0.2541218400001526,
+  "model_path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/cross_arch/lstm_cnn_baseline.h5",
+  "history_csv": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/cross_arch/lstm_cnn_baseline_history.csv",
+  "elapsed_s": 816.3
+}

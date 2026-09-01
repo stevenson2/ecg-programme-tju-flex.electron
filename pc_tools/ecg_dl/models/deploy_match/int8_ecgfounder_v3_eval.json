@@ -1,0 +1,56 @@
+{
+  "date": "2026-08-24 15:29:51",
+  "models": {
+    "exp7c": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/best_resnet_large_exp7c.h5",
+    "v3_float": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/best_resnet_large_exp7c_ecgfounder_v3.h5",
+    "v3_qat_int8": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/ecg_model_exp7c_ecgfounder_v3_qat_int8.tflite"
+  },
+  "pc_resolver": "BUILTIN_REF",
+  "results": {
+    "exp7c": {
+      "mit": {
+        "auc": 0.8963099468995921,
+        "n": 51883
+      },
+      "ptb": {
+        "auc": 0.8015097305781951,
+        "n": 13058
+      },
+      "real_normal": {
+        "mean": 0.449370414018631,
+        "frac_gt_0.5": 0.24437299035369775,
+        "n": 311
+      }
+    },
+    "v3_float": {
+      "mit": {
+        "auc": 0.8912875890148468,
+        "n": 51883
+      },
+      "ptb": {
+        "auc": 0.796355778694863,
+        "n": 13058
+      },
+      "real_normal": {
+        "mean": 0.38433316349983215,
+        "frac_gt_0.5": 0.16720257234726688,
+        "n": 311
+      }
+    },
+    "v3_qat_int8": {
+      "mit": {
+        "auc": 0.8797929758104656,
+        "n": 51883
+      },
+      "ptb": {
+        "auc": 0.8142734914128786,
+        "n": 13058
+      },
+      "real_normal": {
+        "mean": 0.16903637459807075,
+        "frac_gt_0.5": 0.02572347266881029,
+        "n": 311
+      }
+    }
+  }
+}

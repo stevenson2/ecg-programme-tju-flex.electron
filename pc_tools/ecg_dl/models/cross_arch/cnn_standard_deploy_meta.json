@@ -1,0 +1,11 @@
+{
+  "arch": "cnn_standard",
+  "chain": "deploy",
+  "mixed_precision": "mixed_float16",
+  "epochs_run": 22,
+  "best_val_auc": 0.9300045371055603,
+  "best_val_loss": 0.19525203108787537,
+  "model_path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/cross_arch/cnn_standard_deploy.h5",
+  "history_csv": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/cross_arch/cnn_standard_deploy_history.csv",
+  "elapsed_s": 107.2
+}

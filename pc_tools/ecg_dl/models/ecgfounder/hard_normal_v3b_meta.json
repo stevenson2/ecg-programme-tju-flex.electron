@@ -1,0 +1,7 @@
+{
+  "n": 103,
+  "threshold": 0.5,
+  "source": "v3b qat int8 scores on 2360 PTB-XL normal beats",
+  "max_score": 0.99609375,
+  "mean_hard_score": 0.7688106894493103
+}

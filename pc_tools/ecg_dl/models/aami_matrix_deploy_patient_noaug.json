@@ -1,0 +1,1757 @@
+{
+  "meta": {
+    "date": "2026-08-23 20:37:31",
+    "task": "AAMI superclass matrix under deployment chain, noaug test beats",
+    "eval_chain": "deploy",
+    "split": "patient-level 60/20/20, seed=42, MIT+INCART",
+    "noaug_rule": "MIT 6x augmented deploy data reduced to first raw block per record; INCART kept unchanged",
+    "thresholds": [
+      0.35,
+      0.5,
+      0.6,
+      0.65
+    ],
+    "n_test": 51883,
+    "n_abn": 5636,
+    "n_incart_unknown": 173756,
+    "train_records": 73,
+    "test_records": 23,
+    "train_test_record_intersection": 0,
+    "patient_stats": {
+      "n_patients": 79,
+      "n_train": 49,
+      "n_val": 15,
+      "n_test": 15,
+      "beats_train": 162959,
+      "beats_val": 70764,
+      "beats_test": 51883,
+      "test_patients": [
+        "inc_inc_1",
+        "inc_inc_26",
+        "inc_inc_29",
+        "inc_inc_32",
+        "inc_inc_4",
+        "inc_inc_6",
+        "mit_101",
+        "mit_105",
+        "mit_108",
+        "mit_111",
+        "mit_119",
+        "mit_201_202",
+        "mit_205",
+        "mit_207",
+        "mit_208"
+      ],
+      "val_patients": [
+        "inc_inc_10",
+        "inc_inc_13",
+        "inc_inc_14",
+        "inc_inc_16",
+        "inc_inc_25",
+        "inc_inc_31",
+        "inc_inc_5",
+        "inc_inc_7",
+        "mit_112",
+        "mit_203",
+        "mit_212",
+        "mit_221",
+        "mit_222",
+        "mit_232",
+        "mit_234"
+      ],
+      "train_patients": [
+        "inc_inc_11",
+        "inc_inc_12",
+        "inc_inc_15",
+        "inc_inc_17",
+        "inc_inc_18",
+        "inc_inc_19",
+        "inc_inc_2",
+        "inc_inc_20",
+        "inc_inc_21",
+        "inc_inc_22",
+        "inc_inc_23",
+        "inc_inc_24",
+        "inc_inc_27",
+        "inc_inc_28",
+        "inc_inc_3",
+        "inc_inc_30",
+        "inc_inc_8",
+        "inc_inc_9",
+        "mit_100",
+        "mit_102",
+        "mit_103",
+        "mit_104",
+        "mit_106",
+        "mit_107",
+        "mit_109",
+        "mit_113",
+        "mit_114",
+        "mit_115",
+        "mit_116",
+        "mit_117",
+        "mit_118",
+        "mit_121",
+        "mit_122",
+        "mit_123",
+        "mit_124",
+        "mit_200",
+        "mit_209",
+        "mit_210",
+        "mit_213",
+        "mit_214",
+        "mit_215",
+        "mit_217",
+        "mit_219",
+        "mit_220",
+        "mit_223",
+        "mit_228",
+        "mit_230",
+        "mit_231",
+        "mit_233"
+      ]
+    },
+    "metric_notes": [
+      "Per-class table reports recall/AUC only; classwise precision is omitted because it can be an identity when no negative samples exist (AGENTS §30).",
+      "Global precision/FAR are reported separately.",
+      "INCART beats without recoverable .atr symbols are excluded from per-class rows but included in global rows."
+    ]
+  },
+  "models": [
+    {
+      "tag": "exp5_patient_clean",
+      "role": "patient_level_research_baseline",
+      "format": "h5_float32",
+      "model_path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/best_resnet_large_exp5_patient_clean.h5",
+      "model_size_bytes": 1179920,
+      "model_sha256_8": "f2695102",
+      "eval_chain": "deploy",
+      "split": "patient_level_60_20_20_seed42_mit_incart",
+      "n_test": 51883,
+      "n_abn": 5636,
+      "global_auc": 0.948573,
+      "per_class": {
+        "N": {
+          "n": 20981,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 20981,
+          "abn_fraction": 0.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": null,
+            "thr_0.50": null,
+            "thr_0.60": null,
+            "thr_0.65": null
+          }
+        },
+        "S": {
+          "n": 302,
+          "n_abn": 302,
+          "n_pos": 302,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.986755,
+            "thr_0.50": 0.980132,
+            "thr_0.60": 0.963576,
+            "thr_0.65": 0.960265
+          }
+        },
+        "V": {
+          "n": 2590,
+          "n_abn": 2590,
+          "n_pos": 2590,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.987259,
+            "thr_0.50": 0.974903,
+            "thr_0.60": 0.964865,
+            "thr_0.65": 0.954826
+          }
+        },
+        "F": {
+          "n": 389,
+          "n_abn": 389,
+          "n_pos": 389,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.745501,
+            "thr_0.50": 0.712082,
+            "thr_0.60": 0.686375,
+            "thr_0.65": 0.676093
+          }
+        },
+        "Q": {
+          "n": 0,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 0,
+          "abn_fraction": null,
+          "auc": null,
+          "recall": {}
+        }
+      },
+      "global": {
+        "thr_0.35": {
+          "threshold": 0.35,
+          "precision": 0.316818,
+          "recall": 0.966643,
+          "specificity": 0.745973,
+          "far": 0.254027,
+          "f1": 0.477225,
+          "tp": 5448,
+          "fp": 11748,
+          "tn": 34499,
+          "fn": 188,
+          "n": 51883
+        },
+        "thr_0.50": {
+          "threshold": 0.5,
+          "precision": 0.365734,
+          "recall": 0.955997,
+          "specificity": 0.797954,
+          "far": 0.202046,
+          "f1": 0.529065,
+          "tp": 5388,
+          "fp": 9344,
+          "tn": 36903,
+          "fn": 248,
+          "n": 51883
+        },
+        "thr_0.60": {
+          "threshold": 0.6,
+          "precision": 0.40137,
+          "recall": 0.945884,
+          "specificity": 0.828075,
+          "far": 0.171925,
+          "f1": 0.56359,
+          "tp": 5331,
+          "fp": 7951,
+          "tn": 38296,
+          "fn": 305,
+          "n": 51883
+        },
+        "thr_0.65": {
+          "threshold": 0.65,
+          "precision": 0.419087,
+          "recall": 0.939674,
+          "specificity": 0.841265,
+          "far": 0.158735,
+          "f1": 0.579653,
+          "tp": 5296,
+          "fp": 7341,
+          "tn": 38906,
+          "fn": 340,
+          "n": 51883
+        }
+      },
+      "perfect_value_flags": [],
+      "runtime_s": 14.5
+    },
+    {
+      "tag": "exp6_sgd",
+      "role": "deploy_chain_retrain",
+      "format": "h5_float32",
+      "model_path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/best_resnet_large_exp6_sgd.h5",
+      "model_size_bytes": 894872,
+      "model_sha256_8": "bc7b1677",
+      "eval_chain": "deploy",
+      "split": "patient_level_60_20_20_seed42_mit_incart",
+      "n_test": 51883,
+      "n_abn": 5636,
+      "global_auc": 0.912206,
+      "per_class": {
+        "N": {
+          "n": 20981,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 20981,
+          "abn_fraction": 0.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": null,
+            "thr_0.50": null,
+            "thr_0.60": null,
+            "thr_0.65": null
+          }
+        },
+        "S": {
+          "n": 302,
+          "n_abn": 302,
+          "n_pos": 302,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.913907,
+            "thr_0.50": 0.887417,
+            "thr_0.60": 0.860927,
+            "thr_0.65": 0.854305
+          }
+        },
+        "V": {
+          "n": 2590,
+          "n_abn": 2590,
+          "n_pos": 2590,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.971815,
+            "thr_0.50": 0.956371,
+            "thr_0.60": 0.944015,
+            "thr_0.65": 0.934749
+          }
+        },
+        "F": {
+          "n": 389,
+          "n_abn": 389,
+          "n_pos": 389,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.473008,
+            "thr_0.50": 0.426735,
+            "thr_0.60": 0.393316,
+            "thr_0.65": 0.377892
+          }
+        },
+        "Q": {
+          "n": 0,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 0,
+          "abn_fraction": null,
+          "auc": null,
+          "recall": {}
+        }
+      },
+      "global": {
+        "thr_0.35": {
+          "threshold": 0.35,
+          "precision": 0.284332,
+          "recall": 0.928318,
+          "specificity": 0.715246,
+          "far": 0.284754,
+          "f1": 0.435329,
+          "tp": 5232,
+          "fp": 13169,
+          "tn": 33078,
+          "fn": 404,
+          "n": 51883
+        },
+        "thr_0.50": {
+          "threshold": 0.5,
+          "precision": 0.323641,
+          "recall": 0.910397,
+          "specificity": 0.768136,
+          "far": 0.231864,
+          "f1": 0.477524,
+          "tp": 5131,
+          "fp": 10723,
+          "tn": 35524,
+          "fn": 505,
+          "n": 51883
+        },
+        "thr_0.60": {
+          "threshold": 0.6,
+          "precision": 0.350705,
+          "recall": 0.895493,
+          "specificity": 0.797954,
+          "far": 0.202046,
+          "f1": 0.50402,
+          "tp": 5047,
+          "fp": 9344,
+          "tn": 36903,
+          "fn": 589,
+          "n": 51883
+        },
+        "thr_0.65": {
+          "threshold": 0.65,
+          "precision": 0.36605,
+          "recall": 0.88538,
+          "specificity": 0.813134,
+          "far": 0.186866,
+          "f1": 0.517957,
+          "tp": 4990,
+          "fp": 8642,
+          "tn": 37605,
+          "fn": 646,
+          "n": 51883
+        }
+      },
+      "perfect_value_flags": [],
+      "runtime_s": 4.5
+    },
+    {
+      "tag": "exp7b",
+      "role": "pre_real_afe_finetune",
+      "format": "h5_float32",
+      "model_path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/best_resnet_large_exp7b.h5",
+      "model_size_bytes": 894872,
+      "model_sha256_8": "990502bc",
+      "eval_chain": "deploy",
+      "split": "patient_level_60_20_20_seed42_mit_incart",
+      "n_test": 51883,
+      "n_abn": 5636,
+      "global_auc": 0.863523,
+      "per_class": {
+        "N": {
+          "n": 20981,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 20981,
+          "abn_fraction": 0.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": null,
+            "thr_0.50": null,
+            "thr_0.60": null,
+            "thr_0.65": null
+          }
+        },
+        "S": {
+          "n": 302,
+          "n_abn": 302,
+          "n_pos": 302,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.937086,
+            "thr_0.50": 0.923841,
+            "thr_0.60": 0.923841,
+            "thr_0.65": 0.92053
+          }
+        },
+        "V": {
+          "n": 2590,
+          "n_abn": 2590,
+          "n_pos": 2590,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.963707,
+            "thr_0.50": 0.931274,
+            "thr_0.60": 0.894981,
+            "thr_0.65": 0.870656
+          }
+        },
+        "F": {
+          "n": 389,
+          "n_abn": 389,
+          "n_pos": 389,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.411311,
+            "thr_0.50": 0.321337,
+            "thr_0.60": 0.275064,
+            "thr_0.65": 0.25964
+          }
+        },
+        "Q": {
+          "n": 0,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 0,
+          "abn_fraction": null,
+          "auc": null,
+          "recall": {}
+        }
+      },
+      "global": {
+        "thr_0.35": {
+          "threshold": 0.35,
+          "precision": 0.288197,
+          "recall": 0.894606,
+          "specificity": 0.730728,
+          "far": 0.269272,
+          "f1": 0.435952,
+          "tp": 5042,
+          "fp": 12453,
+          "tn": 33794,
+          "fn": 594,
+          "n": 51883
+        },
+        "thr_0.50": {
+          "threshold": 0.5,
+          "precision": 0.312248,
+          "recall": 0.853087,
+          "specificity": 0.771012,
+          "far": 0.228988,
+          "f1": 0.457165,
+          "tp": 4808,
+          "fp": 10590,
+          "tn": 35657,
+          "fn": 828,
+          "n": 51883
+        },
+        "thr_0.60": {
+          "threshold": 0.6,
+          "precision": 0.32877,
+          "recall": 0.822392,
+          "specificity": 0.795381,
+          "far": 0.204619,
+          "f1": 0.469748,
+          "tp": 4635,
+          "fp": 9463,
+          "tn": 36784,
+          "fn": 1001,
+          "n": 51883
+        },
+        "thr_0.65": {
+          "threshold": 0.65,
+          "precision": 0.337406,
+          "recall": 0.803584,
+          "specificity": 0.807685,
+          "far": 0.192315,
+          "f1": 0.475261,
+          "tp": 4529,
+          "fp": 8894,
+          "tn": 37353,
+          "fn": 1107,
+          "n": 51883
+        }
+      },
+      "perfect_value_flags": [],
+      "runtime_s": 4.7
+    },
+    {
+      "tag": "exp7c_float32",
+      "role": "current_deployment_anchor",
+      "format": "h5_float32",
+      "model_path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/best_resnet_large_exp7c.h5",
+      "model_size_bytes": 674808,
+      "model_sha256_8": "1bfd5ab3",
+      "eval_chain": "deploy",
+      "split": "patient_level_60_20_20_seed42_mit_incart",
+      "n_test": 51883,
+      "n_abn": 5636,
+      "global_auc": 0.885801,
+      "per_class": {
+        "N": {
+          "n": 20981,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 20981,
+          "abn_fraction": 0.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": null,
+            "thr_0.50": null,
+            "thr_0.60": null,
+            "thr_0.65": null
+          }
+        },
+        "S": {
+          "n": 302,
+          "n_abn": 302,
+          "n_pos": 302,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.937086,
+            "thr_0.50": 0.890728,
+            "thr_0.60": 0.817881,
+            "thr_0.65": 0.764901
+          }
+        },
+        "V": {
+          "n": 2590,
+          "n_abn": 2590,
+          "n_pos": 2590,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.969112,
+            "thr_0.50": 0.733205,
+            "thr_0.60": 0.496911,
+            "thr_0.65": 0.382239
+          }
+        },
+        "F": {
+          "n": 389,
+          "n_abn": 389,
+          "n_pos": 389,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.460154,
+            "thr_0.50": 0.077121,
+            "thr_0.60": 0.030848,
+            "thr_0.65": 0.012853
+          }
+        },
+        "Q": {
+          "n": 0,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 0,
+          "abn_fraction": null,
+          "auc": null,
+          "recall": {}
+        }
+      },
+      "global": {
+        "thr_0.35": {
+          "threshold": 0.35,
+          "precision": 0.303793,
+          "recall": 0.899574,
+          "specificity": 0.748762,
+          "far": 0.251238,
+          "f1": 0.454199,
+          "tp": 5070,
+          "fp": 11619,
+          "tn": 34628,
+          "fn": 566,
+          "n": 51883
+        },
+        "thr_0.50": {
+          "threshold": 0.5,
+          "precision": 0.431647,
+          "recall": 0.682931,
+          "specificity": 0.890415,
+          "far": 0.109585,
+          "f1": 0.528963,
+          "tp": 3849,
+          "fp": 5068,
+          "tn": 41179,
+          "fn": 1787,
+          "n": 51883
+        },
+        "thr_0.60": {
+          "threshold": 0.6,
+          "precision": 0.435866,
+          "recall": 0.508872,
+          "specificity": 0.919735,
+          "far": 0.080265,
+          "f1": 0.469548,
+          "tp": 2868,
+          "fp": 3712,
+          "tn": 42535,
+          "fn": 2768,
+          "n": 51883
+        },
+        "thr_0.65": {
+          "threshold": 0.65,
+          "precision": 0.426296,
+          "recall": 0.427431,
+          "specificity": 0.929898,
+          "far": 0.070102,
+          "f1": 0.426863,
+          "tp": 2409,
+          "fp": 3242,
+          "tn": 43005,
+          "fn": 3227,
+          "n": 51883
+        }
+      },
+      "perfect_value_flags": [],
+      "runtime_s": 2.7
+    },
+    {
+      "tag": "exp7c_int8_tflite",
+      "role": "current_deployment_anchor",
+      "format": "tflite_int8",
+      "model_path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/ecg_model_exp7c_int8.tflite",
+      "model_size_bytes": 167376,
+      "model_sha256_8": "d572f7f8",
+      "eval_chain": "deploy",
+      "split": "patient_level_60_20_20_seed42_mit_incart",
+      "n_test": 51883,
+      "n_abn": 5636,
+      "global_auc": 0.889437,
+      "per_class": {
+        "N": {
+          "n": 20981,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 20981,
+          "abn_fraction": 0.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": null,
+            "thr_0.50": null,
+            "thr_0.60": null,
+            "thr_0.65": null
+          }
+        },
+        "S": {
+          "n": 302,
+          "n_abn": 302,
+          "n_pos": 302,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.990066,
+            "thr_0.50": 0.831126,
+            "thr_0.60": 0.582781,
+            "thr_0.65": 0.423841
+          }
+        },
+        "V": {
+          "n": 2590,
+          "n_abn": 2590,
+          "n_pos": 2590,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.997297,
+            "thr_0.50": 0.611197,
+            "thr_0.60": 0.207336,
+            "thr_0.65": 0.109266
+          }
+        },
+        "F": {
+          "n": 389,
+          "n_abn": 389,
+          "n_pos": 389,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.598972,
+            "thr_0.50": 0.046272,
+            "thr_0.60": 0.005141,
+            "thr_0.65": 0.005141
+          }
+        },
+        "Q": {
+          "n": 0,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 0,
+          "abn_fraction": null,
+          "auc": null,
+          "recall": {}
+        }
+      },
+      "global": {
+        "thr_0.35": {
+          "threshold": 0.35,
+          "precision": 0.199853,
+          "recall": 0.964514,
+          "specificity": 0.529397,
+          "far": 0.470603,
+          "f1": 0.3311,
+          "tp": 5436,
+          "fp": 21764,
+          "tn": 24483,
+          "fn": 200,
+          "n": 51883
+        },
+        "thr_0.50": {
+          "threshold": 0.5,
+          "precision": 0.452825,
+          "recall": 0.607168,
+          "specificity": 0.910589,
+          "far": 0.089411,
+          "f1": 0.51876,
+          "tp": 3422,
+          "fp": 4135,
+          "tn": 42112,
+          "fn": 2214,
+          "n": 51883
+        },
+        "thr_0.60": {
+          "threshold": 0.6,
+          "precision": 0.468119,
+          "recall": 0.312633,
+          "specificity": 0.956711,
+          "far": 0.043289,
+          "f1": 0.374894,
+          "tp": 1762,
+          "fp": 2002,
+          "tn": 44245,
+          "fn": 3874,
+          "n": 51883
+        },
+        "thr_0.65": {
+          "threshold": 0.65,
+          "precision": 0.537587,
+          "recall": 0.21824,
+          "specificity": 0.977123,
+          "far": 0.022877,
+          "f1": 0.310449,
+          "tp": 1230,
+          "fp": 1058,
+          "tn": 45189,
+          "fn": 4406,
+          "n": 51883
+        }
+      },
+      "perfect_value_flags": [],
+      "runtime_s": 1.0
+    },
+    {
+      "tag": "p2a_float32",
+      "role": "historical_strong_research_model",
+      "format": "h5_float32",
+      "model_path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/archived/final_resnet_l_p2a_backup.h5",
+      "model_size_bytes": 1179920,
+      "model_sha256_8": "d767ccf5",
+      "eval_chain": "deploy",
+      "split": "patient_level_60_20_20_seed42_mit_incart",
+      "n_test": 51883,
+      "n_abn": 5636,
+      "global_auc": 0.964564,
+      "per_class": {
+        "N": {
+          "n": 20981,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 20981,
+          "abn_fraction": 0.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": null,
+            "thr_0.50": null,
+            "thr_0.60": null,
+            "thr_0.65": null
+          }
+        },
+        "S": {
+          "n": 302,
+          "n_abn": 302,
+          "n_pos": 302,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.97351,
+            "thr_0.50": 0.950331,
+            "thr_0.60": 0.940397,
+            "thr_0.65": 0.933775
+          }
+        },
+        "V": {
+          "n": 2590,
+          "n_abn": 2590,
+          "n_pos": 2590,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.990347,
+            "thr_0.50": 0.986873,
+            "thr_0.60": 0.983398,
+            "thr_0.65": 0.981853
+          }
+        },
+        "F": {
+          "n": 389,
+          "n_abn": 389,
+          "n_pos": 389,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.645244,
+            "thr_0.50": 0.601542,
+            "thr_0.60": 0.547558,
+            "thr_0.65": 0.51928
+          }
+        },
+        "Q": {
+          "n": 0,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 0,
+          "abn_fraction": null,
+          "auc": null,
+          "recall": {}
+        }
+      },
+      "global": {
+        "thr_0.35": {
+          "threshold": 0.35,
+          "precision": 0.424591,
+          "recall": 0.957062,
+          "specificity": 0.841936,
+          "far": 0.158064,
+          "f1": 0.588222,
+          "tp": 5394,
+          "fp": 7310,
+          "tn": 38937,
+          "fn": 242,
+          "n": 51883
+        },
+        "thr_0.50": {
+          "threshold": 0.5,
+          "precision": 0.450248,
+          "recall": 0.949787,
+          "specificity": 0.858672,
+          "far": 0.141328,
+          "f1": 0.610899,
+          "tp": 5353,
+          "fp": 6536,
+          "tn": 39711,
+          "fn": 283,
+          "n": 51883
+        },
+        "thr_0.60": {
+          "threshold": 0.6,
+          "precision": 0.465749,
+          "recall": 0.942158,
+          "specificity": 0.868294,
+          "far": 0.131706,
+          "f1": 0.623349,
+          "tp": 5310,
+          "fp": 6091,
+          "tn": 40156,
+          "fn": 326,
+          "n": 51883
+        },
+        "thr_0.65": {
+          "threshold": 0.65,
+          "precision": 0.474081,
+          "recall": 0.937899,
+          "specificity": 0.873203,
+          "far": 0.126797,
+          "f1": 0.629811,
+          "tp": 5286,
+          "fp": 5864,
+          "tn": 40383,
+          "fn": 350,
+          "n": 51883
+        }
+      },
+      "perfect_value_flags": [],
+      "runtime_s": 4.7
+    },
+    {
+      "tag": "lstm_cnn_baseline",
+      "role": "cross_arch_baseline",
+      "format": "h5_float32",
+      "model_path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/cross_arch/lstm_cnn_baseline.h5",
+      "model_size_bytes": 1123024,
+      "model_sha256_8": "b5b54d50",
+      "eval_chain": "deploy",
+      "split": "patient_level_60_20_20_seed42_mit_incart",
+      "n_test": 51883,
+      "n_abn": 5636,
+      "global_auc": 0.79869,
+      "per_class": {
+        "N": {
+          "n": 20981,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 20981,
+          "abn_fraction": 0.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": null,
+            "thr_0.50": null,
+            "thr_0.60": null,
+            "thr_0.65": null
+          }
+        },
+        "S": {
+          "n": 302,
+          "n_abn": 302,
+          "n_pos": 302,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.254967,
+            "thr_0.50": 0.129139,
+            "thr_0.60": 0.102649,
+            "thr_0.65": 0.069536
+          }
+        },
+        "V": {
+          "n": 2590,
+          "n_abn": 2590,
+          "n_pos": 2590,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.718147,
+            "thr_0.50": 0.614286,
+            "thr_0.60": 0.571429,
+            "thr_0.65": 0.547104
+          }
+        },
+        "F": {
+          "n": 389,
+          "n_abn": 389,
+          "n_pos": 389,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.557841,
+            "thr_0.50": 0.416452,
+            "thr_0.60": 0.298201,
+            "thr_0.65": 0.22108
+          }
+        },
+        "Q": {
+          "n": 0,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 0,
+          "abn_fraction": null,
+          "auc": null,
+          "recall": {}
+        }
+      },
+      "global": {
+        "thr_0.35": {
+          "threshold": 0.35,
+          "precision": 0.355922,
+          "recall": 0.520937,
+          "specificity": 0.885117,
+          "far": 0.114883,
+          "f1": 0.422902,
+          "tp": 2936,
+          "fp": 5313,
+          "tn": 40934,
+          "fn": 2700,
+          "n": 51883
+        },
+        "thr_0.50": {
+          "threshold": 0.5,
+          "precision": 0.383403,
+          "recall": 0.388573,
+          "specificity": 0.923844,
+          "far": 0.076156,
+          "f1": 0.385971,
+          "tp": 2190,
+          "fp": 3522,
+          "tn": 42725,
+          "fn": 3446,
+          "n": 51883
+        },
+        "thr_0.60": {
+          "threshold": 0.6,
+          "precision": 0.415247,
+          "recall": 0.337296,
+          "specificity": 0.942115,
+          "far": 0.057885,
+          "f1": 0.372234,
+          "tp": 1901,
+          "fp": 2677,
+          "tn": 43570,
+          "fn": 3735,
+          "n": 51883
+        },
+        "thr_0.65": {
+          "threshold": 0.65,
+          "precision": 0.451295,
+          "recall": 0.309084,
+          "specificity": 0.954202,
+          "far": 0.045798,
+          "f1": 0.366891,
+          "tp": 1742,
+          "fp": 2118,
+          "tn": 44129,
+          "fn": 3894,
+          "n": 51883
+        }
+      },
+      "perfect_value_flags": [],
+      "runtime_s": 4.4
+    },
+    {
+      "tag": "lstm_cnn_deploy",
+      "role": "cross_arch_deploy",
+      "format": "h5_float32",
+      "model_path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/cross_arch/lstm_cnn_deploy.h5",
+      "model_size_bytes": 1123024,
+      "model_sha256_8": "3016ac8e",
+      "eval_chain": "deploy",
+      "split": "patient_level_60_20_20_seed42_mit_incart",
+      "n_test": 51883,
+      "n_abn": 5636,
+      "global_auc": 0.790969,
+      "per_class": {
+        "N": {
+          "n": 20981,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 20981,
+          "abn_fraction": 0.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": null,
+            "thr_0.50": null,
+            "thr_0.60": null,
+            "thr_0.65": null
+          }
+        },
+        "S": {
+          "n": 302,
+          "n_abn": 302,
+          "n_pos": 302,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.427152,
+            "thr_0.50": 0.347682,
+            "thr_0.60": 0.264901,
+            "thr_0.65": 0.211921
+          }
+        },
+        "V": {
+          "n": 2590,
+          "n_abn": 2590,
+          "n_pos": 2590,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.184556,
+            "thr_0.50": 0.102703,
+            "thr_0.60": 0.07529,
+            "thr_0.65": 0.065637
+          }
+        },
+        "F": {
+          "n": 389,
+          "n_abn": 389,
+          "n_pos": 389,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.007712,
+            "thr_0.50": 0.007712,
+            "thr_0.60": 0.0,
+            "thr_0.65": 0.0
+          }
+        },
+        "Q": {
+          "n": 0,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 0,
+          "abn_fraction": null,
+          "auc": null,
+          "recall": {}
+        }
+      },
+      "global": {
+        "thr_0.35": {
+          "threshold": 0.35,
+          "precision": 0.301853,
+          "recall": 0.268808,
+          "specificity": 0.924233,
+          "far": 0.075767,
+          "f1": 0.284374,
+          "tp": 1515,
+          "fp": 3504,
+          "tn": 42743,
+          "fn": 4121,
+          "n": 51883
+        },
+        "thr_0.50": {
+          "threshold": 0.5,
+          "precision": 0.286413,
+          "recall": 0.145493,
+          "specificity": 0.955824,
+          "far": 0.044176,
+          "f1": 0.192964,
+          "tp": 820,
+          "fp": 2043,
+          "tn": 44204,
+          "fn": 4816,
+          "n": 51883
+        },
+        "thr_0.60": {
+          "threshold": 0.6,
+          "precision": 0.258065,
+          "recall": 0.088006,
+          "specificity": 0.969166,
+          "far": 0.030834,
+          "f1": 0.131252,
+          "tp": 496,
+          "fp": 1426,
+          "tn": 44821,
+          "fn": 5140,
+          "n": 51883
+        },
+        "thr_0.65": {
+          "threshold": 0.65,
+          "precision": 0.243997,
+          "recall": 0.066714,
+          "specificity": 0.974809,
+          "far": 0.025191,
+          "f1": 0.104779,
+          "tp": 376,
+          "fp": 1165,
+          "tn": 45082,
+          "fn": 5260,
+          "n": 51883
+        }
+      },
+      "perfect_value_flags": [
+        "F:thr_0.60:recall=0.0",
+        "F:thr_0.65:recall=0.0"
+      ],
+      "runtime_s": 3.5
+    },
+    {
+      "tag": "cnn_standard_baseline",
+      "role": "cross_arch_baseline",
+      "format": "h5_float32",
+      "model_path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/cross_arch/cnn_standard_baseline.h5",
+      "model_size_bytes": 2116064,
+      "model_sha256_8": "1c108c34",
+      "eval_chain": "deploy",
+      "split": "patient_level_60_20_20_seed42_mit_incart",
+      "n_test": 51883,
+      "n_abn": 5636,
+      "global_auc": 0.81731,
+      "per_class": {
+        "N": {
+          "n": 20981,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 20981,
+          "abn_fraction": 0.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": null,
+            "thr_0.50": null,
+            "thr_0.60": null,
+            "thr_0.65": null
+          }
+        },
+        "S": {
+          "n": 302,
+          "n_abn": 302,
+          "n_pos": 302,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.781457,
+            "thr_0.50": 0.708609,
+            "thr_0.60": 0.649007,
+            "thr_0.65": 0.60596
+          }
+        },
+        "V": {
+          "n": 2590,
+          "n_abn": 2590,
+          "n_pos": 2590,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.862934,
+            "thr_0.50": 0.676448,
+            "thr_0.60": 0.528571,
+            "thr_0.65": 0.458301
+          }
+        },
+        "F": {
+          "n": 389,
+          "n_abn": 389,
+          "n_pos": 389,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.390746,
+            "thr_0.50": 0.226221,
+            "thr_0.60": 0.156812,
+            "thr_0.65": 0.120823
+          }
+        },
+        "Q": {
+          "n": 0,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 0,
+          "abn_fraction": null,
+          "auc": null,
+          "recall": {}
+        }
+      },
+      "global": {
+        "thr_0.35": {
+          "threshold": 0.35,
+          "precision": 0.287978,
+          "recall": 0.783712,
+          "specificity": 0.763855,
+          "far": 0.236145,
+          "f1": 0.421188,
+          "tp": 4417,
+          "fp": 10921,
+          "tn": 35326,
+          "fn": 1219,
+          "n": 51883
+        },
+        "thr_0.50": {
+          "threshold": 0.5,
+          "precision": 0.295168,
+          "recall": 0.627573,
+          "specificity": 0.817372,
+          "far": 0.182628,
+          "f1": 0.401498,
+          "tp": 3537,
+          "fp": 8446,
+          "tn": 37801,
+          "fn": 2099,
+          "n": 51883
+        },
+        "thr_0.60": {
+          "threshold": 0.6,
+          "precision": 0.287534,
+          "recall": 0.520582,
+          "specificity": 0.842801,
+          "far": 0.157199,
+          "f1": 0.370455,
+          "tp": 2934,
+          "fp": 7270,
+          "tn": 38977,
+          "fn": 2702,
+          "n": 51883
+        },
+        "thr_0.65": {
+          "threshold": 0.65,
+          "precision": 0.283265,
+          "recall": 0.463094,
+          "specificity": 0.857202,
+          "far": 0.142798,
+          "f1": 0.351515,
+          "tp": 2610,
+          "fp": 6604,
+          "tn": 39643,
+          "fn": 3026,
+          "n": 51883
+        }
+      },
+      "perfect_value_flags": [],
+      "runtime_s": 4.1
+    },
+    {
+      "tag": "cnn_standard_deploy",
+      "role": "cross_arch_deploy",
+      "format": "h5_float32",
+      "model_path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/cross_arch/cnn_standard_deploy.h5",
+      "model_size_bytes": 2116064,
+      "model_sha256_8": "00aea93d",
+      "eval_chain": "deploy",
+      "split": "patient_level_60_20_20_seed42_mit_incart",
+      "n_test": 51883,
+      "n_abn": 5636,
+      "global_auc": 0.850289,
+      "per_class": {
+        "N": {
+          "n": 20981,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 20981,
+          "abn_fraction": 0.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": null,
+            "thr_0.50": null,
+            "thr_0.60": null,
+            "thr_0.65": null
+          }
+        },
+        "S": {
+          "n": 302,
+          "n_abn": 302,
+          "n_pos": 302,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.774834,
+            "thr_0.50": 0.569536,
+            "thr_0.60": 0.427152,
+            "thr_0.65": 0.36755
+          }
+        },
+        "V": {
+          "n": 2590,
+          "n_abn": 2590,
+          "n_pos": 2590,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.508494,
+            "thr_0.50": 0.403475,
+            "thr_0.60": 0.348263,
+            "thr_0.65": 0.310811
+          }
+        },
+        "F": {
+          "n": 389,
+          "n_abn": 389,
+          "n_pos": 389,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.136247,
+            "thr_0.50": 0.071979,
+            "thr_0.60": 0.030848,
+            "thr_0.65": 0.023136
+          }
+        },
+        "Q": {
+          "n": 0,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 0,
+          "abn_fraction": null,
+          "auc": null,
+          "recall": {}
+        }
+      },
+      "global": {
+        "thr_0.35": {
+          "threshold": 0.35,
+          "precision": 0.365173,
+          "recall": 0.582683,
+          "specificity": 0.876554,
+          "far": 0.123446,
+          "f1": 0.448971,
+          "tp": 3284,
+          "fp": 5709,
+          "tn": 40538,
+          "fn": 2352,
+          "n": 51883
+        },
+        "thr_0.50": {
+          "threshold": 0.5,
+          "precision": 0.404434,
+          "recall": 0.469304,
+          "specificity": 0.915778,
+          "far": 0.084222,
+          "f1": 0.434461,
+          "tp": 2645,
+          "fp": 3895,
+          "tn": 42352,
+          "fn": 2991,
+          "n": 51883
+        },
+        "thr_0.60": {
+          "threshold": 0.6,
+          "precision": 0.418916,
+          "recall": 0.388219,
+          "specificity": 0.934374,
+          "far": 0.065626,
+          "f1": 0.402984,
+          "tp": 2188,
+          "fp": 3035,
+          "tn": 43212,
+          "fn": 3448,
+          "n": 51883
+        },
+        "thr_0.65": {
+          "threshold": 0.65,
+          "precision": 0.430069,
+          "recall": 0.342087,
+          "specificity": 0.944753,
+          "far": 0.055247,
+          "f1": 0.381065,
+          "tp": 1928,
+          "fp": 2555,
+          "tn": 43692,
+          "fn": 3708,
+          "n": 51883
+        }
+      },
+      "perfect_value_flags": [],
+      "runtime_s": 1.7
+    },
+    {
+      "tag": "resnet1d_baseline",
+      "role": "cross_arch_baseline",
+      "format": "h5_float32",
+      "model_path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/cross_arch/resnet1d_baseline.h5",
+      "model_size_bytes": 5821776,
+      "model_sha256_8": "72b57282",
+      "eval_chain": "deploy",
+      "split": "patient_level_60_20_20_seed42_mit_incart",
+      "n_test": 51883,
+      "n_abn": 5636,
+      "global_auc": 0.871255,
+      "per_class": {
+        "N": {
+          "n": 20981,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 20981,
+          "abn_fraction": 0.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": null,
+            "thr_0.50": null,
+            "thr_0.60": null,
+            "thr_0.65": null
+          }
+        },
+        "S": {
+          "n": 302,
+          "n_abn": 302,
+          "n_pos": 302,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.910596,
+            "thr_0.50": 0.850993,
+            "thr_0.60": 0.788079,
+            "thr_0.65": 0.781457
+          }
+        },
+        "V": {
+          "n": 2590,
+          "n_abn": 2590,
+          "n_pos": 2590,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.888803,
+            "thr_0.50": 0.80888,
+            "thr_0.60": 0.72973,
+            "thr_0.65": 0.676448
+          }
+        },
+        "F": {
+          "n": 389,
+          "n_abn": 389,
+          "n_pos": 389,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.236504,
+            "thr_0.50": 0.123393,
+            "thr_0.60": 0.105398,
+            "thr_0.65": 0.082262
+          }
+        },
+        "Q": {
+          "n": 0,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 0,
+          "abn_fraction": null,
+          "auc": null,
+          "recall": {}
+        }
+      },
+      "global": {
+        "thr_0.35": {
+          "threshold": 0.35,
+          "precision": 0.297227,
+          "recall": 0.871008,
+          "specificity": 0.749022,
+          "far": 0.250978,
+          "f1": 0.443211,
+          "tp": 4909,
+          "fp": 11607,
+          "tn": 34640,
+          "fn": 727,
+          "n": 51883
+        },
+        "thr_0.50": {
+          "threshold": 0.5,
+          "precision": 0.338924,
+          "recall": 0.817424,
+          "specificity": 0.805696,
+          "far": 0.194304,
+          "f1": 0.479172,
+          "tp": 4607,
+          "fp": 8986,
+          "tn": 37261,
+          "fn": 1029,
+          "n": 51883
+        },
+        "thr_0.60": {
+          "threshold": 0.6,
+          "precision": 0.362807,
+          "recall": 0.768808,
+          "specificity": 0.835449,
+          "far": 0.164551,
+          "f1": 0.492975,
+          "tp": 4333,
+          "fp": 7610,
+          "tn": 38637,
+          "fn": 1303,
+          "n": 51883
+        },
+        "thr_0.65": {
+          "threshold": 0.65,
+          "precision": 0.373434,
+          "recall": 0.735273,
+          "specificity": 0.849655,
+          "far": 0.150345,
+          "f1": 0.495309,
+          "tp": 4144,
+          "fp": 6953,
+          "tn": 39294,
+          "fn": 1492,
+          "n": 51883
+        }
+      },
+      "perfect_value_flags": [],
+      "runtime_s": 4.8
+    },
+    {
+      "tag": "resnet1d_deploy",
+      "role": "cross_arch_deploy",
+      "format": "h5_float32",
+      "model_path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/cross_arch/resnet1d_deploy.h5",
+      "model_size_bytes": 5821776,
+      "model_sha256_8": "9f2587d3",
+      "eval_chain": "deploy",
+      "split": "patient_level_60_20_20_seed42_mit_incart",
+      "n_test": 51883,
+      "n_abn": 5636,
+      "global_auc": 0.849416,
+      "per_class": {
+        "N": {
+          "n": 20981,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 20981,
+          "abn_fraction": 0.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": null,
+            "thr_0.50": null,
+            "thr_0.60": null,
+            "thr_0.65": null
+          }
+        },
+        "S": {
+          "n": 302,
+          "n_abn": 302,
+          "n_pos": 302,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.877483,
+            "thr_0.50": 0.798013,
+            "thr_0.60": 0.771523,
+            "thr_0.65": 0.735099
+          }
+        },
+        "V": {
+          "n": 2590,
+          "n_abn": 2590,
+          "n_pos": 2590,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.879151,
+            "thr_0.50": 0.850965,
+            "thr_0.60": 0.816988,
+            "thr_0.65": 0.790347
+          }
+        },
+        "F": {
+          "n": 389,
+          "n_abn": 389,
+          "n_pos": 389,
+          "n_neg": 0,
+          "abn_fraction": 1.0,
+          "auc": null,
+          "recall": {
+            "thr_0.35": 0.277635,
+            "thr_0.50": 0.182519,
+            "thr_0.60": 0.133676,
+            "thr_0.65": 0.113111
+          }
+        },
+        "Q": {
+          "n": 0,
+          "n_abn": 0,
+          "n_pos": 0,
+          "n_neg": 0,
+          "abn_fraction": null,
+          "auc": null,
+          "recall": {}
+        }
+      },
+      "global": {
+        "thr_0.35": {
+          "threshold": 0.35,
+          "precision": 0.249085,
+          "recall": 0.869411,
+          "specificity": 0.680585,
+          "far": 0.319415,
+          "f1": 0.387229,
+          "tp": 4900,
+          "fp": 14772,
+          "tn": 31475,
+          "fn": 736,
+          "n": 51883
+        },
+        "thr_0.50": {
+          "threshold": 0.5,
+          "precision": 0.308972,
+          "recall": 0.813875,
+          "specificity": 0.778169,
+          "far": 0.221831,
+          "f1": 0.447905,
+          "tp": 4587,
+          "fp": 10259,
+          "tn": 35988,
+          "fn": 1049,
+          "n": 51883
+        },
+        "thr_0.60": {
+          "threshold": 0.6,
+          "precision": 0.350747,
+          "recall": 0.745742,
+          "specificity": 0.831773,
+          "far": 0.168227,
+          "f1": 0.477099,
+          "tp": 4203,
+          "fp": 7780,
+          "tn": 38467,
+          "fn": 1433,
+          "n": 51883
+        },
+        "thr_0.65": {
+          "threshold": 0.65,
+          "precision": 0.372141,
+          "recall": 0.7044,
+          "specificity": 0.855169,
+          "far": 0.144831,
+          "f1": 0.486997,
+          "tp": 3970,
+          "fp": 6698,
+          "tn": 39549,
+          "fn": 1666,
+          "n": 51883
+        }
+      },
+      "perfect_value_flags": [],
+      "runtime_s": 2.3
+    }
+  ]
+}

@@ -46,7 +46,8 @@ def build_lstm_cnn_parallel(input_shape=(250, 1), n_classes=2, seed=42):
     x = layers.Concatenate(name="concat")([c, l])
     x = layers.Dense(64, activation="relu", name="dense_1")(x)
     x = layers.Dropout(0.4, name="dropout")(x)
-    outputs = layers.Dense(n_classes, activation="softmax", name="output")(x)
+    outputs = layers.Dense(n_classes, activation="softmax", name="output",
+                           dtype="float32")(x)
 
     model = Model(inputs, outputs, name="lstm_cnn_parallel")
     return model
@@ -82,7 +83,8 @@ def build_cnn_standard(input_shape=(250, 1), n_classes=2, seed=42):
 
     x = layers.Dense(128, activation="relu", name="fc1")(x)
     x = layers.Dropout(0.4, name="dropout")(x)
-    outputs = layers.Dense(n_classes, activation="softmax", name="output")(x)
+    outputs = layers.Dense(n_classes, activation="softmax", name="output",
+                           dtype="float32")(x)
 
     model = Model(inputs, outputs, name="cnn_standard")
     return model
@@ -127,7 +129,8 @@ def build_resnet1d(input_shape=(250, 1), n_classes=2, seed=42):
     x = layers.GlobalAveragePooling1D(name="gap")(x)
     x = layers.Dense(128, activation="relu", name="fc1")(x)
     x = layers.Dropout(0.4, name="dropout")(x)
-    outputs = layers.Dense(n_classes, activation="softmax", name="output")(x)
+    outputs = layers.Dense(n_classes, activation="softmax", name="output",
+                           dtype="float32")(x)
 
     model = Model(inputs, outputs, name="resnet1d")
     return model

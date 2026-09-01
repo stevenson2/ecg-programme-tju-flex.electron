@@ -1,0 +1,14 @@
+{
+  "task": "three_class_gate_A1",
+  "arch": "resnet_large",
+  "epochs_run": 31,
+  "best_val_loss": 0.915039598941803,
+  "best_val_accuracy": 0.7279524803161621,
+  "optimizer": "adamw",
+  "lr": 0.0005,
+  "batch_size": 256,
+  "max_per_class": 80000,
+  "model_path": "models/gate/gate_model_3class_resnet_large.h5",
+  "history_csv": "models/gate/gate_model_3class_resnet_large_history.csv",
+  "elapsed_s": 447.2
+}

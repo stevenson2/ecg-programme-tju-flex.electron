@@ -1,0 +1,50 @@
+{
+  "mit_incart": {
+    "n": 163078,
+    "n_abn": 20891,
+    "n_normal": 142187,
+    "auc": 0.8615,
+    "best_Sn>=95": {
+      "theta": null,
+      "Sn_A": 0.9427,
+      "E_A": 0.4292,
+      "note": "no threshold meets Sn>=0.95"
+    },
+    "thr_0.5": {
+      "Sn_A": 0.9047,
+      "E_A": 0.3112
+    }
+  },
+  "ptb": {
+    "n": 13058,
+    "n_abn": 10204,
+    "n_normal": 2854,
+    "auc": 0.7464,
+    "best_Sn>=95": {
+      "theta": null,
+      "Sn_A": 0.7945,
+      "E_A": 0.3651,
+      "note": "no threshold meets Sn>=0.95"
+    },
+    "thr_0.5": {
+      "Sn_A": 0.6998,
+      "E_A": 0.2852
+    }
+  },
+  "combined": {
+    "n": 176136,
+    "n_abn": 31095,
+    "n_normal": 145041,
+    "auc": 0.8233,
+    "best_Sn>=95": {
+      "theta": null,
+      "Sn_A": 0.894,
+      "E_A": 0.4279,
+      "note": "no threshold meets Sn>=0.95"
+    },
+    "thr_0.5": {
+      "Sn_A": 0.8375,
+      "E_A": 0.3107
+    }
+  }
+}

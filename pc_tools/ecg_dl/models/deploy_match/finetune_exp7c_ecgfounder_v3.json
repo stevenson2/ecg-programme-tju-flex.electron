@@ -1,0 +1,35 @@
+{
+  "date": "2026-08-24 15:07:54",
+  "purpose": "exp7c + ECGFounder real-like public normal only",
+  "data": {
+    "real_normal_beats": 311,
+    "real_like_public_normal_beats": 1142,
+    "gold_mix": 1700,
+    "val_beats": 440
+  },
+  "config": {
+    "base": "best_resnet_large_exp7c.h5",
+    "freeze": "backbone except fc1/out",
+    "lr": 1e-05,
+    "optimizer": "adam",
+    "sample_weight": {
+      "real_normal": 3.0,
+      "public_normal": 1.5
+    },
+    "epochs": 40
+  },
+  "confidence_real_normal": {
+    "before_exp7c": {
+      "mean": 0.449370414018631,
+      "frac_gt_0.5": 0.24437299035369775
+    },
+    "after_all": {
+      "mean": 0.38433316349983215,
+      "frac_gt_0.5": 0.16720257234726688
+    },
+    "after_public_normal": {
+      "mean": 0.05921400338411331,
+      "frac_gt_0.5": 0.00788091068301226
+    }
+  }
+}

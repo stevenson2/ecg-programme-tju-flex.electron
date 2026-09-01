@@ -1,0 +1,156 @@
+--- Warning: GDB cannot open serial ports accessed as COMx
+--- Using \\.\COM3 instead...
+--- esp-idf-monitor 1.9.0 on \\.\COM3 115200
+--- Quit: Ctrl+] | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H
+Executing action: monitor
+Running idf_monitor in directory C:\esp\esp_idf_ecg_migration
+Executing "C:\Users\cai\.espressif\python_env\idf6.0_py3.13_env\Scripts\python.exe C:\esp\v6.0.1\esp-idf\tools/idf_monitor.py -p COM3 -b 115200 --toolchain-prefix xtensa-esp32s3-elf- --target esp32s3 --revision 0 C:\esp\esp_idf_ecg_migration\build\esp_idf_ecg_migration.elf C:\esp\esp_idf_ecg_migration\build\bootloader\bootloader.elf --timestamps --force-color -m 'C:\Users\cai\.espressif\python_env\idf6.0_py3.13_env\Scripts\python.exe' 'C:\esp\v6.0.1\esp-idf\tools\idf.py' '-p' 'COM3'"...
+2026-08-24 11:28:55 ESP-ROM:esp32s3-20210327
+2026-08-24 11:28:55 ESP-ROM:esp32s3-20210327
+2026-08-24 11:28:55 Build:Mar 27 2021
+2026-08-24 11:28:55 rst:0x1 (POWERON),boot:0x9 (SPI_FAST_FLASH_BOOT)
+2026-08-24 11:28:55 SPIWP:0xee
+2026-08-24 11:28:55 mode:DIO, clock div:1
+2026-08-24 11:28:55 load:0x3fce2820,len:0x14f0
+2026-08-24 11:28:55 load:0x403c8700,len:0xda0
+2026-08-24 11:28:55 --- 0x403c8700: _stext at ??:?
+load:0x403cb700,len:0x2f58
+2026-08-24 11:28:55 entry 0x403c8908
+2026-08-24 11:28:55 --- 0x403c8908: call_start_cpu0 at C:/esp/v6.0.1/esp-idf/components/bootloader/subproject/main/bootloader_start.c:27
+I (24) boot: ESP-IDF v6.0.1 2nd stage bootloader
+2026-08-24 11:28:55 I (25) boot: compile time Aug 24 2026 10:46:05
+2026-08-24 11:28:55 I (25) boot: Multicore bootloader
+2026-08-24 11:28:55 I (25) boot: chip revision: v0.2
+2026-08-24 11:28:55 I (28) boot: efuse block revision: v1.4
+2026-08-24 11:28:55 I (31) boot.esp32s3: Boot SPI Speed : 80MHz
+2026-08-24 11:28:55 I (35) boot.esp32s3: SPI Mode       : DIO
+2026-08-24 11:28:55 I (39) boot.esp32s3: SPI Flash Size : 16MB
+2026-08-24 11:28:55 I (43) boot: Enabling RNG early entropy source...
+2026-08-24 11:28:55 I (47) boot: Partition Table:
+2026-08-24 11:28:55 I (50) boot: ## Label            Usage          Type ST Offset   Length
+2026-08-24 11:28:55 I (56) boot:  0 nvs              WiFi data        01 02 00009000 00006000
+2026-08-24 11:28:55 I (63) boot:  1 phy_init         RF data          01 01 0000f000 00001000
+2026-08-24 11:28:55 I (69) boot:  2 factory          factory app      00 00 00010000 00200000
+2026-08-24 11:28:55 I (76) boot:  3 storage          Unknown data     01 82 00210000 00400000
+2026-08-24 11:28:55 I (82) boot: End of partition table
+2026-08-24 11:28:55 I (86) esp_image: segment 0: paddr=00010020 vaddr=3c0f0020 size=29d28h (171304) map
+2026-08-24 11:28:55 I (124) esp_image: segment 1: paddr=00039d50 vaddr=3fc9da00 size=062c8h ( 25288) load
+2026-08-24 11:28:55 I (129) esp_image: segment 2: paddr=00040020 vaddr=42000020 size=e4784h (935812) map
+2026-08-24 11:28:55 I (297) esp_image: segment 3: paddr=001247ac vaddr=3fca3cc8 size=284f0h (165104) load
+2026-08-24 11:28:56 I (331) esp_image: segment 4: paddr=0014cca4 vaddr=40374000 size=19988h (104840) load
+2026-08-24 11:28:56 I (354) esp_image: segment 5: paddr=00166634 vaddr=50000000 size=00024h (    36) load
+2026-08-24 11:28:56 I (374) boot: Loaded app from partition at offset 0x10000
+2026-08-24 11:28:56 I (374) boot: Disabling RNG early entropy source...
+2026-08-24 11:28:56 I (384) octal_psram: vendor id    : 0x0d (AP)
+2026-08-24 11:28:56 I (384) octal_psram: dev id       : 0x02 (generation 3)
+2026-08-24 11:28:56 I (384) octal_psram: density      : 0x03 (64 Mbit)
+2026-08-24 11:28:56 I (386) octal_psram: good-die     : 0x01 (Pass)
+2026-08-24 11:28:56 I (391) octal_psram: Latency      : 0x01 (Fixed)
+2026-08-24 11:28:56 I (395) octal_psram: VCC          : 0x01 (3V)
+2026-08-24 11:28:56 I (399) octal_psram: SRF          : 0x01 (Fast Refresh)
+2026-08-24 11:28:56 I (404) octal_psram: BurstType    : 0x01 (Hybrid Wrap)
+2026-08-24 11:28:56 I (409) octal_psram: BurstLen     : 0x01 (32 Byte)
+2026-08-24 11:28:56 I (413) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)
+2026-08-24 11:28:56 I (419) octal_psram: DriveStrength: 0x00 (1/1)
+2026-08-24 11:28:56 I (423) MSPI Timing: Enter psram timing tuning
+2026-08-24 11:28:56 I (428) esp_psram: Found 8MB PSRAM device
+2026-08-24 11:28:56 I (431) esp_psram: Speed: 80MHz
+2026-08-24 11:28:56 I (434) cpu_start: Multicore app
+2026-08-24 11:28:56 I (869) esp_psram: SPI SRAM memory test OK
+2026-08-24 11:28:56 I (877) cpu_start: GPIO 44 and 43 are used as console UART I/O pins
+2026-08-24 11:28:56 I (878) cpu_start: Pro cpu start user code
+2026-08-24 11:28:56 I (878) cpu_start: cpu freq: 240000000 Hz
+2026-08-24 11:28:56 I (880) app_init: Application information:
+2026-08-24 11:28:56 I (884) app_init: Project name:     esp_idf_ecg_migration
+2026-08-24 11:28:56 I (889) app_init: App version:      1
+2026-08-24 11:28:56 I (892) app_init: Compile time:     Aug 24 2026 10:56:41
+2026-08-24 11:28:56 I (897) app_init: ELF file SHA256:  8839d1fc9...
+2026-08-24 11:28:56 I (901) app_init: ESP-IDF:          v6.0.1
+2026-08-24 11:28:56 I (905) efuse_init: Min chip rev:     v0.0
+2026-08-24 11:28:56 I (909) efuse_init: Max chip rev:     v0.99 
+2026-08-24 11:28:56 I (913) efuse_init: Chip rev:         v0.2
+2026-08-24 11:28:56 I (917) heap_init: Initializing. RAM available for dynamic allocation:
+2026-08-24 11:28:56 I (923) heap_init: At 3FCD2CD0 len 00016A40 (90 KiB): RAM
+2026-08-24 11:28:56 I (928) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM
+2026-08-24 11:28:56 I (933) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM
+2026-08-24 11:28:56 I (939) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM
+2026-08-24 11:28:56 I (944) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator
+2026-08-24 11:28:56 I (951) spi_flash: detected chip: gd
+2026-08-24 11:28:56 I (954) spi_flash: flash io: dio
+2026-08-24 11:28:56 I (957) sleep_gpio: Configure to isolate all GPIO pins in sleep state
+2026-08-24 11:28:56 I (963) sleep_gpio: Enable automatic switching of GPIO sleep configuration
+2026-08-24 11:28:56 I (970) coexist: coex firmware version: b00e8cb
+2026-08-24 11:28:56 I (974) coexist: coexist rom version e7ae62f
+2026-08-24 11:28:56 I (978) main_task: Started on CPU0
+2026-08-24 11:28:56 I (994) esp_psram: Reserving pool of 32K of internal memory for DMA/internal allocations
+2026-08-24 11:28:56 I (995) main_task: Calling app_main()
+2026-08-24 11:28:56 [ecg_ai] init OK, arena used=50948, in_scale=0.06390853 zp=6
+2026-08-24 11:28:56 I (1030) BLE_INIT: BT controller compile version [b7de11e]
+2026-08-24 11:28:56 I (1030) BLE_INIT: Using main XTAL as clock source
+2026-08-24 11:28:56 I (1031) BLE_INIT: Feature Config, ADV:1, BLE_50:1, DTM:1, SCAN:1, CCA:0, SMP:1, CONNECT:1
+2026-08-24 11:28:56 I (1038) BLE_INIT: Bluetooth MAC: a4:cb:8f:d5:3e:8e
+2026-08-24 11:28:56 I (1043) phy_init: phy_version 711,97bcf0a2,Aug 25 2025,19:04:10
+2026-08-24 11:28:56 I (1086) ecg_ble: registered service 0x1800
+2026-08-24 11:28:56 I (1086) ecg_ble: registered characteristic 0x2a00
+2026-08-24 11:28:56 I (1086) ecg_ble: registered characteristic 0x2a01
+2026-08-24 11:28:56 I (1088) ecg_ble: registered service 0x1801
+2026-08-24 11:28:56 I (1092) ecg_ble: registered characteristic 0x2a05
+2026-08-24 11:28:56 I (1096) ecg_ble: registered characteristic 0x2b3a
+2026-08-24 11:28:56 I (1101) ecg_ble: registered characteristic 0x2b29
+2026-08-24 11:28:56 I (1105) ecg_ble: registered service 6e400001-b5a3-f393-e0a9-e50e24dcca9e
+2026-08-24 11:28:56 I (1112) ecg_ble: registered characteristic 6e400002-b5a3-f393-e0a9-e50e24dcca9e
+2026-08-24 11:28:56 I (1119) ecg_ble: registered characteristic 6e400003-b5a3-f393-e0a9-e50e24dcca9e
+2026-08-24 11:28:56 I (1129) NimBLE: GAP procedure initiated: stop advertising.
+2026-08-24 11:28:56 
+2026-08-24 11:28:56 I (1133) NimBLE: GAP procedure initiated: advertise; 
+2026-08-24 11:28:56 I (1136) NimBLE: disc_mode=2
+2026-08-24 11:28:56 I (1139) NimBLE:  adv_channel_map=0 own_addr_type=0 adv_filter_policy=0 adv_itvl_min=0 adv_itvl_max=0
+2026-08-24 11:28:56 I (1148) NimBLE: 
+2026-08-24 11:28:56 
+2026-08-24 11:28:56 I (1150) ecg_ble: advertising started
+2026-08-24 11:28:56 I (1153) ecg_ble: BLE init OK, device=ESP32-ECG
+2026-08-24 11:28:56 I (1158) pp: pp rom version: e7ae62f
+2026-08-24 11:28:56 I (1161) net80211: net80211 rom version: e7ae62f
+2026-08-24 11:28:56 I (1166) wifi:wifi driver task: 3fcdd268, prio:23, stack:6656, core=0
+2026-08-24 11:28:56 I (1177) wifi:wifi firmware version: b37c951
+2026-08-24 11:28:56 I (1177) wifi:wifi certification version: v7.0
+2026-08-24 11:28:56 I (1179) wifi:config NVS flash: enabled
+2026-08-24 11:28:56 I (1183) wifi:config nano formatting: disabled
+2026-08-24 11:28:56 I (1187) wifi:Init data frame dynamic rx buffer num: 32
+2026-08-24 11:28:56 I (1192) wifi:Init static rx mgmt buffer num: 5
+2026-08-24 11:28:56 I (1196) wifi:Init management short buffer num: 32
+2026-08-24 11:28:56 I (1200) wifi:Init dynamic tx buffer num: 32
+2026-08-24 11:28:56 I (1205) wifi:Init static tx FG buffer num: 2
+2026-08-24 11:28:56 I (1209) wifi:Init static rx buffer size: 1600
+2026-08-24 11:28:56 I (1213) wifi:Init static rx buffer num: 10
+2026-08-24 11:28:56 I (1217) wifi:Init dynamic rx buffer num: 32
+2026-08-24 11:28:56 I (1221) wifi_init: rx ba win: 6
+2026-08-24 11:28:56 I (1224) wifi_init: accept mbox: 6
+2026-08-24 11:28:56 I (1227) wifi_init: tcpip mbox: 32
+2026-08-24 11:28:56 I (1230) wifi_init: udp mbox: 6
+2026-08-24 11:28:56 I (1233) wifi_init: tcp mbox: 6
+2026-08-24 11:28:56 I (1236) wifi_init: tcp tx win: 5760
+2026-08-24 11:28:56 I (1239) wifi_init: tcp rx win: 5760
+2026-08-24 11:28:56 I (1242) wifi_init: tcp mss: 1440
+2026-08-24 11:28:56 I (1245) wifi_init: WiFi IRAM OP enabled
+2026-08-24 11:28:56 I (1249) wifi_init: WiFi RX IRAM OP enabled
+2026-08-24 11:28:56 I (1259) wifi:mode : softAP (a4:cb:8f:d5:3e:8d)
+2026-08-24 11:28:56 I (1263) wifi:Total power save buffer number: 16
+2026-08-24 11:28:56 I (1264) wifi:Init max length of beacon: 752/752
+2026-08-24 11:28:56 I (1266) wifi:Init max length of beacon: 752/752
+2026-08-24 11:28:56 I (1272) esp_netif_lwip: DHCP server started on interface WIFI_AP_DEF with IP: 192.168.4.1
+2026-08-24 11:28:56 I (1281) ecg_wifi: AP started, SSID=ESP32-ECG-3E8D
+2026-08-24 11:28:56 [main] ESP-IDF ECG core demo start (simulator, AI streaming)
+2026-08-24 11:28:56 TICK,0,bpm=0,sqi=0.497
+2026-08-24 11:28:57 TICK,500,bpm=0,sqi=0.633
+2026-08-24 11:28:58 AI_RESULT,0.2148,0,0
+2026-08-24 11:28:59 TICK,1000,bpm=110,sqi=0.977
+2026-08-24 11:28:59 AI_RESULT,0.0234,0,0
+2026-08-24 11:29:00 TICK,1500,bpm=98,sqi=0.965
+2026-08-24 11:29:00 AI_RESULT,0.0000,0,0
+2026-08-24 11:29:01 TICK,2000,bpm=82,sqi=0.964
+2026-08-24 11:29:01 AI_RESULT,0.0039,0,0
+2026-08-24 11:29:02 TICK,2500,bpm=71,sqi=0.967
+2026-08-24 11:29:02 AI_RESULT,0.0000,0,0
+2026-08-24 11:29:03 TICK,3000,bpm=71,sqi=0.962
+2026-08-24 11:29:03 AI_RESULT,0.0312,0,0

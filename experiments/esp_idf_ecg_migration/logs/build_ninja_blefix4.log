@@ -1,0 +1,103 @@
+[1/9] Performing build step for 'bootloader'
+[1/1] C:\Windows\system32\cmd.exe /C "cd /D C:\esp\esp_idf_ecg_migration\build\bootloader && C:\Users\cai\.espressif\python_env\idf6.0_py3.13_env\Scripts\python.exe C:/esp/v6.0.1/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 C:/esp/esp_idf_ecg_migration/build/bootloader/bootloader.bin"
+Bootloader binary size 0x5240 bytes. 0x2dc0 bytes (36%) free.
+[2/9] No install step for 'bootloader'
+[3/9] Completed 'bootloader'
+[4/9] Building CXX object esp-idf/ecg_ble/CMakeFiles/__idf_ecg_ble.dir/src/ble.cpp.obj
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:83:9: warning: missing initializer for member 'ble_gatt_chr_def::arg' [-Wmissing-field-initializers]
+   83 |         },
+      |         ^
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:83:9: warning: missing initializer for member 'ble_gatt_chr_def::descriptors' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:83:9: warning: missing initializer for member 'ble_gatt_chr_def::min_key_size' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:83:9: warning: missing initializer for member 'ble_gatt_chr_def::cpfd' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:83:9: warning: missing initializer for member 'ble_gatt_chr_def::arg' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:83:9: warning: missing initializer for member 'ble_gatt_chr_def::descriptors' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:83:9: warning: missing initializer for member 'ble_gatt_chr_def::min_key_size' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:83:9: warning: missing initializer for member 'ble_gatt_chr_def::cpfd' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:83:9: warning: missing initializer for member 'ble_gatt_chr_def::access_cb' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:83:9: warning: missing initializer for member 'ble_gatt_chr_def::arg' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:83:9: warning: missing initializer for member 'ble_gatt_chr_def::descriptors' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:83:9: warning: missing initializer for member 'ble_gatt_chr_def::flags' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:83:9: warning: missing initializer for member 'ble_gatt_chr_def::min_key_size' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:83:9: warning: missing initializer for member 'ble_gatt_chr_def::val_handle' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:83:9: warning: missing initializer for member 'ble_gatt_chr_def::cpfd' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:86:1: warning: missing initializer for member 'ble_gatt_svc_def::includes' [-Wmissing-field-initializers]
+   86 | };
+      | ^
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:86:1: warning: missing initializer for member 'ble_gatt_svc_def::uuid' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:86:1: warning: missing initializer for member 'ble_gatt_svc_def::includes' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:86:1: warning: missing initializer for member 'ble_gatt_svc_def::characteristics' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp: In function 'void start_advertising()':
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::uuids16' [-Wmissing-field-initializers]
+   91 |     struct ble_hs_adv_fields fields = {0};
+      |                                         ^
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::num_uuids16' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::uuids16_is_complete' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::uuids32' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::num_uuids32' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::uuids32_is_complete' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::uuids128' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::num_uuids128' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::uuids128_is_complete' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::name' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::name_len' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::name_is_complete' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::tx_pwr_lvl' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::tx_pwr_lvl_is_present' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::slave_itvl_range' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::sm_tk_value' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::sm_tk_value_is_present' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::sm_oob_flag' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::sm_oob_flag_is_present' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::sol_uuids16' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::sol_num_uuids16' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::sol_uuids128' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::sol_num_uuids128' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid16' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid16_len' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::public_tgt_addr' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::num_public_tgt_addrs' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::random_tgt_addr' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::num_random_tgt_addrs' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::appearance' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::appearance_is_present' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::adv_itvl' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::adv_itvl_is_present' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::device_addr' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::device_addr_type' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::device_addr_is_present' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::sol_uuids32' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::sol_num_uuids32' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::le_role' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::le_role_is_present' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid32' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid32_len' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid128' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid128_len' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::uri' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::uri_len' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::le_supp_feat' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::le_supp_feat_is_present' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::adv_itvl_long' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::adv_itvl_long_is_present' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::mfg_data' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:91:41: warning: missing initializer for member 'ble_hs_adv_fields::mfg_data_len' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:92:46: warning: missing initializer for member 'ble_gap_adv_params::disc_mode' [-Wmissing-field-initializers]
+   92 |     struct ble_gap_adv_params adv_params = {0};
+      |                                              ^
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:92:46: warning: missing initializer for member 'ble_gap_adv_params::itvl_min' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:92:46: warning: missing initializer for member 'ble_gap_adv_params::itvl_max' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:92:46: warning: missing initializer for member 'ble_gap_adv_params::channel_map' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:92:46: warning: missing initializer for member 'ble_gap_adv_params::filter_policy' [-Wmissing-field-initializers]
+C:/esp/esp_idf_ecg_migration/components/ecg_ble/src/ble.cpp:92:46: warning: missing initializer for member 'ble_gap_adv_params::high_duty_cycle' [-Wmissing-field-initializers]
+[5/9] Linking C static library esp-idf\ecg_ble\libecg_ble.a
+[6/9] Generating esp-idf/esp_system/ld/sections.ld
+[7/9] Linking CXX executable esp_idf_ecg_migration.elf
+[8/9] Generating binary image from built executable
+esptool v5.3.0
+Creating ESP32-S3 image...
+Merged 3 ELF sections.
+Successfully created ESP32-S3 image.
+Generated C:/esp/esp_idf_ecg_migration/build/esp_idf_ecg_migration.bin
+[9/9] C:\Windows\system32\cmd.exe /C "cd /D C:\esp\esp_idf_ecg_migration\build && C:\Users\cai\.espressif\python_env\idf6.0_py3.13_env\Scripts\python.exe C:/esp/v6.0.1/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app C:/esp/esp_idf_ecg_migration/build/partition_table/partition-table.bin C:/esp/esp_idf_ecg_migration/build/esp_idf_ecg_migration.bin"
+esp_idf_ecg_migration.bin binary size 0x156520 bytes. Smallest app partition is 0x200000 bytes. 0xa9ae0 bytes (33%) free.
