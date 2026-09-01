@@ -1,5 +1,7 @@
 # ESP-IDF 固件迁移评估与当前进度（2026-08-24）
 
+> **ⓘ 2026-09-01 状态更新**：`experiments/esp_idf_ecg_migration` 已转正为官方固件线（2026-08-28）。当日补齐两处历史功能缺口——① `main/main.cc` 录制链接线（喂样本 `ecgRecorderPushSample`、秒级异常 `ecgRecorderSetSecondAbnormal`、启用 auto-record）；② `ecg_wifi.cpp` 移植 `/api/records`(JSON 列表)、`/api/records/{id}/meta`、DELETE(JSON) 记录 API。两者经真实 ESP-IDF v6 工具链 `-Werror` 编译验证通过。旧 **Arduino/PlatformIO** 线已归档至 `legacy_arduino/`。全工程整链 `idf.py build` 需在 ESP-IDF 原生 shell 下执行确认。
+
 ## 1. 路线评估
 
 ### 路线 A：整个固件迁移到 ESP-IDF（推荐）

@@ -93,3 +93,7 @@ components/ecg_ai/
 
 # 环境文件
 .clangd
+
+# 2026-09-01 Arduino 线归档：孤儿 vendor / 嵌入 git 副本不提交（避免嵌入嵌套 git 仓库）
+legacy_arduino/components/
+legacy_arduino/esp-nn/

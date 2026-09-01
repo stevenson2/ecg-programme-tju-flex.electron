@@ -1,6 +1,6 @@
 ﻿# ESP32-ECG 心电采集与 AI 异常检测系统
 
-> **ESP32-S3-WROOM-1-N16R8 (16MB Flash / 8MB Octal PSRAM) | PlatformIO + Arduino | 500Hz 采样 | BLE NUS | TFLite Micro AI 推理 | Flutter App**
+> **ESP32-S3-WROOM-1-N16R8 (16MB Flash / 8MB Octal PSRAM) | ESP-IDF 固件线（迁移工程） | 500Hz 采样 | BLE NUS | TFLite Micro + ESP-NN AI 推理 | Flutter App**
 
 ## 目录
 
@@ -17,6 +17,10 @@
 11. [文档导航](#文档导航)
 12. [核心配置](#核心配置)
 13. [开发状态与路线](#开发状态与路线)
+
+---
+
+> **ⓘ 固件线状态（2026-09-01）**：旧 **Arduino + PlatformIO** 固件线已归档至 [`legacy_arduino/`](legacy_arduino/)（不再作为正式线，含 src/include/partitions/platformio.ini 及根目录 components/、esp-nn 副本）；**官方固件为 ESP-IDF 迁移工程** [`experiments/esp_idf_ecg_migration/`](experiments/esp_idf_ecg_migration/)（2026-08-28 转正，exp7c INT8 + ESP-NN，含录制链与 WiFi 记录 API）。下文正文多处仍描述旧 Arduino 线内部实现，作为历史参考。
 
 ---
 
@@ -157,8 +161,10 @@ cd ecg_app && flutter run
 
 ## 项目结构
 
+> ⓘ 2026-09-01 归档：原根目录 `src/` `include/` `partitions/` `components/` `esp-nn/` `platformio.ini` 已整体移入 [`legacy_arduino/`](legacy_arduino/)；官方固件结构见 [`experiments/esp_idf_ecg_migration/`](experiments/esp_idf_ecg_migration/)。下方结构图反映归档前布局，供历史参考。
+
 ```
-├── src/                    固件源码（Arduino 风格）
+├── src/                    固件源码（Arduino 风格，已移入 legacy_arduino/）
 │   ├── main.cpp            主程序：采样调度 / 滤波链 / 心率 / 报警锁存 / 串口输出 /
 │   │                       BLE 输出 / REC_*·WIFI_*·回放命令解析
 │   ├── adc_afe/            ADC / AFE 采集（afe_hal）
@@ -462,7 +468,7 @@ python3 train.py --epochs 200 --batch-size 128
 
 **当前状态（2026-08-25）**：
 
-- ✅ **正式固件仍为 Arduino + PlatformIO**：esp_timer 500Hz、心率 v6、五路统一报警、SPIFFS 记录、WiFi AP、BLE 125Hz；板上模型仍为 **exp7c INT8**。
+- ✅ **正式固件 = ESP-IDF 迁移工程**（2026-08-28 转正，`experiments/esp_idf_ecg_migration`，exp7c INT8 + ESP-NN；2026-09-01 补齐录制链与 WiFi 记录 API）；旧 **Arduino + PlatformIO** 线已于 2026-09-01 归档至 [`legacy_arduino/`](legacy_arduino/)。
 - ✅ **exp7c_v4 后训练完成并通过 PC 侧联合验收**：真实 AFE 留出抑制显著、公共库事件级能力保持、患者级无泄漏；当前为 float32 H5 候选，**尚未导出 INT8、未上板**。
 - 🚧 **ESP-IDF 迁移进行中**：`experiments/esp_idf_ecg_migration` 已编译通过 AI/存储/WiFi/BLE/心率/规则组件，`esp-tflite-micro + ESP-NN` 已将 exp7c INT8 推理从 ~940ms 降至 ~49ms；ADC/AFE、串口命令、完整真机联调尚未完成。
 - 📝 **论文与审计**：跨架构部署链失配、AAMI 矩阵、QAT/后训练、v6 泄漏审计均已留档；权威数字仍以 `docs/FINAL_RESULTS.md` 为准。

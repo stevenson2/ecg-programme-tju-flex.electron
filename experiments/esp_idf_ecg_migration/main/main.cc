@@ -32,6 +32,7 @@ typedef enum {
 static int s_mode = SOURCE_SIMULATOR;
 static uint32_t s_lastButtonMs = 0;
 static bool s_buttonWasLow = false;
+static bool s_secondAbnormal = false;   /* 本秒内是否出现 AI 确认异常 (录制位图用) */
 
 static float s_combBuf1[COMB_TAPS] = {0};
 static int s_combIdx1 = 0;
@@ -106,7 +107,13 @@ static void storage_init_task(void *arg) {
     (void)arg;
     if (!ecgRecorderInit()) {
         printf("[storage] ecgRecorderInit failed\n");
+        vTaskDelete(NULL);
+        return;
     }
+    /* 异常触发自动录制: 异常秒 -> 启动, 连续 N 秒正常 -> 停止。
+     * IDF 线无 BLE/串口 REC_* 命令通道, 故默认启用 auto-record 保证录制功能可用。 */
+    ecgRecorderSetAutoRecord(true);
+    printf("[storage] recorder init OK, auto-record enabled\n");
     vTaskDelete(NULL);
 }
 
@@ -185,7 +192,23 @@ extern "C" void app_main(void) {
         while (ecg_ai_pop_result(&r)) {
             last_conf = r.confidence;
             last_abnormal = (int)r.confirmed;
+            if (r.confirmed) s_secondAbnormal = true;
             printf("AI_RESULT,%.4f,%u,%u\n", r.confidence, (unsigned)r.raw_abnormal, (unsigned)r.confirmed);
+        }
+
+        /* ECG 录制: 2:1 抽取 (500->250Hz) 喂 int16 样本, 每秒更新异常位图。
+         * 与 Arduino 链同参数: 记录 cleanSample (去偏置原始), scale 8000.0 (V->int16)。 */
+        if ((frame % 2) == 0) {
+            ecgRecorderPushSample((int16_t)(cleanSample * 8000.0f));
+        }
+        {
+            uint32_t nowSec = (uint32_t)(esp_timer_get_time() / 1000000ULL);
+            static uint32_t s_lastRecSec = 0;
+            if (nowSec != s_lastRecSec) {
+                s_lastRecSec = nowSec;
+                ecgRecorderSetSecondAbnormal(s_secondAbnormal);
+                s_secondAbnormal = false;
+            }
         }
 
         if ((frame % 4) == 0 && isBLEConnected()) {

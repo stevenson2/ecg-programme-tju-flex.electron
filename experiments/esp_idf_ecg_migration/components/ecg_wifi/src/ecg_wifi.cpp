@@ -1,18 +1,22 @@
 /**
  * @file ecg_wifi.cpp
- * @brief WiFi AP + HTTP 传输模块（ESP-IDF 简化移植）
+ * @brief WiFi AP + HTTP 传输模块（ESP-IDF 移植，与 Arduino 线 API 对齐）
  *
- * 提供：
- *   GET /api/records       -> 文本形式的 records.idx 列表
- *   GET /api/records/{id}/data -> 下载 /spiffs/ecgdata/ecg_rec_<id>.ecgr
- *   DELETE /api/records/{id}    -> 删除记录并刷新 recorder 计数
+ * 提供（与 src/wifi/ecg_wifi.cpp 的 REST 协议一致）：
+ *   GET    /api/records            -> 记录列表 JSON
+ *   GET    /api/records/{id}/meta  -> 单条记录元数据 JSON
+ *   GET    /api/records/{id}/data  -> 原始 .ecgr 二进制流 (chunked)
+ *   DELETE /api/records/{id}       -> 删除记录 + 重建索引，返回 JSON
+ *   OPTIONS *                      -> 204 CORS 预检 (Web 前端跨域)
  */
 #include "wifi/ecg_wifi.h"
 #include "storage/ecg_recorder.h"
+#include "storage/ecg_recorder_format.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <time.h>
 #include "esp_wifi.h"
 #include "esp_netif.h"
 #include "esp_event.h"
@@ -29,20 +33,23 @@ static int s_diagTxPower = 78;
 static int s_diagChannel = 6;
 static bool s_diagSeqSlow = false;
 
-static int ecgWifiListHandler(httpd_req_t *req) {
-    char buf[4096] = {0};
-    int n = ecgRecorderList(buf, sizeof(buf));
-    if (n < 0) {
-        httpd_resp_send_404(req);
-        return ESP_OK;
-    }
-    httpd_resp_set_type(req, "text/plain");
-    httpd_resp_send(req, buf, n);
-    return ESP_OK;
+/* ======================== 内部辅助 ======================== */
+
+/** 从记录 ID (startUnix) 构建 .ecgr 文件全路径 */
+static void get_record_path(uint32_t id, char *buf, size_t len) {
+    snprintf(buf, len, ECGR_BASE_PATH "/ecg_rec_%u.ecgr", (unsigned)id);
 }
 
+/** Unix 时间戳 -> ISO8601 (UTC) 字符串 */
+static void format_iso8601(uint32_t unix_time, char *buf, size_t len) {
+    time_t t = (time_t)unix_time;
+    struct tm tm;
+    gmtime_r(&t, &tm);
+    strftime(buf, len, "%Y-%m-%dT%H:%M:%SZ", &tm);
+}
+
+/** 解析 uri 中 /api/records/<id>... 的数字 id 并构建文件路径 */
 static bool get_record_id_path(httpd_req_t *req, char *path, size_t path_len, uint32_t *id) {
-    /* 解析 /api/records/<id>/data 或 /api/records/<id> */
     const char *uri = req->uri;
     const char *p = strstr(uri, "/api/records/");
     if (!p) return false;
@@ -55,10 +62,106 @@ static bool get_record_id_path(httpd_req_t *req, char *path, size_t path_len, ui
     }
     if (i == 0) return false;
     *id = (uint32_t)strtoul(id_str, NULL, 10);
-    snprintf(path, path_len, ECGR_BASE_PATH "/ecg_rec_%u.ecgr", (unsigned)*id);
+    get_record_path(*id, path, path_len);
     return true;
 }
 
+/* ======================== 路由处理器 ======================== */
+
+/**
+ * GET /api/records
+ * 从 records.idx 逐行解析，返回 {"records":[{id,duration,size,abnormal_seconds,start},...]}
+ */
+static int ecgWifiListHandler(httpd_req_t *req) {
+    char idx[4096] = {0};
+    int n = ecgRecorderList(idx, sizeof(idx));
+    if (n < 0) {
+        n = 0;
+        idx[0] = '\0';
+    }
+    idx[n] = '\0';
+
+    char json[4096];
+    int pos = snprintf(json, sizeof(json), "{\"records\":[");
+    bool first = true;
+
+    char *saveptr = NULL;
+    char *line = strtok_r(idx, "\n", &saveptr);
+    while (line && pos > 0 && pos < (int)sizeof(json) - 1) {
+        while (*line == '\r' || *line == ' ') line++;
+        if (*line == '\0') { line = strtok_r(NULL, "\n", &saveptr); continue; }
+
+        uint32_t startUnix = 0, dur = 0, samples = 0, abnSec = 0, sizeBytes = 0;
+        if (ecgrIdxParse(line, &startUnix, &dur, &samples, &abnSec, &sizeBytes)) {
+            char isoBuf[24];
+            format_iso8601(startUnix, isoBuf, sizeof(isoBuf));
+            if (!first) pos += snprintf(json + pos, sizeof(json) - (size_t)pos, ",");
+            first = false;
+            pos += snprintf(json + pos, sizeof(json) - (size_t)pos,
+                            "{\"id\":%u,\"duration\":%u,\"size\":%u,"
+                            "\"abnormal_seconds\":%u,\"start\":\"%s\"}",
+                            (unsigned)startUnix, (unsigned)dur,
+                            (unsigned)sizeBytes, (unsigned)abnSec, isoBuf);
+        }
+        line = strtok_r(NULL, "\n", &saveptr);
+    }
+    if (pos > 0 && pos < (int)sizeof(json) - 1) {
+        pos += snprintf(json + pos, sizeof(json) - (size_t)pos, "]}");
+    }
+
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_send(req, json, (size_t)pos);
+    return ESP_OK;
+}
+
+/**
+ * GET /api/records/{id}/meta
+ * 从 .ecgr 头部解析，返回 {"id",sample_rate,start_unix,start,duration,total_samples,abnormal_seconds}
+ */
+static int ecgWifiMetaHandler(httpd_req_t *req) {
+    char path[160];
+    uint32_t id = 0;
+    if (!get_record_id_path(req, path, sizeof(path), &id)) {
+        httpd_resp_send_404(req);
+        return ESP_OK;
+    }
+    FILE *f = fopen(path, "rb");
+    if (!f) {
+        httpd_resp_send_404(req);
+        return ESP_OK;
+    }
+    uint8_t hdr[ECGR_HEADER_SIZE];
+    size_t rd = fread(hdr, 1, sizeof(hdr), f);
+    fclose(f);
+    if (rd != sizeof(hdr) || !ecgrHeaderValidate(hdr, ECGR_DEFAULT_SAMPLE_RATE)) {
+        httpd_resp_send_404(req);
+        return ESP_OK;
+    }
+
+    uint32_t startUnix    = ecgrHeaderStartUnix(hdr);
+    uint32_t dur          = ecgrHeaderDurationSec(hdr);
+    uint32_t totalSamples = ecgrHeaderTotalSamples(hdr);
+    uint32_t abnSec       = ecgrHeaderAbnormalSec(hdr);
+
+    char isoBuf[24];
+    format_iso8601(startUnix, isoBuf, sizeof(isoBuf));
+
+    char json[256];
+    snprintf(json, sizeof(json),
+             "{\"id\":%u,\"sample_rate\":%u,\"start_unix\":%u,\"start\":\"%s\","
+             "\"duration\":%u,\"total_samples\":%u,\"abnormal_seconds\":%u}",
+             (unsigned)id, (unsigned)ECGR_DEFAULT_SAMPLE_RATE, (unsigned)startUnix,
+             isoBuf, (unsigned)dur, (unsigned)totalSamples, (unsigned)abnSec);
+
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_send(req, json, strlen(json));
+    return ESP_OK;
+}
+
+/**
+ * GET /api/records/{id}/data
+ * 返回原始 .ecgr 二进制流 (chunked)。App 当前不发送 Range，保底返回全文件。
+ */
 static int ecgWifiDataHandler(httpd_req_t *req) {
     char path[160];
     uint32_t id = 0;
@@ -71,12 +174,12 @@ static int ecgWifiDataHandler(httpd_req_t *req) {
         httpd_resp_send_404(req);
         return ESP_OK;
     }
-    httpd_resp_set_type(req, "application/octet-stream");
     FILE *f = fopen(path, "rb");
     if (!f) {
         httpd_resp_send_404(req);
         return ESP_OK;
     }
+    httpd_resp_set_type(req, "application/octet-stream");
     uint8_t chunk[ECG_WIFI_CHUNK_BYTES];
     size_t rd;
     while ((rd = fread(chunk, 1, sizeof(chunk), f)) > 0) {
@@ -89,6 +192,10 @@ static int ecgWifiDataHandler(httpd_req_t *req) {
     return ESP_OK;
 }
 
+/**
+ * DELETE /api/records/{id}
+ * 删除 .ecgr 文件并重建索引，返回 {"deleted":true/false}
+ */
 static int ecgWifiDeleteHandler(httpd_req_t *req) {
     char path[160];
     uint32_t id = 0;
@@ -96,20 +203,39 @@ static int ecgWifiDeleteHandler(httpd_req_t *req) {
         httpd_resp_send_404(req);
         return ESP_OK;
     }
-    remove(path);
-    ecgRecorderRefreshCount();
-    httpd_resp_sendstr(req, "OK");
+    struct stat st;
+    if (stat(path, &st) != 0) {
+        httpd_resp_set_type(req, "application/json");
+        httpd_resp_sendstr(req, "{\"deleted\":false}");
+        return ESP_OK;
+    }
+    if (remove(path) == 0) {
+        ecgRecorderRefreshCount();
+        httpd_resp_set_type(req, "application/json");
+        httpd_resp_sendstr(req, "{\"deleted\":true}");
+    } else {
+        httpd_resp_set_type(req, "application/json");
+        httpd_resp_sendstr(req, "{\"deleted\":false}");
+    }
     return ESP_OK;
 }
 
+/* ======================== 路由注册 ======================== */
+
 static void register_uri_handlers(httpd_handle_t server) {
+    /* 顺序重要: 更具体的 /data、/meta 必须先于后面的通配接口注册,
+     * 因为 esp_http_server 的通配星号会匹配跨 '/' 的任意后缀。 */
     httpd_uri_t list = {.uri="/api/records", .method=HTTP_GET, .handler=ecgWifiListHandler, .user_ctx=NULL};
     httpd_register_uri_handler(server, &list);
     httpd_uri_t data = {.uri="/api/records/*/data", .method=HTTP_GET, .handler=ecgWifiDataHandler, .user_ctx=NULL};
     httpd_register_uri_handler(server, &data);
+    httpd_uri_t meta = {.uri="/api/records/*/meta", .method=HTTP_GET, .handler=ecgWifiMetaHandler, .user_ctx=NULL};
+    httpd_register_uri_handler(server, &meta);
     httpd_uri_t del = {.uri="/api/records/*", .method=HTTP_DELETE, .handler=ecgWifiDeleteHandler, .user_ctx=NULL};
     httpd_register_uri_handler(server, &del);
 }
+
+/* ======================== 公开 API ======================== */
 
 bool ecgWifiInit(void) {
     esp_err_t err = nvs_flash_init();
