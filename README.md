@@ -41,7 +41,7 @@ python pc_tools/ecg_plotter.py
 cd ecg_app && flutter run
 ```
 
-> ⚠️ AI 模型训练需 GPU（WSL2），见 [docs/03_Software_Docs/AGENTS.md](docs/03_Software_Docs/AGENTS.md)。
+> ⚠️ AI 模型训练需 GPU（WSL2）。
 
 ---
 
@@ -102,7 +102,7 @@ papers/                            # 文献
 | 跨域参考（无 PTB 训练） | P2A | **0.9878** | 0.9312 | 0.7502 | 0.2552 |
 | 部署链（D3，δ 对齐） | exp6-SGD | 0.9122 | 0.9102 | 0.7697 | 0.7069 |
 
-> 权威数字见 `docs/FINAL_RESULTS.md`（表2/表4），可逐项溯源至 JSON。两表口径不同，不可直接比较。
+> 两表口径不同（患者级清洁/未增强 vs 部署链 D3），不可直接比较。
 
 ---
 
@@ -116,13 +116,7 @@ papers/                            # 文献
 
 ## 文档
 
-| 文档 | 定位 |
-|------|------|
-| [docs/01_Project_Overview/ROADMAP.md](docs/01_Project_Overview/ROADMAP.md) | 决策视图（D1-D14） |
-| [docs/03_Software_Docs/TUNING_HISTORY.md](docs/03_Software_Docs/TUNING_HISTORY.md) | 实验证据日志 |
-| [docs/FINAL_RESULTS.md](docs/FINAL_RESULTS.md) | **权威指标数字源** |
-| [docs/MODEL_GUIDE.md](docs/MODEL_GUIDE.md) | 通俗故事版导读 |
-| [docs/03_Software_Docs/IDF_MIGRATION_ASSESSMENT.md](docs/03_Software_Docs/IDF_MIGRATION_ASSESSMENT.md) | 固件迁移评估 |
+面向用户的说明见各子项目 `README.md`（`pc_tools/ecg_dl/`、`ecg_app/`、`web/`、`experiments/`）。
 
 ---
 

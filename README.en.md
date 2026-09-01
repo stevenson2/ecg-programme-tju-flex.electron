@@ -41,7 +41,7 @@ python pc_tools/ecg_plotter.py
 cd ecg_app && flutter run
 ```
 
-> ⚠️ AI model training requires a GPU (WSL2); see [docs/03_Software_Docs/AGENTS.md](docs/03_Software_Docs/AGENTS.md).
+> ⚠️ AI model training requires a GPU (WSL2).
 
 ---
 
@@ -102,7 +102,7 @@ papers/                            # literature
 | Cross-domain (no PTB training) | P2A | **0.9878** | 0.9312 | 0.7502 | 0.2552 |
 | Deploy chain (D3, δ-aligned) | exp6-SGD | 0.9122 | 0.9102 | 0.7697 | 0.7069 |
 
-> Authoritative numbers in `docs/FINAL_RESULTS.md` (Tables 2/4), traceable to JSON. The two cadences are not directly comparable.
+> The two cadences (patient-level clean/un-augmented vs deploy chain D3) are not directly comparable.
 
 ---
 
@@ -116,13 +116,7 @@ papers/                            # literature
 
 ## Docs
 
-| Doc | Purpose |
-|------|---------|
-| [docs/01_Project_Overview/ROADMAP.md](docs/01_Project_Overview/ROADMAP.md) | Decision view (D1-D14) |
-| [docs/03_Software_Docs/TUNING_HISTORY.md](docs/03_Software_Docs/TUNING_HISTORY.md) | Experimental evidence log |
-| [docs/FINAL_RESULTS.md](docs/FINAL_RESULTS.md) | **Authoritative metric source** |
-| [docs/MODEL_GUIDE.md](docs/MODEL_GUIDE.md) | Plain-language guide |
-| [docs/03_Software_Docs/IDF_MIGRATION_ASSESSMENT.md](docs/03_Software_Docs/IDF_MIGRATION_ASSESSMENT.md) | Firmware migration assessment |
+User-facing details are in the per-module `README.md` files (`pc_tools/ecg_dl/`, `ecg_app/`, `web/`, `experiments/`).
 
 ---
 
