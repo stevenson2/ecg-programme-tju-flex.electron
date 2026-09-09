@@ -134,6 +134,7 @@ papers/                            # 文献
 - **PC 绘图** `pc_tools/ecg_plotter.py`：实时三通道波形 + AI 异常标签（可打包 ECG-Plotter.exe）。
 - **深度学习** `pc_tools/ecg_dl/`：训练 / INT8 导出 / 评估（患者级无泄漏划分 + SplitGuard 守卫）。
 - **手机 App** `ecg_app/`：BLE NUS 波形显示、AI 高亮报警、记录列表/回放。
+- **跨 Shell 协作**：`scripts/project_paths.json`（唯一路径真值）+ `scripts/project_paths.{py,sh,ps1}` 读取器 + `scripts/cross_shell.py` 调度器；WSL 负责训练/评测，PowerShell 负责固件/烧录/串口/推送，规则见 `docs/03_Software_Docs/AGENTS.md`（内部）与研究树 `docs/PROJECT_STRUCTURE.md`。
 
 ---
 
