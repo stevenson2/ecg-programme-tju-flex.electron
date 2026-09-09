@@ -1,0 +1,5 @@
+[V6A5] source 0: quota=2000 available=7361 -> 2000
+[V6A5] source 1: quota=3000 available=14437 -> 3000
+[V6A5] source 2: quota=19 available=19 -> 19
+[V6A5] source 3: quota=4981 available=48239 -> 4981
+[V6A5] saved v6a5_train_10k_hardnorm_anchor.npz: x=(15942, 250) n=15942 normal=13442 abnormal=2500 elapsed=3.4s

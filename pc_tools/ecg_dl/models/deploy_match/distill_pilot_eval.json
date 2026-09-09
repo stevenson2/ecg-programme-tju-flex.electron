@@ -1,0 +1,408 @@
+{
+  "date": "2026-09-02 00:20:43",
+  "purpose": "TH §106 蒸馏试点评估: 教师软目标 (α=0.5) vs v3 A 基线, val 侧同脚本同协议; 测试集零接触",
+  "models": {
+    "baseline": "models/best_resnet_large_clean_baseline_v3.h5",
+    "pilot": "models/best_resnet_large_distill_pilot.h5"
+  },
+  "frozen_operating_point": {
+    "theta": 0.95,
+    "k": 1,
+    "n": 5,
+    "cooldown": 20
+  },
+  "selfcheck": {
+    "mit_frac_gt_0.95_vs_p1": [
+      0.2447810562747804,
+      true,
+      "tol=0.004152 (band=379)"
+    ],
+    "incart_frac_gt_0.95_vs_p1": [
+      0.27364988091917525,
+      true,
+      "tol=0.007081 (band=330)"
+    ],
+    "mit_auc_vs_p1": [
+      0.7679612116024779,
+      true,
+      "tol=1e-3"
+    ],
+    "ptb_auc_vs_p1": [
+      0.8262549325343971,
+      true,
+      "tol=1e-3"
+    ],
+    "frozen_event_recall_vs_sweep": [
+      0.9807,
+      true,
+      "tol=1e-3"
+    ],
+    "frozen_alert_blocks_vs_sweep": [
+      401,
+      true,
+      "tol=±2 (边界翻转实测差≤1)"
+    ]
+  },
+  "selfcheck_tolerance_revision": {
+    "date": "2026-09-02",
+    "reason": "GPU/XLA 推理跨进程非确定性; v3 正常拍有数百点密集压住 θ=0.95 边界带, 1e-6 位级复现不可行 (独立进程重跑同口径冻结点与盘上完全一致, 证管道口径正确)",
+    "frac_tolerance": "该域边界带(±0.005)点数 / 该域正常拍数 (数据推导)",
+    "alert_blocks_tolerance": "±2",
+    "gates_affected": "无 — 全部假设门为同进程基线-试点对比"
+  },
+  "gates": {
+    "primary_pooled_norm_frac_gt_0.95": {
+      "baseline": 0.2545374123516232,
+      "pilot": 0.015829278727276682,
+      "relative_reduction": 0.9378115830555793,
+      "passed": true,
+      "criterion": ">=0.3 相对降幅"
+    },
+    "guardrail_A_mit_auc": {
+      "baseline": 0.7679612116024779,
+      "pilot": 0.7617329027828212,
+      "drop": 0.006228308819656636,
+      "passed": true,
+      "criterion": "drop<=0.02"
+    },
+    "guardrail_B_frozen_event_recall": {
+      "baseline_event_recall": 0.9807,
+      "pilot_event_recall": 0.4961,
+      "pilot_alert_blocks": 713,
+      "passed": false,
+      "criterion": "drop<=0.02 且 alert_blocks>=3"
+    },
+    "guardrail_C_real_holdout": {
+      "pilot": {
+        "mean_prob": 0.03675426170229912,
+        "frac_gt_0.5": 0.0,
+        "n": 40
+      },
+      "passed": true,
+      "criterion": "mean_prob<0.1 且 frac_gt_0.5<=0.0"
+    }
+  },
+  "verdict": "PARTIAL",
+  "verdict_semantics": {
+    "PASS": "主门 + 护栏 A/B/C 全过",
+    "PARTIAL": "主门过但至少一条护栏破",
+    "UNPROVEN": "主门未过 (相对降幅在 0–30% 区间或为负) 记未证明; 单种子运行, 噪声区间内不称证伪"
+  },
+  "baseline_metrics": {
+    "mit_incart": {
+      "auc": 0.7679612116024779,
+      "n_beats": 159294,
+      "norm_quantiles": {
+        "n": 137909,
+        "mean": 0.32168641686439514,
+        "p05": 2.5064855071832427e-05,
+        "p25": 0.0006324502173811197,
+        "p50": 0.00808391347527504,
+        "p75": 0.9585442543029785,
+        "p95": 0.9999840259552002,
+        "frac_gt_0.5": 0.31815182475400444,
+        "frac_gt_0.95": 0.2545374123516232
+      },
+      "frozen": {
+        "theta": 0.95,
+        "k": 1,
+        "n": 5,
+        "cooldown": 20,
+        "beat_tp": 17729,
+        "beat_fp": 76971,
+        "beat_tn": 60938,
+        "beat_fn": 3656,
+        "beat_recall": 0.829,
+        "beat_precision": 0.1872,
+        "beat_f1": 0.3054,
+        "gt_events": 3050,
+        "alert_blocks": 401,
+        "matched_gt_events": 2991,
+        "false_alarm_blocks": 188,
+        "event_recall": 0.9807,
+        "event_precision": 0.5312,
+        "event_f1": 0.6891,
+        "fp_per_record": 6.963,
+        "median_latency_beats": 0.0,
+        "n_records": 27
+      }
+    },
+    "mit_only": {
+      "n_norm": 91302,
+      "frac_gt_0.95": 0.2447810562747804,
+      "frac_gt_0.5": 0.29555760005257276,
+      "band_0.005_count": 379
+    },
+    "incart_only": {
+      "n_norm": 46607,
+      "frac_gt_0.95": 0.27364988091917525,
+      "frac_gt_0.5": 0.36241337138198126,
+      "band_0.005_count": 330
+    },
+    "pooled_norm_frac_gt_0.95": 0.2545374123516232,
+    "pooled_bootstrap_ci95": [
+      0.11854969733329015,
+      0.4168131071867467
+    ],
+    "ptb": {
+      "auc": 0.8262549325343971,
+      "n_beats": 14694,
+      "norm_quantiles": {
+        "n": 2403,
+        "mean": 0.20761333405971527,
+        "p05": 0.00010520863143028692,
+        "p25": 0.0008493046625517309,
+        "p50": 0.004570567514747381,
+        "p75": 0.08898919448256493,
+        "p95": 0.999846613407135,
+        "frac_gt_0.5": 0.19850187265917604,
+        "frac_gt_0.95": 0.16312942155638785
+      },
+      "frozen": {
+        "theta": 0.95,
+        "k": 1,
+        "n": 5,
+        "cooldown": 20,
+        "beat_tp": 10051,
+        "beat_fp": 635,
+        "beat_tn": 1768,
+        "beat_fn": 2240,
+        "beat_recall": 0.8178,
+        "beat_precision": 0.9406,
+        "beat_f1": 0.8749,
+        "gt_events": 92,
+        "alert_blocks": 108,
+        "matched_gt_events": 86,
+        "false_alarm_blocks": 10,
+        "event_recall": 0.9348,
+        "event_precision": 0.9074,
+        "event_f1": 0.9209,
+        "fp_per_record": 0.0893,
+        "median_latency_beats": 0.0,
+        "n_records": 112
+      }
+    }
+  },
+  "pilot_metrics": {
+    "mit_incart": {
+      "auc": 0.7617329027828212,
+      "n_beats": 159294,
+      "norm_quantiles": {
+        "n": 137909,
+        "mean": 0.5117292404174805,
+        "p05": 0.1729270488023758,
+        "p25": 0.3026442527770996,
+        "p50": 0.4698345363140106,
+        "p75": 0.7323223948478699,
+        "p95": 0.9100984334945679,
+        "frac_gt_0.5": 0.4694327418805154,
+        "frac_gt_0.95": 0.015829278727276682
+      },
+      "frozen": {
+        "theta": 0.95,
+        "k": 1,
+        "n": 5,
+        "cooldown": 20,
+        "beat_tp": 4306,
+        "beat_fp": 14311,
+        "beat_tn": 123598,
+        "beat_fn": 17079,
+        "beat_recall": 0.2014,
+        "beat_precision": 0.2313,
+        "beat_f1": 0.2153,
+        "gt_events": 3050,
+        "alert_blocks": 713,
+        "matched_gt_events": 1513,
+        "false_alarm_blocks": 156,
+        "event_recall": 0.4961,
+        "event_precision": 0.7812,
+        "event_f1": 0.6068,
+        "fp_per_record": 5.7778,
+        "median_latency_beats": 0.0,
+        "n_records": 27
+      }
+    },
+    "mit_only": {
+      "n_norm": 91302,
+      "frac_gt_0.95": 0.020667674311625157,
+      "frac_gt_0.5": 0.4039780070535147,
+      "band_0.005_count": 757
+    },
+    "incart_only": {
+      "n_norm": 46607,
+      "frac_gt_0.95": 0.006350977321003283,
+      "frac_gt_0.5": 0.5976570043126569,
+      "band_0.005_count": 171
+    },
+    "pooled_norm_frac_gt_0.95": 0.015829278727276682,
+    "pooled_bootstrap_ci95": [
+      0.0017939639828971191,
+      0.032651280436689266
+    ],
+    "ptb": {
+      "auc": 0.8008629207524169,
+      "n_beats": 14694,
+      "norm_quantiles": {
+        "n": 2403,
+        "mean": 0.3819064497947693,
+        "p05": 0.09145829007029535,
+        "p25": 0.22054366022348404,
+        "p50": 0.32825303077697754,
+        "p75": 0.47908955812454224,
+        "p95": 0.92235227227211,
+        "frac_gt_0.5": 0.22929671244277985,
+        "frac_gt_0.95": 0.025801081980857263
+      },
+      "frozen": {
+        "theta": 0.95,
+        "k": 1,
+        "n": 5,
+        "cooldown": 20,
+        "beat_tp": 934,
+        "beat_fp": 169,
+        "beat_tn": 2234,
+        "beat_fn": 11357,
+        "beat_recall": 0.076,
+        "beat_precision": 0.8468,
+        "beat_f1": 0.1395,
+        "gt_events": 92,
+        "alert_blocks": 36,
+        "matched_gt_events": 21,
+        "false_alarm_blocks": 1,
+        "event_recall": 0.2283,
+        "event_precision": 0.9722,
+        "event_f1": 0.3697,
+        "fp_per_record": 0.0089,
+        "median_latency_beats": 15.0,
+        "n_records": 112
+      }
+    }
+  },
+  "real_afe_holdout": {
+    "base": {
+      "mean_prob": 0.008826475590467453,
+      "frac_gt_0.5": 0.0,
+      "n": 40
+    },
+    "pilot": {
+      "mean_prob": 0.03675426170229912,
+      "frac_gt_0.5": 0.0,
+      "n": 40
+    }
+  },
+  "secondary": {
+    "alert_blocks_ratio_pilot_over_baseline": 1.7780548628428927,
+    "p1_caliber_summary": {
+      "baseline": {
+        "clean_normal_records": 1,
+        "clean_normal_alert_blocks_total": 118,
+        "record_212": {
+          "n_beats": 16488,
+          "abn_beats": 0,
+          "alert_blocks": 118,
+          "gt_events": 0
+        },
+        "top5_by_alert_blocks": [
+          {
+            "rid": 221,
+            "n_beats": 14562,
+            "abn_beats": 2376,
+            "alert_blocks": 225,
+            "gt_events": 654
+          },
+          {
+            "rid": 112,
+            "n_beats": 15234,
+            "abn_beats": 12,
+            "alert_blocks": 139,
+            "gt_events": 12
+          },
+          {
+            "rid": 212,
+            "n_beats": 16488,
+            "abn_beats": 0,
+            "alert_blocks": 118,
+            "gt_events": 0
+          },
+          {
+            "rid": 232,
+            "n_beats": 10680,
+            "abn_beats": 8292,
+            "alert_blocks": 115,
+            "gt_events": 13
+          },
+          {
+            "rid": 222,
+            "n_beats": 14898,
+            "abn_beats": 1254,
+            "alert_blocks": 109,
+            "gt_events": 264
+          }
+        ]
+      },
+      "pilot": {
+        "clean_normal_records": 1,
+        "clean_normal_alert_blocks_total": 120,
+        "record_212": {
+          "n_beats": 16488,
+          "abn_beats": 0,
+          "alert_blocks": 120,
+          "gt_events": 0
+        },
+        "top5_by_alert_blocks": [
+          {
+            "rid": 112,
+            "n_beats": 15234,
+            "abn_beats": 12,
+            "alert_blocks": 417,
+            "gt_events": 12
+          },
+          {
+            "rid": 221,
+            "n_beats": 14562,
+            "abn_beats": 2376,
+            "alert_blocks": 207,
+            "gt_events": 654
+          },
+          {
+            "rid": 212,
+            "n_beats": 16488,
+            "abn_beats": 0,
+            "alert_blocks": 120,
+            "gt_events": 0
+          },
+          {
+            "rid": 100058,
+            "n_beats": 2323,
+            "abn_beats": 12,
+            "alert_blocks": 58,
+            "gt_events": 10
+          },
+          {
+            "rid": 222,
+            "n_beats": 14898,
+            "abn_beats": 1254,
+            "alert_blocks": 54,
+            "gt_events": 264
+          }
+        ]
+      }
+    },
+    "sweep_reference_frozen": {
+      "mit_incart": {
+        "event_recall": 0.9807,
+        "alert_blocks": 401,
+        "false_alarm_blocks": 188,
+        "fp_per_record": 6.963
+      },
+      "ptb_event_recall": 0.9348
+    }
+  },
+  "known_limitations": [
+    "val 双重使用 (早停监控 + 全部门): 一切数字为相对指标, 非诚实泛化估计",
+    "教师真 10s 读出 0.7794 未过 0.80 GO 线; 本试点教的是偏移后更强的 tile 视图 (0.8893); 若通过, 结论只覆盖'教师软目标能否降低 val 侧误报'",
+    "伪目标含噪 (读出 AUC ≈ 0.89 非 1); α=0.5 保留硬标签锚",
+    "单种子运行; 记录级 bootstrap CI 仅报告不进门; 多种子复跑为后续工作"
+  ],
+  "elapsed_s": 38.7
+}

@@ -1,0 +1,42 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788277518.513909     377 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788277519.659223     377 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788277522.826818     377 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+[DP1] sample mit_bih: abn=1500 norm=1500 records=31
+[DP1] sample incart: abn=400 norm=400 records=42
+[DP1] sample ptb: abn=600 norm=400 records=273
+[DP1] train total=5942 abn=2500 norm=3442 groups=347
+[DP1] val total=4040 abn=2000 norm=2040
+[DP1] identity anchors PASS (19 checks vs train_clean_baseline_v3.json)
+/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/p3c_teacher_10s.py:177: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  ck = torch.load(str(CKPT_1LEAD), map_location="cpu")
+[P3c] teacher loaded; missing=0 unexpected=0
+[DP1] teacher train: 32/5942
+[DP1] teacher train: 832/5942
+[DP1] teacher train: 1632/5942
+[DP1] teacher train: 2432/5942
+[DP1] teacher train: 3232/5942
+[DP1] teacher train: 4032/5942
+[DP1] teacher train: 4832/5942
+[DP1] teacher train: 5632/5942
+[DP1] teacher feats train: (5942, 1024) (89.0 seg/s, 67s)
+[DP1] teacher val: 32/4040
+[DP1] teacher val: 832/4040
+[DP1] teacher val: 1632/4040
+[DP1] teacher val: 2432/4040
+[DP1] teacher val: 3232/4040
+[DP1] teacher val: 4032/4040
+[DP1] teacher feats val: (4040, 1024) (131.5 seg/s, 31s)
+[DP1] LORO fold 1/347
+[DP1] LORO fold 51/347
+[DP1] LORO fold 101/347
+[DP1] LORO fold 151/347
+[DP1] LORO fold 201/347
+[DP1] LORO fold 251/347
+[DP1] LORO fold 301/347
+[DP1] LORO readout AUC=0.8822 (public beats) per-domain={mit_bih:0.9285, incart:0.9400, ptb:0.8166} single_class_folds=0
+[DP1] real_synth mean_p=0.8287 swap_to_EPS=True
+[DP1] saved distill_pilot_teacher_targets.npz, distill_pilot_teacher_targets.json, distill_pilot_teacher_features.npy (266s)
+DP1_EXIT=0

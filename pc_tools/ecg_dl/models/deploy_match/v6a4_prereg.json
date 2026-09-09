@@ -1,0 +1,62 @@
+{
+  "title": "v6a4 MIT/INCART-only hard-normal 微调预注册",
+  "date": "2026-09-02 12:03:47",
+  "purpose": "Restrict hard-normal additions to MIT/INCART train beats to avoid domain shift from SVDB/AFDB/VFDB.",
+  "recipe": {
+    "name": "v6a4",
+    "arch": "v3 A (62,834 params)",
+    "init": "v3 A weights, all layers trainable",
+    "data": "v6a4_train_mitincart_hardnorm_anchor.npz (16k MIT/INCART hard normal + original v3-A train 5,942)",
+    "optimizer": "Adam lr=1e-5",
+    "batch": 128,
+    "epochs_requested": 20,
+    "early_stopping": {
+      "monitor": "val_auc",
+      "patience": 5,
+      "restore_best": true
+    },
+    "loss": "sparse categorical crossentropy",
+    "augmentation": "none"
+  },
+  "gates": {
+    "primary_relative_reduction_min": 0.3,
+    "guardrail_auc_max_drop": 0.02,
+    "guardrail_event_recall_max_drop": 0.02,
+    "guardrail_alert_blocks_min": 3,
+    "real_holdout_mean_prob_max": 0.1,
+    "real_holdout_frac_gt_0.5_max": 0.0
+  },
+  "frozen_operating_point": {
+    "theta": 0.95,
+    "k": 1,
+    "n": 5,
+    "cooldown": 20
+  },
+  "baseline_references_from_disk": {
+    "p1_mit_frac_gt_0.95": 0.24480296159996495,
+    "p1_incart_frac_gt_0.95": 0.2735855129057867,
+    "p1_mit_auc": 0.7679994798154276,
+    "p1_ptb_auc": 0.8262335343912346,
+    "sweep_mit_event_recall": 0.9807,
+    "sweep_mit_alert_blocks": 401,
+    "sweep_mit_false_alarm_blocks": 188,
+    "sweep_mit_fp_per_record": 6.963,
+    "sweep_ptb_event_recall": 0.9348
+  },
+  "calibration_protection": {
+    "real_afe_holdout_not_worse": "same as v6 prereg",
+    "theta05_false_alarm_not_worse": "same as v6 prereg",
+    "frozen_event_recall_drop_max": 0.02
+  },
+  "verdict_semantics": {
+    "PASS": "primary + guardrail A/B/C + calibration pass",
+    "PARTIAL": "primary passes but a guardrail/calibration breaks",
+    "UNPROVEN": "primary does not pass"
+  },
+  "zero_test_contact": true,
+  "outputs": {
+    "model": "models/deploy_match/best_v6a4_mitincart_hardnorm_anchor.h5",
+    "train_json": "models/deploy_match/train_v6a4_mitincart_hardnorm_anchor.json",
+    "log": "models/deploy_match/train_v6a4_mitincart_hardnorm_anchor.log"
+  }
+}

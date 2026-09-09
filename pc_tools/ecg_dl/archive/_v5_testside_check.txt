@@ -1,0 +1,14 @@
+rid=205 mit_test=True
+rid=100069 incart_test=False
+rid=100061 incart_test=False
+rid=119 mit_test=True
+rid=202 mit_test=True
+rid=100059 incart_test=False
+rid=100008 incart_test=False
+rid=100001 incart_test=False
+rid=100068 incart_test=False
+rid=100013 incart_test=False
+replication_checks={"base_total": 5942, "base_abn": 2500, "base_norm": 3442, "val_total": 4040, "real_holdout_indices_match_v4_json": true}
+svdb keys=[]
+svdb n_abn=None n_norm=None records=None
+best_val_auc=0.7628100490196078 holdout_mean=0.22906427085399628 holdout_frac=0.225 best_epoch=7

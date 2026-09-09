@@ -1,0 +1,5 @@
+[VFS] saved /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/deploy_match/vfdb_split_audit.json
+[VFS] records=29 beats=67249 train=19 val=5 test=5 overlaps={'train_val': 0, 'train_test': 0, 'val_test': 0} ok=True
+[VFS] train: beats=43676 N=17941 A=25735
+[VFS] val: beats=14663 N=4471 A=10192
+[VFS] test: beats=8910 N=3919 A=4991

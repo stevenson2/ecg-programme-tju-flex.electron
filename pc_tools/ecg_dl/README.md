@@ -191,11 +191,16 @@
 | `plot_history.py` / `plot_ssl_history.py` | 训练曲线 | 🔵 |
 | `audit_manuscript.py` | H19 稿件数值一致性审计（57 项） | 🟢 |
 
-## M. 硬编码路径警告 ⚠️
+## M. 路径规范（R17-CLEANUP 起强制）
 
-以下脚本内含**绝对路径**（`C:\Users\cai\...` 或 `/mnt/c/Users/cai/...`），换机器/换用户名时需同步修改：
-`audit_leakage.py`, `audit_s_class.py`, `eval_context_fusion.py`, `eval_deploy_decision.py`, `eval_deploy_match.py`, `eval_expert_combo.py`, `eval_fusion.py`, `eval_ptb_holdout.py`, `eval_vf_detect_ablation.py`, `eval_vf_detect_ablation2.py`, `eval_weighted_fusion.py`, `export_dual_tflite.py`, `gen_paper_figures_task12.py`, `smoke_patient_split.py`, `train_ssl.py`, `verify_exp6_sgd_int8.py`, `verify_split_consistency.py`, `preprocess_ptb.py`（ECG-Database 双路径探测，Windows/WSL 各一）。
-其余脚本一律经 `config.py` 相对定位——**改路径先改 config.py，不要散改**。
+参考数据库（PTB-XL / ECG-Database / INCART）已移出仓库，统一放在
+资料库根（Windows `C:\ecg_data`，子目录 `ptbxl/`、`ecg_database/`、`incart/`、`figs/`、`lib/`）。
+代码一律用 `from ecg_refs import PTBXL_DIR, ECG_DATABASE_DIR, INCART_DIR`
+（定义在 `scripts/project_paths.json` 的 `ecg_refs_*` 键，WSL 走 `/mnt/c/ecg_data/`）。
+
+硬编码扫描：`python scripts\check_paths.py --repo electron`（0 违规为合格；
+白名单 `scripts/check_paths.json` 记录历史遗留，只许消减不许扩充；
+`archive/` 内一次性脚本与生成文件豁免）。
 
 ## N. 整理规则（2026-08-21 起）
 

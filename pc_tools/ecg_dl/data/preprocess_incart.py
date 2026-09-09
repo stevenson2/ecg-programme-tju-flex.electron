@@ -24,13 +24,17 @@ INCART Database:
 
 import sys
 from pathlib import Path
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+import ecg_refs as _REFS  # noqa: E402
+
 import numpy as np
 from scipy import signal as scipy_signal
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from config import PROCESSED_DIR, TARGET_FS, BEAT_WINDOW_SAMPLES, AAMI_CLASSES
 
-INCART_DIR = Path(r"C:\Users\cai\OneDrive\Desktop\Fe programme 25261\ecg-programme-tju-flex.electron-master\st-petersburg-incart-12-lead-arrhythmia-database-1.0.0\files")
+INCART_DIR = _REFS.INCART_DIR
 INCART_RECORDS = [f"I{i:02d}" for i in range(1, 76)]
 
 

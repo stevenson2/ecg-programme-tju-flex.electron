@@ -1,0 +1,56 @@
+{
+  "spec_id": "normfix_spec_v1_b",
+  "version": 1,
+  "option": "B",
+  "date": "2026-09-01",
+  "chapter": "§105 逐拍归一化修复 (normfix)",
+  "status": "finalized_before_any_training_script",
+  "parent": "normfix_spec_v1 (option A)",
+  "trigger": "A 探针双闸失败 (val AUC 0.7979 < 0.80, gate1 FAIL)。按 normfix_spec_v1.json candidates.B_fallback 预注册条件执行本 fallback。",
+  "problem_statement": "同 A: 逐拍窗口 z-score 抹掉拍内绝对幅度 (ST 抬/压、P/T 幅度), PTB 诊断分层审计已因果定位。",
+  "difference_from_A": "A 用因果慢包络 (τ=4s 一阶 IIR 均方) 估计并除掉个体尺度; B 只用固定常数尺度 (全局中位数), 不除个体增益。二者都移除窗口 z-score、都保留拍内相对幅度 (ST/R、T/R 比例); B 是信息保留最保守的版本, 但不消除个体/记录间增益差异。",
+  "chain_position": {
+    "input_stream": "修正后因果部署链 250Hz 输出 (同 A: 因果 HP 0.5Hz 已除基线)",
+    "firmware_point": "ai_inference_push 内, aiApplyFilter 之后的逐样本流, 写入推理环形缓冲之前",
+    "baseline_role": "基线由既有因果 HP 0.5Hz 承担 (不改); B 只新增一级固定常数除法, 无任何窗口均值减法",
+    "replaces": "preprocess_samples 的逐拍窗口 z-score (mu 减法 + std 除法, std<1e-6→1.0) 整体移除"
+  },
+  "formula": {
+    "normalize": "y[n] = x[n] / SCALE",
+    "recurrence": "无 (纯逐样本标量除法, 无状态、无包络)",
+    "order": "无顺序约束 (每样本独立)",
+    "init": "无状态; 无需初始化/复位",
+    "monotonic_note": "除以固定正数 SCALE 是全局单调仿射变换, AUC 不变; B 探针的 val AUC 与 '完全不归一化 (仅因果 HP 去基线)' 等价, 用于隔离 'z-score 抹幅度' 这一个变量。"
+  },
+  "constants": {
+    "scale": 0.27540087628966436,
+    "scale_source": "normfix_rms_measure.json aggregate.rms_full_median (36 条训练侧记录全记录 RMS 中位数)",
+    "scale_rationale": "全局中位数 RMS; 把典型记录的尺度归一到约单位幅度, 同时完整保留拍内相对幅度与记录间增益差异",
+    "firmware_float32": "0.27540088f (float32 最近舍入, 相对误差 ~1.4e-8, 远小于 1e-6 验证容差)",
+    "fixed_point_note": "纯常数乘法 y = x * (1/SCALE), 可预计算倒数定点 Q16/Q32, 无状态, 定点最友好"
+  },
+  "warmup": {
+    "strategy": "无 (无状态); 无收敛期、无特殊分支、无复位逻辑"
+  },
+  "information_preservation": {
+    "goal": "同 A: 保留拍内相对幅度 (ST 段、P/T 波幅度)",
+    "mechanism": "基线由上游因果 HP 0.5Hz 去除; 仅除以全局常数, 拍内幅度比例 (ST/R, T/R) 完整保留; 相比 A 额外保留记录间增益差异 (个体尺度不归一)",
+    "tradeoff_vs_A": "若个体增益差异携带病理信息, B 优于 A; 若个体增益差异是纯采集噪声, A 优于 B"
+  },
+  "candidates": {
+    "A": "因果慢包络尺度 (已探针, gate1 FAIL, 0.7979)",
+    "B": "固定常数尺度 (本规格, 探针中)",
+    "C": "稳健分位数尺度 (排序/滑窗统计, 因果流式复杂且定点不友好, 仅列备选)"
+  },
+  "verification_plan": {
+    "phase": "Phase B 全链重建前 (仅当 B 双闸通过)",
+    "method": "同一真实流逐样本对比固件导出路径与 Python 参考 (normfix.normfix_stream_const)",
+    "tolerance": "相对误差 ≤ 1e-6",
+    "log": "models/deploy_match/normfix_fw_verify.json"
+  },
+  "reference_implementation": {
+    "module": "pc_tools/ecg_dl/normfix.py",
+    "api": ["load_spec(path)", "normalize_stream(x250, spec)", "normfix_stream_const(x250, spec)", "window_beats_normfix(...)"],
+    "rule": "本文件为常数唯一来源; normfix.py 不硬编码数值; 任何训练/重建/验证脚本一律经 normfix.py 取公式"
+  }
+}

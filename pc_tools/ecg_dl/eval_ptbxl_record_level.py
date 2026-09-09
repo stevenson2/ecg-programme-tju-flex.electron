@@ -45,12 +45,16 @@ import json
 import sys
 import time
 from pathlib import Path
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+import ecg_refs as _REFS  # noqa: E402
+
 
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]      # 项目根
 REPO = Path(__file__).resolve().parent          # pc_tools/ecg_dl
-PTBXL_DIR = ROOT / "PTB-XL_ECG"
+PTBXL_DIR = _REFS.PTBXL_DIR
 PTBXL_CSV = PTBXL_DIR / "ptbxl_database.csv"
 SCP_CSV = PTBXL_DIR / "scp_statements.csv"
 MODELS = REPO / "models"

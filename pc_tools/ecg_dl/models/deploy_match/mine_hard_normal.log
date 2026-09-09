@@ -1,0 +1,27 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788320001.023367     371 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788320001.825202     371 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788320004.099063     371 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+W0000 00:00:1788320007.916871     371 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+W0000 00:00:1788320008.107025     371 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+I0000 00:00:1788320008.292396     371 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 5199 MB memory:  -> device: 0, name: NVIDIA GeForce RTX 5070 Laptop GPU, pci bus id: 0000:01:00.0, compute capability: 12.0a
+I0000 00:00:1788320023.641405     458 service.cc:153] XLA service 0x7d4dec057ba0 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1788320023.641725     458 service.cc:161]   StreamExecutor [0]: NVIDIA GeForce RTX 5070 Laptop GPU, Compute Capability 12.0a (Driver: 13.2.0; Runtime: 12.9.0; Toolkit: 12.5.0; DNN: 9.24.0)
+I0000 00:00:1788320023.683354     458 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1788320023.985449     458 cuda_dnn.cc:461] Loaded cuDNN version 92400
+I0000 00:00:1788320031.525160     458 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+[HN] MIT-BIH: normal=337356 mean=0.0571 p95=0.5171 frac>0.5=0.0508 frac>0.95=0.0250
+I0000 00:00:1788320098.512557   31719 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_fusion', 4 bytes spill stores, 4 bytes spill loads
+
+[HN] INCART: normal=79930 mean=0.1859 p95=0.9990 frac>0.5=0.1804 frac>0.95=0.1201
+[HN] PTB: normal=5159 mean=0.0179 p95=0.0387 frac>0.5=0.0126 frac>0.95=0.0039
+[HN] SVDB: normal=97153 mean=0.6332 p95=1.0000 frac>0.5=0.6346 frac>0.95=0.5506
+I0000 00:00:1788320120.131754     459 dot_search_space.cc:240] All configs were filtered out because none of them sufficiently match the hints. Maybe the hints set does not contain a good representative set of valid configs? Working around this by using the full hints set instead.
+I0000 00:00:1788320121.435838   41028 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_74', 4 bytes spill stores, 4 bytes spill loads
+
+[HN] VFDB+CUDB: normal=17941 mean=0.7612 p95=1.0000 frac>0.5=0.7625 frac>0.95=0.7134
+[HN] AFDB: normal=337119 mean=0.7437 p95=1.0000 frac>0.5=0.7422 frac>0.95=0.7058
+[HN] saved beat_pool_normal_scores.npy, beat_pool_normal_meta.npz, hard_normal_audit.json
+[HN] totals: normal=874658 frac>0.5=0.4084 n>0.5=357169 n>0.95=322252

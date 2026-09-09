@@ -1,0 +1,53 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788266885.548198     409 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788266886.633653     409 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788266889.586819     409 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+[RMS] mit_100: rms_full=0.1458
+[RMS] mit_102: rms_full=0.1680
+[RMS] mit_103: rms_full=0.2474
+[RMS] mit_104: rms_full=0.2164
+[RMS] mit_106: rms_full=0.3180
+[RMS] mit_107: rms_full=0.7961
+[RMS] mit_109: rms_full=0.4702
+[RMS] mit_113: rms_full=0.3375
+[RMS] mit_114: rms_full=0.1118
+[RMS] mit_115: rms_full=0.2371
+[RMS] mit_116: rms_full=0.4825
+[RMS] mit_117: rms_full=0.1811
+[RMS] mit_118: rms_full=0.3587
+[RMS] mit_121: rms_full=0.1692
+[RMS] mit_122: rms_full=0.3271
+[RMS] mit_123: rms_full=0.2276
+[RMS] mit_124: rms_full=0.3542
+[RMS] mit_200: rms_full=0.3459
+[RMS] mit_209: rms_full=0.1837
+[RMS] mit_210: rms_full=0.2216
+[RMS] mit_213: rms_full=0.5772
+[RMS] mit_214: rms_full=0.4395
+[RMS] mit_215: rms_full=0.2344
+[RMS] mit_217: rms_full=0.5658
+[RMS] mit_219: rms_full=0.4023
+[RMS] mit_220: rms_full=0.2395
+[RMS] mit_223: rms_full=0.3587
+[RMS] mit_228: rms_full=0.2718
+[RMS] mit_230: rms_full=0.2820
+[RMS] mit_231: rms_full=0.2175
+[RMS] mit_233: rms_full=0.4826
+[RMS] incart_3: rms_full=0.0687
+[RMS] incart_4: rms_full=0.0644
+[RMS] incart_5: rms_full=0.0489
+[RMS] real_ecg_real_052.ecgr: rms_full=0.279043
+[RMS] real_rec_latest.ecgr: rms_full=0.389793
+[RMS] saved normfix_rms_measure.json (4s)
+[RMS] aggregate: {
+  "n_records": 36,
+  "rms_full_min": 0.048864662327158956,
+  "rms_full_p10": 0.12882489396236815,
+  "rms_full_median": 0.27540087628966436,
+  "rms_full_p90": 0.48255355092913066,
+  "rms_full_max": 0.7961436405266928,
+  "rms_roll10s_min_overall": 0.029826608239093468,
+  "rms_head_over_median_max": 5.546022529173838
+}

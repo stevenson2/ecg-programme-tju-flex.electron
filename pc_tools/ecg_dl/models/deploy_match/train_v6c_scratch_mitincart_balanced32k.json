@@ -1,0 +1,45 @@
+{
+  "date": "2026-09-02 12:13:46",
+  "purpose": "v6a fast fine-tune recipe",
+  "recipe": "fine-tune v3 A on 100k balanced mined hard-normal data",
+  "seed": 42,
+  "gpu": [
+    "PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')"
+  ],
+  "data": {
+    "npz": "models/deploy_match/v6c_train_mitincart_balanced32k.npz",
+    "train_total": 32000,
+    "train_normal": 16000,
+    "train_abnormal": 16000,
+    "val_total": 4040
+  },
+  "config": {
+    "batch": 128,
+    "epochs_requested": 40,
+    "epochs_run": 10,
+    "patience": 8,
+    "lr": 0.0003,
+    "loss": "sparse_categorical_crossentropy",
+    "augmentation": null
+  },
+  "results": {
+    "best_val_auc": 0.7534811274509804,
+    "best_epoch_auc": 0.0,
+    "train_time_s": 157.3,
+    "val_auc_history": [
+      0.632734068627451,
+      0.7534811274509804,
+      0.6990936274509805,
+      0.6892123774509804,
+      0.6818460784313725,
+      0.6796372549019609,
+      0.6993801470588235,
+      0.69055625,
+      0.7052626225490196,
+      0.6825316176470588
+    ],
+    "epochs": 10
+  },
+  "model": "models/deploy_match/best_v6c_scratch_mitincart_balanced32k.h5",
+  "zero_test_contact": true
+}

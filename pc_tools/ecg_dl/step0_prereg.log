@@ -1,0 +1,26 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788277464.693228     364 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788277465.692570     364 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788277468.793209     364 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+W0000 00:00:1788277472.098122     364 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+[DPE] prereg saved: /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/deploy_match/distill_pilot_prereg.json
+PREREG_EXIT=0
+[GUARD] ECG_DATA = /home/devcontainers/ecg_data
+[GUARD] MIT+INCART 合并: 患者 79 = train 49 / val 15 / test 15
+[GUARD]   心拍: train 512369 / val 159294 / test 163078 (MIT 658962 + INCART 175779)
+[GUARD]   test 患者: inc_inc_1, inc_inc_26, inc_inc_29, inc_inc_32, inc_inc_4, inc_inc_6, mit_101, mit_105, mit_108, mit_111, mit_119, mit_201_202, mit_205, mit_207, mit_208
+[GUARD] PTB: 患者 286 = train 172 / val 57 / test 57
+[GUARD] SVDB (独立划分): 患者 78 = train 48 / val 15 / test 15
+[GUARD]   心拍: train 112826 / val 35247 / test 36334
+[GUARD] mit_bih: 记录 train=31 val=7 test=10
+[GUARD]   self-check ok (test 心拍 133434 全部命中测试组)
+[GUARD] incart: 记录 train=42 val=20 test=13
+[GUARD]   self-check ok (test 心拍 29644 全部命中测试组)
+[GUARD] ptb: 记录 train=326 val=112 test=95
+[GUARD]   self-check ok (test 心拍 13058 全部命中测试组)
+[GUARD] svdb: 记录 train=48 val=15 test=15
+[GUARD]   self-check ok (test 心拍 36334 全部命中测试组)
+[GUARD] 划分完整性检查全部通过
+GUARD_EXIT=0

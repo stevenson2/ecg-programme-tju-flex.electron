@@ -1,0 +1,8 @@
+[BP] MIT-BIH: train beats=419292 N=337356 A=81936 records=31
+[BP] INCART: train beats=93077 N=79930 A=13147 records=42
+[BP] PTB: train beats=41730 N=5159 A=36571 records=326
+[BP] SVDB: train beats=112826 N=97153 A=15673 records=48
+[BP] VFDB+CUDB: train beats=43676 N=17941 A=25735 records=19
+[BP] AFDB: train beats=655585 N=337119 A=318466
+[BP] saved /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/deploy_match/beat_pool_train_manifest.json
+[BP] totals: beats=1366186 N=874658 A=491528 records=480

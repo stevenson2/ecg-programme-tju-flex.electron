@@ -1,0 +1,253 @@
+{
+  "date": "2026-09-02 10:18:16",
+  "label": "cap_d2_seed42",
+  "model": "best_resnet_capacity_cap_d2_seed42.h5",
+  "purpose": "TH109 capacity probe per-variant evaluation",
+  "frozen_operating_point": {
+    "theta": 0.95,
+    "k": 1,
+    "n": 5,
+    "cooldown": 20
+  },
+  "prereg": "capacity_probe_prereg.json",
+  "gates": {
+    "primary_pooled_norm_frac_gt_0.95": {
+      "baseline": 0.25468243551907416,
+      "pilot": 0.1903284049626928,
+      "relative_reduction": 0.25268342681433814,
+      "passed": false,
+      "criterion": ">=0.3 relative reduction"
+    },
+    "guardrail_A_mit_auc": {
+      "baseline": 0.768001829617977,
+      "pilot": 0.6552991213622037,
+      "drop": 0.11270270825577333,
+      "passed": false,
+      "criterion": "drop<=0.02"
+    },
+    "guardrail_B_frozen_event_recall": {
+      "baseline_event_recall": 0.9807,
+      "pilot_event_recall": 0.9511,
+      "pilot_alert_blocks": 634,
+      "passed": false,
+      "criterion": "drop<=0.02 and alert_blocks>=3"
+    },
+    "guardrail_C_real_holdout": {
+      "pilot": {
+        "mean_prob": 0.006287617143243551,
+        "frac_gt_0.5": 0.0,
+        "n": 40
+      },
+      "passed": true,
+      "criterion": "mean_prob<0.1 and frac_gt_0.5<=0.0"
+    }
+  },
+  "verdict": "UNPROVEN",
+  "verdict_semantics": {
+    "PASS": "主门 + 护栏 A/B/C 全过",
+    "PARTIAL": "主门过但至少一条护栏破 (或嵌入分离度改善但未过门)",
+    "UNPROVEN": "主门未过 (相对降幅在 0–30% 区间或为负) 记未证明; 结果在种子噪声区间内不称证伪"
+  },
+  "baseline_metrics": {
+    "mit_incart": {
+      "auc": 0.768001829617977,
+      "n_beats": 159294,
+      "norm_quantiles": {
+        "n": 137909,
+        "mean": 0.32180964946746826,
+        "p05": 2.51022465818096e-05,
+        "p25": 0.0006337316008284688,
+        "p50": 0.008103498257696629,
+        "p75": 0.9587404727935791,
+        "p95": 0.9999840259552002,
+        "frac_gt_0.5": 0.3182750944463378,
+        "frac_gt_0.95": 0.25468243551907416
+      },
+      "frozen": {
+        "theta": 0.95,
+        "k": 1,
+        "n": 5,
+        "cooldown": 20,
+        "beat_tp": 17736,
+        "beat_fp": 76994,
+        "beat_tn": 60915,
+        "beat_fn": 3649,
+        "beat_recall": 0.8294,
+        "beat_precision": 0.1872,
+        "beat_f1": 0.3055,
+        "gt_events": 3050,
+        "alert_blocks": 401,
+        "matched_gt_events": 2991,
+        "false_alarm_blocks": 188,
+        "event_recall": 0.9807,
+        "event_precision": 0.5312,
+        "event_f1": 0.6891,
+        "fp_per_record": 6.963,
+        "median_latency_beats": 0.0,
+        "n_records": 27
+      }
+    },
+    "mit_only": {
+      "n_norm": 91302,
+      "frac_gt_0.95": 0.2449124882258877,
+      "frac_gt_0.5": 0.2956561740159033,
+      "band_0.005_count": 386
+    },
+    "incart_only": {
+      "n_norm": 46607,
+      "frac_gt_0.95": 0.27382152895487805,
+      "frac_gt_0.5": 0.36258501941768406,
+      "band_0.005_count": 338
+    },
+    "pooled_norm_frac_gt_0.95": 0.25468243551907416,
+    "pooled_bootstrap_ci95": [
+      0.11862150567645349,
+      0.4169564257827697
+    ],
+    "ptb": {
+      "auc": 0.8262431500125291,
+      "n_beats": 14694,
+      "norm_quantiles": {
+        "n": 2403,
+        "mean": 0.2076924741268158,
+        "p05": 0.00010581290043774061,
+        "p25": 0.000849466712679714,
+        "p50": 0.00457681342959404,
+        "p75": 0.08992615714669228,
+        "p95": 0.9998468518257141,
+        "frac_gt_0.5": 0.19850187265917604,
+        "frac_gt_0.95": 0.16312942155638785
+      },
+      "frozen": {
+        "theta": 0.95,
+        "k": 1,
+        "n": 5,
+        "cooldown": 20,
+        "beat_tp": 10051,
+        "beat_fp": 635,
+        "beat_tn": 1768,
+        "beat_fn": 2240,
+        "beat_recall": 0.8178,
+        "beat_precision": 0.9406,
+        "beat_f1": 0.8749,
+        "gt_events": 92,
+        "alert_blocks": 108,
+        "matched_gt_events": 86,
+        "false_alarm_blocks": 10,
+        "event_recall": 0.9348,
+        "event_precision": 0.9074,
+        "event_f1": 0.9209,
+        "fp_per_record": 0.0893,
+        "median_latency_beats": 0.0,
+        "n_records": 112
+      }
+    }
+  },
+  "pilot_metrics": {
+    "mit_incart": {
+      "auc": 0.6552991213622037,
+      "n_beats": 159294,
+      "norm_quantiles": {
+        "n": 137909,
+        "mean": 0.23780842125415802,
+        "p05": 7.757211477610327e-08,
+        "p25": 6.4192213358182926e-06,
+        "p50": 0.00024509450304321945,
+        "p75": 0.30648720264434814,
+        "p95": 0.9999703168869019,
+        "frac_gt_0.5": 0.2360687119767383,
+        "frac_gt_0.95": 0.1903284049626928
+      },
+      "frozen": {
+        "theta": 0.95,
+        "k": 1,
+        "n": 5,
+        "cooldown": 20,
+        "beat_tp": 12877,
+        "beat_fp": 68396,
+        "beat_tn": 69513,
+        "beat_fn": 8508,
+        "beat_recall": 0.6022,
+        "beat_precision": 0.1584,
+        "beat_f1": 0.2509,
+        "gt_events": 3050,
+        "alert_blocks": 634,
+        "matched_gt_events": 2901,
+        "false_alarm_blocks": 334,
+        "event_recall": 0.9511,
+        "event_precision": 0.4732,
+        "event_f1": 0.632,
+        "fp_per_record": 12.3704,
+        "median_latency_beats": 0.0,
+        "n_records": 27
+      }
+    },
+    "mit_only": {
+      "n_norm": 91302,
+      "frac_gt_0.95": 0.20608529933626865,
+      "frac_gt_0.5": 0.2515388490942148,
+      "band_0.005_count": 323
+    },
+    "incart_only": {
+      "n_norm": 46607,
+      "frac_gt_0.95": 0.15946102516789323,
+      "frac_gt_0.5": 0.20576308279872121,
+      "band_0.005_count": 156
+    },
+    "pooled_norm_frac_gt_0.95": 0.1903284049626928,
+    "pooled_bootstrap_ci95": [
+      0.08144334111834857,
+      0.32194956279406806
+    ],
+    "ptb": {
+      "auc": 0.8458487077468355,
+      "n_beats": 14694,
+      "norm_quantiles": {
+        "n": 2403,
+        "mean": 0.11703590303659439,
+        "p05": 3.367958392175298e-08,
+        "p25": 9.492329695603985e-07,
+        "p50": 1.697941479505971e-05,
+        "p75": 0.0004934212483931333,
+        "p95": 0.9997468233108521,
+        "frac_gt_0.5": 0.11568872243029546,
+        "frac_gt_0.95": 0.09363295880149813
+      },
+      "frozen": {
+        "theta": 0.95,
+        "k": 1,
+        "n": 5,
+        "cooldown": 20,
+        "beat_tp": 9500,
+        "beat_fp": 396,
+        "beat_tn": 2007,
+        "beat_fn": 2791,
+        "beat_recall": 0.7729,
+        "beat_precision": 0.96,
+        "beat_f1": 0.8564,
+        "gt_events": 92,
+        "alert_blocks": 114,
+        "matched_gt_events": 83,
+        "false_alarm_blocks": 18,
+        "event_recall": 0.9022,
+        "event_precision": 0.8421,
+        "event_f1": 0.8711,
+        "fp_per_record": 0.1607,
+        "median_latency_beats": 1.0,
+        "n_records": 112
+      }
+    }
+  },
+  "real_afe_holdout": {
+    "baseline": {
+      "mean_prob": 0.00889548845589161,
+      "frac_gt_0.5": 0.0,
+      "n": 40
+    },
+    "pilot": {
+      "mean_prob": 0.006287617143243551,
+      "frac_gt_0.5": 0.0,
+      "n": 40
+    }
+  }
+}

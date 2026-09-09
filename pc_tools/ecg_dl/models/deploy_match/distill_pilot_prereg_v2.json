@@ -1,0 +1,50 @@
+{
+  "title": "TH106+ v2 recall-preserving distill variant prereg",
+  "gates": {
+    "primary_relative_reduction_min": 0.3,
+    "guardrail_auc_max_drop": 0.02,
+    "guardrail_event_recall_max_drop": 0.02,
+    "guardrail_alert_blocks_min": 3,
+    "real_holdout_mean_prob_max": 0.1,
+    "real_holdout_frac_gt_0.5_max": 0.0
+  },
+  "frozen_operating_point": {
+    "theta": 0.95,
+    "k": 1,
+    "n": 5,
+    "cooldown": 20
+  },
+  "baseline_references_from_disk": {
+    "p1_mit_frac_gt_0.95": 0.24480296159996495,
+    "p1_incart_frac_gt_0.95": 0.2735855129057867,
+    "p1_mit_auc": 0.7679994798154276,
+    "p1_ptb_auc": 0.8262335343912346,
+    "sweep_mit_event_recall": 0.9807,
+    "sweep_mit_alert_blocks": 401,
+    "sweep_mit_false_alarm_blocks": 188,
+    "sweep_mit_fp_per_record": 6.963,
+    "sweep_ptb_event_recall": 0.9348
+  },
+  "variant": {
+    "name": "alpha0.2_teacher_tail_sharpen_t0.7",
+    "alpha": 0.2,
+    "teacher_tail_pre_sharpen_temperature": 0.7,
+    "kd_temperature": 1.0,
+    "tail_mode": "sharpen",
+    "rationale": "The v1 pilot (alpha=0.5, T=1) cleared the theta=0.95 high-confidence false-alarm tail but collapsed global confidence: frozen event recall fell to 0.33-0.50 and real-holdout guardrail C also broke on one of three seeds. This v2 variant keeps the hard-label anchor strong (alpha=0.2) and pre-sharpens the teacher soft probabilities with a monotone logit temperature T=0.7 before the standard KL packing, so the soft target does not drag the abnormal tail back toward 0.5. The KD loss itself stays at T=1.0; the transform only changes the teacher scale, not the ranking (AUC-invariant), and is fitted/derived from the existing Stage-1 package (no val/test label use, no new data)."
+  },
+  "verdict_semantics": {
+    "PASS": "primary + guardrail A/B/C all pass",
+    "PARTIAL": "primary passes but at least one guardrail breaks",
+    "UNPROVEN": "primary does not pass (relative reduction below the 30% pre-registered bar, or negative), recorded as unproven rather than disproven; single-seed noise is not treated as disproof"
+  },
+  "zero_test_contact": true,
+  "known_limitations": [
+    "val double-use: early stopping + all gates share val; numbers are relative indicators",
+    "teacher domain offset: tile view 0.8893 vs true deploy 10s 0.7794",
+    "pseudo-target contains noise (LORO AUC 0.88, not oracle)",
+    "variant is pre-registered; only PASS/PARTIAL/UNPROVEN verdicts are allowed"
+  ],
+  "date": "2026-09-02 01:32:05",
+  "purpose": "Pre-register TH106+ v2 recall-preserving distill variant"
+}

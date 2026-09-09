@@ -1,0 +1,264 @@
+{
+  "date": "2026-09-01 20:10:49",
+  "model": "best_resnet_large_clean_baseline_v5.h5",
+  "suffix": "v5",
+  "prob_dist": {
+    "mit": {
+      "abn": {
+        "n": 3051,
+        "mean": 0.963785707950592,
+        "p05": 0.8114840686321259,
+        "p25": 0.9991599321365356,
+        "p50": 0.9998842477798462,
+        "p75": 0.999977171421051,
+        "p95": 0.9999996423721313,
+        "frac_gt_0.5": 0.9665683382497542
+      },
+      "norm": {
+        "n": 19188,
+        "mean": 0.6263552904129028,
+        "p05": 0.010419732006266714,
+        "p25": 0.13521962985396385,
+        "p50": 0.872715562582016,
+        "p75": 0.9969648271799088,
+        "p95": 0.9999967813491821,
+        "frac_gt_0.5": 0.6259641442568272
+      }
+    },
+    "incart": {
+      "abn": {
+        "n": 2585,
+        "mean": 0.9702450633049011,
+        "p05": 0.8800824761390686,
+        "p25": 0.9970836043357849,
+        "p50": 0.9995987415313721,
+        "p75": 0.9999480247497559,
+        "p95": 0.9999935626983643,
+        "frac_gt_0.5": 0.9779497098646035
+      },
+      "norm": {
+        "n": 27059,
+        "mean": 0.6005004644393921,
+        "p05": 0.014588609151542187,
+        "p25": 0.13782930374145508,
+        "p50": 0.7825764417648315,
+        "p75": 0.9879427254199982,
+        "p95": 0.9995993852615357,
+        "frac_gt_0.5": 0.5952548135555638
+      }
+    },
+    "ptb": {
+      "abn": {
+        "n": 10204,
+        "mean": 0.8741092085838318,
+        "p05": 0.12459482699632646,
+        "p25": 0.9398767203092575,
+        "p50": 0.9970918893814087,
+        "p75": 0.999899685382843,
+        "p95": 0.9999980926513672,
+        "frac_gt_0.5": 0.8839670717365739
+      },
+      "norm": {
+        "n": 2854,
+        "mean": 0.6250959634780884,
+        "p05": 0.024795912951231004,
+        "p25": 0.24628202989697456,
+        "p50": 0.7817220389842987,
+        "p75": 0.9745593816041946,
+        "p95": 0.9987536787986755,
+        "frac_gt_0.5": 0.6345480028030834
+      }
+    }
+  },
+  "per_domain": {
+    "mit": {
+      "beat": {
+        "n_beats": 22239,
+        "n_abnormal": 3051,
+        "theta": 0.5,
+        "tp": 2949,
+        "fp": 12011,
+        "tn": 7177,
+        "fn": 102,
+        "sensitivity": 0.9665683382497542,
+        "precision": 0.19712566844919785,
+        "f1": 0.3274665482205319,
+        "auc": 0.8294596491019495
+      },
+      "event": {
+        "event_recall": 0.995261,
+        "event_precision": 0.492188,
+        "event_f1": 0.658651,
+        "fp_per_record": 6.5,
+        "fp_per_1000_beats": 2.922793,
+        "alert_rate": 0.875624,
+        "gt_events": 211,
+        "alert_blocks": 128,
+        "false_alarm_blocks": 65,
+        "matched_gt_events": 210,
+        "matched_pred_blocks": 63
+      }
+    },
+    "incart": {
+      "beat": {
+        "n_beats": 29644,
+        "n_abnormal": 2585,
+        "theta": 0.5,
+        "tp": 2528,
+        "fp": 16107,
+        "tn": 10952,
+        "fn": 57,
+        "sensitivity": 0.9779497098646035,
+        "precision": 0.13565870673463912,
+        "f1": 0.23826578699340248,
+        "auc": 0.8859745196094531
+      },
+      "event": {
+        "event_recall": 0.997396,
+        "event_precision": 0.609756,
+        "event_f1": 0.756827,
+        "fp_per_record": 3.692308,
+        "fp_per_1000_beats": 1.619215,
+        "alert_rate": 0.914418,
+        "gt_events": 768,
+        "alert_blocks": 123,
+        "false_alarm_blocks": 48,
+        "matched_gt_events": 766,
+        "matched_pred_blocks": 75
+      }
+    },
+    "ptb": {
+      "beat": {
+        "n_beats": 13058,
+        "n_abnormal": 10204,
+        "theta": 0.5,
+        "tp": 9020,
+        "fp": 1811,
+        "tn": 1043,
+        "fn": 1184,
+        "sensitivity": 0.8839670717365739,
+        "precision": 0.8327947557935556,
+        "f1": 0.8576182552888044,
+        "auc": 0.787577291508311
+      },
+      "event": {
+        "event_recall": 1.0,
+        "event_precision": 0.682927,
+        "event_f1": 0.811594,
+        "fp_per_record": 0.410526,
+        "fp_per_1000_beats": 2.986675,
+        "alert_rate": 0.952443,
+        "gt_events": 75,
+        "alert_blocks": 123,
+        "false_alarm_blocks": 39,
+        "matched_gt_events": 75,
+        "matched_pred_blocks": 84
+      }
+    },
+    "mit_incart_merged": {
+      "beat": {
+        "n_beats": 51883,
+        "n_abnormal": 5636,
+        "theta": 0.5,
+        "tp": 5477,
+        "fp": 28118,
+        "tn": 18129,
+        "fn": 159,
+        "sensitivity": 0.9717885024840313,
+        "precision": 0.16303021282929006,
+        "f1": 0.2792179653845173,
+        "auc": 0.8636329227378345
+      },
+      "event": {
+        "event_recall": 0.996936,
+        "event_precision": 0.549801,
+        "event_f1": 0.708739,
+        "fp_per_record": 4.913043,
+        "fp_per_1000_beats": 2.177977,
+        "alert_rate": 0.897789,
+        "gt_events": 979,
+        "alert_blocks": 251,
+        "false_alarm_blocks": 113,
+        "matched_gt_events": 976,
+        "matched_pred_blocks": 138
+      }
+    }
+  },
+  "per_record_fp": {
+    "records": 23,
+    "records_with_alerts": 23,
+    "total_alert_blocks": 251,
+    "top10_by_alert_blocks": [
+      {
+        "rid": 205,
+        "n_beats": 2656,
+        "abn_beats": 85,
+        "alert_blocks": 80,
+        "gt_events": 26
+      },
+      {
+        "rid": 100069,
+        "n_beats": 2168,
+        "abn_beats": 169,
+        "alert_blocks": 53,
+        "gt_events": 141
+      },
+      {
+        "rid": 100061,
+        "n_beats": 1453,
+        "abn_beats": 1,
+        "alert_blocks": 31,
+        "gt_events": 1
+      },
+      {
+        "rid": 119,
+        "n_beats": 1987,
+        "abn_beats": 444,
+        "alert_blocks": 25,
+        "gt_events": 54
+      },
+      {
+        "rid": 202,
+        "n_beats": 2136,
+        "abn_beats": 75,
+        "alert_blocks": 15,
+        "gt_events": 24
+      },
+      {
+        "rid": 100059,
+        "n_beats": 2147,
+        "abn_beats": 81,
+        "alert_blocks": 13,
+        "gt_events": 3
+      },
+      {
+        "rid": 100008,
+        "n_beats": 2129,
+        "abn_beats": 353,
+        "alert_blocks": 6,
+        "gt_events": 33
+      },
+      {
+        "rid": 100001,
+        "n_beats": 2756,
+        "abn_beats": 344,
+        "alert_blocks": 5,
+        "gt_events": 96
+      },
+      {
+        "rid": 100068,
+        "n_beats": 2644,
+        "abn_beats": 163,
+        "alert_blocks": 5,
+        "gt_events": 155
+      },
+      {
+        "rid": 100013,
+        "n_beats": 2023,
+        "abn_beats": 230,
+        "alert_blocks": 3,
+        "gt_events": 74
+      }
+    ]
+  }
+}

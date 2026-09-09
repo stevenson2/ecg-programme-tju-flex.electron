@@ -1,0 +1,160 @@
+{
+  "date": "2026-09-02 11:06:40",
+  "purpose": "Inventory of locally available beat-level ECG data for mining planning",
+  "databases": [
+    {
+      "name": "MIT-BIH Arrhythmia",
+      "path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/data/raw/mit-bih-arrhythmia-database",
+      "n_dat": 48,
+      "n_atr": 48,
+      "n_qrs": 0,
+      "n_hea": 48,
+      "note": "48 records, beat-level .atr (AAMI labels)"
+    },
+    {
+      "name": "INCART full",
+      "path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/st-petersburg-incart-12-lead-arrhythmia-database-1.0.0/files",
+      "n_dat": 75,
+      "n_atr": 75,
+      "n_qrs": 0,
+      "n_hea": 75,
+      "note": "75 records, beat-level .atr (AAMI labels)"
+    },
+    {
+      "name": "INCART data/raw copy",
+      "path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/data/raw/incartdb",
+      "n_dat": 5,
+      "n_atr": 5,
+      "n_qrs": 0,
+      "n_hea": 6,
+      "note": "partial legacy copy; use full INCART if present"
+    },
+    {
+      "name": "PTB (ECG-Database)",
+      "path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/ECG-Database",
+      "n_dat": 0,
+      "n_atr": 0,
+      "n_qrs": 0,
+      "n_hea": 0,
+      "note": "record-level diagnosis; no per-beat .atr by default"
+    },
+    {
+      "name": "SVDB",
+      "path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/data/raw/svdb",
+      "n_dat": 78,
+      "n_atr": 78,
+      "n_qrs": 0,
+      "n_hea": 78,
+      "note": "78 Holter records, beat-level .atr, record ids 800-899"
+    },
+    {
+      "name": "LUDB",
+      "path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/ECG-Database/lobachevsky-university-electrocardiography-database-1.0.1/lobachevsky-university-electrocardiography-database-1.0.1/data",
+      "n_dat": 200,
+      "n_atr": 0,
+      "n_qrs": 0,
+      "n_hea": 200,
+      "note": "Lobachevsky University DB, .qrs heart-rate gold annotations"
+    },
+    {
+      "name": "PTB-XL",
+      "path": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/PTB-XL_ECG",
+      "n_dat": 0,
+      "n_atr": 0,
+      "n_qrs": 0,
+      "n_hea": 0,
+      "note": "record-level diagnosis; 10s/12-lead; not beat-level"
+    },
+    {
+      "name": "VFDB+CUDB",
+      "path": "/home/devcontainers/vfdb",
+      "n_dat": 57,
+      "n_atr": 57,
+      "n_qrs": 0,
+      "n_hea": 57,
+      "note": "22 VFDB + 35 CUDB; rhythm/boundary .atr; CUDB has beat N + VF []"
+    },
+    {
+      "name": "AFDB WSL",
+      "path": "/home/devcontainers/afdb",
+      "n_dat": 23,
+      "n_atr": 24,
+      "n_qrs": 0,
+      "n_hea": 24,
+      "note": "AFDB raw in WSL; .atr/.qrs present"
+    },
+    {
+      "name": "AFDB wfdb WSL",
+      "path": "/home/devcontainers/afdb_wfdb",
+      "n_dat": 23,
+      "n_atr": 25,
+      "n_qrs": 25,
+      "n_hea": 25,
+      "note": "AFDB wfdb-format copy; .qrs beat annotations"
+    }
+  ],
+  "processed_deploy_causal_arrays": [
+    {
+      "file": "incart_processed_deploy_causal_beats.npy",
+      "size_mb": 167.64,
+      "path": "/home/devcontainers/ecg_data/incart_processed_deploy_causal_beats.npy"
+    },
+    {
+      "file": "mit_bih_processed_deploy_causal_beats.npy",
+      "size_mb": 628.44,
+      "path": "/home/devcontainers/ecg_data/mit_bih_processed_deploy_causal_beats.npy"
+    },
+    {
+      "file": "ptb_processed_deploy_causal_beats.npy",
+      "size_mb": 66.26,
+      "path": "/home/devcontainers/ecg_data/ptb_processed_deploy_causal_beats.npy"
+    },
+    {
+      "file": "svdb_processed_deploy_causal_beats.npy",
+      "size_mb": 175.86,
+      "path": "/home/devcontainers/ecg_data/svdb_processed_deploy_causal_beats.npy"
+    },
+    {
+      "file": "incart_processed_deploy_causal_labels.npy",
+      "size_mb": 0.67,
+      "path": "/home/devcontainers/ecg_data/incart_processed_deploy_causal_labels.npy"
+    },
+    {
+      "file": "mit_bih_processed_deploy_causal_labels.npy",
+      "size_mb": 2.51,
+      "path": "/home/devcontainers/ecg_data/mit_bih_processed_deploy_causal_labels.npy"
+    },
+    {
+      "file": "ptb_processed_deploy_causal_labels.npy",
+      "size_mb": 0.27,
+      "path": "/home/devcontainers/ecg_data/ptb_processed_deploy_causal_labels.npy"
+    },
+    {
+      "file": "svdb_processed_deploy_causal_labels.npy",
+      "size_mb": 0.7,
+      "path": "/home/devcontainers/ecg_data/svdb_processed_deploy_causal_labels.npy"
+    },
+    {
+      "file": "incart_processed_deploy_causal_record_ids.npy",
+      "size_mb": 0.67,
+      "path": "/home/devcontainers/ecg_data/incart_processed_deploy_causal_record_ids.npy"
+    },
+    {
+      "file": "mit_bih_processed_deploy_causal_record_ids.npy",
+      "size_mb": 2.51,
+      "path": "/home/devcontainers/ecg_data/mit_bih_processed_deploy_causal_record_ids.npy"
+    },
+    {
+      "file": "ptb_processed_deploy_causal_record_ids.npy",
+      "size_mb": 0.27,
+      "path": "/home/devcontainers/ecg_data/ptb_processed_deploy_causal_record_ids.npy"
+    },
+    {
+      "file": "svdb_processed_deploy_causal_record_ids.npy",
+      "size_mb": 0.7,
+      "path": "/home/devcontainers/ecg_data/svdb_processed_deploy_causal_record_ids.npy"
+    }
+  ],
+  "elapsed_s": 0.2,
+  "note": "This inventory does not decide labels or training; use SplitGuard before any mining."
+}

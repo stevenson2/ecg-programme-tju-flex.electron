@@ -1,0 +1,70 @@
+{
+  "date": "2026-09-02 23:51:27",
+  "purpose": "Clean hard-normal mining (MIT/INCART-LeadII/PTB/SVDB, completeness-filtered)",
+  "model": "models/best_resnet_large_clean_baseline_v3.h5",
+  "center_tol": 40,
+  "overall": {
+    "n_train_normal_total": 517272,
+    "n_complete": 485279,
+    "n_gt_0.5": 101370,
+    "n_gt_0.95": 79458,
+    "n_gt_0.5_complete": 89803,
+    "n_gt_0.95_complete": 70056,
+    "frac_gt_0.5": 0.1959703985524057,
+    "frac_gt_0.95": 0.15360970630538673,
+    "mean": 0.20037822425365448,
+    "p95": 0.9999704360961914
+  },
+  "per_source": [
+    {
+      "name": "MIT-BIH",
+      "source_code": 0,
+      "n_normal": 337356,
+      "n_complete": 324102,
+      "n_score_gt_0.5": 17140,
+      "n_score_gt_0.95": 8439,
+      "n_hard_gt_0.5_complete": 15412,
+      "n_hard_gt_0.95_complete": 7361,
+      "frac_gt_0.95": 0.025015117561270585
+    },
+    {
+      "name": "INCART-LeadII",
+      "source_code": 1,
+      "n_normal": 77604,
+      "n_complete": 66270,
+      "n_score_gt_0.5": 22489,
+      "n_score_gt_0.95": 17482,
+      "n_hard_gt_0.5_complete": 18405,
+      "n_hard_gt_0.95_complete": 14437,
+      "frac_gt_0.95": 0.22527189320138138
+    },
+    {
+      "name": "PTB",
+      "source_code": 2,
+      "n_normal": 5159,
+      "n_complete": 5149,
+      "n_score_gt_0.5": 64,
+      "n_score_gt_0.95": 20,
+      "n_hard_gt_0.5_complete": 62,
+      "n_hard_gt_0.95_complete": 19,
+      "frac_gt_0.95": 0.0038767202946307423
+    },
+    {
+      "name": "SVDB",
+      "source_code": 3,
+      "n_normal": 97153,
+      "n_complete": 89758,
+      "n_score_gt_0.5": 61677,
+      "n_score_gt_0.95": 53517,
+      "n_hard_gt_0.5_complete": 55924,
+      "n_hard_gt_0.95_complete": 48239,
+      "frac_gt_0.95": 0.5508527786069396
+    }
+  ],
+  "outputs": {
+    "scores": "models/deploy_match/beat_pool_clean_normal_scores.npy",
+    "meta": "models/deploy_match/beat_pool_clean_normal_meta.npz",
+    "audit": "models/deploy_match/hard_normal_clean_audit.json"
+  },
+  "elapsed_s": 99.2
+}

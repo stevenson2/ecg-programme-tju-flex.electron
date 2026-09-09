@@ -281,18 +281,15 @@
     "mnt-c"
   ],
   "meeti:scripts/analyze_local_kd_failure.py": [
-    "legacy-data",
     "meeti-root"
   ],
   "meeti:scripts/bench_teacher_extract.py": [
     "meeti-root"
   ],
   "meeti:scripts/build_selected_manifest_from_archive.py": [
-    "legacy-data",
     "meeti-root"
   ],
   "meeti:scripts/ecg_bench.py": [
-    "legacy-data",
     "meeti-root",
     "mnt-c"
   ],
@@ -317,15 +314,12 @@
     "mnt-c"
   ],
   "meeti:scripts/extract_ecg_fm_local_features.py": [
-    "legacy-data",
     "meeti-root"
   ],
   "meeti:scripts/extract_ecg_fm_teacher.py": [
-    "legacy-data",
     "meeti-root"
   ],
   "meeti:scripts/m3_local_feature_probe.py": [
-    "legacy-data",
     "meeti-root",
     "mnt-c"
   ],
@@ -369,12 +363,10 @@
     "meeti-root"
   ],
   "meeti:scripts/process_mimic_raw.py": [
-    "legacy-data",
     "meeti-root",
     "mnt-c"
   ],
   "meeti:scripts/process_mimic_raw_beat_centered.py": [
-    "legacy-data",
     "meeti-root",
     "mnt-c"
   ],
@@ -385,11 +377,9 @@
     "meeti-root"
   ],
   "meeti:scripts/r10_lit_fm_linear_probe.py": [
-    "legacy-data",
     "meeti-root"
   ],
   "meeti:scripts/r10_lit_strodthoff.py": [
-    "legacy-data",
     "meeti-root"
   ],
   "meeti:scripts/r10_merge_lit_rows.py": [
@@ -473,7 +463,6 @@
     "meeti-root"
   ],
   "meeti:scripts/r14_meeti_af_scan.py": [
-    "legacy-data",
     "meeti-root"
   ],
   "meeti:scripts/r14_rr_baseline.py": [
@@ -562,7 +551,6 @@
     "mnt-c"
   ],
   "meeti:scripts/r4_train_label_fix.py": [
-    "legacy-data",
     "meeti-root",
     "mnt-c"
   ],
@@ -579,11 +567,9 @@
     "mnt-c"
   ],
   "meeti:scripts/r7_lead2_teacher_probe.py": [
-    "legacy-data",
     "meeti-root"
   ],
   "meeti:scripts/r8_data_5s.py": [
-    "legacy-data",
     "meeti-root",
     "mnt-c"
   ],
@@ -632,11 +618,9 @@
     "win-users"
   ],
   "meeti:scripts/teacher_supervised_subspace.py": [
-    "legacy-data",
     "meeti-root"
   ],
   "meeti:scripts/train_dual_head_kd_record_small.py": [
-    "legacy-data",
     "meeti-root",
     "mnt-c"
   ],
@@ -645,7 +629,6 @@
     "mnt-c"
   ],
   "meeti:scripts/train_dual_head_local_kd_small.py": [
-    "legacy-data",
     "meeti-root",
     "mnt-c"
   ],
@@ -654,7 +637,6 @@
     "mnt-c"
   ],
   "meeti:scripts/train_dual_head_small.py": [
-    "legacy-data",
     "meeti-root",
     "mnt-c"
   ],
@@ -675,7 +657,6 @@
     "mnt-c"
   ],
   "meeti:scripts/train_ecgfm_feature_kd_small.py": [
-    "legacy-data",
     "meeti-root",
     "mnt-c"
   ],
@@ -684,7 +665,6 @@
     "mnt-c"
   ],
   "meeti:scripts/train_meeti_weak_small.py": [
-    "legacy-data",
     "meeti-root",
     "mnt-c"
   ],

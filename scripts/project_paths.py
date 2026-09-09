@@ -8,7 +8,7 @@ Usage:
     paths_for('windows')     # all Windows-form paths
     P['electron_root'] / 'experiments/esp_idf_ecg_migration'
 
-Never hardcode /mnt/c/... or C:\\... in scripts; add the path here instead.
+Never hardcode cross-shell absolute paths in scripts; add the path here instead.
 """
 import json
 import os

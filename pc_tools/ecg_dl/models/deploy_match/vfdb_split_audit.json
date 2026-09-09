@@ -1,0 +1,158 @@
+{
+  "date": "2026-09-02 10:54:48",
+  "purpose": "VFDB/CUDB record-level split audit using patient_level_split core",
+  "seed": 42,
+  "split_rule": "60/20/20 patient-level; each record = one patient (conservative)",
+  "source": "models/deploy_match/vfdb_processed_deploy_causal.npz",
+  "n_records_with_beats": 29,
+  "n_beats_total": 67249,
+  "overlaps": {
+    "train_val": 0,
+    "train_test": 0,
+    "val_test": 0
+  },
+  "coverage": {
+    "covered": 67249,
+    "total": 67249,
+    "ok": true
+  },
+  "split_ok": true,
+  "stats": {
+    "n_patients": 29,
+    "n_train": 19,
+    "n_val": 5,
+    "n_test": 5,
+    "beats_train": 43676,
+    "beats_val": 14663,
+    "beats_test": 8910,
+    "test_patients": [
+      "vfdb_rec_15",
+      "vfdb_rec_23",
+      "vfdb_rec_25",
+      "vfdb_rec_4",
+      "vfdb_rec_5"
+    ],
+    "val_patients": [
+      "vfdb_rec_13",
+      "vfdb_rec_18",
+      "vfdb_rec_26",
+      "vfdb_rec_6",
+      "vfdb_rec_9"
+    ],
+    "train_patients": [
+      "vfdb_rec_0",
+      "vfdb_rec_1",
+      "vfdb_rec_10",
+      "vfdb_rec_11",
+      "vfdb_rec_12",
+      "vfdb_rec_14",
+      "vfdb_rec_16",
+      "vfdb_rec_17",
+      "vfdb_rec_19",
+      "vfdb_rec_2",
+      "vfdb_rec_20",
+      "vfdb_rec_21",
+      "vfdb_rec_22",
+      "vfdb_rec_24",
+      "vfdb_rec_27",
+      "vfdb_rec_28",
+      "vfdb_rec_3",
+      "vfdb_rec_7",
+      "vfdb_rec_8"
+    ]
+  },
+  "splits": {
+    "train": {
+      "beats": 43676,
+      "normal": 17941,
+      "abnormal": 25735,
+      "excluded": 0
+    },
+    "val": {
+      "beats": 14663,
+      "normal": 4471,
+      "abnormal": 10192,
+      "excluded": 0
+    },
+    "test": {
+      "beats": 8910,
+      "normal": 3919,
+      "abnormal": 4991,
+      "excluded": 0
+    }
+  },
+  "patient_map": {
+    "0": "vfdb_rec_0",
+    "1": "vfdb_rec_1",
+    "2": "vfdb_rec_2",
+    "3": "vfdb_rec_3",
+    "4": "vfdb_rec_4",
+    "5": "vfdb_rec_5",
+    "6": "vfdb_rec_6",
+    "7": "vfdb_rec_7",
+    "8": "vfdb_rec_8",
+    "9": "vfdb_rec_9",
+    "10": "vfdb_rec_10",
+    "11": "vfdb_rec_11",
+    "12": "vfdb_rec_12",
+    "13": "vfdb_rec_13",
+    "14": "vfdb_rec_14",
+    "15": "vfdb_rec_15",
+    "16": "vfdb_rec_16",
+    "17": "vfdb_rec_17",
+    "18": "vfdb_rec_18",
+    "19": "vfdb_rec_19",
+    "20": "vfdb_rec_20",
+    "21": "vfdb_rec_21",
+    "22": "vfdb_rec_22",
+    "23": "vfdb_rec_23",
+    "24": "vfdb_rec_24",
+    "25": "vfdb_rec_25",
+    "26": "vfdb_rec_26",
+    "27": "vfdb_rec_27",
+    "28": "vfdb_rec_28"
+  },
+  "train_record_ids": [
+    0,
+    1,
+    2,
+    3,
+    7,
+    8,
+    10,
+    11,
+    12,
+    14,
+    16,
+    17,
+    19,
+    20,
+    21,
+    22,
+    24,
+    27,
+    28
+  ],
+  "val_record_ids": [
+    6,
+    9,
+    13,
+    18,
+    26
+  ],
+  "test_record_ids": [
+    4,
+    5,
+    15,
+    23,
+    25
+  ],
+  "elapsed_s": 0.1,
+  "split_record_counts": {
+    "train": 19,
+    "val": 5,
+    "test": 5,
+    "union": 29
+  },
+  "record_split_ok": true
+}

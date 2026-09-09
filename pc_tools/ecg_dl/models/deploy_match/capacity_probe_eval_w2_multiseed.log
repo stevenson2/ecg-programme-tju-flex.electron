@@ -1,0 +1,85 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788315980.473558     398 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788315981.284593     398 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788315983.532615     398 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+W0000 00:00:1788315987.263070     398 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+[CP] prereg gates: {'primary_relative_reduction_min': 0.3, 'guardrail_auc_max_drop': 0.02, 'guardrail_event_recall_max_drop': 0.02, 'guardrail_alert_blocks_min': 3, 'real_holdout_mean_prob_max': 0.1, 'real_holdout_frac_gt_0.5_max': 0.0}
+W0000 00:00:1788315987.535510     398 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+I0000 00:00:1788315987.723837     398 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 5199 MB memory:  -> device: 0, name: NVIDIA GeForce RTX 5070 Laptop GPU, pci bus id: 0000:01:00.0, compute capability: 12.0a
+[SWEEP] val mit_bih: 106236 beats, abn=14934, records=7
+[SWEEP] val incart: 53058 beats, abn=6451, records=20
+[SWEEP] val ptb: 14694 beats, abn=12291, records=112
+I0000 00:00:1788315991.876482     484 service.cc:153] XLA service 0x720e54045bd0 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1788315991.876817     484 service.cc:161]   StreamExecutor [0]: NVIDIA GeForce RTX 5070 Laptop GPU, Compute Capability 12.0a (Driver: 13.2.0; Runtime: 12.9.0; Toolkit: 12.5.0; DNN: 9.24.0)
+I0000 00:00:1788315991.928298     484 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1788315992.155068     484 cuda_dnn.cc:461] Loaded cuDNN version 92400
+I0000 00:00:1788315999.042123     484 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+I0000 00:00:1788316003.955856     870 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_fusion', 4 bytes spill stores, 4 bytes spill loads
+
+I0000 00:00:1788316005.197057     487 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_fusion', 4 bytes spill stores, 4 bytes spill loads
+
+[CP] selfcheck mit_frac_gt_0.95_vs_p1: 0.2447372456244113 (tol=0.004130) PASS
+[CP] selfcheck incart_frac_gt_0.95_vs_p1: 0.2734996888879353 (tol=0.007124) PASS
+[CP] selfcheck mit_auc_vs_p1: 0.7680174466498565 (tol=1e-3) PASS
+[CP] selfcheck ptb_auc_vs_p1: 0.8262107311484812 (tol=1e-3) PASS
+[CP] selfcheck frozen_event_recall_vs_sweep: 0.9807 (tol=1e-3) PASS
+[CP] WARN selfcheck frozen_alert_blocks_vs_sweep: value=404 registered=401 dev=3 (±2 超限 (跨进程边界翻转); 门裁定为同进程相对量, 无影响)
+[CP] embed: val MIT+INCART 159294 beats, 27 records
+I0000 00:00:1788316018.686157     486 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_fusion', 4 bytes spill stores, 4 bytes spill loads
+
+[CP]   FP        n= 35092 dist_ratio=0.6953868026246532 nearest_abn=0.9970363615638892
+[CP]   TN        n= 94037 dist_ratio=0.28894387270919575 nearest_abn=0.0
+[CP]   TP        n= 14720 dist_ratio=0.6156766234861734 nearest_abn=0.8418478260869565
+[CP]   gray_norm n=  8780 dist_ratio=0.43487165196033173 nearest_abn=0.17801822323462416
+[CP]   miss_abn  n=  6665 dist_ratio=0.21815408035336353 nearest_abn=0.0
+[CP] baseline embed AUC=0.5273
+[CP] evaluating cap_w2_seed42 <- /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/deploy_match/best_resnet_capacity_cap_w2_seed42.h5
+[SWEEP] val mit_bih: 106236 beats, abn=14934, records=7
+[SWEEP] val incart: 53058 beats, abn=6451, records=20
+[SWEEP] val ptb: 14694 beats, abn=12291, records=112
+I0000 00:00:1788316039.817877    2274 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_72', 16 bytes spill stores, 16 bytes spill loads
+
+[CP] embed: val MIT+INCART 159294 beats, 27 records
+[CP]   FP        n= 22373 dist_ratio=0.7345018809220576 nearest_abn=1.0
+[CP]   TN        n=107925 dist_ratio=0.31209101724095256 nearest_abn=0.061264767199444056
+[CP]   TP        n= 14539 dist_ratio=0.6924170364179575 nearest_abn=1.0
+[CP]   gray_norm n=  7611 dist_ratio=0.6691412202318795 nearest_abn=1.0
+[CP]   miss_abn  n=  6846 dist_ratio=0.3359092010943633 nearest_abn=0.09538416593631317
+[CP] cap_w2_seed42 gate primary_pooled_norm_frac_gt_0.95: passed=True
+[CP] cap_w2_seed42 gate guardrail_A_mit_auc: passed=True
+[CP] cap_w2_seed42 gate guardrail_B_frozen_event_recall: passed=False
+[CP] cap_w2_seed42 gate guardrail_C_real_holdout: passed=True
+[CP] cap_w2_seed42 verdict=PARTIAL primary rel_red=0.3624 A_drop=-0.0345 B_ev=0.9272 B_blocks=522 C_mean=0.0000 embed_auc=0.7132
+[CP] evaluating cap_w2_seed43 <- /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/deploy_match/best_resnet_capacity_cap_w2_seed43.h5
+[SWEEP] val mit_bih: 106236 beats, abn=14934, records=7
+[SWEEP] val incart: 53058 beats, abn=6451, records=20
+[SWEEP] val ptb: 14694 beats, abn=12291, records=112
+[CP] embed: val MIT+INCART 159294 beats, 27 records
+[CP]   FP        n= 41700 dist_ratio=0.6876741027682035 nearest_abn=0.9966666666666667
+[CP]   TN        n= 39624 dist_ratio=0.37037779458995973 nearest_abn=0.0
+[CP]   TP        n= 21081 dist_ratio=0.5325625964393597 nearest_abn=0.6187562259854845
+[CP]   gray_norm n= 56585 dist_ratio=0.32177101291409094 nearest_abn=0.03610497481664752
+[CP]   miss_abn  n=   304 dist_ratio=0.36388764904626647 nearest_abn=0.0
+[CP] cap_w2_seed43 gate primary_pooled_norm_frac_gt_0.95: passed=False
+[CP] cap_w2_seed43 gate guardrail_A_mit_auc: passed=True
+[CP] cap_w2_seed43 gate guardrail_B_frozen_event_recall: passed=True
+[CP] cap_w2_seed43 gate guardrail_C_real_holdout: passed=False
+[CP] cap_w2_seed43 verdict=UNPROVEN primary rel_red=-0.1883 A_drop=-0.0028 B_ev=0.9656 B_blocks=431 C_mean=0.2415 embed_auc=0.2796
+[CP] evaluating cap_w2_seed44 <- /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/deploy_match/best_resnet_capacity_cap_w2_seed44.h5
+[SWEEP] val mit_bih: 106236 beats, abn=14934, records=7
+[SWEEP] val incart: 53058 beats, abn=6451, records=20
+[SWEEP] val ptb: 14694 beats, abn=12291, records=112
+[CP] embed: val MIT+INCART 159294 beats, 27 records
+[CP]   FP        n= 35724 dist_ratio=0.7034081700776509 nearest_abn=0.999944015227858
+[CP]   TN        n= 76631 dist_ratio=0.3252195761129026 nearest_abn=0.0
+[CP]   TP        n= 18172 dist_ratio=0.5907384002704941 nearest_abn=0.7542372881355932
+[CP]   gray_norm n= 25554 dist_ratio=0.4174006423776621 nearest_abn=0.263911716365344
+[CP]   miss_abn  n=  3213 dist_ratio=0.26689403304421216 nearest_abn=0.0
+[CP] cap_w2_seed44 gate primary_pooled_norm_frac_gt_0.95: passed=False
+[CP] cap_w2_seed44 gate guardrail_A_mit_auc: passed=True
+[CP] cap_w2_seed44 gate guardrail_B_frozen_event_recall: passed=True
+[CP] cap_w2_seed44 gate guardrail_C_real_holdout: passed=False
+[CP] cap_w2_seed44 verdict=UNPROVEN primary rel_red=-0.0180 A_drop=0.0021 B_ev=0.9725 B_blocks=359 C_mean=0.0369 embed_auc=0.4209
+[CP] saved /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/deploy_match/capacity_probe_eval_w2_multiseed.json and /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/deploy_match/capacity_probe_embed.json (111s)

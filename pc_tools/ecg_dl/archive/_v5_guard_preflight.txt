@@ -1,0 +1,17 @@
+[GUARD] ECG_DATA = /home/devcontainers/ecg_data
+[GUARD] MIT+INCART 合并: 患者 79 = train 49 / val 15 / test 15
+[GUARD]   心拍: train 512369 / val 159294 / test 163078 (MIT 658962 + INCART 175779)
+[GUARD]   test 患者: inc_inc_1, inc_inc_26, inc_inc_29, inc_inc_32, inc_inc_4, inc_inc_6, mit_101, mit_105, mit_108, mit_111, mit_119, mit_201_202, mit_205, mit_207, mit_208
+[GUARD] PTB: 患者 286 = train 172 / val 57 / test 57
+[GUARD] SVDB (独立划分): 患者 78 = train 48 / val 15 / test 15
+[GUARD]   心拍: train 112826 / val 35247 / test 36334
+[GUARD] mit_bih: 记录 train=31 val=7 test=10
+[GUARD]   self-check ok (test 心拍 133434 全部命中测试组)
+[GUARD] incart: 记录 train=42 val=20 test=13
+[GUARD]   self-check ok (test 心拍 29644 全部命中测试组)
+[GUARD] ptb: 记录 train=326 val=112 test=95
+[GUARD]   self-check ok (test 心拍 13058 全部命中测试组)
+[GUARD] svdb: 记录 train=48 val=15 test=15
+[GUARD]   self-check ok (test 心拍 36334 全部命中测试组)
+[GUARD] 划分完整性检查全部通过
+EXIT_CODE=0

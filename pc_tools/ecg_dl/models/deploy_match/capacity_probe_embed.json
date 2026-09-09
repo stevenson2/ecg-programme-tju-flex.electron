@@ -1,0 +1,194 @@
+{
+  "date": "2026-09-02 10:28:18",
+  "purpose": "TH §109 容量探针 fc1 嵌入分离度 (P2 同口径, LORO 原型)",
+  "embed_layer": "fc1",
+  "method": "与 p2_embed_separation.py 同口径: val MIT+INCART 全量拍(SplitGuard val_mask), fc1 (Dense64 relu) 嵌入, leave-one-record-out 原型, dist_ratio=dn/(dn+da)",
+  "baseline_references": {
+    "p1_mit_frac_gt_0.95": 0.24480296159996495,
+    "p1_incart_frac_gt_0.95": 0.2735855129057867,
+    "p1_mit_auc": 0.7679994798154276,
+    "p1_ptb_auc": 0.8262335343912346,
+    "sweep_mit_event_recall": 0.9807,
+    "sweep_mit_alert_blocks": 401,
+    "p2_embed_auc": 0.543305347518394,
+    "p2_fp_frac_nearest_abn": 0.996952608794714
+  },
+  "models": {
+    "v3A_baseline": {
+      "records": 27,
+      "beats": 159294,
+      "embedding_auc_label_vs_ratio": 0.5272833588731384,
+      "embed_auc_delta_vs_v3A": -0.016021988645255614,
+      "fp_tp_dist_ratio": 1.1294676070160556,
+      "groups": {
+        "FP": {
+          "n": 35092,
+          "mean_dist_norm": 5.417948189509251,
+          "mean_dist_abn": 2.477911594621162,
+          "mean_dist_ratio": 0.6953868026246532,
+          "frac_nearest_abn": 0.9970363615638892
+        },
+        "TN": {
+          "n": 94037,
+          "mean_dist_norm": 2.614808572263176,
+          "mean_dist_abn": 6.136418083787379,
+          "mean_dist_ratio": 0.28894387270919575,
+          "frac_nearest_abn": 0.0
+        },
+        "TP": {
+          "n": 14720,
+          "mean_dist_norm": 6.669317310044299,
+          "mean_dist_abn": 4.184716051978909,
+          "mean_dist_ratio": 0.6156766234861734,
+          "frac_nearest_abn": 0.8418478260869565
+        },
+        "gray_norm": {
+          "n": 8780,
+          "mean_dist_norm": 2.350774417664847,
+          "mean_dist_abn": 3.080464629363905,
+          "mean_dist_ratio": 0.43487165196033173,
+          "frac_nearest_abn": 0.17801822323462416
+        },
+        "miss_abn": {
+          "n": 6665,
+          "mean_dist_norm": 1.9291788854101772,
+          "mean_dist_abn": 6.820539651378509,
+          "mean_dist_ratio": 0.21815408035336353,
+          "frac_nearest_abn": 0.0
+        }
+      }
+    },
+    "cap_w2_seed42": {
+      "records": 27,
+      "beats": 159294,
+      "embedding_auc_label_vs_ratio": 0.7131587096500438,
+      "embed_auc_delta_vs_v3A": 0.1698533621316498,
+      "fp_tp_dist_ratio": 1.060779620215319,
+      "groups": {
+        "FP": {
+          "n": 22373,
+          "mean_dist_norm": 9.076093780932075,
+          "mean_dist_abn": 3.4911076467453763,
+          "mean_dist_ratio": 0.7345018809220576,
+          "frac_nearest_abn": 1.0
+        },
+        "TN": {
+          "n": 107925,
+          "mean_dist_norm": 4.239823873194937,
+          "mean_dist_abn": 8.63767131847614,
+          "mean_dist_ratio": 0.31209101724095256,
+          "frac_nearest_abn": 0.061264767199444056
+        },
+        "TP": {
+          "n": 14539,
+          "mean_dist_norm": 9.359758978869337,
+          "mean_dist_abn": 4.46022742885418,
+          "mean_dist_ratio": 0.6924170364179575,
+          "frac_nearest_abn": 1.0
+        },
+        "gray_norm": {
+          "n": 7611,
+          "mean_dist_norm": 6.11716207313312,
+          "mean_dist_abn": 3.0345186819589776,
+          "mean_dist_ratio": 0.6691412202318795,
+          "frac_nearest_abn": 1.0
+        },
+        "miss_abn": {
+          "n": 6846,
+          "mean_dist_norm": 3.8738567230996073,
+          "mean_dist_abn": 7.4109443832899515,
+          "mean_dist_ratio": 0.3359092010943633,
+          "frac_nearest_abn": 0.09538416593631317
+        }
+      }
+    },
+    "cap_w2_seed43": {
+      "records": 27,
+      "beats": 159294,
+      "embedding_auc_label_vs_ratio": 0.27955374801449523,
+      "embed_auc_delta_vs_v3A": -0.26375159950389876,
+      "fp_tp_dist_ratio": 1.29125497615848,
+      "groups": {
+        "FP": {
+          "n": 41700,
+          "mean_dist_norm": 1.9809958673566936,
+          "mean_dist_abn": 0.9502220082711831,
+          "mean_dist_ratio": 0.6876741027682035,
+          "frac_nearest_abn": 0.9966666666666667
+        },
+        "TN": {
+          "n": 39624,
+          "mean_dist_norm": 1.872434654802403,
+          "mean_dist_abn": 3.119136944031104,
+          "mean_dist_ratio": 0.37037779458995973,
+          "frac_nearest_abn": 0.0
+        },
+        "TP": {
+          "n": 21081,
+          "mean_dist_norm": 1.708706061398755,
+          "mean_dist_abn": 1.4202151992072654,
+          "mean_dist_ratio": 0.5325625964393597,
+          "frac_nearest_abn": 0.6187562259854845
+        },
+        "gray_norm": {
+          "n": 56585,
+          "mean_dist_norm": 0.8058470831918476,
+          "mean_dist_abn": 1.7405021703947956,
+          "mean_dist_ratio": 0.32177101291409094,
+          "frac_nearest_abn": 0.03610497481664752
+        },
+        "miss_abn": {
+          "n": 304,
+          "mean_dist_norm": 1.7926247343420982,
+          "mean_dist_abn": 3.0747860724988736,
+          "mean_dist_ratio": 0.36388764904626647,
+          "frac_nearest_abn": 0.0
+        }
+      }
+    },
+    "cap_w2_seed44": {
+      "records": 27,
+      "beats": 159294,
+      "embedding_auc_label_vs_ratio": 0.4209268654422512,
+      "embed_auc_delta_vs_v3A": -0.12237848207614277,
+      "fp_tp_dist_ratio": 1.1907270117459205,
+      "groups": {
+        "FP": {
+          "n": 35724,
+          "mean_dist_norm": 3.6605367316983206,
+          "mean_dist_abn": 1.6481822331879898,
+          "mean_dist_ratio": 0.7034081700776509,
+          "frac_nearest_abn": 0.999944015227858
+        },
+        "TN": {
+          "n": 76631,
+          "mean_dist_norm": 2.291011632542738,
+          "mean_dist_abn": 4.517980932976271,
+          "mean_dist_ratio": 0.3252195761129026,
+          "frac_nearest_abn": 0.0
+        },
+        "TP": {
+          "n": 18172,
+          "mean_dist_norm": 3.391598190114332,
+          "mean_dist_abn": 2.2228620603316527,
+          "mean_dist_ratio": 0.5907384002704941,
+          "frac_nearest_abn": 0.7542372881355932
+        },
+        "gray_norm": {
+          "n": 25554,
+          "mean_dist_norm": 1.4732995479960784,
+          "mean_dist_abn": 2.0955911937235405,
+          "mean_dist_ratio": 0.4174006423776621,
+          "frac_nearest_abn": 0.263911716365344
+        },
+        "miss_abn": {
+          "n": 3213,
+          "mean_dist_norm": 1.6136535716101346,
+          "mean_dist_abn": 4.148129634088421,
+          "mean_dist_ratio": 0.26689403304421216,
+          "frac_nearest_abn": 0.0
+        }
+      }
+    }
+  }
+}

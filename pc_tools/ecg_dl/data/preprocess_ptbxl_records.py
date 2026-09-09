@@ -20,12 +20,16 @@ Output: data/processed/ptbxl_records_100hz.npz
 
 import sys, os, ast
 from pathlib import Path
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+import ecg_refs as _REFS  # noqa: E402
+
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from config import PROCESSED_DIR
 
-PTBXL_DIR = Path(__file__).resolve().parent.parent.parent.parent / "PTB-XL_ECG"
+PTBXL_DIR = _REFS.PTBXL_DIR
 PTBXL_CSV = PTBXL_DIR / "ptbxl_database.csv"
 SCP_CSV = PTBXL_DIR / "scp_statements.csv"
 

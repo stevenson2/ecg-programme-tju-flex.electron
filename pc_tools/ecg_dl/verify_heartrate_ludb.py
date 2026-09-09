@@ -26,6 +26,10 @@ import argparse
 import json
 import sys
 from pathlib import Path
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+import ecg_refs as _REFS  # noqa: E402
+
 
 import numpy as np
 
@@ -40,13 +44,7 @@ TOLERANCE_MS = 150  # AAMI 标准匹配容差
 TOLERANCE_SAMP = int(TOLERANCE_MS * FS / 1000)  # 75 @500Hz
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_DATA_DIR = (
-    ROOT
-    / "ECG-Database"
-    / "lobachevsky-university-electrocardiography-database-1.0.1"
-    / "lobachevsky-university-electrocardiography-database-1.0.1"
-    / "data"
-)
+DEFAULT_DATA_DIR = _REFS.LUDB_DIR
 
 # ======================== 滤波器系数 (与固件逐位一致) ========================
 # filter.cpp: 两级级联 HP 0.05Hz → LP 40Hz (2阶 Butterworth, fs=500)
@@ -816,7 +814,7 @@ def print_summary(s, label="结果"):
 def main():
     ap = argparse.ArgumentParser(description="LUDB 金标准验证固件心率算法")
     ap.add_argument("--data-dir", type=str, default=str(DEFAULT_DATA_DIR),
-                    help="LUDB data 目录 (默认: 工作区 ECG-Database)")
+                    help="LUDB data 目录 (默认: 统一资料库 ecg_database)")
     ap.add_argument("--lead", type=str, default="ii", help="导联 (默认 ii)")
     ap.add_argument("--gain", type=float, default=1000.0,
                     help="mV→V 缩放 (默认 1000, 模拟 AFE 放大)")

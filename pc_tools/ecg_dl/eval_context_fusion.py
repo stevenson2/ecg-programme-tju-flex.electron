@@ -24,6 +24,10 @@ import sys
 import time
 from collections import defaultdict
 from pathlib import Path
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+import ecg_refs as _REFS  # noqa: E402
+
 
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
@@ -44,9 +48,7 @@ OUT_JSON = MODELS / "fusion_decision_eval.json"
 PROB_CACHE = MODELS / "deploy_match" / "fusion_p_all.npy"
 
 MIT_RAW = Path(__file__).resolve().parent / "data" / "raw" / "mit-bih-arrhythmia-database"
-INCART_DIR = Path("/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/"
-                  "ecg-programme-tju-flex.electron-master/st-petersburg-incart-12-lead-"
-                  "arrhythmia-database-1.0.0/files")
+INCART_DIR = _REFS.INCART_DIR
 
 BEAT_S = 0.8
 FAR_TARGET = 42.0      # 监护目标: ≤1 次/天
@@ -92,9 +94,7 @@ def s_event_comparison(p_base, p_fused, labels, rids, gap=GAP_ALARM):
                                      recover_incart_symbols_per_record)
     from eval_alarm_decision import events_from_alarm_flags, duration_hours
     from pathlib import Path as _P
-    incart_dir = _P("/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/"
-                    "ecg-programme-tju-flex.electron-master/st-petersburg-incart-"
-                    "12-lead-arrhythmia-database-1.0.0/files")
+    incart_dir = _P(str(__import__('ecg_refs').INCART_DIR))
     per_rec = recover_mit_symbols_per_record()
     per_rec.update(recover_incart_symbols_per_record(incart_dir))
 

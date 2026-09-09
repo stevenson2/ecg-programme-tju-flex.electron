@@ -1,0 +1,253 @@
+{
+  "date": "2026-09-02 10:27:57",
+  "label": "cap_w2_seed43",
+  "model": "best_resnet_capacity_cap_w2_seed43.h5",
+  "purpose": "TH109 capacity probe per-variant evaluation",
+  "frozen_operating_point": {
+    "theta": 0.95,
+    "k": 1,
+    "n": 5,
+    "cooldown": 20
+  },
+  "prereg": "capacity_probe_prereg.json",
+  "gates": {
+    "primary_pooled_norm_frac_gt_0.95": {
+      "baseline": 0.2544576496095251,
+      "pilot": 0.30237330413533564,
+      "relative_reduction": -0.18830502678673217,
+      "passed": false,
+      "criterion": ">=0.3 relative reduction"
+    },
+    "guardrail_A_mit_auc": {
+      "baseline": 0.7680174466498565,
+      "pilot": 0.7708186330451584,
+      "drop": -0.0028011863953019134,
+      "passed": true,
+      "criterion": "drop<=0.02"
+    },
+    "guardrail_B_frozen_event_recall": {
+      "baseline_event_recall": 0.9807,
+      "pilot_event_recall": 0.9656,
+      "pilot_alert_blocks": 431,
+      "passed": true,
+      "criterion": "drop<=0.02 and alert_blocks>=3"
+    },
+    "guardrail_C_real_holdout": {
+      "pilot": {
+        "mean_prob": 0.24153833091259003,
+        "frac_gt_0.5": 0.15,
+        "n": 40
+      },
+      "passed": false,
+      "criterion": "mean_prob<0.1 and frac_gt_0.5<=0.0"
+    }
+  },
+  "verdict": "UNPROVEN",
+  "verdict_semantics": {
+    "PASS": "主门 + 护栏 A/B/C 全过",
+    "PARTIAL": "主门过但至少一条护栏破 (或嵌入分离度改善但未过门)",
+    "UNPROVEN": "主门未过 (相对降幅在 0–30% 区间或为负) 记未证明; 结果在种子噪声区间内不称证伪"
+  },
+  "baseline_metrics": {
+    "mit_incart": {
+      "auc": 0.7680174466498565,
+      "n_beats": 159294,
+      "norm_quantiles": {
+        "n": 137909,
+        "mean": 0.3216709792613983,
+        "p05": 2.5040922992047854e-05,
+        "p25": 0.000632789044175297,
+        "p50": 0.008086294867098331,
+        "p75": 0.9587060809135437,
+        "p95": 0.9999840259552002,
+        "frac_gt_0.5": 0.31812282012051424,
+        "frac_gt_0.95": 0.2544576496095251
+      },
+      "frozen": {
+        "theta": 0.95,
+        "k": 1,
+        "n": 5,
+        "cooldown": 20,
+        "beat_tp": 17725,
+        "beat_fp": 76945,
+        "beat_tn": 60964,
+        "beat_fn": 3660,
+        "beat_recall": 0.8289,
+        "beat_precision": 0.1872,
+        "beat_f1": 0.3055,
+        "gt_events": 3050,
+        "alert_blocks": 404,
+        "matched_gt_events": 2991,
+        "false_alarm_blocks": 190,
+        "event_recall": 0.9807,
+        "event_precision": 0.5297,
+        "event_f1": 0.6879,
+        "fp_per_record": 7.037,
+        "median_latency_beats": 0.0,
+        "n_records": 27
+      }
+    },
+    "mit_only": {
+      "n_norm": 91302,
+      "frac_gt_0.95": 0.2447372456244113,
+      "frac_gt_0.5": 0.29557950537775735,
+      "band_0.005_count": 377
+    },
+    "incart_only": {
+      "n_norm": 46607,
+      "frac_gt_0.95": 0.2734996888879353,
+      "frac_gt_0.5": 0.36228463535520417,
+      "band_0.005_count": 332
+    },
+    "pooled_norm_frac_gt_0.95": 0.2544576496095251,
+    "pooled_bootstrap_ci95": [
+      0.11847788899012679,
+      0.4167871930420949
+    ],
+    "ptb": {
+      "auc": 0.8262107311484812,
+      "n_beats": 14694,
+      "norm_quantiles": {
+        "n": 2403,
+        "mean": 0.20770372450351715,
+        "p05": 0.0001055751730746124,
+        "p25": 0.0008479202806483954,
+        "p50": 0.004580812528729439,
+        "p75": 0.08934065699577332,
+        "p95": 0.999848234653473,
+        "frac_gt_0.5": 0.19850187265917604,
+        "frac_gt_0.95": 0.16312942155638785
+      },
+      "frozen": {
+        "theta": 0.95,
+        "k": 1,
+        "n": 5,
+        "cooldown": 20,
+        "beat_tp": 10051,
+        "beat_fp": 635,
+        "beat_tn": 1768,
+        "beat_fn": 2240,
+        "beat_recall": 0.8178,
+        "beat_precision": 0.9406,
+        "beat_f1": 0.8749,
+        "gt_events": 92,
+        "alert_blocks": 108,
+        "matched_gt_events": 86,
+        "false_alarm_blocks": 10,
+        "event_recall": 0.9348,
+        "event_precision": 0.9074,
+        "event_f1": 0.9209,
+        "fp_per_record": 0.0893,
+        "median_latency_beats": 0.0,
+        "n_records": 112
+      }
+    }
+  },
+  "pilot_metrics": {
+    "mit_incart": {
+      "auc": 0.7708186330451584,
+      "n_beats": 159294,
+      "norm_quantiles": {
+        "n": 137909,
+        "mean": 0.68341463804245,
+        "p05": 0.12126766294240952,
+        "p25": 0.42462003231048584,
+        "p50": 0.7869610786437988,
+        "p75": 0.9698494672775269,
+        "p95": 0.996703279018402,
+        "frac_gt_0.5": 0.7126801006460782,
+        "frac_gt_0.95": 0.30237330413533564
+      },
+      "frozen": {
+        "theta": 0.95,
+        "k": 1,
+        "n": 5,
+        "cooldown": 20,
+        "beat_tp": 18385,
+        "beat_fp": 76390,
+        "beat_tn": 61519,
+        "beat_fn": 3000,
+        "beat_recall": 0.8597,
+        "beat_precision": 0.194,
+        "beat_f1": 0.3165,
+        "gt_events": 3050,
+        "alert_blocks": 431,
+        "matched_gt_events": 2945,
+        "false_alarm_blocks": 221,
+        "event_recall": 0.9656,
+        "event_precision": 0.4872,
+        "event_f1": 0.6477,
+        "fp_per_record": 8.1852,
+        "median_latency_beats": 0.0,
+        "n_records": 27
+      }
+    },
+    "mit_only": {
+      "n_norm": 91302,
+      "frac_gt_0.95": 0.2931699196074566,
+      "frac_gt_0.5": 0.642450329675144,
+      "band_0.005_count": 1282
+    },
+    "incart_only": {
+      "n_norm": 46607,
+      "frac_gt_0.95": 0.32040251464372305,
+      "frac_gt_0.5": 0.8502585448537773,
+      "band_0.005_count": 1638
+    },
+    "pooled_norm_frac_gt_0.95": 0.30237330413533564,
+    "pooled_bootstrap_ci95": [
+      0.14160421143387322,
+      0.4692305151651876
+    ],
+    "ptb": {
+      "auc": 0.7752855543268553,
+      "n_beats": 14694,
+      "norm_quantiles": {
+        "n": 2403,
+        "mean": 0.7414101958274841,
+        "p05": 0.2875642716884613,
+        "p25": 0.6241958439350128,
+        "p50": 0.7814785242080688,
+        "p75": 0.912367433309555,
+        "p95": 0.9936296820640564,
+        "frac_gt_0.5": 0.8643362463587183,
+        "frac_gt_0.95": 0.19225967540574282
+      },
+      "frozen": {
+        "theta": 0.95,
+        "k": 1,
+        "n": 5,
+        "cooldown": 20,
+        "beat_tp": 9669,
+        "beat_fp": 649,
+        "beat_tn": 1754,
+        "beat_fn": 2622,
+        "beat_recall": 0.7867,
+        "beat_precision": 0.9371,
+        "beat_f1": 0.8553,
+        "gt_events": 92,
+        "alert_blocks": 102,
+        "matched_gt_events": 80,
+        "false_alarm_blocks": 11,
+        "event_recall": 0.8696,
+        "event_precision": 0.8922,
+        "event_f1": 0.8807,
+        "fp_per_record": 0.0982,
+        "median_latency_beats": 0.0,
+        "n_records": 112
+      }
+    }
+  },
+  "real_afe_holdout": {
+    "baseline": {
+      "mean_prob": 0.008784550242125988,
+      "frac_gt_0.5": 0.0,
+      "n": 40
+    },
+    "pilot": {
+      "mean_prob": 0.24153833091259003,
+      "frac_gt_0.5": 0.15,
+      "n": 40
+    }
+  }
+}

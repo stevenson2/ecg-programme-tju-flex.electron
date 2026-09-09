@@ -1,0 +1,131 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788249665.248238    1441 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788249665.330716    1441 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788249666.710786    1441 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+W0000 00:00:1788249668.354751    1441 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+[CB3:c] GPU: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+[CB3:c] main gold: 4800 (abn=2500, norm=2300)
+[CB3:c] real AFE: train_unique=271 repeated=542, holdout=40
+[CB3:c] synthetic hard neg: 600
+[CB3:c] train total=5942 abn=2500 norm=3442
+[CB3:c] val total=4040 abn=2000 norm=2040 (incl real holdout 40)
+W0000 00:00:1788249671.834740    1441 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+I0000 00:00:1788249672.057957    1441 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 5199 MB memory:  -> device: 0, name: NVIDIA GeForce RTX 5070 Laptop GPU, pci bus id: 0000:01:00.0, compute capability: 12.0a
+[CB3:c] params=62,834 (随机初始化, 未加载任何权重; dropout=0.4)
+[CB3:c] start from-scratch training: epochs=80 batch=32 lr=0.0003 cosine, class_weight={0:2.0,1:1.0}
+Epoch 1/80
+I0000 00:00:1788249681.419910    1528 service.cc:153] XLA service 0x7d392c074ba0 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1788249681.419993    1528 service.cc:161]   StreamExecutor [0]: NVIDIA GeForce RTX 5070 Laptop GPU, Compute Capability 12.0a (Driver: 13.2.0; Runtime: 12.9.0; Toolkit: 12.5.0; DNN: 9.24.0)
+I0000 00:00:1788249681.708773    1528 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1788249683.206824    1528 cuda_dnn.cc:461] Loaded cuDNN version 92400
+I0000 00:00:1788249683.478950    1528 dot_merger.cc:481] Merging Dots in computation: a_inference_one_step_on_data_20969__.182
+I0000 00:00:1788249685.127301    1528 dot_search_space.cc:240] All configs were filtered out because none of them sufficiently match the hints. Maybe the hints set does not contain a good representative set of valid configs? Working around this by using the full hints set instead.
+I0000 00:00:1788249692.408988    1594 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_1_46', 24 bytes spill stores, 16 bytes spill loads
+
+I0000 00:00:1788249692.641663    1528 dot_search_space.cc:240] All configs were filtered out because none of them sufficiently match the hints. Maybe the hints set does not contain a good representative set of valid configs? Working around this by using the full hints set instead.
+I0000 00:00:1788249693.273039    1602 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_124', 16 bytes spill stores, 16 bytes spill loads
+
+I0000 00:00:1788249693.566976    1603 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_1_44', 28 bytes spill stores, 20 bytes spill loads
+
+I0000 00:00:1788249696.256630    1595 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_2', 8 bytes spill stores, 8 bytes spill loads
+
+I0000 00:00:1788249698.340089    1595 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_3', 8 bytes spill stores, 8 bytes spill loads
+
+I0000 00:00:1788249698.564132    1599 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_1', 4 bytes spill stores, 4 bytes spill loads
+
+I0000 00:00:1788249706.142370    1528 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_3', 8 bytes spill stores, 8 bytes spill loads
+ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_2', 8 bytes spill stores, 8 bytes spill loads
+
+I0000 00:00:1788249706.206439    1528 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+I0000 00:00:1788249709.255927    1528 dot_merger.cc:481] Merging Dots in computation: a_inference_one_step_on_data_20969__.182
+I0000 00:00:1788249710.181975    1528 dot_search_space.cc:240] All configs were filtered out because none of them sufficiently match the hints. Maybe the hints set does not contain a good representative set of valid configs? Working around this by using the full hints set instead.
+I0000 00:00:1788249713.049325    2462 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_114', 4 bytes spill stores, 4 bytes spill loads
+
+I0000 00:00:1788249713.324014    1528 dot_search_space.cc:240] All configs were filtered out because none of them sufficiently match the hints. Maybe the hints set does not contain a good representative set of valid configs? Working around this by using the full hints set instead.
+I0000 00:00:1788249713.694645    2460 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_124', 16 bytes spill stores, 16 bytes spill loads
+
+I0000 00:00:1788249717.046423    2452 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_7', 4 bytes spill stores, 4 bytes spill loads
+
+I0000 00:00:1788249717.543195    2454 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_3', 12 bytes spill stores, 12 bytes spill loads
+
+I0000 00:00:1788249718.225633    2453 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_2', 8 bytes spill stores, 8 bytes spill loads
+
+I0000 00:00:1788249718.510905    2453 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion', 4 bytes spill stores, 4 bytes spill loads
+
+I0000 00:00:1788249719.681576    2454 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_6', 4 bytes spill stores, 4 bytes spill loads
+
+I0000 00:00:1788249720.372279    2454 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_1', 12 bytes spill stores, 12 bytes spill loads
+
+I0000 00:00:1788249727.475988    1528 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_6', 4 bytes spill stores, 4 bytes spill loads
+ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion', 4 bytes spill stores, 4 bytes spill loads
+
+I0000 00:00:1788249732.426892    3339 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_76', 4 bytes spill stores, 4 bytes spill loads
+
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+  * saved best val_auc=0.6127 (epoch 1)
+186/186 - 74s - 395ms/step - accuracy: 0.7087 - loss: 0.7124 - val_accuracy: 0.4950 - val_loss: 0.8190 - val_auc: 0.6127
+Epoch 2/80
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+  * saved best val_auc=0.7062 (epoch 2)
+186/186 - 3s - 18ms/step - accuracy: 0.8669 - loss: 0.4212 - val_accuracy: 0.4953 - val_loss: 1.1748 - val_auc: 0.7062
+Epoch 3/80
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+  * saved best val_auc=0.7257 (epoch 3)
+186/186 - 3s - 18ms/step - accuracy: 0.8962 - loss: 0.3289 - val_accuracy: 0.6327 - val_loss: 0.7093 - val_auc: 0.7257
+Epoch 4/80
+186/186 - 4s - 21ms/step - accuracy: 0.9191 - loss: 0.2676 - val_accuracy: 0.6584 - val_loss: 0.8299 - val_auc: 0.7231
+Epoch 5/80
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+  * saved best val_auc=0.7421 (epoch 5)
+186/186 - 3s - 17ms/step - accuracy: 0.9352 - loss: 0.2173 - val_accuracy: 0.6748 - val_loss: 0.9015 - val_auc: 0.7421
+Epoch 6/80
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+  * saved best val_auc=0.7493 (epoch 6)
+186/186 - 3s - 18ms/step - accuracy: 0.9456 - loss: 0.1879 - val_accuracy: 0.6772 - val_loss: 0.9700 - val_auc: 0.7493
+Epoch 7/80
+186/186 - 3s - 15ms/step - accuracy: 0.9618 - loss: 0.1429 - val_accuracy: 0.6671 - val_loss: 1.1930 - val_auc: 0.7255
+Epoch 8/80
+186/186 - 3s - 14ms/step - accuracy: 0.9675 - loss: 0.1232 - val_accuracy: 0.6589 - val_loss: 1.4564 - val_auc: 0.7120
+Epoch 9/80
+186/186 - 3s - 15ms/step - accuracy: 0.9739 - loss: 0.1009 - val_accuracy: 0.6636 - val_loss: 1.4762 - val_auc: 0.7153
+Epoch 10/80
+186/186 - 3s - 15ms/step - accuracy: 0.9756 - loss: 0.0943 - val_accuracy: 0.6728 - val_loss: 1.5574 - val_auc: 0.7301
+Epoch 11/80
+186/186 - 3s - 15ms/step - accuracy: 0.9769 - loss: 0.0857 - val_accuracy: 0.6738 - val_loss: 1.5334 - val_auc: 0.7291
+Epoch 12/80
+186/186 - 3s - 16ms/step - accuracy: 0.9825 - loss: 0.0694 - val_accuracy: 0.6431 - val_loss: 1.7856 - val_auc: 0.7130
+Epoch 13/80
+186/186 - 3s - 14ms/step - accuracy: 0.9854 - loss: 0.0548 - val_accuracy: 0.6446 - val_loss: 1.8713 - val_auc: 0.7020
+Epoch 14/80
+186/186 - 3s - 15ms/step - accuracy: 0.9838 - loss: 0.0593 - val_accuracy: 0.6668 - val_loss: 1.7666 - val_auc: 0.7237
+Epoch 15/80
+186/186 - 4s - 21ms/step - accuracy: 0.9867 - loss: 0.0486 - val_accuracy: 0.6601 - val_loss: 2.2470 - val_auc: 0.6912
+Epoch 16/80
+186/186 - 3s - 15ms/step - accuracy: 0.9872 - loss: 0.0430 - val_accuracy: 0.6510 - val_loss: 2.1046 - val_auc: 0.6898
+Epoch 17/80
+186/186 - 3s - 16ms/step - accuracy: 0.9904 - loss: 0.0382 - val_accuracy: 0.6418 - val_loss: 2.1445 - val_auc: 0.6982
+Epoch 18/80
+186/186 - 3s - 15ms/step - accuracy: 0.9914 - loss: 0.0312 - val_accuracy: 0.6327 - val_loss: 2.2776 - val_auc: 0.6828
+Epoch 19/80
+186/186 - 3s - 15ms/step - accuracy: 0.9911 - loss: 0.0325 - val_accuracy: 0.6599 - val_loss: 2.1072 - val_auc: 0.7047
+Epoch 20/80
+186/186 - 3s - 15ms/step - accuracy: 0.9951 - loss: 0.0193 - val_accuracy: 0.6517 - val_loss: 2.5039 - val_auc: 0.6817
+Epoch 21/80
+186/186 - 3s - 16ms/step - accuracy: 0.9929 - loss: 0.0259 - val_accuracy: 0.6537 - val_loss: 2.6367 - val_auc: 0.6909
+Epoch 22/80
+186/186 - 3s - 17ms/step - accuracy: 0.9906 - loss: 0.0310 - val_accuracy: 0.6498 - val_loss: 2.5273 - val_auc: 0.6898
+Epoch 23/80
+186/186 - 3s - 16ms/step - accuracy: 0.9929 - loss: 0.0285 - val_accuracy: 0.6567 - val_loss: 2.2766 - val_auc: 0.7252
+Epoch 24/80
+186/186 - 3s - 15ms/step - accuracy: 0.9958 - loss: 0.0151 - val_accuracy: 0.6587 - val_loss: 2.5529 - val_auc: 0.7045
+Epoch 25/80
+186/186 - 3s - 15ms/step - accuracy: 0.9960 - loss: 0.0188 - val_accuracy: 0.6671 - val_loss: 2.3766 - val_auc: 0.7301
+Epoch 26/80
+186/186 - 4s - 21ms/step - accuracy: 0.9960 - loss: 0.0141 - val_accuracy: 0.6587 - val_loss: 2.9585 - val_auc: 0.6710
+Epoch 26: early stopping
+Restoring model weights from the end of the best epoch: 6.
+[CB3:c] training done in 155s
+[CB3:c] BEST: val AUC=0.7493; real holdout mean=0.0122 frac>0.5=0.0000
+[CB3:c] saved best_resnet_large_clean_baseline_v3_c.h5, train_history_clean_baseline_v3_c.csv, train_clean_baseline_v3_c.json

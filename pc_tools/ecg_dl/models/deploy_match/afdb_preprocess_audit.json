@@ -1,0 +1,507 @@
+{
+  "date": "2026-09-02 11:30:57",
+  "purpose": "AFDB deploy-causal feasibility build with .qrs peaks + rhythm labels",
+  "label_map": {
+    "normal_notes": [
+      "N"
+    ],
+    "exclude_notes": [
+      "",
+      "ASYS",
+      "NOISE"
+    ],
+    "abnormal": "all other non-excluded rhythm notes (AFIB/AFL/J etc)"
+  },
+  "records_processed": 23,
+  "records_with_error": 1,
+  "total_beats": 1069696,
+  "label_counts": {
+    "normal": 594374,
+    "abnormal": 475322,
+    "excluded": 0
+  },
+  "per_record": [
+    {
+      "record": "04015",
+      "fs": 250,
+      "n_qrs": 44005,
+      "n_beats": 44004,
+      "n_normal": 43479,
+      "n_abnormal": 525,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "N",
+          43479
+        ],
+        [
+          "AFIB",
+          525
+        ]
+      ],
+      "elapsed_s": 2.2
+    },
+    {
+      "record": "04043",
+      "fs": 250,
+      "n_qrs": 61915,
+      "n_beats": 61915,
+      "n_normal": 47256,
+      "n_abnormal": 14659,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "N",
+          47256
+        ],
+        [
+          "AFIB",
+          14634
+        ],
+        [
+          "AFL",
+          25
+        ]
+      ],
+      "elapsed_s": 2.5
+    },
+    {
+      "record": "04048",
+      "fs": 250,
+      "n_qrs": 39934,
+      "n_beats": 39934,
+      "n_normal": 39121,
+      "n_abnormal": 813,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "N",
+          39121
+        ],
+        [
+          "AFIB",
+          813
+        ]
+      ],
+      "elapsed_s": 2.4
+    },
+    {
+      "record": "04126",
+      "fs": 250,
+      "n_qrs": 42860,
+      "n_beats": 42860,
+      "n_normal": 39567,
+      "n_abnormal": 3293,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "N",
+          39567
+        ],
+        [
+          "AFIB",
+          3293
+        ]
+      ],
+      "elapsed_s": 1.9
+    },
+    {
+      "record": "04746",
+      "fs": 250,
+      "n_qrs": 47873,
+      "n_beats": 47872,
+      "n_normal": 16999,
+      "n_abnormal": 30873,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "AFIB",
+          30873
+        ],
+        [
+          "N",
+          16999
+        ]
+      ],
+      "elapsed_s": 2.0
+    },
+    {
+      "record": "04908",
+      "fs": 250,
+      "n_qrs": 61760,
+      "n_beats": 61759,
+      "n_normal": 55318,
+      "n_abnormal": 6441,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "N",
+          55318
+        ],
+        [
+          "AFIB",
+          5810
+        ],
+        [
+          "AFL",
+          631
+        ]
+      ],
+      "elapsed_s": 2.3
+    },
+    {
+      "record": "04936",
+      "fs": 250,
+      "n_qrs": 53646,
+      "n_beats": 53645,
+      "n_normal": 7641,
+      "n_abnormal": 46004,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "AFIB",
+          39681
+        ],
+        [
+          "N",
+          7641
+        ],
+        [
+          "AFL",
+          6323
+        ]
+      ],
+      "elapsed_s": 2.0
+    },
+    {
+      "record": "05091",
+      "fs": 250,
+      "n_qrs": 36793,
+      "n_beats": 36793,
+      "n_normal": 36655,
+      "n_abnormal": 138,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "N",
+          36655
+        ],
+        [
+          "AFIB",
+          138
+        ]
+      ],
+      "elapsed_s": 2.1
+    },
+    {
+      "record": "05121",
+      "fs": 250,
+      "n_qrs": 49881,
+      "n_beats": 49880,
+      "n_normal": 15925,
+      "n_abnormal": 33955,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "AFIB",
+          33759
+        ],
+        [
+          "N",
+          15925
+        ],
+        [
+          "J",
+          196
+        ]
+      ],
+      "elapsed_s": 2.0
+    },
+    {
+      "record": "05261",
+      "fs": 250,
+      "n_qrs": 45534,
+      "n_beats": 45534,
+      "n_normal": 44600,
+      "n_abnormal": 934,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "N",
+          44600
+        ],
+        [
+          "AFIB",
+          934
+        ]
+      ],
+      "elapsed_s": 2.3
+    },
+    {
+      "record": "06426",
+      "fs": 250,
+      "n_qrs": 55155,
+      "n_beats": 55154,
+      "n_normal": 1684,
+      "n_abnormal": 53470,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "AFIB",
+          53135
+        ],
+        [
+          "N",
+          1684
+        ],
+        [
+          "AFL",
+          237
+        ],
+        [
+          "J",
+          98
+        ]
+      ],
+      "elapsed_s": 2.4
+    },
+    {
+      "record": "06453",
+      "fs": 250,
+      "n_qrs": 34837,
+      "n_beats": 34837,
+      "n_normal": 34392,
+      "n_abnormal": 445,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "N",
+          34392
+        ],
+        [
+          "AFIB",
+          445
+        ]
+      ],
+      "elapsed_s": 1.4
+    },
+    {
+      "record": "06995",
+      "fs": 250,
+      "n_qrs": 55189,
+      "n_beats": 55188,
+      "n_normal": 27637,
+      "n_abnormal": 27551,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "N",
+          27637
+        ],
+        [
+          "AFIB",
+          27525
+        ],
+        [
+          "AFL",
+          26
+        ]
+      ],
+      "elapsed_s": 2.1
+    },
+    {
+      "record": "07162",
+      "fs": 250,
+      "n_qrs": 39298,
+      "n_beats": 39298,
+      "n_normal": 0,
+      "n_abnormal": 39298,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "AFIB",
+          39298
+        ]
+      ],
+      "elapsed_s": 2.1
+    },
+    {
+      "record": "07859",
+      "fs": 250,
+      "n_qrs": 60266,
+      "n_beats": 60266,
+      "n_normal": 0,
+      "n_abnormal": 60266,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "AFIB",
+          60266
+        ]
+      ],
+      "elapsed_s": 5.1
+    },
+    {
+      "record": "07879",
+      "fs": 250,
+      "n_qrs": 56594,
+      "n_beats": 56593,
+      "n_normal": 16551,
+      "n_abnormal": 40042,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "AFIB",
+          40035
+        ],
+        [
+          "N",
+          16551
+        ],
+        [
+          "J",
+          7
+        ]
+      ],
+      "elapsed_s": 4.3
+    },
+    {
+      "record": "07910",
+      "fs": 250,
+      "n_qrs": 36599,
+      "n_beats": 36599,
+      "n_normal": 28981,
+      "n_abnormal": 7618,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "N",
+          28981
+        ],
+        [
+          "AFIB",
+          6770
+        ],
+        [
+          "AFL",
+          848
+        ]
+      ],
+      "elapsed_s": 2.2
+    },
+    {
+      "record": "08215",
+      "fs": 250,
+      "n_qrs": 43356,
+      "n_beats": 43356,
+      "n_normal": 10149,
+      "n_abnormal": 33207,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "AFIB",
+          33130
+        ],
+        [
+          "N",
+          10149
+        ],
+        [
+          "AFL",
+          77
+        ]
+      ],
+      "elapsed_s": 2.4
+    },
+    {
+      "record": "08219",
+      "fs": 250,
+      "n_qrs": 59293,
+      "n_beats": 59293,
+      "n_normal": 45099,
+      "n_abnormal": 14194,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "N",
+          45099
+        ],
+        [
+          "AFIB",
+          14194
+        ]
+      ],
+      "elapsed_s": 2.6
+    },
+    {
+      "record": "08378",
+      "fs": 250,
+      "n_qrs": 45515,
+      "n_beats": 45515,
+      "n_normal": 30493,
+      "n_abnormal": 15022,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "N",
+          30493
+        ],
+        [
+          "AFIB",
+          11478
+        ],
+        [
+          "AFL",
+          3544
+        ]
+      ],
+      "elapsed_s": 2.1
+    },
+    {
+      "record": "08405",
+      "error": "could not broadcast input array from shape (1250537,) into shape (9205760,)"
+    },
+    {
+      "record": "08434",
+      "fs": 250,
+      "n_qrs": 39850,
+      "n_beats": 39849,
+      "n_normal": 37539,
+      "n_abnormal": 2310,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "N",
+          37539
+        ],
+        [
+          "AFIB",
+          2310
+        ]
+      ],
+      "elapsed_s": 1.8
+    },
+    {
+      "record": "08455",
+      "fs": 250,
+      "n_qrs": 59552,
+      "n_beats": 59552,
+      "n_normal": 15288,
+      "n_abnormal": 44264,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "AFIB",
+          44264
+        ],
+        [
+          "N",
+          15288
+        ]
+      ],
+      "elapsed_s": 2.4
+    }
+  ],
+  "output": "models/deploy_match/afdb_processed_deploy_causal.npz",
+  "elapsed_s": 97.8
+}

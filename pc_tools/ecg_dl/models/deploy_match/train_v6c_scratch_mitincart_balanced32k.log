@@ -1,0 +1,60 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788322265.704868    4684 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788322265.802550    4684 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788322267.572020    4684 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+W0000 00:00:1788322269.911340    4684 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+[V6] GPU: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+[V6] train loaded: x=(32000, 250, 1) n=32000 norm=16000 abn=16000
+[V6] val loaded: x=(4040, 250, 1) n=4040
+W0000 00:00:1788322270.996977    4684 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+I0000 00:00:1788322271.369679    4684 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 4726 MB memory:  -> device: 0, name: NVIDIA GeForce RTX 5070 Laptop GPU, pci bus id: 0000:01:00.0, compute capability: 12.0a
+[V6] built v3 A architecture from scratch, params=62,834
+[V6] start fine-tune: epochs=40 batch=128 lr=0.0003 cosine, CE, no aug
+Epoch 1/40
+I0000 00:00:1788322309.452811    4769 service.cc:153] XLA service 0x7bc020073a60 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1788322309.453659    4769 service.cc:161]   StreamExecutor [0]: NVIDIA GeForce RTX 5070 Laptop GPU, Compute Capability 12.0a (Driver: 13.2.0; Runtime: 12.9.0; Toolkit: 12.5.0; DNN: 9.24.0)
+I0000 00:00:1788322309.679880    4769 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1788322315.367171    4769 cuda_dnn.cc:461] Loaded cuDNN version 92400
+I0000 00:00:1788322315.640895    4769 dot_merger.cc:481] Merging Dots in computation: a_inference_one_step_on_data_19776__.138
+I0000 00:00:1788322320.626740    5002 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_118', 4 bytes spill stores, 4 bytes spill loads
+
+I0000 00:00:1788322339.646275    5001 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_2', 4 bytes spill stores, 8 bytes spill loads
+
+I0000 00:00:1788322340.104220    5006 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_5', 4 bytes spill stores, 8 bytes spill loads
+
+I0000 00:00:1788322341.892429    5001 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_add_multiply_reduce_fusion', 32 bytes spill stores, 32 bytes spill loads
+
+I0000 00:00:1788322352.459243    4769 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_add_multiply_reduce_fusion', 32 bytes spill stores, 32 bytes spill loads
+
+I0000 00:00:1788322352.535528    4769 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+I0000 00:00:1788322366.943034    5956 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_48', 4 bytes spill stores, 4 bytes spill loads
+
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+  * saved best val_auc=0.6327 (epoch 1)
+250/250 - 85s - 340ms/step - accuracy: 0.8052 - loss: 0.4129 - val_accuracy: 0.4950 - val_loss: 0.8330 - val_auc: 0.6327
+Epoch 2/40
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+  * saved best val_auc=0.7535 (epoch 2)
+250/250 - 4s - 17ms/step - accuracy: 0.9110 - loss: 0.2226 - val_accuracy: 0.7074 - val_loss: 0.6533 - val_auc: 0.7535
+Epoch 3/40
+250/250 - 4s - 17ms/step - accuracy: 0.9344 - loss: 0.1710 - val_accuracy: 0.6443 - val_loss: 0.9866 - val_auc: 0.6991
+Epoch 4/40
+250/250 - 5s - 18ms/step - accuracy: 0.9478 - loss: 0.1421 - val_accuracy: 0.6332 - val_loss: 1.0556 - val_auc: 0.6892
+Epoch 5/40
+250/250 - 4s - 16ms/step - accuracy: 0.9557 - loss: 0.1226 - val_accuracy: 0.6240 - val_loss: 1.1576 - val_auc: 0.6818
+Epoch 6/40
+250/250 - 3s - 14ms/step - accuracy: 0.9639 - loss: 0.1044 - val_accuracy: 0.6262 - val_loss: 1.2100 - val_auc: 0.6796
+Epoch 7/40
+250/250 - 4s - 15ms/step - accuracy: 0.9692 - loss: 0.0909 - val_accuracy: 0.6396 - val_loss: 1.2901 - val_auc: 0.6994
+Epoch 8/40
+250/250 - 4s - 15ms/step - accuracy: 0.9723 - loss: 0.0804 - val_accuracy: 0.6312 - val_loss: 1.4645 - val_auc: 0.6906
+Epoch 9/40
+250/250 - 3s - 14ms/step - accuracy: 0.9766 - loss: 0.0709 - val_accuracy: 0.6433 - val_loss: 1.3338 - val_auc: 0.7053
+Epoch 10/40
+250/250 - 4s - 15ms/step - accuracy: 0.9792 - loss: 0.0624 - val_accuracy: 0.6329 - val_loss: 1.5630 - val_auc: 0.6825
+Epoch 10: early stopping
+Restoring model weights from the end of the best epoch: 2.
+[V6] training done in 149s
+[V6] saved best_v6c_scratch_mitincart_balanced32k.h5 + train_v6c_scratch_mitincart_balanced32k.json

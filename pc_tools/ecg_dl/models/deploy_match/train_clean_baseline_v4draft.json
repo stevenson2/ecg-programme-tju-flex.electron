@@ -1,0 +1,184 @@
+{
+  "date": "2026-09-01 16:55:35",
+  "purpose": "TH §103 clean_baseline_v4: 记录级硬负例挖掘从零重训 (压制 §100 诊断的自信误报)",
+  "provenance": "from scratch; no checkpoint loaded; v3 A 仅用于挖掘打分",
+  "gpu": [
+    "PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')"
+  ],
+  "output_model": "models/best_resnet_large_clean_baseline_v4.h5",
+  "patient_split_seed": 42,
+  "base_identical_to_v3_a": true,
+  "data": {
+    "base_main": {
+      "mit_bih_abn": 1500,
+      "incart_abn": 400,
+      "ptb_abn": 600,
+      "mit_bih_norm": 1500,
+      "incart_norm": 400,
+      "ptb_norm": 400
+    },
+    "sampling_audit": {
+      "mit_bih": {
+        "assert_train_only": "passed",
+        "sampled_records_vs_test_intersection": 0,
+        "sampled_unique_records": 31
+      },
+      "incart": {
+        "assert_train_only": "passed",
+        "sampled_records_vs_test_intersection": 0,
+        "sampled_unique_records": 42
+      },
+      "ptb": {
+        "assert_train_only": "passed",
+        "sampled_records_vs_test_intersection": 0,
+        "sampled_unique_records": 273
+      }
+    },
+    "real_afe_train_unique": 271,
+    "real_afe_train_repeated": 542,
+    "real_afe_holdout": 40,
+    "synthetic_hard_negative": 600,
+    "hard_negative_mining": {
+      "teacher_model": "models/best_resnet_large_clean_baseline_v3.h5",
+      "confident_threshold": 0.95,
+      "fallback_threshold": 0.5,
+      "per_record_cap": 100,
+      "target_total": 1000,
+      "mined_total": 1000,
+      "rng_seed": 4242,
+      "per_domain_candidates": {
+        "mit_bih": {
+          "candidates_total": 335856,
+          "confident_fp_beats": 8414,
+          "fallback_fp_beats": 8686
+        },
+        "incart": {
+          "candidates_total": 79530,
+          "confident_fp_beats": 9587,
+          "fallback_fp_beats": 4815
+        },
+        "ptb": {
+          "candidates_total": 4759,
+          "confident_fp_beats": 20,
+          "fallback_fp_beats": 44
+        }
+      },
+      "per_domain": {
+        "mit_bih": {
+          "mined_beats": 431,
+          "mined_records": 27,
+          "assert_train_only": "passed",
+          "mined_records_vs_test_intersection": 0,
+          "top_records": [
+            102,
+            124,
+            217,
+            209,
+            210
+          ]
+        },
+        "incart": {
+          "mined_beats": 567,
+          "mined_records": 41,
+          "assert_train_only": "passed",
+          "mined_records_vs_test_intersection": 0,
+          "top_records": [
+            16,
+            6,
+            48,
+            41,
+            54
+          ]
+        },
+        "ptb": {
+          "mined_beats": 2,
+          "mined_records": 2,
+          "assert_train_only": "passed",
+          "mined_records_vs_test_intersection": 0,
+          "top_records": [
+            400387,
+            400426
+          ]
+        }
+      },
+      "per_tag_mined": {
+        "mit_bih": 431,
+        "incart": 567,
+        "ptb": 2
+      },
+      "note": "挖掘仅限训练患者; 测试记录 (含 §100 头部误报记录 100060 等) 未参与"
+    },
+    "train_total": 6942,
+    "train_abn": 2500,
+    "train_norm": 4442,
+    "val_total": 4040,
+    "val_abn": 2000,
+    "val_norm": 2040,
+    "real_holdout_indices": [
+      185,
+      103,
+      247,
+      49,
+      278,
+      63,
+      258,
+      128,
+      288,
+      91,
+      22,
+      218,
+      250,
+      179,
+      125,
+      109,
+      270,
+      3,
+      98,
+      31,
+      141,
+      169,
+      173,
+      200,
+      214,
+      90,
+      104,
+      45,
+      257,
+      260,
+      88,
+      203,
+      42,
+      94,
+      180,
+      248,
+      294,
+      92,
+      148,
+      210
+    ]
+  },
+  "config": {
+    "architecture": "build_ecg_resnet_lite_large",
+    "params": 62834,
+    "dropout": 0.4,
+    "optimizer": "adam",
+    "lr_schedule": "cosine decay from 0.0003",
+    "epochs_requested": 80,
+    "epochs_run": 23,
+    "batch_size": 32,
+    "early_stopping_patience": 20,
+    "val_monitor": "val_auc",
+    "class_weight": {
+      "0": 1.0,
+      "1": 1.0
+    },
+    "loss": "sparse_categorical_crossentropy"
+  },
+  "results": {
+    "best_val_auc": 0.7535411764705883,
+    "best_epoch": 3,
+    "real_holdout_mean_prob": 0.01907520554959774,
+    "real_holdout_frac_gt_0.5": 0.0,
+    "train_time_s": 244.7
+  }
+}

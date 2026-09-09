@@ -1,0 +1,86 @@
+{
+  "date": "2026-09-01 22:52:04",
+  "purpose": "P3c: 教师真实上限 — 真 10s 上下文窗 (非 tile 周期化) 重测, 消除域偏移混杂后再定蒸馏路线",
+  "teacher": {
+    "ckpt": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ECGFounder/checkpoint/1_lead_ECGFounder.pth",
+    "feature_dim": 1024,
+    "input": "10s@500Hz (1,5000)",
+    "preprocess": "filter_bandpass(500Hz) + per-segment z-score"
+  },
+  "beat_to_segment": {
+    "10s_arm": "R 峰为中心 ±5s 原始信号 (lead0, native fs) → resample_poly → 5000@500Hz; 边界拍排除 (不内移)",
+    "tile_arm": "同 P3: 250@250Hz → resample x2 → tile x10 → 5000",
+    "boundary_excluded": 55
+  },
+  "evaluation_set": {
+    "raw_only": true,
+    "reason": "MIT 数组 = raw+5 增强副本; 增强副本与 raw 共享同一 10s 上下文, 无增量信息 → 仅评 raw (MIT 块前 1/6 行, INCART 全行)",
+    "census_note": "census 与 P3/P3b 不同 (P3 含增强副本); 配对比较在 P3c 内部成立"
+  },
+  "mapping_evidence": "p3c_map_check.py PASS: MIT 201/231 + INCART I01/I02 逐拍重建 max|Δ|=0.0, 标签与增强块结构全部一致",
+  "student_model": "models/best_resnet_large_clean_baseline_v3.h5",
+  "selfcheck": {
+    "npz_mit_incart_auc": 0.8650518281944685,
+    "diag_v3_auc": 0.865055547768982
+  },
+  "group_defs": {
+    "FP": "label=0 & prob>0.95",
+    "TN": "label=0 & prob<=0.5",
+    "TP": "label=1 & prob>0.5",
+    "gray_norm": "label=0 & 0.5<prob<=0.95 (不抽样)",
+    "miss_abn": "label=1 & prob<=0.5"
+  },
+  "sampling": {
+    "per_group_cap": 4000,
+    "seed": 0
+  },
+  "n_beats": 13870,
+  "n_records": 27,
+  "values": {
+    "teacher_10s_linear_readout_auc_all": 0.7793595508515249,
+    "teacher_10s_linear_readout_auc_fp_vs_tp": 0.7888640332990057,
+    "teacher_tile_linear_readout_auc_all": 0.8893030074328547,
+    "teacher_tile_linear_readout_auc_fp_vs_tp": 0.8969851672712716,
+    "student_fc1_linear_readout_auc_all": 0.689556917013936,
+    "student_fc1_linear_readout_auc_fp_vs_tp": 0.7324895156809301,
+    "teacher_10s_embedding_auc_label_vs_ratio": 0.7662834189409877
+  },
+  "p3_reference_tiled": {
+    "embedding_auc_label_vs_ratio": 0.47286074218749996,
+    "linear_readout_auc_all": 0.7345043906250001,
+    "linear_readout_auc_fp_vs_tp": 0.7301781875
+  },
+  "groups_teacher_10s": {
+    "FP": {
+      "n": 3982,
+      "mean_dist_ratio": 0.4932304552336664,
+      "frac_nearest_abn": 0.3309894525364139,
+      "mean_prob": 0.9941071268603288
+    },
+    "TN": {
+      "n": 3979,
+      "mean_dist_ratio": 0.4865844971751951,
+      "frac_nearest_abn": 0.23448102538326213,
+      "mean_prob": 0.032920609354667486
+    },
+    "TP": {
+      "n": 3989,
+      "mean_dist_ratio": 0.5106240577582998,
+      "frac_nearest_abn": 0.6758586111807471,
+      "mean_prob": 0.9822274899685942
+    },
+    "gray_norm": {
+      "n": 0,
+      "mean_dist_ratio": null,
+      "frac_nearest_abn": null,
+      "mean_prob": null
+    },
+    "miss_abn": {
+      "n": 1920,
+      "mean_dist_ratio": 0.5060707863885909,
+      "frac_nearest_abn": 0.5390625,
+      "mean_prob": 0.06869524190124866
+    }
+  },
+  "elapsed_s": 361.4
+}

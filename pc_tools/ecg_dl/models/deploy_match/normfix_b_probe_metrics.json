@@ -1,0 +1,12 @@
+{
+  "date": "2026-09-01 21:51:32",
+  "chapter": "TH §105 Phase A-2",
+  "model": "models/best_resnet_large_clean_baseline_normfix_b_probe.h5",
+  "best_val_auc": 0.8222094362745099,
+  "real_holdout_mean_prob": 0.019924089312553406,
+  "real_holdout_frac_gt_0.5": 0.0,
+  "gate1_pass": true,
+  "gate2_pass": true,
+  "verdict": "PASS",
+  "decision": "both pass → Phase B; else stop and report"
+}

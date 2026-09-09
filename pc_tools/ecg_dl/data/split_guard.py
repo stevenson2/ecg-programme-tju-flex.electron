@@ -25,6 +25,10 @@ import json
 import os
 import sys
 from pathlib import Path
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+import ecg_refs as _REFS  # noqa: E402
+
 
 import numpy as np
 
@@ -39,7 +43,7 @@ ECG_DATA = Path(os.environ.get("ECG_PROCESSED_DIR", "/home/devcontainers/ecg_dat
 INCART_RID_OFFSET = 100000
 SAVED_SPLIT_FILE = PROCESSED_DIR / "patient_split.json"
 
-TAGS = ("mit_bih", "incart", "ptb")
+TAGS = ("mit_bih", "incart", "ptb", "svdb")
 
 
 class LeakError(RuntimeError):
@@ -121,7 +125,7 @@ def compute_ptb_split(seed=SPLIT_SEED):
     ptb_b, ptb_l, ptb_r = load_arrays("ptb")
     ptb_map = build_ptb_patient_map()
     if not ptb_map:
-        raise LeakError("PTB 患者元数据 (ECG-Database/RECORDS) 不可用, 拒绝继续")
+        raise LeakError("PTB 患者元数据 (统一资料库 ecg_database/RECORDS) 不可用, 拒绝继续")
     tr, va, te, stats = patient_level_split(np.asarray(ptb_r), ptb_map, seed=seed)
     tr, va, te = np.asarray(tr), np.asarray(va), np.asarray(te)
     assert int((tr & va).sum()) == int((tr & te).sum()) == int((va & te).sum()) == 0
@@ -129,6 +133,28 @@ def compute_ptb_split(seed=SPLIT_SEED):
     unknown = [int(rid) for rid in np.unique(ptb_r) if int(rid) not in ptb_map]
     if unknown:
         raise LeakError(f"PTB 存在无患者映射的 record_id: {unknown[:10]} ...")
+    return {"train": tr, "val": va, "test": te, "stats": stats}
+
+
+def compute_svdb_split(seed=SPLIT_SEED):
+    """SVDB 独立患者级划分。
+
+    SVDB = 78 条 Holter 记录 (rid 800-894), 每条记录一个受试者 →
+    patient = record。**刻意不并入** MIT+INCART 合并划分: 并入会改变
+    patient_level_split 的患者池, 重洗 mit_bih/incart 全部既有掩码,
+    破坏 clean-baseline 谱系 (v3 A / v4) 的可比性。
+    """
+    sv_b, sv_l, sv_r = load_arrays("svdb")
+    sv_r = np.asarray(sv_r)
+    if int(sv_r.min()) < 800 or int(sv_r.max()) >= 900:
+        raise LeakError(
+            f"SVDB record_id 超出独占区间 [800,900): "
+            f"{int(sv_r.min())}-{int(sv_r.max())}")
+    sv_map = {int(rid): "svdb_%d" % int(rid) for rid in np.unique(sv_r)}
+    tr, va, te, stats = patient_level_split(sv_r, sv_map, seed=seed)
+    tr, va, te = np.asarray(tr), np.asarray(va), np.asarray(te)
+    assert int((tr & va).sum()) == int((tr & te).sum()) == int((va & te).sum()) == 0
+    assert int((tr | va | te).sum()) == len(sv_r)
     return {"train": tr, "val": va, "test": te, "stats": stats}
 
 
@@ -154,6 +180,10 @@ class SplitGuard:
             self.val_mask = m["val_masks"][tag]
             self.test_mask = m["test_masks"][tag]
             self.stats = m["stats"]
+        elif tag == "svdb":
+            p = compute_svdb_split(seed)
+            self.train_mask, self.val_mask, self.test_mask = p["train"], p["val"], p["test"]
+            self.stats = p["stats"]
         else:
             p = compute_ptb_split(seed)
             self.train_mask, self.val_mask, self.test_mask = p["train"], p["val"], p["test"]
@@ -278,6 +308,12 @@ def main():
     ps = p["stats"]
     print(f"[GUARD] PTB: 患者 {ps['n_patients']} = train {ps['n_train']} / "
           f"val {ps['n_val']} / test {ps['n_test']}")
+    s = compute_svdb_split()
+    ss = s["stats"]
+    print(f"[GUARD] SVDB (独立划分): 患者 {ss['n_patients']} = train {ss['n_train']}"
+          f" / val {ss['n_val']} / test {ss['n_test']}")
+    print(f"[GUARD]   心拍: train {ss['beats_train']} / val {ss['beats_val']}"
+          f" / test {ss['beats_test']}")
 
     for tag in TAGS:
         g = get_guard(tag)

@@ -1,0 +1,70 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788317594.668468     366 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788317595.450355     366 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788317597.664649     366 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+[VFP] 418: peaks=4296 beats=4296 N=3564 A=732 X=0 (1s)
+[VFP] 419: peaks=3861 beats=3859 N=1917 A=649 X=1293 (1s)
+[VFP] 420: peaks=2961 beats=2960 N=1472 A=781 X=707 (1s)
+[VFP] 421: peaks=4430 beats=4429 N=2454 A=1139 X=836 (1s)
+[VFP] 422: peaks=3982 beats=3981 N=1991 A=1624 X=366 (1s)
+[VFP] 423: peaks=2875 beats=2874 N=1327 A=1220 X=327 (1s)
+[VFP] 424: peaks=3891 beats=3890 N=3142 A=654 X=94 (1s)
+[VFP] 425: peaks=2052 beats=2051 N=1191 A=489 X=371 (1s)
+[VFP] 426: peaks=3687 beats=3686 N=1052 A=2000 X=634 (1s)
+[VFP] 427: peaks=4249 beats=4247 N=803 A=2479 X=965 (1s)
+[VFP] progress 10/57
+[VFP] 428: peaks=3275 beats=3274 N=0 A=3256 X=18 (1s)
+[VFP] 429: peaks=3618 beats=3617 N=0 A=3470 X=147 (1s)
+[VFP] 430: peaks=4842 beats=4841 N=0 A=4767 X=74 (1s)
+[VFP] 602: peaks=3225 beats=3223 N=54 A=2779 X=390 (1s)
+[VFP] 605: peaks=1865 beats=1864 N=0 A=69 X=1795 (1s)
+[VFP] 607: peaks=1850 beats=1850 N=0 A=1849 X=1 (1s)
+[VFP] 609: peaks=2202 beats=2200 N=856 A=1344 X=0 (1s)
+[VFP] 610: peaks=2125 beats=2125 N=1326 A=776 X=23 (1s)
+[VFP] 611: peaks=4207 beats=4205 N=0 A=4205 X=0 (1s)
+[VFP] 612: peaks=2453 beats=2452 N=1487 A=965 X=0 (1s)
+[VFP] progress 20/57
+[VFP] 614: peaks=3472 beats=3470 N=1388 A=2082 X=0 (1s)
+[VFP] 615: peaks=1589 beats=1589 N=0 A=1589 X=0 (1s)
+[VFP] cu01: peaks=925 beats=923 N=202 A=721 X=0 (0s)
+[VFP] cu02: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu03: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu04: peaks=403 beats=401 N=321 A=62 X=18 (0s)
+[VFP] cu05: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu06: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu07: peaks=1159 beats=1157 N=374 A=783 X=0 (0s)
+[VFP] cu08: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] progress 30/57
+[VFP] cu09: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu10: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu11: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu12: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu13: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu14: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu15: peaks=518 beats=516 N=280 A=236 X=0 (0s)
+[VFP] cu16: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu17: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu18: peaks=755 beats=754 N=472 A=75 X=207 (0s)
+[VFP] progress 40/57
+[VFP] cu19: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu20: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu21: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu22: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu23: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu24: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu25: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu26: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu27: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu28: peaks=421 beats=418 N=388 A=30 X=0 (0s)
+[VFP] progress 50/57
+[VFP] cu29: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu30: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu31: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu32: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu33: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] cu34: peaks=423 beats=422 N=270 A=93 X=59 (0s)
+[VFP] cu35: peaks=0 beats=0 N=0 A=0 X=0 (0s)
+[VFP] saved vfdb_processed_deploy_causal.npz + vfdb_preprocess_audit.json
+[VFP] total beats=75574 N=26331 A=40918 X=8325

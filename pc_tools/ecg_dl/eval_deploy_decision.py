@@ -3,6 +3,10 @@
 """exp5 vs P2A: MIT测试集 + PTB独立测试的多阈值工作点"""
 import sys
 from pathlib import Path
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+import ecg_refs as _REFS  # noqa: E402
+
 import numpy as np
 import tensorflow as tf
 from sklearn.metrics import roc_auc_score
@@ -19,10 +23,7 @@ x_mit, y_mit = splits["test"]
 
 # PTB 独立测试集 (患者级留出)
 PTB_NPZ = Path(__file__).resolve().parent / "data" / "processed" / "ptb_processed.npz"
-RECORDS = next((Path(c) for c in [
-    r"C:\Users\cai\OneDrive\Desktop\Fe programme 25261\ecg-programme-tju-flex.electron-master\ECG-Database\RECORDS",
-    "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/ECG-Database/RECORDS",
-] if Path(c).exists()), None)
+RECORDS = _REFS.RECORDS_FILE if _REFS.RECORDS_FILE.exists() else None
 recs = [l.strip() for l in open(RECORDS) if l.strip()]
 d = np.load(PTB_NPZ)
 x_ptb, y_ptb, rids = d["beats"], d["labels"], d["record_ids"]

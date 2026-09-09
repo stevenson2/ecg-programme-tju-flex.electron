@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """4.4-4 冒烟测试: 验证 patient_split=True 训练路径正确工作。
 只验证数据划分逻辑, 不训练模型。运行 (WSL2):
-  cd /mnt/c/.../pc_tools/ecg_dl && python3 smoke_patient_split.py
+  cd <repo>/pc_tools/ecg_dl && python3 smoke_patient_split.py
 """
 import sys
 from pathlib import Path

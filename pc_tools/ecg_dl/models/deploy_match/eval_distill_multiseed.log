@@ -1,0 +1,55 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788283732.403798     375 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788283733.226164     375 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788283735.577862     375 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+W0000 00:00:1788283739.477897     375 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+[DPM] prereg: distill_pilot_prereg.json gates_primary_min=0.3 gates_event_recall_drop_max=0.02
+W0000 00:00:1788283739.729027     375 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+I0000 00:00:1788283739.894691     375 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 5199 MB memory:  -> device: 0, name: NVIDIA GeForce RTX 5070 Laptop GPU, pci bus id: 0000:01:00.0, compute capability: 12.0a
+[SWEEP] val mit_bih: 106236 beats, abn=14934, records=7
+[SWEEP] val incart: 53058 beats, abn=6451, records=20
+[SWEEP] val ptb: 14694 beats, abn=12291, records=112
+I0000 00:00:1788283743.369583     461 service.cc:153] XLA service 0x7d1c20044ee0 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1788283743.369989     461 service.cc:161]   StreamExecutor [0]: NVIDIA GeForce RTX 5070 Laptop GPU, Compute Capability 12.0a (Driver: 13.2.0; Runtime: 12.9.0; Toolkit: 12.5.0; DNN: 9.24.0)
+I0000 00:00:1788283743.414219     461 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1788283743.646018     461 cuda_dnn.cc:461] Loaded cuDNN version 92400
+I0000 00:00:1788283750.199778     461 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+[DPM] selfcheck mit_frac_gt_0.95_vs_p1: 0.2447372456244113 (tol=0.004196) PASS
+[DPM] selfcheck incart_frac_gt_0.95_vs_p1: 0.273542600896861 (tol=0.007210) PASS
+[DPM] selfcheck mit_auc_vs_p1: 0.7679819444562863 (tol=1e-3) PASS
+[DPM] selfcheck ptb_auc_vs_p1: 0.8262522916243232 (tol=1e-3) PASS
+[DPM] selfcheck frozen_event_recall_vs_sweep: 0.9807 (tol=1e-3) PASS
+[DPM] selfcheck frozen_alert_blocks_vs_sweep: 402 (tol=2) PASS
+[DPM] evaluating seed42 <- /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/deploy_match/../best_resnet_large_distill_pilot.h5
+[SWEEP] val mit_bih: 106236 beats, abn=14934, records=7
+[SWEEP] val incart: 53058 beats, abn=6451, records=20
+[SWEEP] val ptb: 14694 beats, abn=12291, records=112
+[DPM] seed42 gate primary_pooled_norm_frac_gt_0.95: passed=True
+[DPM] seed42 gate guardrail_A_mit_auc: passed=True
+[DPM] seed42 gate guardrail_B_frozen_event_recall: passed=False
+[DPM] seed42 gate guardrail_C_real_holdout: passed=True
+[DPM] seed42 verdict=PARTIAL
+[DPM] seed42 primary rel_red=0.9379 A_drop=0.0062 B_ev=0.4957 B_blocks=712 C_mean=0.0367
+[DPM] evaluating seed43 <- /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/deploy_match/best_resnet_large_distill_pilot_seed43.h5
+[SWEEP] val mit_bih: 106236 beats, abn=14934, records=7
+[SWEEP] val incart: 53058 beats, abn=6451, records=20
+[SWEEP] val ptb: 14694 beats, abn=12291, records=112
+[DPM] seed43 gate primary_pooled_norm_frac_gt_0.95: passed=True
+[DPM] seed43 gate guardrail_A_mit_auc: passed=True
+[DPM] seed43 gate guardrail_B_frozen_event_recall: passed=False
+[DPM] seed43 gate guardrail_C_real_holdout: passed=True
+[DPM] seed43 verdict=PARTIAL
+[DPM] seed43 primary rel_red=0.9807 A_drop=-0.0099 B_ev=0.3338 B_blocks=601 C_mean=0.0162
+[DPM] evaluating seed44 <- /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/deploy_match/best_resnet_large_distill_pilot_seed44.h5
+[SWEEP] val mit_bih: 106236 beats, abn=14934, records=7
+[SWEEP] val incart: 53058 beats, abn=6451, records=20
+[SWEEP] val ptb: 14694 beats, abn=12291, records=112
+[DPM] seed44 gate primary_pooled_norm_frac_gt_0.95: passed=True
+[DPM] seed44 gate guardrail_A_mit_auc: passed=True
+[DPM] seed44 gate guardrail_B_frozen_event_recall: passed=False
+[DPM] seed44 gate guardrail_C_real_holdout: passed=False
+[DPM] seed44 verdict=PARTIAL
+[DPM] seed44 primary rel_red=0.9359 A_drop=-0.0183 B_ev=0.3974 B_blocks=711 C_mean=0.1053
+[DPM] saved /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/deploy_match/distill_pilot_multiseed_eval.json + per-model files: ['distill_pilot_eval_seed42.json', 'distill_pilot_eval_seed43.json', 'distill_pilot_eval_seed44.json']

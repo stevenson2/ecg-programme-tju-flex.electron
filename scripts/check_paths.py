@@ -23,6 +23,10 @@ Usage (from either repo; both carry a copy of this file):
     python3 scripts/check_paths.py --repo meeti    # scan one repo
     python3 scripts/check_paths.py --json          # machine-readable output
 
+Scan each repo from its own side (WSL for meeti, Windows for electron):
+scanning the other repo crosses a filesystem mount (/mnt/c or UNC) and is
+very slow.
+
 Exit code 0 = no unwhitelisted violation, 1 = violations found (CI style).
 """
 import argparse
@@ -37,7 +41,8 @@ from project_paths import all_paths  # noqa: E402
 
 RULES = [
     ('legacy-refs', re.compile(r'PTB-XL_ECG|ECG-Database|st-petersburg-incart|ECG-figs')),
-    ('legacy-data', re.compile(r'processed_small|processed_smoke|selected8k|zenodo10k')),
+    ('legacy-data', re.compile(r'(?<!data/)processed_small|(?<!data/)processed_smoke'
+                               r'|(?<!data/)selected8k|(?<!data/)zenodo10k')),
     ('mnt-c', re.compile(r'/mnt/c/', re.IGNORECASE)),
     ('win-users', re.compile(r'C:\\+Users|C:/Users', re.IGNORECASE)),
     ('meeti-root', re.compile(r'/home/devcontainers/meeti')),
@@ -51,7 +56,7 @@ SKIP_DIR_NAMES = {
     'build', 'build_n16r8', 'build_supermini', 'dist', '.dart_tool', '.idea',
     # bulk data trees: no maintainable source inside, huge enumeration cost
     'processed_small', 'processed_smoke', 'selected8k', 'zenodo10k',
-    'PTB-XL_ECG', 'ECG-Database', 'ECG-figs',
+    'PTB-XL_ECG', 'ECG-Database', 'ECG-figs', 'papers', 'new_papers',
     'st-petersburg-incart-12-lead-arrhythmia-database-1.0.0',
 }
 

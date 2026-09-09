@@ -1,0 +1,2296 @@
+{
+  "date": "2026-09-02 10:47:07",
+  "purpose": "VFDB/CUDB raw feasibility audit stage 1: metadata + annotation vocabulary only",
+  "source_dir": "/home/devcontainers/vfdb",
+  "zero_test_contact": true,
+  "training_performed": false,
+  "summary": {
+    "n_dat_files": 57,
+    "n_vfdb": 22,
+    "n_cudb": 35,
+    "fs_values": {
+      "250": 57
+    },
+    "sig_names": {
+      "ECG": 57
+    },
+    "units": {
+      "mV": 57
+    },
+    "total_duration_s": 64012.479999999996,
+    "annotation_present": 57,
+    "annotation_missing": 0,
+    "aoi_notes": {
+      "(N": 235,
+      "(VFL": 98,
+      "(NOISE": 73,
+      "(VT": 98,
+      "(VFIB": 4,
+      "(AFIB": 9,
+      "(NOD": 6,
+      "(ASYS": 13,
+      "(NSR": 2,
+      "(B": 12,
+      "(SVTA": 6,
+      "(VF": 11,
+      "(BI": 22,
+      "(HGEA": 19,
+      "(SBR": 2,
+      "(VER": 3,
+      "(PM": 5,
+      "(AF": 4
+    },
+    "symbol_counts": {
+      "+": 612,
+      "N": 19534,
+      "[": 47,
+      "]": 39,
+      "~": 149,
+      "|": 3
+    },
+    "total_duration_h": 17.78,
+    "total_records_ok": 57,
+    "RECORDS": {
+      "n_lines": 22,
+      "first": [
+        "418",
+        "419",
+        "420",
+        "421",
+        "422",
+        "423",
+        "424",
+        "425",
+        "426",
+        "427"
+      ],
+      "last": [
+        "430",
+        "602",
+        "605",
+        "607",
+        "609",
+        "610",
+        "611",
+        "612",
+        "614",
+        "615"
+      ]
+    },
+    "CUDB_RECORDS": {
+      "n_lines": 35,
+      "first": [
+        "cu01",
+        "cu02",
+        "cu03",
+        "cu04",
+        "cu05",
+        "cu06",
+        "cu07",
+        "cu08",
+        "cu09",
+        "cu10"
+      ],
+      "last": [
+        "cu26",
+        "cu27",
+        "cu28",
+        "cu29",
+        "cu30",
+        "cu31",
+        "cu32",
+        "cu33",
+        "cu34",
+        "cu35"
+      ]
+    },
+    "record_ids": {
+      "vfdb": [
+        "418",
+        "419",
+        "420",
+        "421",
+        "422",
+        "423",
+        "424",
+        "425",
+        "426",
+        "427",
+        "428",
+        "429",
+        "430",
+        "602",
+        "605",
+        "607",
+        "609",
+        "610",
+        "611",
+        "612",
+        "614",
+        "615"
+      ],
+      "cudb": [
+        "cu01",
+        "cu02",
+        "cu03",
+        "cu04",
+        "cu05",
+        "cu06",
+        "cu07",
+        "cu08",
+        "cu09",
+        "cu10",
+        "cu11",
+        "cu12",
+        "cu13",
+        "cu14",
+        "cu15",
+        "cu16",
+        "cu17",
+        "cu18",
+        "cu19",
+        "cu20",
+        "cu21",
+        "cu22",
+        "cu23",
+        "cu24",
+        "cu25",
+        "cu26",
+        "cu27",
+        "cu28",
+        "cu29",
+        "cu30",
+        "cu31",
+        "cu32",
+        "cu33",
+        "cu34",
+        "cu35"
+      ]
+    },
+    "id_family_note": "VFDB IDs (418-430, 602-615) and CUDB IDs (cu01-cu35) are PhysioNet records unrelated by record-number family to MIT-BIH (100-124), INCART (numerous integer records), or PTB (patientNNN). This is not independent proof of zero patient overlap; patient-level overlap must be addressed by dataset provenance (separate PhysioNet collections)."
+  },
+  "records": [
+    {
+      "record": "418",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 121,
+        "symbol_counts": {
+          "+": 121
+        },
+        "note_counts": {
+          "(N": 61,
+          "(VFL": 60
+        },
+        "first_notes": [
+          "(N",
+          "(VFL",
+          "(N",
+          "(VFL",
+          "(N",
+          "(VFL",
+          "(N",
+          "(VFL",
+          "(N",
+          "(VFL"
+        ]
+      }
+    },
+    {
+      "record": "419",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 69,
+        "symbol_counts": {
+          "+": 69
+        },
+        "note_counts": {
+          "(VFL": 33,
+          "(N": 30,
+          "(NOISE": 6
+        },
+        "first_notes": [
+          "(N",
+          "(VFL",
+          "(N",
+          "(VFL",
+          "(N",
+          "(VFL",
+          "(N",
+          "(VFL",
+          "(N",
+          "(VFL"
+        ]
+      }
+    },
+    {
+      "record": "420",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 9,
+        "symbol_counts": {
+          "+": 9
+        },
+        "note_counts": {
+          "(NOISE": 4,
+          "(VT": 3,
+          "(N": 2
+        },
+        "first_notes": [
+          "(N",
+          "(NOISE",
+          "(N",
+          "(VT",
+          "(NOISE",
+          "(VT",
+          "(NOISE",
+          "(VT",
+          "(NOISE"
+        ]
+      }
+    },
+    {
+      "record": "421",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 134,
+        "symbol_counts": {
+          "+": 134
+        },
+        "note_counts": {
+          "(N": 67,
+          "(VT": 50,
+          "(NOISE": 17
+        },
+        "first_notes": [
+          "(N",
+          "(NOISE",
+          "(N",
+          "(NOISE",
+          "(N",
+          "(NOISE",
+          "(N",
+          "(NOISE",
+          "(N",
+          "(NOISE"
+        ]
+      }
+    },
+    {
+      "record": "422",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 29,
+        "symbol_counts": {
+          "+": 29
+        },
+        "note_counts": {
+          "(NOISE": 13,
+          "(N": 11,
+          "(VFIB": 3,
+          "(VT": 2
+        },
+        "first_notes": [
+          "(N",
+          "(NOISE",
+          "(N",
+          "(NOISE",
+          "(N",
+          "(NOISE",
+          "(N",
+          "(NOISE",
+          "(N",
+          "(NOISE"
+        ]
+      }
+    },
+    {
+      "record": "423",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 12,
+        "symbol_counts": {
+          "+": 12
+        },
+        "note_counts": {
+          "(N": 4,
+          "(NOISE": 3,
+          "(AFIB": 2,
+          "(NOD": 1,
+          "(ASYS": 1,
+          "(VT": 1
+        },
+        "first_notes": [
+          "(N",
+          "(NOISE",
+          "(N",
+          "(VT",
+          "(NOISE",
+          "(ASYS",
+          "(NOD",
+          "(N",
+          "(AFIB",
+          "(N"
+        ]
+      }
+    },
+    {
+      "record": "424",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 14,
+        "symbol_counts": {
+          "+": 14
+        },
+        "note_counts": {
+          "(NOISE": 4,
+          "(ASYS": 3,
+          "(NOD": 2,
+          "(NSR": 2,
+          "(N": 1,
+          "(VFL": 1,
+          "(VFIB": 1
+        },
+        "first_notes": [
+          "(N",
+          "(VFIB",
+          "(NOISE",
+          "(ASYS",
+          "(NOD",
+          "(NSR",
+          "(VFL",
+          "(NOISE",
+          "(ASYS",
+          "(NOISE"
+        ]
+      }
+    },
+    {
+      "record": "425",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 20,
+        "symbol_counts": {
+          "+": 20
+        },
+        "note_counts": {
+          "(N": 9,
+          "(NOISE": 8,
+          "(B": 2,
+          "(VT": 1
+        },
+        "first_notes": [
+          "(N",
+          "(NOISE",
+          "(N",
+          "(NOISE",
+          "(N",
+          "(NOISE",
+          "(N",
+          "(NOISE",
+          "(N",
+          "(NOISE"
+        ]
+      }
+    },
+    {
+      "record": "426",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 17,
+        "symbol_counts": {
+          "+": 17
+        },
+        "note_counts": {
+          "(NOISE": 4,
+          "(VT": 4,
+          "(N": 3,
+          "(SVTA": 3,
+          "(VF": 3
+        },
+        "first_notes": [
+          "(N",
+          "(VF",
+          "(NOISE",
+          "(VF",
+          "(NOISE",
+          "(N",
+          "(VT",
+          "(NOISE",
+          "(VT",
+          "(SVTA"
+        ]
+      }
+    },
+    {
+      "record": "427",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 3,
+        "symbol_counts": {
+          "+": 3
+        },
+        "note_counts": {
+          "(ASYS": 1,
+          "(N": 1,
+          "(VT": 1
+        },
+        "first_notes": [
+          "(N",
+          "(VT",
+          "(ASYS"
+        ]
+      }
+    },
+    {
+      "record": "428",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 9,
+        "symbol_counts": {
+          "+": 9
+        },
+        "note_counts": {
+          "(BI": 5,
+          "(VT": 3,
+          "(NOISE": 1
+        },
+        "first_notes": [
+          "(BI",
+          "(NOISE",
+          "(BI",
+          "(VT",
+          "(BI",
+          "(VT",
+          "(BI",
+          "(VT",
+          "(BI"
+        ]
+      }
+    },
+    {
+      "record": "429",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 23,
+        "symbol_counts": {
+          "+": 23
+        },
+        "note_counts": {
+          "(BI": 12,
+          "(NOISE": 6,
+          "(VT": 3,
+          "(VFL": 2
+        },
+        "first_notes": [
+          "(BI",
+          "(VT",
+          "(BI",
+          "(NOISE",
+          "(BI",
+          "(NOISE",
+          "(BI",
+          "(NOISE",
+          "(BI",
+          "(NOISE"
+        ]
+      }
+    },
+    {
+      "record": "430",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 34,
+        "symbol_counts": {
+          "+": 34
+        },
+        "note_counts": {
+          "(ASYS": 6,
+          "(VF": 6,
+          "(VT": 6,
+          "(BI": 5,
+          "(HGEA": 4,
+          "(SBR": 2,
+          "(VER": 2,
+          "(NOISE": 2,
+          "(VFL": 1
+        },
+        "first_notes": [
+          "(BI",
+          "(VT",
+          "(BI",
+          "(NOISE",
+          "(BI",
+          "(VT",
+          "(BI",
+          "(BI",
+          "(VFL",
+          "(NOISE"
+        ]
+      }
+    },
+    {
+      "record": "602",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 12,
+        "symbol_counts": {
+          "+": 12
+        },
+        "note_counts": {
+          "(PM": 5,
+          "(VT": 4,
+          "(N": 1,
+          "(ASYS": 1,
+          "(NOISE": 1
+        },
+        "first_notes": [
+          "(PM",
+          "(VT",
+          "(PM",
+          "(VT",
+          "(PM",
+          "(VT",
+          "(PM",
+          "(VT",
+          "(ASYS",
+          "(N"
+        ]
+      }
+    },
+    {
+      "record": "605",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 3,
+        "symbol_counts": {
+          "+": 3
+        },
+        "note_counts": {
+          "(NOISE": 2,
+          "(VT": 1
+        },
+        "first_notes": [
+          "(NOISE",
+          "(VT",
+          "(NOISE"
+        ]
+      }
+    },
+    {
+      "record": "607",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 10,
+        "symbol_counts": {
+          "+": 10
+        },
+        "note_counts": {
+          "(VT": 4,
+          "(NOD": 3,
+          "(SVTA": 2,
+          "(ASYS": 1
+        },
+        "first_notes": [
+          "(NOD",
+          "(VT",
+          "(NOD",
+          "(VT",
+          "(ASYS",
+          "(NOD",
+          "(VT",
+          "(SVTA",
+          "(VT",
+          "(SVTA"
+        ]
+      }
+    },
+    {
+      "record": "609",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 12,
+        "symbol_counts": {
+          "+": 12
+        },
+        "note_counts": {
+          "(N": 4,
+          "(HGEA": 4,
+          "(VT": 1,
+          "(VER": 1,
+          "(VFL": 1,
+          "(AFIB": 1
+        },
+        "first_notes": [
+          "(AFIB",
+          "(VFL",
+          "(VER",
+          "(N",
+          "(VT",
+          "(HGEA",
+          "(N",
+          "(HGEA",
+          "(N",
+          "(HGEA"
+        ]
+      }
+    },
+    {
+      "record": "610",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 26,
+        "symbol_counts": {
+          "+": 26
+        },
+        "note_counts": {
+          "(N": 12,
+          "(HGEA": 11,
+          "(NOISE": 2,
+          "(VT": 1
+        },
+        "first_notes": [
+          "(N",
+          "(HGEA",
+          "(N",
+          "(HGEA",
+          "(N",
+          "(HGEA",
+          "(N",
+          "(HGEA",
+          "(N",
+          "(HGEA"
+        ]
+      }
+    },
+    {
+      "record": "611",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 2,
+        "symbol_counts": {
+          "+": 2
+        },
+        "note_counts": {
+          "(SVTA": 1,
+          "(VT": 1
+        },
+        "first_notes": [
+          "(SVTA",
+          "(VT"
+        ]
+      }
+    },
+    {
+      "record": "612",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 2,
+        "symbol_counts": {
+          "+": 2
+        },
+        "note_counts": {
+          "(N": 1,
+          "(VT": 1
+        },
+        "first_notes": [
+          "(N",
+          "(VT"
+        ]
+      }
+    },
+    {
+      "record": "614",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 20,
+        "symbol_counts": {
+          "+": 20
+        },
+        "note_counts": {
+          "(B": 10,
+          "(N": 9,
+          "(VT": 1
+        },
+        "first_notes": [
+          "(B",
+          "(N",
+          "(B",
+          "(N",
+          "(B",
+          "(N",
+          "(B",
+          "(N",
+          "(B",
+          "(N"
+        ]
+      }
+    },
+    {
+      "record": "615",
+      "type": "vfdb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 525000,
+      "duration_s": 2100.0,
+      "duration_min": 35.0,
+      "annotation": {
+        "n_annotations": 11,
+        "symbol_counts": {
+          "+": 11
+        },
+        "note_counts": {
+          "(AFIB": 6,
+          "(VT": 5
+        },
+        "first_notes": [
+          "(AFIB",
+          "(VT",
+          "(AFIB",
+          "(VT",
+          "(AFIB",
+          "(VT",
+          "(AFIB",
+          "(VT",
+          "(AFIB",
+          "(VT"
+        ]
+      }
+    },
+    {
+      "record": "cu01",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 206,
+        "symbol_counts": {
+          "N": 203,
+          "[": 1,
+          "]": 1,
+          "+": 1
+        },
+        "note_counts": {
+          "(VF": 1
+        },
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu02",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 970,
+        "symbol_counts": {
+          "N": 949,
+          "~": 12,
+          "+": 9
+        },
+        "note_counts": {
+          "(N": 14,
+          "(VT": 5
+        },
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu03",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 941,
+        "symbol_counts": {
+          "N": 930,
+          "~": 8,
+          "[": 1,
+          "]": 1,
+          "+": 1
+        },
+        "note_counts": {
+          "(VF": 1
+        },
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu04",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 248,
+        "symbol_counts": {
+          "N": 232,
+          "~": 8,
+          "[": 4,
+          "]": 4
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu05",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 697,
+        "symbol_counts": {
+          "N": 693,
+          "~": 2,
+          "[": 1,
+          "]": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu06",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 453,
+        "symbol_counts": {
+          "N": 447,
+          "[": 2,
+          "]": 2,
+          "|": 2
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu07",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 377,
+        "symbol_counts": {
+          "N": 375,
+          "[": 1,
+          "]": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu08",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 1209,
+        "symbol_counts": {
+          "N": 1164,
+          "~": 43,
+          "[": 1,
+          "]": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu09",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 925,
+        "symbol_counts": {
+          "N": 917,
+          "+": 6,
+          "[": 1,
+          "]": 1
+        },
+        "note_counts": {
+          "(N": 3,
+          "(AF": 3
+        },
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu10",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 557,
+        "symbol_counts": {
+          "N": 555,
+          "[": 1,
+          "]": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu11",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 508,
+        "symbol_counts": {
+          "N": 506,
+          "[": 1,
+          "]": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu12",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 410,
+        "symbol_counts": {
+          "N": 408,
+          "[": 1,
+          "]": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu13",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 870,
+        "symbol_counts": {
+          "N": 864,
+          "~": 4,
+          "[": 1,
+          "]": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu14",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 534,
+        "symbol_counts": {
+          "N": 532,
+          "~": 2
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu15",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 284,
+        "symbol_counts": {
+          "N": 283,
+          "[": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu16",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 836,
+        "symbol_counts": {
+          "N": 831,
+          "[": 2,
+          "]": 2,
+          "+": 1
+        },
+        "note_counts": {
+          "(N": 1
+        },
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu17",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 533,
+        "symbol_counts": {
+          "N": 526,
+          "~": 4,
+          "[": 1,
+          "]": 1,
+          "|": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu18",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 688,
+        "symbol_counts": {
+          "N": 683,
+          "~": 2,
+          "[": 1,
+          "]": 1,
+          "+": 1
+        },
+        "note_counts": {
+          "(AF": 1
+        },
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu19",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 679,
+        "symbol_counts": {
+          "N": 671,
+          "~": 5,
+          "[": 2,
+          "]": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu20",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 208,
+        "symbol_counts": {
+          "N": 207,
+          "[": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu21",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 647,
+        "symbol_counts": {
+          "N": 624,
+          "~": 12,
+          "[": 5,
+          "]": 5,
+          "+": 1
+        },
+        "note_counts": {
+          "(N": 1
+        },
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu22",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 440,
+        "symbol_counts": {
+          "N": 436,
+          "~": 2,
+          "[": 1,
+          "]": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu23",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 443,
+        "symbol_counts": {
+          "N": 441,
+          "[": 1,
+          "]": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu24",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 511,
+        "symbol_counts": {
+          "N": 507,
+          "~": 2,
+          "[": 1,
+          "]": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu25",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 559,
+        "symbol_counts": {
+          "N": 555,
+          "~": 2,
+          "[": 1,
+          "]": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu26",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 773,
+        "symbol_counts": {
+          "N": 759,
+          "~": 10,
+          "[": 2,
+          "]": 2
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu27",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 1065,
+        "symbol_counts": {
+          "N": 1049,
+          "~": 14,
+          "[": 1,
+          "]": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu28",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 385,
+        "symbol_counts": {
+          "N": 384,
+          "[": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu29",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 543,
+        "symbol_counts": {
+          "N": 540,
+          "~": 2,
+          "[": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu30",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 118,
+        "symbol_counts": {
+          "N": 107,
+          "~": 6,
+          "[": 3,
+          "]": 2
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu31",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 262,
+        "symbol_counts": {
+          "N": 261,
+          "[": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu32",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 780,
+        "symbol_counts": {
+          "N": 776,
+          "~": 2,
+          "[": 1,
+          "]": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu33",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 549,
+        "symbol_counts": {
+          "N": 546,
+          "[": 1,
+          "]": 1,
+          "~": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu34",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 255,
+        "symbol_counts": {
+          "N": 249,
+          "[": 2,
+          "]": 2,
+          "~": 2
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "record": "cu35",
+      "type": "cudb",
+      "fs": 250,
+      "n_sig": 1,
+      "sig_name": [
+        "ECG"
+      ],
+      "units": [
+        "mV"
+      ],
+      "n_samples": 127232,
+      "duration_s": 508.928,
+      "duration_min": 8.48,
+      "annotation": {
+        "n_annotations": 329,
+        "symbol_counts": {
+          "N": 324,
+          "~": 4,
+          "[": 1
+        },
+        "note_counts": {},
+        "first_notes": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    }
+  ],
+  "elapsed_s": 0.4
+}

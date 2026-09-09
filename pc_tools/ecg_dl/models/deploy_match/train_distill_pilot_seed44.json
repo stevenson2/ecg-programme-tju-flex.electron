@@ -1,0 +1,63 @@
+{
+  "date": "2026-09-02 01:25:47",
+  "purpose": "TH106+ Stage 2 multi-seed/variant training (new script, no frozen edit)",
+  "seed": 44,
+  "provenance": "from scratch; no checkpoint loaded; Stage1 package unchanged",
+  "gpu": [
+    "PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')"
+  ],
+  "output_model": "models/deploy_match/best_resnet_large_distill_pilot_seed44.h5",
+  "teacher_targets": {
+    "source_npz": "models/deploy_match/distill_pilot_teacher_targets.npz",
+    "source_json": "models/deploy_match/distill_pilot_teacher_targets.json",
+    "loro_auc_public": 0.882208,
+    "real_synth_teacher_target_swap": true,
+    "real_synth_mean_p_before_swap": 0.8287003255610709
+  },
+  "kd": {
+    "alpha": 0.5,
+    "temperature": 1.0,
+    "tail_mode": "none",
+    "transform": "none",
+    "packing": "y_kd = concat([onehot(2), [log(clip(1-p,1e-7)), log(clip(p,1e-7))]], axis=1)",
+    "eps": 1e-07,
+    "class_weight": null
+  },
+  "data": {
+    "train_total": 5942,
+    "train_abn": 2500,
+    "train_norm": 3442,
+    "val_total": 4040,
+    "val_abn": 2000,
+    "val_norm": 2040,
+    "real_holdout": 40,
+    "p_train_mean_raw": 0.42190057039260864,
+    "p_train_mean_transformed": 0.42190057039260864,
+    "p_val_mean_raw": 0.5069763660430908,
+    "p_val_mean_transformed": 0.5069763660430908
+  },
+  "config": {
+    "architecture": "build_ecg_resnet_lite_large (dropout 0.4, v3 A same)",
+    "params": 62834,
+    "optimizer": "adam",
+    "lr_schedule": "cosine decay from 0.0003",
+    "epochs_requested": 80,
+    "epochs_run": 23,
+    "batch_size": 32,
+    "early_stopping_patience": 20,
+    "val_monitor": "val_auc (ValAucCB predict path, same as v3)",
+    "loss": "kd_loss(alpha=0.5, temperature=1.0)"
+  },
+  "results": {
+    "best_val_auc": 0.7694949754901961,
+    "real_holdout_mean_prob": 0.10527314990758896,
+    "real_holdout_frac_gt_0.5": 0.075,
+    "train_time_s": 758.4
+  },
+  "known_limitations": [
+    "val double-use: early stopping + evaluation share val; all numbers are relative indicators",
+    "teacher domain offset: tile view 0.8893 vs true deploy 10s 0.7794",
+    "pseudo-target contains noise (LORO AUC 0.88, not oracle)",
+    "multi-seed only changes Stage-2 init; Stage-1 data/teacher package is fixed"
+  ]
+}

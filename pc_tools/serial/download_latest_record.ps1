@@ -6,9 +6,11 @@ param([int]$Id = 0)
 
 $ErrorActionPreference = 'Stop'
 $base = 'http://192.168.4.1'
+$reports = Join-Path $PSScriptRoot '..\ecg_dl\reports'
+if (-not (Test-Path $reports)) { New-Item -ItemType Directory -Path $reports | Out-Null }
 
 $list = Invoke-RestMethod "$base/api/records" -TimeoutSec 10
-$list | ConvertTo-Json -Depth 5 | Out-File -FilePath 'api_records.json' -Encoding utf8
+$list | ConvertTo-Json -Depth 5 | Out-File -FilePath (Join-Path $reports 'api_records.json') -Encoding utf8
 
 $ids = @($list.records | ForEach-Object { [int]$_.id })
 if ($ids.Count -eq 0) { Write-Output 'no records'; exit 1 }
@@ -20,8 +22,8 @@ if ($Id -eq 0) {
 }
 
 $meta = Invoke-RestMethod "$base/api/records/$Id/meta" -TimeoutSec 10
-$meta | ConvertTo-Json -Depth 5 | Out-File -FilePath 'api_record_meta.json' -Encoding utf8
+$meta | ConvertTo-Json -Depth 5 | Out-File -FilePath (Join-Path $reports 'api_record_meta.json') -Encoding utf8
 Invoke-WebRequest "$base/api/records/$Id/data" -OutFile 'rec_latest.ecgr' -TimeoutSec 120
 
 Write-Output "meta: $($meta | ConvertTo-Json -Compress)"
-Write-Output "saved: api_records.json, api_record_meta.json, rec_latest.ecgr"
+Write-Output "saved: $reports\api_records.json, $reports\api_record_meta.json, rec_latest.ecgr"

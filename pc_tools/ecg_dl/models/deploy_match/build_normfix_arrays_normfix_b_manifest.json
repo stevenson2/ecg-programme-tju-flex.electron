@@ -1,0 +1,45 @@
+{
+  "date": "2026-09-01 21:38:22",
+  "purpose": "§105 Phase A-1: MIT+INCART normfix 探针数组 (仅窗口归一化被替换)",
+  "spec": {
+    "id": "normfix_spec_v1_b",
+    "version": 1,
+    "option": "B",
+    "constants": {
+      "scale": 0.27540087628966436,
+      "scale_source": "normfix_rms_measure.json aggregate.rms_full_median (36 条训练侧记录全记录 RMS 中位数)",
+      "scale_rationale": "全局中位数 RMS; 把典型记录的尺度归一到约单位幅度, 同时完整保留拍内相对幅度与记录间增益差异",
+      "firmware_float32": "0.27540088f (float32 最近舍入, 相对误差 ~1.4e-8, 远小于 1e-6 验证容差)",
+      "fixed_point_note": "纯常数乘法 y = x * (1/SCALE), 可预计算倒数定点 Q16/Q32, 无状态, 定点最友好"
+    }
+  },
+  "chain": "修正后因果链 (D3 + 因果 HP 0.5Hz@250Hz), 与 build_deploy_npz --causal 同",
+  "reference_arrays": {
+    "mit_bih": "mit_bih_processed_deploy_causal",
+    "incart": "incart_processed_deploy_causal"
+  },
+  "verification": [
+    "链忠实度: 旧公式 (固件窗口 z-score) 在新建链流上重算拍, 与旧 _deploy_causal 数组逐位相等",
+    "normfix 拍数 == z-score 拍数 (逐记录)",
+    "record_ids / labels 序列与旧数组逐位相等; 总拍数相等"
+  ],
+  "outputs": {
+    "mit_bih": "mit_bih_processed_deploy_causal_normfix_b",
+    "incart": "incart_processed_deploy_causal_normfix_b"
+  },
+  "totals": {
+    "mit_bih": {
+      "records": 48,
+      "total_beats": 658962,
+      "normal": 543786,
+      "abnormal": 115176
+    },
+    "incart": {
+      "records": 75,
+      "total_beats": 175779,
+      "normal": 153596,
+      "abnormal": 22183
+    }
+  },
+  "wall_time_seconds": 68.4
+}

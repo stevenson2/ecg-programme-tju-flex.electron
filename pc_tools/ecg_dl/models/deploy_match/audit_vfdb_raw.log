@@ -1,0 +1,3 @@
+[VFA] wrote /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/deploy_match/vfdb_raw_audit.json
+[VFA] n_dat=57 vfdb=22 cudb=35 total_h=17.78 fs={'250': 57} sig={'ECG': 57} units={'mV': 57}
+[VFA] top annotation notes: [('(N', 235), ('(VFL', 98), ('(VT', 98), ('(NOISE', 73), ('(BI', 22), ('(HGEA', 19), ('(ASYS', 13), ('(B', 12), ('(VF', 11), ('(AFIB', 9), ('(NOD', 6), ('(SVTA', 6), ('(PM', 5), ('(VFIB', 4), ('(AF', 4)]

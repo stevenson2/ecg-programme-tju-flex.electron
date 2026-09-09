@@ -1,0 +1,20 @@
+[V6D] normal source 0: quota=8000 available=17131 -> 8000
+[V6D] normal source 1: quota=8000 available=14422 -> 8000
+[V6D] normal source 2: quota=500 available=65 -> 65
+[V6D] normal source 3: quota=10000 available=61657 -> 10000
+[V6D] normal source 4: quota=10000 available=13680 -> 10000
+[V6D] normal source 5: quota=13935 available=250214 -> 13935
+[V6D] normal selected total=50000
+[V6D] abnormal source 0: quota=10000 available=81936 -> 10000
+[V6D] abnormal source 1: quota=8000 available=13147 -> 8000
+[V6D] abnormal source 2: quota=10000 available=36571 -> 10000
+[V6D] abnormal source 3: quota=8000 available=15673 -> 8000
+[V6D] abnormal source 4: quota=8000 available=25735 -> 8000
+[V6D] abnormal source 5: quota=6000 available=318466 -> 6000
+[V6D] saved v6a_train_100k.npz: x=(100000, 250) y_norm=50000 y_abn=50000 elapsed=33.3s
+[V6D] source 0: n=18000 norm=8000 abn=10000
+[V6D] source 1: n=16000 norm=8000 abn=8000
+[V6D] source 2: n=10065 norm=65 abn=10000
+[V6D] source 3: n=18000 norm=10000 abn=8000
+[V6D] source 4: n=18000 norm=10000 abn=8000
+[V6D] source 5: n=19935 norm=13935 abn=6000

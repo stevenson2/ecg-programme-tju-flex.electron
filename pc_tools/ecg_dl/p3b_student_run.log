@@ -1,0 +1,26 @@
+[P3b] selfcheck: npz MIT+INCART AUC=0.8651 diag=0.8651 match=True
+[P3b] val MIT+INCART: 159294 beats, 27 records
+  FP        full= 35130 keep=  4000
+  TN        full= 94013 keep=  4000
+  TP        full= 14722 keep=  4000
+  gray_norm full=  8766 keep=     0
+  miss_abn  full=  6663 keep=  4000
+[P3b] student fc1 feats (16000, 64) (45s)
+
+[P3b] student readout AUC=0.4563 (FP vs TP: 0.5532)
+[P3b] teacher readout AUC=0.7345 (FP vs TP: 0.7302)
+[P3b] delta (teacher-student) all=+0.2782 fp_vs_tp=+0.1769
+[P3b] saved /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/deploy_match/p3_student_readout.json (63s)
+th the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788272838.279817     434 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+W0000 00:00:1788272842.946475     434 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+W0000 00:00:1788272843.272455     434 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+I0000 00:00:1788272843.579742     434 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 5199 MB memory:  -> device: 0, name: NVIDIA GeForce RTX 5070 Laptop GPU, pci bus id: 0000:01:00.0, compute capability: 12.0a
+I0000 00:00:1788272847.909742     525 service.cc:153] XLA service 0x76a9f00454a0 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1788272847.909791     525 service.cc:161]   StreamExecutor [0]: NVIDIA GeForce RTX 5070 Laptop GPU, Compute Capability 12.0a (Driver: 13.2.0; Runtime: 12.9.0; Toolkit: 12.5.0; DNN: 9.24.0)
+I0000 00:00:1788272847.974188     525 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1788272848.328143     525 cuda_dnn.cc:461] Loaded cuDNN version 92400
+I0000 00:00:1788272857.380597     525 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+I0000 00:00:1788272871.455290    1206 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_fusion', 4 bytes spill stores, 4 bytes spill loads
+

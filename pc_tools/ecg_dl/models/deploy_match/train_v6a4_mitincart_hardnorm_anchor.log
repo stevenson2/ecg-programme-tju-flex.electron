@@ -1,0 +1,66 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788321838.970519     450 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788321839.004096     450 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788321839.819601     450 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+W0000 00:00:1788321841.150898     450 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+[V6] GPU: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+[V6] train loaded: x=(21942, 250, 1) n=21942 norm=19442 abn=2500
+[V6] val loaded: x=(4040, 250, 1) n=4040
+W0000 00:00:1788321841.574352     450 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+I0000 00:00:1788321841.839570     450 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 5199 MB memory:  -> device: 0, name: NVIDIA GeForce RTX 5070 Laptop GPU, pci bus id: 0000:01:00.0, compute capability: 12.0a
+[V6] loaded v3 A baseline, params=62,834
+[V6] start fine-tune: epochs=20 batch=128 lr=1e-05 cosine, CE, no aug
+Epoch 1/20
+I0000 00:00:1788321849.077857     534 service.cc:153] XLA service 0x767c9406c3d0 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1788321849.078197     534 service.cc:161]   StreamExecutor [0]: NVIDIA GeForce RTX 5070 Laptop GPU, Compute Capability 12.0a (Driver: 13.2.0; Runtime: 12.9.0; Toolkit: 12.5.0; DNN: 9.24.0)
+I0000 00:00:1788321849.312924     534 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1788321850.520540     534 cuda_dnn.cc:461] Loaded cuDNN version 92400
+I0000 00:00:1788321850.718597     534 dot_merger.cc:481] Merging Dots in computation: a_inference_one_step_on_data_21095__.182
+I0000 00:00:1788321853.855998     614 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_118', 4 bytes spill stores, 4 bytes spill loads
+
+I0000 00:00:1788321862.847330     615 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_5', 4 bytes spill stores, 8 bytes spill loads
+
+I0000 00:00:1788321863.257238     611 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_2', 4 bytes spill stores, 8 bytes spill loads
+
+I0000 00:00:1788321871.506926     534 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_5', 4 bytes spill stores, 8 bytes spill loads
+
+I0000 00:00:1788321871.620066     534 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+I0000 00:00:1788321875.412291     535 dot_merger.cc:481] Merging Dots in computation: a_inference_one_step_on_data_21095__.182
+I0000 00:00:1788321877.887765    1457 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_1_58', 4 bytes spill stores, 4 bytes spill loads
+
+I0000 00:00:1788321880.870246    1464 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_118', 4 bytes spill stores, 4 bytes spill loads
+
+I0000 00:00:1788321881.918019    1465 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_120', 12 bytes spill stores, 12 bytes spill loads
+
+I0000 00:00:1788321884.611730    1456 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_5', 8 bytes spill stores, 8 bytes spill loads
+
+I0000 00:00:1788321885.385700    1470 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_add_multiply_reduce_fusion_2', 136 bytes spill stores, 136 bytes spill loads
+
+I0000 00:00:1788321886.256504    1464 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_3', 4 bytes spill stores, 4 bytes spill loads
+
+I0000 00:00:1788321887.543504    1456 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_4', 8 bytes spill stores, 8 bytes spill loads
+
+I0000 00:00:1788321895.827114     535 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_5', 8 bytes spill stores, 8 bytes spill loads
+ptxas warning : Registers are spilled to local memory in function 'input_add_multiply_reduce_fusion_2', 136 bytes spill stores, 136 bytes spill loads
+
+I0000 00:00:1788321900.269387    2266 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_48', 4 bytes spill stores, 4 bytes spill loads
+
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+  * saved best val_auc=0.7460 (epoch 1)
+172/172 - 74s - 429ms/step - accuracy: 0.7631 - loss: 0.9825 - val_accuracy: 0.6926 - val_loss: 1.7840 - val_auc: 0.7460
+Epoch 2/20
+172/172 - 3s - 15ms/step - accuracy: 0.8524 - loss: 0.5505 - val_accuracy: 0.6790 - val_loss: 1.9859 - val_auc: 0.7188
+Epoch 3/20
+172/172 - 3s - 15ms/step - accuracy: 0.8951 - loss: 0.3528 - val_accuracy: 0.6735 - val_loss: 2.0963 - val_auc: 0.7061
+Epoch 4/20
+172/172 - 3s - 15ms/step - accuracy: 0.9211 - loss: 0.2577 - val_accuracy: 0.6666 - val_loss: 2.1622 - val_auc: 0.6991
+Epoch 5/20
+172/172 - 2s - 13ms/step - accuracy: 0.9367 - loss: 0.2153 - val_accuracy: 0.6631 - val_loss: 2.2124 - val_auc: 0.6943
+Epoch 6/20
+172/172 - 2s - 14ms/step - accuracy: 0.9424 - loss: 0.1957 - val_accuracy: 0.6629 - val_loss: 2.2157 - val_auc: 0.6915
+Epoch 6: early stopping
+Restoring model weights from the end of the best epoch: 1.
+[V6] training done in 89s
+[V6] saved best_v6a4_mitincart_hardnorm_anchor.h5 + train_v6a4_mitincart_hardnorm_anchor.json

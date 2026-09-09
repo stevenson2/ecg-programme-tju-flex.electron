@@ -1,0 +1,540 @@
+{
+  "date": "2026-09-02 01:29:57",
+  "purpose": "TH106+ multi-seed / variant robustness check of distill pilot",
+  "prereg": "distill_pilot_prereg.json",
+  "zero_test_contact": true,
+  "frozen_operating_point": {
+    "theta": 0.95,
+    "k": 1,
+    "n": 5,
+    "cooldown": 20
+  },
+  "baseline_model": "models/best_resnet_large_clean_baseline_v3.h5",
+  "selfcheck": {
+    "mit_frac_gt_0.95_vs_p1": {
+      "value": 0.2447372456244113,
+      "ok": true,
+      "tol": "tol=0.004196"
+    },
+    "incart_frac_gt_0.95_vs_p1": {
+      "value": 0.273542600896861,
+      "ok": true,
+      "tol": "tol=0.007210"
+    },
+    "mit_auc_vs_p1": {
+      "value": 0.7679819444562863,
+      "ok": true,
+      "tol": "tol=1e-3"
+    },
+    "ptb_auc_vs_p1": {
+      "value": 0.8262522916243232,
+      "ok": true,
+      "tol": "tol=1e-3"
+    },
+    "frozen_event_recall_vs_sweep": {
+      "value": 0.9807,
+      "ok": true,
+      "tol": "tol=1e-3"
+    },
+    "frozen_alert_blocks_vs_sweep": {
+      "value": 402,
+      "ok": true,
+      "tol": "tol=2"
+    }
+  },
+  "rows": [
+    {
+      "label": "seed42",
+      "model": "best_resnet_large_distill_pilot_seed42.h5",
+      "verdict": "PARTIAL",
+      "gates": {
+        "primary_pooled_norm_frac_gt_0.95": {
+          "baseline": 0.2544721519262702,
+          "pilot": 0.015814776410531584,
+          "relative_reduction": 0.937852624380236,
+          "passed": true,
+          "criterion": ">=0.3 relative reduction"
+        },
+        "guardrail_A_mit_auc": {
+          "baseline": 0.7679819444562863,
+          "pilot": 0.761767813456832,
+          "drop": 0.006214130999454337,
+          "passed": true,
+          "criterion": "drop<=0.02"
+        },
+        "guardrail_B_frozen_event_recall": {
+          "baseline_event_recall": 0.9807,
+          "pilot_event_recall": 0.4957,
+          "pilot_alert_blocks": 712,
+          "passed": false,
+          "criterion": "drop<=0.02 and alert_blocks>=3"
+        },
+        "guardrail_C_real_holdout": {
+          "pilot": {
+            "mean_prob": 0.036743201315402985,
+            "frac_gt_0.5": 0.0,
+            "n": 40
+          },
+          "passed": true,
+          "criterion": "mean_prob<0.1 and frac_gt_0.5<=0.0"
+        }
+      },
+      "secondary": {
+        "alert_blocks_ratio_pilot_over_baseline": 1.771144278606965,
+        "p1_caliber_summary": {
+          "baseline": {
+            "clean_normal_records": 1,
+            "clean_normal_alert_blocks_total": 118,
+            "record_212": {
+              "n_beats": 16488,
+              "abn_beats": 0,
+              "alert_blocks": 118,
+              "gt_events": 0
+            },
+            "top5_by_alert_blocks": [
+              {
+                "rid": 221,
+                "n_beats": 14562,
+                "abn_beats": 2376,
+                "alert_blocks": 225,
+                "gt_events": 654
+              },
+              {
+                "rid": 112,
+                "n_beats": 15234,
+                "abn_beats": 12,
+                "alert_blocks": 139,
+                "gt_events": 12
+              },
+              {
+                "rid": 212,
+                "n_beats": 16488,
+                "abn_beats": 0,
+                "alert_blocks": 118,
+                "gt_events": 0
+              },
+              {
+                "rid": 232,
+                "n_beats": 10680,
+                "abn_beats": 8292,
+                "alert_blocks": 115,
+                "gt_events": 13
+              },
+              {
+                "rid": 222,
+                "n_beats": 14898,
+                "abn_beats": 1254,
+                "alert_blocks": 110,
+                "gt_events": 264
+              }
+            ]
+          },
+          "pilot": {
+            "clean_normal_records": 1,
+            "clean_normal_alert_blocks_total": 120,
+            "record_212": {
+              "n_beats": 16488,
+              "abn_beats": 0,
+              "alert_blocks": 120,
+              "gt_events": 0
+            },
+            "top5_by_alert_blocks": [
+              {
+                "rid": 112,
+                "n_beats": 15234,
+                "abn_beats": 12,
+                "alert_blocks": 417,
+                "gt_events": 12
+              },
+              {
+                "rid": 221,
+                "n_beats": 14562,
+                "abn_beats": 2376,
+                "alert_blocks": 207,
+                "gt_events": 654
+              },
+              {
+                "rid": 212,
+                "n_beats": 16488,
+                "abn_beats": 0,
+                "alert_blocks": 120,
+                "gt_events": 0
+              },
+              {
+                "rid": 100058,
+                "n_beats": 2323,
+                "abn_beats": 12,
+                "alert_blocks": 58,
+                "gt_events": 10
+              },
+              {
+                "rid": 222,
+                "n_beats": 14898,
+                "abn_beats": 1254,
+                "alert_blocks": 54,
+                "gt_events": 264
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "seed43",
+      "model": "best_resnet_large_distill_pilot_seed43.h5",
+      "verdict": "PARTIAL",
+      "gates": {
+        "primary_pooled_norm_frac_gt_0.95": {
+          "baseline": 0.2544721519262702,
+          "pilot": 0.00490178305984381,
+          "relative_reduction": 0.9807374479968085,
+          "passed": true,
+          "criterion": ">=0.3 relative reduction"
+        },
+        "guardrail_A_mit_auc": {
+          "baseline": 0.7679819444562863,
+          "pilot": 0.7778539227206195,
+          "drop": -0.00987197826433317,
+          "passed": true,
+          "criterion": "drop<=0.02"
+        },
+        "guardrail_B_frozen_event_recall": {
+          "baseline_event_recall": 0.9807,
+          "pilot_event_recall": 0.3338,
+          "pilot_alert_blocks": 601,
+          "passed": false,
+          "criterion": "drop<=0.02 and alert_blocks>=3"
+        },
+        "guardrail_C_real_holdout": {
+          "pilot": {
+            "mean_prob": 0.016216224059462547,
+            "frac_gt_0.5": 0.0,
+            "n": 40
+          },
+          "passed": true,
+          "criterion": "mean_prob<0.1 and frac_gt_0.5<=0.0"
+        }
+      },
+      "secondary": {
+        "alert_blocks_ratio_pilot_over_baseline": 1.4950248756218905,
+        "p1_caliber_summary": {
+          "baseline": {
+            "clean_normal_records": 1,
+            "clean_normal_alert_blocks_total": 118,
+            "record_212": {
+              "n_beats": 16488,
+              "abn_beats": 0,
+              "alert_blocks": 118,
+              "gt_events": 0
+            },
+            "top5_by_alert_blocks": [
+              {
+                "rid": 221,
+                "n_beats": 14562,
+                "abn_beats": 2376,
+                "alert_blocks": 225,
+                "gt_events": 654
+              },
+              {
+                "rid": 112,
+                "n_beats": 15234,
+                "abn_beats": 12,
+                "alert_blocks": 139,
+                "gt_events": 12
+              },
+              {
+                "rid": 212,
+                "n_beats": 16488,
+                "abn_beats": 0,
+                "alert_blocks": 118,
+                "gt_events": 0
+              },
+              {
+                "rid": 232,
+                "n_beats": 10680,
+                "abn_beats": 8292,
+                "alert_blocks": 115,
+                "gt_events": 13
+              },
+              {
+                "rid": 222,
+                "n_beats": 14898,
+                "abn_beats": 1254,
+                "alert_blocks": 110,
+                "gt_events": 264
+              }
+            ]
+          },
+          "pilot": {
+            "clean_normal_records": 1,
+            "clean_normal_alert_blocks_total": 117,
+            "record_212": {
+              "n_beats": 16488,
+              "abn_beats": 0,
+              "alert_blocks": 117,
+              "gt_events": 0
+            },
+            "top5_by_alert_blocks": [
+              {
+                "rid": 221,
+                "n_beats": 14562,
+                "abn_beats": 2376,
+                "alert_blocks": 222,
+                "gt_events": 654
+              },
+              {
+                "rid": 212,
+                "n_beats": 16488,
+                "abn_beats": 0,
+                "alert_blocks": 117,
+                "gt_events": 0
+              },
+              {
+                "rid": 222,
+                "n_beats": 14898,
+                "abn_beats": 1254,
+                "alert_blocks": 74,
+                "gt_events": 264
+              },
+              {
+                "rid": 232,
+                "n_beats": 10680,
+                "abn_beats": 8292,
+                "alert_blocks": 74,
+                "gt_events": 13
+              },
+              {
+                "rid": 100022,
+                "n_beats": 3126,
+                "abn_beats": 310,
+                "alert_blocks": 69,
+                "gt_events": 152
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "label": "seed44",
+      "model": "best_resnet_large_distill_pilot_seed44.h5",
+      "verdict": "PARTIAL",
+      "gates": {
+        "primary_pooled_norm_frac_gt_0.95": {
+          "baseline": 0.2544721519262702,
+          "pilot": 0.016307855179864984,
+          "relative_reduction": 0.9359149712201515,
+          "passed": true,
+          "criterion": ">=0.3 relative reduction"
+        },
+        "guardrail_A_mit_auc": {
+          "baseline": 0.7679819444562863,
+          "pilot": 0.786257440369611,
+          "drop": -0.01827549591332467,
+          "passed": true,
+          "criterion": "drop<=0.02"
+        },
+        "guardrail_B_frozen_event_recall": {
+          "baseline_event_recall": 0.9807,
+          "pilot_event_recall": 0.3974,
+          "pilot_alert_blocks": 711,
+          "passed": false,
+          "criterion": "drop<=0.02 and alert_blocks>=3"
+        },
+        "guardrail_C_real_holdout": {
+          "pilot": {
+            "mean_prob": 0.10534504801034927,
+            "frac_gt_0.5": 0.075,
+            "n": 40
+          },
+          "passed": false,
+          "criterion": "mean_prob<0.1 and frac_gt_0.5<=0.0"
+        }
+      },
+      "secondary": {
+        "alert_blocks_ratio_pilot_over_baseline": 1.7686567164179106,
+        "p1_caliber_summary": {
+          "baseline": {
+            "clean_normal_records": 1,
+            "clean_normal_alert_blocks_total": 118,
+            "record_212": {
+              "n_beats": 16488,
+              "abn_beats": 0,
+              "alert_blocks": 118,
+              "gt_events": 0
+            },
+            "top5_by_alert_blocks": [
+              {
+                "rid": 221,
+                "n_beats": 14562,
+                "abn_beats": 2376,
+                "alert_blocks": 225,
+                "gt_events": 654
+              },
+              {
+                "rid": 112,
+                "n_beats": 15234,
+                "abn_beats": 12,
+                "alert_blocks": 139,
+                "gt_events": 12
+              },
+              {
+                "rid": 212,
+                "n_beats": 16488,
+                "abn_beats": 0,
+                "alert_blocks": 118,
+                "gt_events": 0
+              },
+              {
+                "rid": 232,
+                "n_beats": 10680,
+                "abn_beats": 8292,
+                "alert_blocks": 115,
+                "gt_events": 13
+              },
+              {
+                "rid": 222,
+                "n_beats": 14898,
+                "abn_beats": 1254,
+                "alert_blocks": 110,
+                "gt_events": 264
+              }
+            ]
+          },
+          "pilot": {
+            "clean_normal_records": 1,
+            "clean_normal_alert_blocks_total": 14,
+            "record_212": {
+              "n_beats": 16488,
+              "abn_beats": 0,
+              "alert_blocks": 14,
+              "gt_events": 0
+            },
+            "top5_by_alert_blocks": [
+              {
+                "rid": 234,
+                "n_beats": 16518,
+                "abn_beats": 318,
+                "alert_blocks": 399,
+                "gt_events": 24
+              },
+              {
+                "rid": 221,
+                "n_beats": 14562,
+                "abn_beats": 2376,
+                "alert_blocks": 59,
+                "gt_events": 654
+              },
+              {
+                "rid": 100021,
+                "n_beats": 2183,
+                "abn_beats": 112,
+                "alert_blocks": 18,
+                "gt_events": 69
+              },
+              {
+                "rid": 212,
+                "n_beats": 16488,
+                "abn_beats": 0,
+                "alert_blocks": 14,
+                "gt_events": 0
+              },
+              {
+                "rid": 100058,
+                "n_beats": 2323,
+                "abn_beats": 12,
+                "alert_blocks": 13,
+                "gt_events": 10
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "summary": {
+    "seeds": [
+      "seed42",
+      "seed43",
+      "seed44"
+    ],
+    "primary_rel_red": {
+      "values": [
+        0.937852624380236,
+        0.9807374479968085,
+        0.9359149712201515
+      ],
+      "mean": 0.9515016811990652,
+      "std": 0.025337446006478484
+    },
+    "pilot_frac_gt_0.95": {
+      "values": [
+        0.015814776410531584,
+        0.00490178305984381,
+        0.016307855179864984
+      ],
+      "mean": 0.012341471550080127,
+      "std": 0.00644767440958427
+    },
+    "pilot_auc": {
+      "values": [
+        0.761767813456832,
+        0.7778539227206195,
+        0.786257440369611
+      ],
+      "mean": 0.7752930588490208,
+      "std": 0.012444033687210187
+    },
+    "auc_drop": {
+      "values": [
+        0.006214130999454337,
+        -0.00987197826433317,
+        -0.01827549591332467
+      ],
+      "mean": -0.007311114392734501,
+      "std": 0.012444033687210187
+    },
+    "pilot_event_recall": {
+      "values": [
+        0.4957,
+        0.3338,
+        0.3974
+      ],
+      "mean": 0.40896666666666665,
+      "std": 0.08156741587995375
+    },
+    "event_recall_drop": {
+      "values": [
+        0.48500000000000004,
+        0.6469,
+        0.5833
+      ],
+      "mean": 0.5717333333333333,
+      "std": 0.08156741587995377
+    },
+    "pilot_alert_blocks": {
+      "values": [
+        712.0,
+        601.0,
+        711.0
+      ],
+      "mean": 674.6666666666666,
+      "std": 63.799164048859865
+    },
+    "pilot_holdout_mean": {
+      "values": [
+        0.036743201315402985,
+        0.016216224059462547,
+        0.10534504801034927
+      ],
+      "mean": 0.0527681577950716,
+      "std": 0.04667532792973708
+    }
+  },
+  "per_model_files": [
+    "distill_pilot_eval_seed42.json",
+    "distill_pilot_eval_seed43.json",
+    "distill_pilot_eval_seed44.json"
+  ],
+  "elapsed_s": 57.7
+}

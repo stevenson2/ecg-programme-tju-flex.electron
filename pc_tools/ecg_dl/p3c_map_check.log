@@ -1,0 +1,11 @@
+[MAPCHECK] MIT (raw+6x 结构 + 重建一致性)
+  [OK] MIT 201: raw=1963 max|Δ|=0.00e+00 labels=True aug_labels=True aug_mean_abs_diff=1.195e-02
+  [OK] MIT 231: raw=1571 max|Δ|=0.00e+00 labels=True aug_labels=True aug_mean_abs_diff=1.198e-02
+[MAPCHECK] INCART (raw only + 重建一致性)
+  [OK] INCART I01: n=2756 max|Δ|=0.00e+00 labels=True
+  [OK] INCART I02: n=2673 max|Δ|=0.00e+00 labels=True
+[MAPCHECK] RESULT: PASS
+:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788273514.795896     379 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.

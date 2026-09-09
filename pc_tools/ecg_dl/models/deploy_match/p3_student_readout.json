@@ -1,0 +1,50 @@
+{
+  "date": "2026-09-01 22:28:19",
+  "purpose": "P3b: 学生 fc1 特征同协议线性读出, 对照教师 0.7345; 定蒸馏路线的增量信息归属",
+  "student_model": "models/best_resnet_large_clean_baseline_v3.h5",
+  "embed_layer": "fc1",
+  "selfcheck": {
+    "npz_mit_incart_auc": 0.8650589604162535,
+    "diag_v3_auc": 0.865055547768982,
+    "match": true
+  },
+  "sampling": {
+    "per_group_cap": 4000,
+    "seed": 0,
+    "census": {
+      "FP": {
+        "full": 35130,
+        "keep": 4000
+      },
+      "TN": {
+        "full": 94013,
+        "keep": 4000
+      },
+      "TP": {
+        "full": 14722,
+        "keep": 4000
+      },
+      "gray_norm": {
+        "full": 8766,
+        "keep": 0
+      },
+      "miss_abn": {
+        "full": 6663,
+        "keep": 4000
+      }
+    },
+    "same_as_p3": true
+  },
+  "n_beats": 16000,
+  "n_records": 27,
+  "method": "留一记录线性读出 (L2 归一化 + LogReg C=1.0, max_iter=2000), 与 P3 逐行同协议",
+  "values": {
+    "student_linear_readout_auc_all": 0.4563317968749999,
+    "student_linear_readout_auc_fp_vs_tp": 0.5532401875,
+    "teacher_linear_readout_auc_all": 0.7345043906250001,
+    "teacher_linear_readout_auc_fp_vs_tp": 0.7301781875,
+    "delta_teacher_minus_student_all": 0.27817259375000014,
+    "delta_teacher_minus_student_fp_vs_tp": 0.17693799999999993
+  },
+  "elapsed_s": 63.4
+}

@@ -14,8 +14,8 @@ eval_st_morphology.py — 下一步待办#6: ST 形态学预研（模块 4 地�
   PTB-XL 子类: IMI(下壁) 用 III/aVF, ASMI(前间壁) 用 V2/V3, STTC 用全体, NORM 对照
 
 数据:
-  LUDB: ECG-Database/lobachevsky-.../data/ (200 条, 500Hz, 12 导联)
-  PTB-XL: PTB-XL_ECG/ (records500, 21837 条, 500Hz, 12 导联)
+  LUDB: 统一资料库 ecg_database/lobachevsky-.../data/ (200 条, 500Hz, 12 导联)
+  PTB-XL: 统一资料库 ptbxl/ (records500, 21837 条, 500Hz, 12 导联)
 输出: models/st_morphology_eval.json
 用法 (WSL): python3 eval_st_morphology.py [--ludb-only] [--ptbxl-only] [--n-max N]
 """
@@ -26,6 +26,10 @@ import json
 import sys
 import time
 from pathlib import Path
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+import ecg_refs as _REFS  # noqa: E402
+
 
 import numpy as np
 from scipy import signal as scipy_signal
@@ -35,9 +39,8 @@ REPO = Path(__file__).resolve().parent
 MODELS = REPO / "models"
 OUT_JSON = MODELS / "st_morphology_eval.json"
 
-LUDB_DIR = (ROOT / "ECG-Database" / "lobachevsky-university-electrocardiography-database-1.0.1"
-            / "lobachevsky-university-electrocardiography-database-1.0.1" / "data")
-PTBXL_DIR = ROOT / "PTB-XL_ECG"
+LUDB_DIR = _REFS.LUDB_DIR
+PTBXL_DIR = _REFS.PTBXL_DIR
 PTBXL_CSV = PTBXL_DIR / "ptbxl_database.csv"
 
 FS = 500

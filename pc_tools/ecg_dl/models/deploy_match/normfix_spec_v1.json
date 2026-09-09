@@ -1,0 +1,95 @@
+{
+  "spec_id": "normfix_spec_v1",
+  "version": 1,
+  "option": "A",
+  "date": "2026-09-01",
+  "chapter": "§105 逐拍归一化修复 (normfix)",
+  "status": "finalized_before_any_training_script",
+  "problem_statement": "现行固件/训练逐拍窗口 z-score (preprocess_samples: 减窗均值、除窗内总体标准差) 抹掉拍内绝对幅度信息: ST 段抬/压幅度、P/T 波幅度、基线相对位置在归一化后全部退化为形状信息。PTB 诊断分层审计已因果定位该缺陷 (见 evidence)。本规格以因果慢包络尺度归一替换窗口 z-score, 保留拍内相对与绝对幅度结构。",
+  "evidence": {
+    "source": "PTB 诊断分层审计 (memory: ecg-ptb-diagnosis-strata-audit.md; JSON: models/deploy_match/ptb_diagnosis_strata_audit.json)",
+    "findings": "层内敏感度与临床 Lead II 可检测性倒挂: 下壁 MI sens=0.13, 心律失常 0.25, 肥厚 0.0, 而前壁 MI 0.91, 束支阻滞 0.95 (前壁/束支阻滞恰为形态改变大、幅度信息少的类); control 层 FP=344/2854 (12%)。逐拍 z-score (preprocess_ptb.py L83) 抹掉绝对幅度, ST 抬/压与 Q 波幅度信息被摧毁。泄漏审计排除记忆红利 (AUC≈0.49)。",
+    "decision": "按任务书决定引用既有审计证据, 不做新测量。"
+  },
+  "chain_position": {
+    "input_stream": "修正后因果部署链 250Hz 输出: 原生采样 → 有理重采样 500Hz → DC 去均值 → 双级 10 抽头因果梳状 → HP0.05/LP40 因果双二阶 (240 样本 warmup) → 2:1 抽取 → 因果 HP 0.5Hz@250Hz (causal_hp_05_fs250)",
+    "firmware_point": "ai_inference_push 内, aiApplyFilter 之后的逐样本流, 写入推理环形缓冲之前",
+    "baseline_role": "基线漂移/均值角色由既有因果 HP 0.5Hz 级承担 (该级不改, 固件既有先例); normfix 只新增一级因果慢包络尺度, 不做任何窗口均值减法",
+    "replaces": "preprocess_samples 的逐拍窗口 z-score (mu 减法 + std 除法, std<1e-6→1.0) 整体移除"
+  },
+  "formula": {
+    "recurrence": "e2[n] = e2[n-1] + alpha * (x[n]*x[n] - e2[n-1])",
+    "normalize": "y[n] = x[n] / max(sqrt(e2[n]), smin)",
+    "order": "固定: 先更新包络 (含当前样本), 再相除。训练参考实现与固件逐样本循环逐位同构",
+    "init": "e2 初值 = e2_init = s_init^2; 每段流独立初始化 (训练 = 每记录; 固件 = 每次上电/推理会话)",
+    "vectorized_reference": "normfix.py normfix_stream(): scipy.signal.lfilter([alpha],[1.0,-(1-alpha)], x*x, zi=[(1-alpha)*e2_init]) — 与逐样本循环同一递推; float64 运算次序差异导致最大相对偏差 2.92e-15 (实测), 远小于固件一致性容差 1e-6"
+  },
+  "selfcheck": {
+    "date": "2026-09-01",
+    "log": "models/deploy_match/normfix_spec_selfcheck.log",
+    "results": "alpha 公式一致; e2_init=s_init^2 一致; lfilter vs 逐样本循环最大相对偏差 2.92e-15; 零输入输出全零; 微幅输入增益封顶 1/smin=50; t0 尺度=0.275"
+  },
+  "constants": {
+    "tau_s": 4.0,
+    "fs_hz": 250,
+    "alpha": 0.000999500166624978,
+    "alpha_formula": "alpha = 1 - exp(-1/(tau_s*fs_hz)) = 1 - exp(-0.001)",
+    "s_init": 0.275,
+    "smin": 0.02,
+    "e2_init": 0.075625,
+    "warmup_s": 12.0,
+    "fixed_point_note": "一阶 IIR 单状态, 可 Q16/Q32 定点; 固件用 float32 实现, 常数以 #define 固定 (alpha float32 相对误差 <1.2e-7, 在验证容差内)"
+  },
+  "constants_provenance": {
+    "measurement": "models/deploy_match/normfix_rms_measure.json + normfix_rms_measure.log (normfix_rms_measure.py, 2026-09-01)",
+    "scope": "修正后因果链 250Hz 流; 36 条训练侧记录 (31 MIT train + 3 INCART train, SplitGuard 内; 2 条真实 AFE: ecg_real_052.ecgr + rec_latest.ecgr); 测试记录零接触",
+    "aggregate": {
+      "n_records": 36,
+      "rms_full_min": 0.048864662327158956,
+      "rms_full_p10": 0.12882489396236815,
+      "rms_full_median": 0.27540087628966436,
+      "rms_full_p90": 0.48255355092913066,
+      "rms_full_max": 0.7961436405266928,
+      "rms_roll10s_min_overall": 0.029826608239093468,
+      "rms_head_over_median_max": 5.546022529173838
+    },
+    "s_init_rationale": "0.275 ≈ 全记录 RMS 中位数 0.27540087628966436 的整洁舍入; 收敛期 (~3τ=12s) 内充当保守常数尺度; 收敛后包络取代其作用, 故舍入误差无长期影响",
+    "smin_rationale": "0.02 < 观测最小 10s 滑动 RMS 0.029826608239093468 (全部 36 条记录所有 10s 窗的最小值), 仅作平线/零信号保护, 正常心电不触发; 若触发, 增益封顶 1/smin = 50x",
+    "tau_rationale": "τ=4.0s ≥ 数秒要求: 对拍内结构 (拍周期 ≥ ~0.33s) 几乎无幅度调制, 保留 ST/P/T 相对幅度; 同时 ~3τ=12s 收敛, 可跟踪个体增益与缓慢幅值变化"
+  },
+  "warmup": {
+    "strategy": "无特殊分支。包络从 e2_init = s_init^2 起, 以时间常数 τ 向真实 RMS 收敛; 收敛期 (~12s) 内尺度由保守常数平滑过渡到个体尺度。固件与训练脚本逐字相同, 无任何一侧独有分支",
+    "record_start_note": "INCART 记录起始存在瞬态 (测量: 头部 12.5s RMS / 全记录中位数最大比值 5.546), 包络在 ~3τ 内自适应吸收; 期间拍幅度尺度略偏, 但两侧实现相同, 不构成训练/部署失配",
+    "firmware_reset": "每次上电/新推理会话将 e2 复位为 e2_init (与训练侧每记录独立初始化对应)"
+  },
+  "information_preservation": {
+    "goal": "去除基线漂移与个体/导联增益差异, 保留拍内相对幅度 (ST 段、P/T 波幅度) 与拍间慢幅度变化",
+    "mechanism": "基线由上游因果 HP 0.5Hz 去除; 慢包络 (τ=4s) 估计个体尺度并除掉 → 拍内幅度比例 (ST/R, T/R) 完整保留, 跨记录尺度归一; 相比窗口 z-score: 不减窗均值 (保留基线相对位置由拍内样本值体现), 不除 1s 窗内波动标准差 (保留 ST 抬/压的绝对幅度信息)"
+  },
+  "candidates": {
+    "A_adopted": "因果慢基线 (既有因果 HP 0.5Hz) + 因果慢包络尺度 (本规格)。探针验证中",
+    "B_fallback": "因果慢基线 + 固定常数尺度 (全局中位数): 信息保留最保守, 但不消除个体增益差异, 仅当 A 探针双闸失败时作为至多两个规格版本之一",
+    "C_fallback": "稳健分位数尺度: 需要排序/滑窗统计, 因果流式实现复杂且状态量大, 定点不友好, 仅列为备选"
+  },
+  "firmware_integration_sketch": {
+    "location": "main/ai_inference.c (或当前承载 ai_inference_push 的源文件; 以仓库当前源码为准)",
+    "steps": [
+      "1. 在 aiApplyFilter 输出逐样本处新增: e2 += NORMFIX_ALPHA * (x*x - e2); s = sqrtf(e2); if (s < NORMFIX_SMIN) s = NORMFIX_SMIN; y = x / s; y 写入环形缓冲",
+      "2. #define NORMFIX_ALPHA 0.000999500166624978f, NORMFIX_SMIN 0.02f, NORMFIX_E2_INIT 0.075625f (0.275f^2)",
+      "3. 会话/上电复位: e2 = NORMFIX_E2_INIT",
+      "4. preprocess_samples 中窗口 mu/std z-score 移除 (公式漂移 = 全链作废)"
+    ],
+    "source_authoritative": "固件此前已按因果 HP 0.5Hz 联动修改过一次; 源码为唯一权威, 文档滞后不作为依据"
+  },
+  "verification_plan": {
+    "phase": "Phase B 全链重建前",
+    "method": "同一真实流 (真实 AFE 记录经修正后因果链的 250Hz 流) 分别过固件导出路径与 Python 参考 (normfix.normfix_stream), 逐样本对比",
+    "tolerance": "相对误差 ≤ 1e-6",
+    "log": "models/deploy_match/normfix_fw_verify.json (样本数、最大绝对/相对误差、通过标志)"
+  },
+  "reference_implementation": {
+    "module": "pc_tools/ecg_dl/normfix.py",
+    "api": ["load_spec()", "normfix_stream(x250, spec)", "window_beats_normfix(stream250, r_idx, domain, beat_len)"],
+    "rule": "本文件为常数唯一来源; normfix.py 不硬编码数值; 任何训练/重建/验证脚本一律经 normfix.py 取公式"
+  }
+}

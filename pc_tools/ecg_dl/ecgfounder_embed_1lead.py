@@ -10,7 +10,7 @@ ecgfounder_embed_1lead.py — ECGFounder 1-lead 离线特征提取 / 硬负样�
   提取 1024 维 deep features，供离线硬负样本挖掘/域距离分析。
 
 输入：
-  - PTB-XL 数据库（项目根 PTB-XL_ECG）
+  - PTB-XL 数据库（统一资料库 ecg_refs.PTBXL_DIR）
   - ECGFounder checkpoint：../ECGFounder/checkpoint/1_lead_ECGFounder.pth
   - 真实 AFE ECGR：pc_tools/ecg_dl/data/real/*.ecgr
 
@@ -26,6 +26,10 @@ ecgfounder_embed_1lead.py — ECGFounder 1-lead 离线特征提取 / 硬负样�
 """
 import sys, json, time, argparse
 from pathlib import Path
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+import ecg_refs as _REFS  # noqa: E402
+
 
 import numpy as np
 import torch
@@ -45,7 +49,7 @@ from util import filter_bandpass
 MODEL_DIR = Path(__file__).resolve().parent / "models" / "ecgfounder"
 MODEL_DIR.mkdir(parents=True, exist_ok=True)
 CKPT_1LEAD = ECGFOUNDER_DIR / "checkpoint" / "1_lead_ECGFounder.pth"
-PTBXL_DIR = PROJECT_ROOT / "PTB-XL_ECG"
+PTBXL_DIR = _REFS.PTBXL_DIR
 PTBXL_CSV = PTBXL_DIR / "ptbxl_database.csv"
 
 FS = 500

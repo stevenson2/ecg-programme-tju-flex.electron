@@ -18,6 +18,10 @@ Expected GPU time:
 
 import sys, os, ast, argparse, numpy as np
 from pathlib import Path
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+import ecg_refs as _REFS  # noqa: E402
+
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -41,8 +45,8 @@ np.random.seed(TRAIN_CONFIG['random_seed'])
 # PTB-XL Raw Signal Loader
 # ===========================================================================
 
-_RAW = r"C:\Users\cai\OneDrive\Desktop\Fe programme 25261\ecg-programme-tju-flex.electron-master\PTB-XL_ECG"
-_WSL = "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/PTB-XL_ECG"
+_RAW = str(_REFS.PTBXL_DIR)
+_WSL = str(_REFS.PTBXL_DIR)
 PTBXL_DIR = Path(_WSL if os.path.exists(_WSL) else _RAW)
 PTBXL_CSV = PTBXL_DIR / "ptbxl_database.csv"
 

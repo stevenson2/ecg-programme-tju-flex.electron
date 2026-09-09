@@ -1,0 +1,50 @@
+{
+  "date": "2026-09-02 23:25:35",
+  "purpose": "Clean hard-normal pool excluding INCART due to unresolved Lead II visual review",
+  "excluded_source": "INCART (source_code=1)",
+  "overall": {
+    "normal_total": 439668,
+    "complete_total": 419009,
+    "hard_gt_0_5": 78875,
+    "hard_gt_0_95": 61964,
+    "hard_gt_0_5_complete": 71392,
+    "hard_gt_0_95_complete": 55605
+  },
+  "per_source": [
+    {
+      "name": "MIT-BIH",
+      "source_code": 0,
+      "normal": 337356,
+      "complete": 324102,
+      "hard_gt_0_5": 17135,
+      "hard_gt_0_95": 8434,
+      "hard_gt_0_5_complete": 15407,
+      "hard_gt_0_95_complete": 7355
+    },
+    {
+      "name": "PTB",
+      "source_code": 2,
+      "normal": 5159,
+      "complete": 5149,
+      "hard_gt_0_5": 65,
+      "hard_gt_0_95": 20,
+      "hard_gt_0_5_complete": 63,
+      "hard_gt_0_95_complete": 19
+    },
+    {
+      "name": "SVDB",
+      "source_code": 3,
+      "normal": 97153,
+      "complete": 89758,
+      "hard_gt_0_5": 61675,
+      "hard_gt_0_95": 53510,
+      "hard_gt_0_5_complete": 55922,
+      "hard_gt_0_95_complete": 48231
+    }
+  ],
+  "outputs": {
+    "scores": "models/deploy_match/beat_pool_noincart_normal_scores.npy",
+    "meta": "models/deploy_match/beat_pool_noincart_normal_meta.npz",
+    "audit": "models/deploy_match/hard_normal_noincart_audit.json"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "date": "2026-09-01 16:57:05",
+  "purpose": "TH §103 clean_baseline_v4 (硬负例挖掘) 患者级测试集评估; 模型未见任何测试数据, 挖掘仅限训练患者",
+  "model": "models/best_resnet_large_clean_baseline_v4.h5",
+  "reference_policy": {
+    "theta": 0.5,
+    "policy": "1-of-5",
+    "cooldown": 5
+  },
+  "results": {
+    "mit_incart": {
+      "beat": {
+        "n_beats": 51883,
+        "n_abnormal": 5636,
+        "theta": 0.5,
+        "tp": 5029,
+        "fp": 19528,
+        "tn": 26719,
+        "fn": 607,
+        "sensitivity": 0.8922995031937544,
+        "precision": 0.20478885857393003,
+        "f1": 0.33312357168880197,
+        "auc": 0.8385421213825729
+      },
+      "event": {
+        "event_recall": 0.979571,
+        "event_precision": 0.40458,
+        "event_f1": 0.572647,
+        "fp_per_record": 10.173913,
+        "fp_per_1000_beats": 4.510148,
+        "alert_rate": 0.791435,
+        "gt_events": 979,
+        "alert_blocks": 393,
+        "false_alarm_blocks": 234,
+        "matched_gt_events": 959,
+        "matched_pred_blocks": 159
+      }
+    },
+    "ptb": {
+      "beat": {
+        "n_beats": 13058,
+        "n_abnormal": 10204,
+        "theta": 0.5,
+        "tp": 7237,
+        "fp": 1157,
+        "tn": 1697,
+        "fn": 2967,
+        "sensitivity": 0.7092316738533908,
+        "precision": 0.8621634500833929,
+        "f1": 0.7782557264221959,
+        "auc": 0.7059794659856928
+      },
+      "event": {
+        "event_recall": 0.96,
+        "event_precision": 0.682635,
+        "event_f1": 0.7979,
+        "fp_per_record": 0.557895,
+        "fp_per_1000_beats": 4.058815,
+        "alert_rate": 0.81138,
+        "gt_events": 75,
+        "alert_blocks": 167,
+        "false_alarm_blocks": 53,
+        "matched_gt_events": 72,
+        "matched_pred_blocks": 114
+      }
+    }
+  }
+}

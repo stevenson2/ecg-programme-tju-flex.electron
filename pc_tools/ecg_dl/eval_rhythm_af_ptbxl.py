@@ -12,7 +12,7 @@ eval_rhythm_af_ptbxl.py — 下一步待办#5: AF 短窗验证 (PTB-XL 10s 节�
   R 峰检测: 简化 Pan-Tompkins (带通 5-15Hz + 微分平方 + 150ms 滑动积分 + 自适应阈值)
   标签: 正类 = AFIB (validated_by_human); 负类 = 规则窦性 NEG-SR (主口径) / 非AF NEG-ALL (敏感性)
 
-数据: PTB-XL_ECG/ (records500: 12 导联交错 int16, 500Hz, 10s)
+数据: 统一资料库 ptbxl/ (records500: 12 导联交错 int16, 500Hz, 10s)
 输出: models/rhythm_af_ptbxl_eval.json
 用法 (WSL): python3 eval_rhythm_af_ptbxl.py [--n-max N] [--lead 1|2|...|12]
 """
@@ -23,13 +23,17 @@ import json
 import sys
 import time
 from pathlib import Path
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+import ecg_refs as _REFS  # noqa: E402
+
 
 import numpy as np
 from scipy import signal as scipy_signal
 
-ROOT = Path(__file__).resolve().parents[2]   # 项目根 (含 PTB-XL_ECG/)
+ROOT = Path(__file__).resolve().parents[2]   # 项目根
 REPO = Path(__file__).resolve().parent       # pc_tools/ecg_dl
-PTBXL_DIR = ROOT / "PTB-XL_ECG"
+PTBXL_DIR = _REFS.PTBXL_DIR
 PTBXL_CSV = PTBXL_DIR / "ptbxl_database.csv"
 MODELS = REPO / "models"
 OUT_JSON = MODELS / "rhythm_af_ptbxl_eval.json"

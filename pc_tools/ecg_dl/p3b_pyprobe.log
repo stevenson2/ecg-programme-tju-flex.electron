@@ -1,0 +1,13 @@
+/usr/bin/python3
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788272815.507174     368 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+afdb
+afdb_dl.log
+afdb_dl2.log
+afdb_dl4.log
+afdb_wfdb
+bal_mixed_train.log
+compare_lstm_split_probe.log
+compare_lstm_split_probe.py
+dsh-sessions-backup-20260821.tar.gz
+ecg_data

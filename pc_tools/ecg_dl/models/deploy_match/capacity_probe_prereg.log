@@ -1,0 +1,3 @@
+[CAP] prereg saved: /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/deploy_match/capacity_probe_prereg.json
+[CAP] variants: ['cap_w2', 'cap_d2', 'cap_hybrid'] seeds=[42]
+[CAP] gates: {'primary_relative_reduction_min': 0.3, 'guardrail_auc_max_drop': 0.02, 'guardrail_event_recall_max_drop': 0.02, 'guardrail_alert_blocks_min': 3, 'real_holdout_mean_prob_max': 0.1, 'real_holdout_frac_gt_0.5_max': 0.0}

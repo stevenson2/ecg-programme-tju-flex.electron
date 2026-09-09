@@ -1,0 +1,177 @@
+{
+  "date": "2026-09-01 15:50:12",
+  "purpose": "TH §100 clean_baseline_v3 配置 a: 主配置: 公共库正常拍提到近似平衡 + class_weight 1:1",
+  "provenance": "from scratch; no checkpoint loaded",
+  "gpu": [
+    "PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')"
+  ],
+  "config_name": "a",
+  "output_model": "models/best_resnet_large_clean_baseline_v3.h5",
+  "patient_split_seed": 42,
+  "split_stats": {
+    "mit_bih": {
+      "n_patients": 79,
+      "n_train": 49,
+      "n_val": 15,
+      "n_test": 15,
+      "beats_train": 512369,
+      "beats_val": 159294,
+      "beats_test": 163078
+    },
+    "incart": {
+      "n_patients": 79,
+      "n_train": 49,
+      "n_val": 15,
+      "n_test": 15,
+      "beats_train": 512369,
+      "beats_val": 159294,
+      "beats_test": 163078
+    },
+    "ptb": {
+      "n_patients": 286,
+      "n_train": 172,
+      "n_val": 57,
+      "n_test": 57,
+      "beats_train": 41730,
+      "beats_val": 14694,
+      "beats_test": 13058
+    }
+  },
+  "train_beat_availability": {
+    "mit_bih": {
+      "train_abn_available": 81936,
+      "train_norm_available": 337356,
+      "val_abn_available": 14934,
+      "val_norm_available": 91302
+    },
+    "incart": {
+      "train_abn_available": 13147,
+      "train_norm_available": 79930,
+      "val_abn_available": 6451,
+      "val_norm_available": 46607
+    },
+    "ptb": {
+      "train_abn_available": 36571,
+      "train_norm_available": 5159,
+      "val_abn_available": 12291,
+      "val_norm_available": 2403
+    }
+  },
+  "data": {
+    "main": {
+      "mit_bih_abn": 1500,
+      "mit_bih_norm": 1500,
+      "incart_abn": 400,
+      "incart_norm": 400,
+      "ptb_abn": 600,
+      "ptb_norm": 400
+    },
+    "sampling_audit": {
+      "mit_bih": {
+        "assert_train_only": "passed",
+        "sampled_records_vs_test_intersection": 0,
+        "sampled_unique_records": 31
+      },
+      "incart": {
+        "assert_train_only": "passed",
+        "sampled_records_vs_test_intersection": 0,
+        "sampled_unique_records": 42
+      },
+      "ptb": {
+        "assert_train_only": "passed",
+        "sampled_records_vs_test_intersection": 0,
+        "sampled_unique_records": 273
+      }
+    },
+    "real_afe_train_unique": 271,
+    "real_afe_train_repeated": 542,
+    "real_afe_holdout": 40,
+    "synthetic_hard_negative": 600,
+    "train_total": 5942,
+    "train_abn": 2500,
+    "train_norm": 3442,
+    "val_total": 4040,
+    "val_abn": 2000,
+    "val_norm": 2040,
+    "real_holdout_indices": [
+      185,
+      103,
+      247,
+      49,
+      278,
+      63,
+      258,
+      128,
+      288,
+      91,
+      22,
+      218,
+      250,
+      179,
+      125,
+      109,
+      270,
+      3,
+      98,
+      31,
+      141,
+      169,
+      173,
+      200,
+      214,
+      90,
+      104,
+      45,
+      257,
+      260,
+      88,
+      203,
+      42,
+      94,
+      180,
+      248,
+      294,
+      92,
+      148,
+      210
+    ]
+  },
+  "config": {
+    "architecture": "build_ecg_resnet_lite_large",
+    "params": 62834,
+    "dropout": 0.4,
+    "optimizer": "adam",
+    "lr_schedule": "cosine decay from 0.0003",
+    "epochs_requested": 80,
+    "epochs_run": 37,
+    "batch_size": 32,
+    "early_stopping_patience": 20,
+    "val_monitor": "val_auc",
+    "class_weight": {
+      "0": 1.0,
+      "1": 1.0
+    },
+    "loss": "sparse_categorical_crossentropy"
+  },
+  "results": {
+    "best_val_auc": 0.7935439950980392,
+    "real_holdout_mean_prob": 0.008827914483845234,
+    "real_holdout_frac_gt_0.5": 0.0,
+    "train_time_s": 195.6
+  },
+  "anchors": {
+    "v2_clean_baseline_mit_incart": {
+      "auc": 0.851,
+      "event_f1": 0.643,
+      "beat_f1": 0.281
+    },
+    "v4_clean_mit_incart": {
+      "auc": 0.848,
+      "event_f1": 0.697
+    },
+    "ptb_clean_deployed_int8": {
+      "auc": 0.9,
+      "event_f1": 0.898
+    }
+  }
+}

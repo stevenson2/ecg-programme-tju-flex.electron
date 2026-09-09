@@ -10,7 +10,7 @@
     "afpdb": "/home/devcontainers/ecg_data/afpdb",
     "aftdb": "/home/devcontainers/ecg_data/aftdb",
     "ptbxl_fold10": "/home/devcontainers/ptbxl_data/fold10.npz",
-    "ptbxl_copy": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/PTB-XL_ECG",
+    "ptbxl_copy": "/mnt/c/ecg_data/ptbxl",
     "windows_temp": "/mnt/c/Users/cai/AppData/Local/Temp",
     "public_clone": "/mnt/c/Users/cai/AppData/Local/Temp/meeti_push",
     "esp_short": "/mnt/c/esp/esp_idf_ecg_migration",
@@ -19,7 +19,13 @@
     "device_052": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/data/real/ecg_real_052.ecgr",
     "device_rec_latest": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/rec_latest.ecgr",
     "idf_tools_path": "/mnt/c/Users/cai/.espressif",
-    "idf_python_env": "/mnt/c/Users/cai/.espressif/python_env/idf6.0_py3.13_env"
+    "idf_python_env": "/mnt/c/Users/cai/.espressif/python_env/idf6.0_py3.13_env",
+    "ecg_refs_root": "/mnt/c/ecg_data",
+    "ecg_refs_ptbxl": "/mnt/c/ecg_data/ptbxl",
+    "ecg_refs_incart": "/mnt/c/ecg_data/incart",
+    "ecg_refs_ecg_database": "/mnt/c/ecg_data/ecg_database",
+    "ecg_refs_figs": "/mnt/c/ecg_data/figs",
+    "ecg_refs_lib": "/mnt/c/ecg_data/lib"
   },
   "windows": {
     "meeti_root": "\\\\wsl.localhost\\Ubuntu\\home\\devcontainers\\meeti",
@@ -35,7 +41,13 @@
     "device_052": "C:\\Users\\cai\\OneDrive\\Desktop\\Fe programme 25261\\ecg-programme-tju-flex.electron-master\\pc_tools\\ecg_dl\\data\\real\\ecg_real_052.ecgr",
     "device_rec_latest": "C:\\Users\\cai\\OneDrive\\Desktop\\Fe programme 25261\\ecg-programme-tju-flex.electron-master\\rec_latest.ecgr",
     "idf_tools_path": "C:\\Users\\cai\\.espressif",
-    "idf_python_env": "C:\\Users\\cai\\.espressif\\python_env\\idf6.0_py3.13_env"
+    "idf_python_env": "C:\\Users\\cai\\.espressif\\python_env\\idf6.0_py3.13_env",
+    "ecg_refs_root": "C:\\ecg_data",
+    "ecg_refs_ptbxl": "C:\\ecg_data\\ptbxl",
+    "ecg_refs_incart": "C:\\ecg_data\\incart",
+    "ecg_refs_ecg_database": "C:\\ecg_data\\ecg_database",
+    "ecg_refs_figs": "C:\\ecg_data\\figs",
+    "ecg_refs_lib": "C:\\ecg_data\\lib"
   },
   "task_routing": {
     "wsl": [

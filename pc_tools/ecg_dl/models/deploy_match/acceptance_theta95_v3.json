@@ -1,0 +1,184 @@
+{
+  "date": "2026-09-01 16:40:48",
+  "purpose": "TH §102: §101 选中操作点 (θ=0.95, 1-of-5, cooldown=20) 上的完整验收门; 测试集从未参与选择",
+  "model": "models/best_resnet_large_clean_baseline_v3.h5",
+  "operating_point": {
+    "theta": 0.95,
+    "k": 1,
+    "n": 5,
+    "cooldown": 20
+  },
+  "metric_caliber": {
+    "beat": "原始概率 > 0.95 的混淆矩阵 (与 §100 θ=0.5 拍级口径同源平移)",
+    "event": "策略 (0.95, 1-of-5, cooldown=20), evaluate_sequence_set 池化语义",
+    "threshold_independent": "clean AUC / 真 AFE 留出 / best val AUC"
+  },
+  "gates": {
+    "mit_incart_auc_min": 0.848,
+    "mit_incart_beat_f1_min": 0.4,
+    "mit_incart_fp_per_record_max": 1.5,
+    "mit_incart_event_f1_min": 0.64,
+    "mit_incart_beat_sensitivity_min": 0.9,
+    "ptb_auc_min": 0.7,
+    "ptb_event_f1_min": 0.75,
+    "alert_blocks_min": 3,
+    "real_holdout_mean_prob_max": 0.1,
+    "real_holdout_frac_gt_0.5_max": 0.0,
+    "train_best_val_auc_min": 0.8
+  },
+  "beat_raw_theta": {
+    "mit_incart": {
+      "theta": 0.95,
+      "tp": 4924,
+      "fp": 14471,
+      "tn": 31776,
+      "fn": 712,
+      "sensitivity": 0.8736692689850958,
+      "precision": 0.25387986594483114,
+      "f1": 0.3934321441412648,
+      "auc": 0.8650327776042189,
+      "n_beats": 51883
+    },
+    "ptb": {
+      "theta": 0.95,
+      "tp": 5982,
+      "fp": 531,
+      "tn": 2323,
+      "fn": 4222,
+      "sensitivity": 0.5862406899255194,
+      "precision": 0.9184707508060801,
+      "f1": 0.7156786504755637,
+      "auc": 0.7662708600197183,
+      "n_beats": 13058
+    }
+  },
+  "event_policy": {
+    "mit_incart": {
+      "theta": 0.95,
+      "k": 1,
+      "n": 5,
+      "cooldown": 20,
+      "beat_tp": 5428,
+      "beat_fp": 29141,
+      "beat_tn": 17106,
+      "beat_fn": 208,
+      "beat_recall": 0.9631,
+      "beat_precision": 0.157,
+      "beat_f1": 0.27,
+      "gt_events": 979,
+      "alert_blocks": 142,
+      "matched_gt_events": 958,
+      "false_alarm_blocks": 56,
+      "event_recall": 0.9785,
+      "event_precision": 0.6056,
+      "event_f1": 0.7482,
+      "fp_per_record": 2.4348,
+      "median_latency_beats": 0.0,
+      "n_records": 23
+    },
+    "ptb": {
+      "theta": 0.95,
+      "k": 1,
+      "n": 5,
+      "cooldown": 20,
+      "beat_tp": 7419,
+      "beat_fp": 941,
+      "beat_tn": 1913,
+      "beat_fn": 2785,
+      "beat_recall": 0.7271,
+      "beat_precision": 0.8874,
+      "beat_f1": 0.7993,
+      "gt_events": 75,
+      "alert_blocks": 91,
+      "matched_gt_events": 68,
+      "false_alarm_blocks": 13,
+      "event_recall": 0.9067,
+      "event_precision": 0.8571,
+      "event_f1": 0.8812,
+      "fp_per_record": 0.1368,
+      "median_latency_beats": 1.0,
+      "n_records": 95
+    }
+  },
+  "threshold_independent": {
+    "real_holdout_mean_prob": 0.008827914483845234,
+    "real_holdout_frac_gt_0.5": 0.0,
+    "train_best_val_auc": 0.7935439950980392
+  },
+  "checks": {
+    "mit_incart_auc": {
+      "passed": true,
+      "value": 0.8650327776042189,
+      "criterion": ">=0.848"
+    },
+    "mit_incart_beat_f1": {
+      "passed": false,
+      "value": 0.3934321441412648,
+      "criterion": ">=0.4"
+    },
+    "mit_incart_fp_per_record": {
+      "passed": false,
+      "value": 2.4348,
+      "criterion": "<=1.5"
+    },
+    "mit_incart_event_f1": {
+      "passed": true,
+      "value": 0.7482,
+      "criterion": ">=0.64"
+    },
+    "mit_incart_beat_sensitivity": {
+      "passed": false,
+      "value": 0.8736692689850958,
+      "criterion": ">=0.9"
+    },
+    "ptb_auc": {
+      "passed": true,
+      "value": 0.7662708600197183,
+      "criterion": ">=0.7"
+    },
+    "ptb_event_f1": {
+      "passed": true,
+      "value": 0.8812,
+      "criterion": ">=0.75"
+    },
+    "collapse_detector": {
+      "passed": true,
+      "value": 142,
+      "criterion": ">=3"
+    },
+    "real_afe_holdout": {
+      "passed": true,
+      "value": {
+        "mean_prob": 0.008827914483845234,
+        "frac_gt_0.5": 0.0
+      },
+      "criterion": "mean<0.10 且 frac=0"
+    },
+    "train_best_val_auc": {
+      "passed": false,
+      "value": 0.7935439950980392,
+      "criterion": ">=0.8"
+    }
+  },
+  "verdict": {
+    "passed": [
+      "mit_incart_auc",
+      "mit_incart_event_f1",
+      "ptb_auc",
+      "ptb_event_f1",
+      "collapse_detector",
+      "real_afe_holdout"
+    ],
+    "failed": [
+      "mit_incart_beat_f1",
+      "mit_incart_fp_per_record",
+      "mit_incart_beat_sensitivity",
+      "train_best_val_auc"
+    ],
+    "overall": "FAIL"
+  },
+  "supplementary": {
+    "mit_incart_beat_sens_after_k_of_n": 0.9631,
+    "note": "事件级拍召回 (1-of-5 平滑后) 另列, 非验收门口径"
+  }
+}

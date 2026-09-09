@@ -1,0 +1,253 @@
+{
+  "date": "2026-09-02 01:29:57",
+  "label": "seed44",
+  "model": "best_resnet_large_distill_pilot_seed44.h5",
+  "purpose": "TH106+ per-seed distill-pilot evaluation (new script)",
+  "frozen_operating_point": {
+    "theta": 0.95,
+    "k": 1,
+    "n": 5,
+    "cooldown": 20
+  },
+  "prereg": "distill_pilot_prereg.json",
+  "gates": {
+    "primary_pooled_norm_frac_gt_0.95": {
+      "baseline": 0.2544721519262702,
+      "pilot": 0.016307855179864984,
+      "relative_reduction": 0.9359149712201515,
+      "passed": true,
+      "criterion": ">=0.3 relative reduction"
+    },
+    "guardrail_A_mit_auc": {
+      "baseline": 0.7679819444562863,
+      "pilot": 0.786257440369611,
+      "drop": -0.01827549591332467,
+      "passed": true,
+      "criterion": "drop<=0.02"
+    },
+    "guardrail_B_frozen_event_recall": {
+      "baseline_event_recall": 0.9807,
+      "pilot_event_recall": 0.3974,
+      "pilot_alert_blocks": 711,
+      "passed": false,
+      "criterion": "drop<=0.02 and alert_blocks>=3"
+    },
+    "guardrail_C_real_holdout": {
+      "pilot": {
+        "mean_prob": 0.10534504801034927,
+        "frac_gt_0.5": 0.075,
+        "n": 40
+      },
+      "passed": false,
+      "criterion": "mean_prob<0.1 and frac_gt_0.5<=0.0"
+    }
+  },
+  "verdict": "PARTIAL",
+  "baseline_metrics": {
+    "mit_incart": {
+      "auc": 0.7679819444562863,
+      "n_beats": 159294,
+      "norm_quantiles": {
+        "n": 137909,
+        "mean": 0.3216654658317566,
+        "p05": 2.5086549430852757e-05,
+        "p25": 0.0006322601111605763,
+        "p50": 0.008083943277597427,
+        "p75": 0.9584956169128418,
+        "p95": 0.9999839782714843,
+        "frac_gt_0.5": 0.31821708517935743,
+        "frac_gt_0.95": 0.2544721519262702
+      },
+      "frozen": {
+        "theta": 0.95,
+        "k": 1,
+        "n": 5,
+        "cooldown": 20,
+        "beat_tp": 17733,
+        "beat_fp": 76949,
+        "beat_tn": 60960,
+        "beat_fn": 3652,
+        "beat_recall": 0.8292,
+        "beat_precision": 0.1873,
+        "beat_f1": 0.3056,
+        "gt_events": 3050,
+        "alert_blocks": 402,
+        "matched_gt_events": 2991,
+        "false_alarm_blocks": 189,
+        "event_recall": 0.9807,
+        "event_precision": 0.5299,
+        "event_f1": 0.688,
+        "fp_per_record": 7.0,
+        "median_latency_beats": 0.0,
+        "n_records": 27
+      }
+    },
+    "mit_only": {
+      "n_norm": 91302,
+      "frac_gt_0.95": 0.2447372456244113,
+      "frac_gt_0.5": 0.2955904580403496,
+      "band_0.005_count": 383
+    },
+    "incart_only": {
+      "n_norm": 46607,
+      "frac_gt_0.95": 0.273542600896861,
+      "frac_gt_0.5": 0.36254210740875836,
+      "band_0.005_count": 336
+    },
+    "pooled_norm_frac_gt_0.95": 0.2544721519262702,
+    "pooled_bootstrap_ci95": [
+      0.11852610798960024,
+      0.41675669627318845
+    ],
+    "ptb": {
+      "auc": 0.8262522916243232,
+      "n_beats": 14694,
+      "norm_quantiles": {
+        "n": 2403,
+        "mean": 0.2076207548379898,
+        "p05": 0.00010581812239252031,
+        "p25": 0.0008479507232550532,
+        "p50": 0.0045510511845350266,
+        "p75": 0.08929494395852089,
+        "p95": 0.9998474359512329,
+        "frac_gt_0.5": 0.19850187265917604,
+        "frac_gt_0.95": 0.16312942155638785
+      },
+      "frozen": {
+        "theta": 0.95,
+        "k": 1,
+        "n": 5,
+        "cooldown": 20,
+        "beat_tp": 10051,
+        "beat_fp": 635,
+        "beat_tn": 1768,
+        "beat_fn": 2240,
+        "beat_recall": 0.8178,
+        "beat_precision": 0.9406,
+        "beat_f1": 0.8749,
+        "gt_events": 92,
+        "alert_blocks": 108,
+        "matched_gt_events": 86,
+        "false_alarm_blocks": 10,
+        "event_recall": 0.9348,
+        "event_precision": 0.9074,
+        "event_f1": 0.9209,
+        "fp_per_record": 0.0893,
+        "median_latency_beats": 0.0,
+        "n_records": 112
+      }
+    }
+  },
+  "pilot_metrics": {
+    "mit_incart": {
+      "auc": 0.786257440369611,
+      "n_beats": 159294,
+      "norm_quantiles": {
+        "n": 137909,
+        "mean": 0.674515426158905,
+        "p05": 0.34784072637557983,
+        "p25": 0.5060119032859802,
+        "p50": 0.7195613980293274,
+        "p75": 0.8333001732826233,
+        "p95": 0.924719226360321,
+        "frac_gt_0.5": 0.7573399850626138,
+        "frac_gt_0.95": 0.016307855179864984
+      },
+      "frozen": {
+        "theta": 0.95,
+        "k": 1,
+        "n": 5,
+        "cooldown": 20,
+        "beat_tp": 3682,
+        "beat_fp": 12096,
+        "beat_tn": 125813,
+        "beat_fn": 17703,
+        "beat_recall": 0.1722,
+        "beat_precision": 0.2334,
+        "beat_f1": 0.1982,
+        "gt_events": 3050,
+        "alert_blocks": 711,
+        "matched_gt_events": 1212,
+        "false_alarm_blocks": 202,
+        "event_recall": 0.3974,
+        "event_precision": 0.7159,
+        "event_f1": 0.5111,
+        "fp_per_record": 7.4815,
+        "median_latency_beats": 0.0,
+        "n_records": 27
+      }
+    },
+    "mit_only": {
+      "n_norm": 91302,
+      "frac_gt_0.95": 0.010591224726731067,
+      "frac_gt_0.5": 0.6994917964557184,
+      "band_0.005_count": 604
+    },
+    "incart_only": {
+      "n_norm": 46607,
+      "frac_gt_0.95": 0.027506597721372327,
+      "frac_gt_0.5": 0.8706632050979467,
+      "band_0.005_count": 715
+    },
+    "pooled_norm_frac_gt_0.95": 0.016307855179864984,
+    "pooled_bootstrap_ci95": [
+      0.007089069460189716,
+      0.027908480792462345
+    ],
+    "ptb": {
+      "auc": 0.7496129458495271,
+      "n_beats": 14694,
+      "norm_quantiles": {
+        "n": 2403,
+        "mean": 0.6050348877906799,
+        "p05": 0.35895082652568816,
+        "p25": 0.5094751417636871,
+        "p50": 0.5933479070663452,
+        "p75": 0.6947552561759949,
+        "p95": 0.9066806852817536,
+        "frac_gt_0.5": 0.7727840199750312,
+        "frac_gt_0.95": 0.019558884727424054
+      },
+      "frozen": {
+        "theta": 0.95,
+        "k": 1,
+        "n": 5,
+        "cooldown": 20,
+        "beat_tp": 585,
+        "beat_fp": 126,
+        "beat_tn": 2277,
+        "beat_fn": 11706,
+        "beat_recall": 0.0476,
+        "beat_precision": 0.8228,
+        "beat_f1": 0.09,
+        "gt_events": 92,
+        "alert_blocks": 25,
+        "matched_gt_events": 16,
+        "false_alarm_blocks": 1,
+        "event_recall": 0.1739,
+        "event_precision": 0.96,
+        "event_f1": 0.2945,
+        "fp_per_record": 0.0089,
+        "median_latency_beats": 17.5,
+        "n_records": 112
+      }
+    }
+  },
+  "real_afe_holdout": {
+    "baseline": {
+      "mean_prob": 0.008819356560707092,
+      "frac_gt_0.5": 0.0,
+      "n": 40
+    },
+    "pilot": {
+      "mean_prob": 0.10534504801034927,
+      "frac_gt_0.5": 0.075,
+      "n": 40
+    }
+  },
+  "verdict_semantics": {
+    "PASS": "主门 + 护栏 A/B/C 全过",
+    "PARTIAL": "主门过但至少一条护栏破",
+    "UNPROVEN": "主门未过 (相对降幅在 0–30% 区间或为负) 记未证明; 单种子运行, 噪声区间内不称证伪"
+  }
+}

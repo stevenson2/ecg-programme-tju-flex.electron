@@ -1,0 +1,120 @@
+{
+  "title": "VFDB/CUDB 校准保护扩训预注册 (v6 candidate)",
+  "date": "2026-09-02 10:55:39",
+  "status": "AUDIT_ONLY_NO_TRAINING_YET",
+  "purpose": "Audit/plan for adding VFDB+CUDB as a new data source to the clean v3-A pipeline, with explicit calibration protection. The raw audit, deploy-causal preprocessing, and record-level split audit are done; training is NOT approved by this file.",
+  "data": {
+    "raw_dir": "/home/devcontainers/vfdb",
+    "raw_audit_json": "models/deploy_match/vfdb_raw_audit.json",
+    "preprocessed_npz": "models/deploy_match/vfdb_processed_deploy_causal.npz",
+    "preprocess_audit_json": "models/deploy_match/vfdb_preprocess_audit.json",
+    "split_audit_json": "models/deploy_match/vfdb_split_audit.json",
+    "note": "VFDB 22 records + CUDB 35 records. After strict 250-point deploy-causal extraction and provisional rhythm labels: 29 records with usable beats, 67,249 beats (N=26,331, A=40,918, excluded=8,325 discarded from arrays). CUDB XQRS detection failed on 28/35 records; only 7 CUDB records contributed beats.",
+    "record_split": {
+      "rule": "patient_level_split(seed=42, 60/20/20); each record = one patient (conservative)",
+      "train_records": 19,
+      "val_records": 5,
+      "test_records": 5,
+      "train_beats": 43676,
+      "train_normal": 17941,
+      "train_abnormal": 25735,
+      "val_beats": 14663,
+      "val_normal": 4471,
+      "val_abnormal": 10192,
+      "test_beats": 8910,
+      "test_normal": 3919,
+      "test_abnormal": 4991,
+      "zero_overlap_audited": true
+    }
+  },
+  "label_map": {
+    "vfdb_normal_notes": [
+      "N",
+      "NSR"
+    ],
+    "vfdb_abnormal": "all non-normal, non-excluded rhythm notes (VT,VF,VFL,VFIB,AFIB,AF,SVTA,NOD,BI,HGEA,VER,SBR,PM,B,...)",
+    "vfdb_exclude": [
+      "NOISE",
+      "ASYS",
+      "EMPTY_NOTE"
+    ],
+    "cudb": "pre-'[' normal; '['->']' VF abnormal; post-']' excluded",
+    "note": "provisional map already used for feasibility arrays; final decision locked here if training is approved"
+  },
+  "training_plan_if_approved": {
+    "architecture": "v3 A = build_ecg_resnet_lite_large(dropout=0.4), 62,834 params",
+    "seed": 42,
+    "data_mix": "v3-A train split (existing distill_pilot_teacher_targets.npz train x/y) + VFDB/CUDB train split only. VFDB/CUDB val/test are NEVER used for training or early-stopping.",
+    "optimizer": "Adam + CosineDecay(3e-4, 80*steps), batch 32, epochs 80, patience 20, monitor val_auc, restore best",
+    "loss": "hard-label CE, no distillation, no teacher targets",
+    "calibration": {
+      "method": "post-hoc isotonic or temperature scaling fitted on val/probabilities (monotone; ranking/AUC-invariant)",
+      "fit_data": "val split only; never test; never VFDB test split",
+      "required_report": "pre/post calibration Brier or ECE + theta=0.5 metrics"
+    }
+  },
+  "gates": {
+    "primary_relative_reduction_min": 0.3,
+    "guardrail_auc_max_drop": 0.02,
+    "guardrail_event_recall_max_drop": 0.02,
+    "guardrail_alert_blocks_min": 3,
+    "real_holdout_mean_prob_max": 0.1,
+    "real_holdout_frac_gt_0.5_max": 0.0
+  },
+  "frozen_operating_point": {
+    "theta": 0.95,
+    "k": 1,
+    "n": 5,
+    "cooldown": 20
+  },
+  "baseline_references_from_disk": {
+    "p1_mit_frac_gt_0.95": 0.24480296159996495,
+    "p1_incart_frac_gt_0.95": 0.2735855129057867,
+    "p1_mit_auc": 0.7679994798154276,
+    "p1_ptb_auc": 0.8262335343912346,
+    "sweep_mit_event_recall": 0.9807,
+    "sweep_mit_alert_blocks": 401,
+    "sweep_mit_false_alarm_blocks": 188,
+    "sweep_mit_fp_per_record": 6.963,
+    "sweep_ptb_event_recall": 0.9348
+  },
+  "calibration_protection": {
+    "real_afe_holdout_not_worse": {
+      "criterion": "mean_prob <= max(0.10, baseline_mean + 0.02) AND frac_gt_0.5 <= baseline_frac_gt_0.5",
+      "baseline_ref": {
+        "p1_mit_frac_gt_0.95": 0.24480296159996495,
+        "p1_incart_frac_gt_0.95": 0.2735855129057867,
+        "p1_mit_auc": 0.7679994798154276,
+        "p1_ptb_auc": 0.8262335343912346,
+        "sweep_mit_event_recall": 0.9807,
+        "sweep_mit_alert_blocks": 401,
+        "sweep_mit_false_alarm_blocks": 188,
+        "sweep_mit_fp_per_record": 6.963,
+        "sweep_ptb_event_recall": 0.9348
+      }
+    },
+    "theta05_false_alarm_not_worse": {
+      "criterion": "pooled val normal beat frac>0.5 increase <= +0.02 vs baseline; pure-normal record alert blocks <= baseline count (from p1/val per-record blocks), reported as relative indicator",
+      "note": "baseline values loaded at evaluation time from disk; never hard-coded without proof"
+    },
+    "frozen_event_recall": {
+      "criterion": "drop <= 0.02 vs baseline at theta=0.95/1-of-5/cooldown=20"
+    },
+    "no_strategy_only": {
+      "rule": "A verdict cannot be PASS if calibration/theta=0.5/frozen-recall reports are missing."
+    }
+  },
+  "verdict_semantics": {
+    "PASS": "primary reduction gate + guardrail A/B/C + all calibration protection gates pass",
+    "PARTIAL": "primary passes but at least one guardrail/calibration gate breaks",
+    "UNPROVEN": "primary does not pass or data/split impossible; not called disproven"
+  },
+  "zero_test_contact": true,
+  "tests_holdout": "the existing 40-beat real AFE holdout remains untouched in training; used only in gates",
+  "known_limitations": [
+    "VFDB/CUDB are not healthy-population SVEB Holter data like SVDB; VFDB N segments come from patients with malignant arrhythmias, so 'normal' here is normal-sinus morphology in a pathological population.",
+    "CUDB XQRS failure on 28/35 records reduces usablity; current usable set is mostly VFDB.",
+    "label map is provisional and must be re-confirmed before any training.",
+    "val double-use remains (early stopping + gates); numbers are relative indicators."
+  ]
+}

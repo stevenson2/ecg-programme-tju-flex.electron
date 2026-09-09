@@ -1,0 +1,85 @@
+{
+  "title": "v6a 快速微调配方预注册",
+  "date": "2026-09-02 11:53:26",
+  "purpose": "Fast recipe check: fine-tune v3 A on 100k balanced mined dataset (50k abnormal + 50k hard-normal >0.5) to see whether the new hard-normal pool can reduce val over-alarm without breaking recall/calibration.",
+  "recipe": {
+    "name": "v6a",
+    "arch": "v3 A (62,834 params)",
+    "init": "load best_resnet_large_clean_baseline_v3.h5, then fine-tune all layers",
+    "data": {
+      "npz": "models/deploy_match/v6a_train_100k.npz",
+      "n": 100000,
+      "normal": 50000,
+      "abnormal": 50000,
+      "normal_source": "hard-normal pool (v3 A score > 0.5) + stratified source quotas",
+      "note": "no test/val data; all from train-safe mined pool"
+    },
+    "optimizer": "Adam + CosineDecay(3e-4, 40*steps)",
+    "batch_size": 128,
+    "epochs_requested": 40,
+    "early_stopping": {
+      "monitor": "val_auc",
+      "patience": 8,
+      "restore_best": true
+    },
+    "val_for_early_stopping": "v3 A val split (distill_pilot_teacher_targets.npz x_val/y_val), 4040 beats",
+    "loss": "sparse categorical crossentropy (hard labels only, no KD)",
+    "augmentation": "none for speed"
+  },
+  "gates": {
+    "primary_relative_reduction_min": 0.3,
+    "guardrail_auc_max_drop": 0.02,
+    "guardrail_event_recall_max_drop": 0.02,
+    "guardrail_alert_blocks_min": 3,
+    "real_holdout_mean_prob_max": 0.1,
+    "real_holdout_frac_gt_0.5_max": 0.0
+  },
+  "frozen_operating_point": {
+    "theta": 0.95,
+    "k": 1,
+    "n": 5,
+    "cooldown": 20
+  },
+  "baseline_references_from_disk": {
+    "p1_mit_frac_gt_0.95": 0.24480296159996495,
+    "p1_incart_frac_gt_0.95": 0.2735855129057867,
+    "p1_mit_auc": 0.7679994798154276,
+    "p1_ptb_auc": 0.8262335343912346,
+    "sweep_mit_event_recall": 0.9807,
+    "sweep_mit_alert_blocks": 401,
+    "sweep_mit_false_alarm_blocks": 188,
+    "sweep_mit_fp_per_record": 6.963,
+    "sweep_ptb_event_recall": 0.9348
+  },
+  "calibration_protection": {
+    "real_afe_holdout_not_worse": {
+      "criterion": "mean_prob <= max(0.10, baseline_mean + 0.02) AND frac_gt_0.5 <= baseline_frac_gt_0.5"
+    },
+    "theta05_false_alarm_not_worse": {
+      "criterion": "val pooled normal frac>0.5 increase <= +0.02; pure-normal record alert blocks <= baseline"
+    },
+    "frozen_event_recall": {
+      "criterion": "event_recall drop <= 0.02 at theta=0.95/1-of-5/cooldown=20"
+    },
+    "no_strategy_only": {
+      "rule": "PASS requires calibration/theta=0.5/frozen-recall reports present"
+    }
+  },
+  "verdict_semantics": {
+    "PASS": "primary + guardrail A/B/C + calibration protection all pass",
+    "PARTIAL": "primary passes but at least one guardrail/calibration gate breaks",
+    "UNPROVEN": "primary does not pass or recipe impossible; not called disproven"
+  },
+  "outputs": {
+    "model": "models/deploy_match/best_v6a_finetune_v3a_100k.h5",
+    "train_json": "models/deploy_match/train_v6a_finetune_v3a_100k.json",
+    "train_log": "models/deploy_match/train_v6a_finetune_v3a_100k.log",
+    "eval_json": "models/deploy_match/eval_v6a_finetune_v3a_100k.json"
+  },
+  "zero_test_contact": true,
+  "known_limitations": [
+    "fine-tune from v3 A may be faster but could preserve existing biases",
+    "100k is a fast subset; if signal appears, expand to 200k-400k",
+    "val double-use unchanged (early stopping + gates)"
+  ]
+}

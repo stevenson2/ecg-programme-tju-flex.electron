@@ -1,0 +1,9 @@
+TOP KEYS: ['date', 'purpose', 'provenance', 'gpu', 'output_model', 'patient_split_seed', 'svdb_seed', 'base_and_val_identical_to_v3_a', 'replication_checks', 'data', 'config', 'results']
+replication_checks keys: ['base_total', 'base_abn', 'base_norm', 'val_total', 'real_holdout_indices_match_v4_json']
+data keys: ['base_main', 'sampling_audit', 'real_afe_train_unique', 'real_afe_train_repeated', 'real_afe_holdout', 'synthetic_hard_negative', 'svdb_addition', 'train_total', 'train_abn', 'train_norm', 'val_total', 'val_abn', 'val_norm', 'val_contains_svdb', 'real_holdout_indices']
+config keys: ['architecture', 'params', 'dropout', 'optimizer', 'lr_schedule', 'epochs_requested', 'epochs_run', 'batch_size', 'early_stopping_patience', 'val_monitor', 'class_weight', 'loss']
+results keys: ['best_val_auc', 'best_epoch', 'real_holdout_mean_prob', 'real_holdout_frac_gt_0.5', 'train_time_s']
+incart test_record_ids[:20]=[np.int32(1), np.int32(2), np.int32(8), np.int32(12), np.int32(13), np.int32(14), np.int32(59), np.int32(60), np.int32(61), np.int32(68), np.int32(69), np.int32(74), np.int32(75)] len=13 dtype=ndarray
+mit test_record_ids=[np.int32(101), np.int32(105), np.int32(108), np.int32(111), np.int32(119), np.int32(201), np.int32(202), np.int32(205), np.int32(207), np.int32(208)]
+npz rids unique=[np.int32(101), np.int32(105), np.int32(108), np.int32(111), np.int32(119), np.int32(201), np.int32(202), np.int32(205), np.int32(207), np.int32(208), np.int32(100001), np.int32(100002), np.int32(100008), np.int32(100012), np.int32(100013), np.int32(100014), np.int32(100059), np.int32(100060), np.int32(100061), np.int32(100068), np.int32(100069), np.int32(100074), np.int32(100075)]
+cache incart rids subset of guard? False ; with +100000 offset? True

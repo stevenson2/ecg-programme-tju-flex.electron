@@ -1,0 +1,50 @@
+{
+  "date": "2026-09-02 11:56:31",
+  "purpose": "v6a fast fine-tune recipe",
+  "recipe": "fine-tune v3 A on 100k balanced mined hard-normal data",
+  "seed": 42,
+  "gpu": [
+    "PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')"
+  ],
+  "data": {
+    "npz": "models/deploy_match/v6a_train_100k.npz",
+    "train_total": 100000,
+    "train_normal": 50000,
+    "train_abnormal": 50000,
+    "val_total": 4040
+  },
+  "config": {
+    "batch": 128,
+    "epochs_requested": 40,
+    "epochs_run": 15,
+    "patience": 8,
+    "lr": 0.0003,
+    "loss": "sparse_categorical_crossentropy",
+    "augmentation": null
+  },
+  "results": {
+    "best_val_auc": 0.5619444852941176,
+    "best_epoch_auc": 0.0,
+    "train_time_s": 172.9,
+    "val_auc_history": [
+      0.5559674019607843,
+      0.5616991421568627,
+      0.5618741421568628,
+      0.5606900735294118,
+      0.5574162990196079,
+      0.5614958333333333,
+      0.5619444852941176,
+      0.5394295343137254,
+      0.5489758578431373,
+      0.5137313725490197,
+      0.53398125,
+      0.5211246323529412,
+      0.5269730392156862,
+      0.5052324754901961,
+      0.48615723039215686
+    ],
+    "epochs": 15
+  },
+  "model": "models/deploy_match/best_v6a_finetune_v3a_100k.h5",
+  "zero_test_contact": true
+}

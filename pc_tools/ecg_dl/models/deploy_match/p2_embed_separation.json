@@ -1,0 +1,79 @@
+{
+  "date": "2026-09-01 21:53:33",
+  "purpose": "P2: 被误报正常拍在 fc1 嵌入空间里靠近正常还是异常原型; 决定原型/距离校准头是否值得做",
+  "model": "models/best_resnet_large_clean_baseline_v3.h5",
+  "embed_layer": "fc1",
+  "selfcheck": {
+    "npz_mit_incart_auc": 0.8650835280236773,
+    "diag_v3_mit_incart_auc": 0.865055547768982,
+    "match": true
+  },
+  "group_defs": {
+    "FP": "label=0 & prob>0.95 (过度报警源头)",
+    "TN": "label=0 & prob<=0.5 (明确判对)",
+    "TP": "label=1 & prob>0.5 (真阳性)",
+    "gray_norm": "label=0 & 0.5<prob<=0.95 (灰区)",
+    "miss_abn": "label=1 & prob<=0.5 (漏检)"
+  },
+  "method": "leave-one-record-out 原型; dist_ratio=dn/(dn+da), 正常小/异常大",
+  "domains": {
+    "mit_incart": {
+      "records": 27,
+      "values": {
+        "embedding_auc_label_vs_ratio": 0.543305347518394
+      },
+      "groups": {
+        "FP": {
+          "n": 35112,
+          "recs_present": 26,
+          "mean_dist_norm": 5.416619341726264,
+          "mean_dist_abn": 2.4773440977796577,
+          "mean_dist_ratio": 0.695371660228261,
+          "frac_nearest_abn": 0.996952608794714,
+          "mean_prob": 0.9949109516214553,
+          "p95_prob": 0.9999998807907104
+        },
+        "TN": {
+          "n": 94013,
+          "recs_present": 27,
+          "mean_dist_norm": 2.6154347063860754,
+          "mean_dist_abn": 6.137529893308596,
+          "mean_dist_ratio": 0.28895258438292776,
+          "frac_nearest_abn": 0.0,
+          "mean_prob": 0.027088715571562227,
+          "p95_prob": 0.18771094679832445
+        },
+        "TP": {
+          "n": 14723,
+          "recs_present": 25,
+          "mean_dist_norm": 6.668131648931443,
+          "mean_dist_abn": 4.183629386549547,
+          "mean_dist_ratio": 0.6156829337693029,
+          "frac_nearest_abn": 0.841676288799837,
+          "mean_prob": 0.9741493357448063,
+          "p95_prob": 1.0
+        },
+        "gray_norm": {
+          "n": 8784,
+          "recs_present": 27,
+          "mean_dist_norm": 2.349192486638254,
+          "mean_dist_abn": 3.082327400916044,
+          "mean_dist_ratio": 0.434565033348361,
+          "frac_nearest_abn": 0.17770947176684881,
+          "mean_prob": 0.78567637398649,
+          "p95_prob": 0.9436933308839798
+        },
+        "miss_abn": {
+          "n": 6662,
+          "recs_present": 22,
+          "mean_dist_norm": 1.9295154707151216,
+          "mean_dist_abn": 6.821126245944145,
+          "mean_dist_ratio": 0.2181556552578935,
+          "frac_nearest_abn": 0.0,
+          "mean_prob": 0.06240757634685876,
+          "p95_prob": 0.3478126347064972
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+[HNQ] MIT-BIH: hard_total=8425 sampled=200
+[HNQ] INCART: hard_total=9596 sampled=200
+[HNQ] PTB: hard_total=20 sampled=20
+[HNQ] SVDB: hard_total=53489 sampled=200
+[HNQ] VFDB+CUDB: hard_total=12799 sampled=200
+[HNQ] AFDB: hard_total=237923 sampled=200
+[HNQ] saved /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/deploy_match/hard_normal_quality_audit.json

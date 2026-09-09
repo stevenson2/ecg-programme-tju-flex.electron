@@ -1,0 +1,49 @@
+{
+  "date": "2026-09-01 21:02:08",
+  "purpose": "§105 Phase A-1: MIT+INCART normfix 探针数组 (仅窗口归一化被替换)",
+  "spec": {
+    "id": "normfix_spec_v1",
+    "version": 1,
+    "option": "A",
+    "constants": {
+      "tau_s": 4.0,
+      "fs_hz": 250,
+      "alpha": 0.000999500166624978,
+      "alpha_formula": "alpha = 1 - exp(-1/(tau_s*fs_hz)) = 1 - exp(-0.001)",
+      "s_init": 0.275,
+      "smin": 0.02,
+      "e2_init": 0.075625,
+      "warmup_s": 12.0,
+      "fixed_point_note": "一阶 IIR 单状态, 可 Q16/Q32 定点; 固件用 float32 实现, 常数以 #define 固定 (alpha float32 相对误差 <1.2e-7, 在验证容差内)"
+    }
+  },
+  "chain": "修正后因果链 (D3 + 因果 HP 0.5Hz@250Hz), 与 build_deploy_npz --causal 同",
+  "reference_arrays": {
+    "mit_bih": "mit_bih_processed_deploy_causal",
+    "incart": "incart_processed_deploy_causal"
+  },
+  "verification": [
+    "链忠实度: 旧公式 (固件窗口 z-score) 在新建链流上重算拍, 与旧 _deploy_causal 数组逐位相等",
+    "normfix 拍数 == z-score 拍数 (逐记录)",
+    "record_ids / labels 序列与旧数组逐位相等; 总拍数相等"
+  ],
+  "outputs": {
+    "mit_bih": "mit_bih_processed_deploy_causal_normfix",
+    "incart": "incart_processed_deploy_causal_normfix"
+  },
+  "totals": {
+    "mit_bih": {
+      "records": 48,
+      "total_beats": 658962,
+      "normal": 543786,
+      "abnormal": 115176
+    },
+    "incart": {
+      "records": 75,
+      "total_beats": 175779,
+      "normal": 153596,
+      "abnormal": 22183
+    }
+  },
+  "wall_time_seconds": 84.1
+}

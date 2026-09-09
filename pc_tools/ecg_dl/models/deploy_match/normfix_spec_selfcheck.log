@@ -1,0 +1,25 @@
+{
+  "alpha_formula_match": true,
+  "e2_init_match": true,
+  "vectorized_vs_loop_bitexact": false,
+  "max_rel_diff": 2.9206034509586032e-15,
+  "zero_input_all_zero": true,
+  "tiny_gain_capped": [
+    3.638182272800633e-05,
+    5.995350068462169e-05,
+    50.0
+  ],
+  "warmup_scale_at_t0": 0.275,
+  "spec_constants": {
+    "tau_s": 4.0,
+    "fs_hz": 250,
+    "alpha": 0.000999500166624978,
+    "alpha_formula": "alpha = 1 - exp(-1/(tau_s*fs_hz)) = 1 - exp(-0.001)",
+    "s_init": 0.275,
+    "smin": 0.02,
+    "e2_init": 0.075625,
+    "warmup_s": 12.0,
+    "fixed_point_note": "一阶 IIR 单状态, 可 Q16/Q32 定点; 固件用 float32 实现, 常数以 #define 固定 (alpha float32 相对误差 <1.2e-7, 在验证容差内)"
+  }
+}
+EXIT=0

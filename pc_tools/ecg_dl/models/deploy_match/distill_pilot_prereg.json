@@ -1,0 +1,48 @@
+{
+  "gates": {
+    "primary_relative_reduction_min": 0.3,
+    "guardrail_auc_max_drop": 0.02,
+    "guardrail_event_recall_max_drop": 0.02,
+    "guardrail_alert_blocks_min": 3,
+    "real_holdout_mean_prob_max": 0.1,
+    "real_holdout_frac_gt_0.5_max": 0.0
+  },
+  "frozen_operating_point": {
+    "theta": 0.95,
+    "k": 1,
+    "n": 5,
+    "cooldown": 20
+  },
+  "baseline_references_from_disk": {
+    "p1_mit_frac_gt_0.95": 0.24480296159996495,
+    "p1_incart_frac_gt_0.95": 0.2735855129057867,
+    "p1_mit_auc": 0.7679994798154276,
+    "p1_ptb_auc": 0.8262335343912346,
+    "sweep_mit_event_recall": 0.9807,
+    "sweep_mit_alert_blocks": 401,
+    "sweep_mit_false_alarm_blocks": 188,
+    "sweep_mit_fp_per_record": 6.963,
+    "sweep_ptb_event_recall": 0.9348
+  },
+  "verdict_semantics": {
+    "PASS": "主门 + 护栏 A/B/C 全过",
+    "PARTIAL": "主门过但至少一条护栏破",
+    "UNPROVEN": "主门未过 (相对降幅在 0–30% 区间或为负) 记未证明; 单种子运行, 噪声区间内不称证伪"
+  },
+  "abort_gate_stage1": "训练侧 LORO 读出 AUC < 0.75 → 中止, 不训练",
+  "real_synth_swap_rule": "real_synth 组均值伪概率 > 0.5 → 该组目标替换为 EPS (预注册, 防 OOD 教师反噬)",
+  "zero_test_contact": "仅使用 val 患者全序列与真实 AFE 留出 40 拍; 禁止加载 mit/ptb_deploy_causal_match.npz",
+  "known_limitations": [
+    "val 双重使用 (早停监控 + 全部门): 一切数字为相对指标, 非诚实泛化估计",
+    "教师真 10s 读出 0.7794 未过 0.80 GO 线; 本试点教的是偏移后更强的 tile 视图 (0.8893); 若通过, 结论只覆盖'教师软目标能否降低 val 侧误报'",
+    "伪目标含噪 (读出 AUC ≈ 0.89 非 1); α=0.5 保留硬标签锚",
+    "单种子运行; 记录级 bootstrap CI 仅报告不进门; 多种子复跑为后续工作"
+  ],
+  "bootstrap": {
+    "n_iterations": 2000,
+    "seed": 7,
+    "note": "记录级, 仅报告不进门"
+  },
+  "date": "2026-09-02 01:11:09",
+  "purpose": "TH §106 蒸馏试点预注册: 教师 tile 特征软目标 (α=0.5) 能否降低 v3 A 的 val 侧高置信误报"
+}

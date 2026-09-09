@@ -1,0 +1,1149 @@
+{
+  "date": "2026-09-02 10:53:55",
+  "purpose": "VFDB/CUDB deploy-causal feasibility build: beats + provisional labels",
+  "provisional_label_map": {
+    "vfdb_normal_notes": [
+      "N",
+      "NSR"
+    ],
+    "vfdb_abnormal_notes": "all non-normal non-excluded rhythm notes",
+    "vfdb_exclude_notes": [
+      "ASYS",
+      "NOISE"
+    ],
+    "cudb_fepisode": "'['->']' abnormal, pre-'[' normal, post-']' excluded",
+    "note": "THIS IS NOT A FINAL TRAINING LABEL DECISION; confirm in prereg"
+  },
+  "records_processed": 57,
+  "records_with_error": 0,
+  "total_beats": 75574,
+  "label_counts": {
+    "normal": 26331,
+    "abnormal": 40918,
+    "excluded": 8325
+  },
+  "per_record": [
+    {
+      "record": "418",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 4296,
+      "n_beats_extracted": 4296,
+      "n_normal": 3564,
+      "n_abnormal": 732,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "N",
+          3564
+        ],
+        [
+          "VFL",
+          732
+        ]
+      ],
+      "elapsed_s": 1.2
+    },
+    {
+      "record": "419",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 3861,
+      "n_beats_extracted": 3859,
+      "n_normal": 1917,
+      "n_abnormal": 649,
+      "n_excluded": 1293,
+      "notes_top": [
+        [
+          "N",
+          1917
+        ],
+        [
+          "NOISE",
+          1293
+        ],
+        [
+          "VFL",
+          649
+        ]
+      ],
+      "elapsed_s": 1.0
+    },
+    {
+      "record": "420",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 2961,
+      "n_beats_extracted": 2960,
+      "n_normal": 1472,
+      "n_abnormal": 781,
+      "n_excluded": 707,
+      "notes_top": [
+        [
+          "N",
+          1472
+        ],
+        [
+          "VT",
+          781
+        ],
+        [
+          "NOISE",
+          707
+        ]
+      ],
+      "elapsed_s": 1.0
+    },
+    {
+      "record": "421",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 4430,
+      "n_beats_extracted": 4429,
+      "n_normal": 2454,
+      "n_abnormal": 1139,
+      "n_excluded": 836,
+      "notes_top": [
+        [
+          "N",
+          2454
+        ],
+        [
+          "VT",
+          1139
+        ],
+        [
+          "NOISE",
+          836
+        ]
+      ],
+      "elapsed_s": 1.0
+    },
+    {
+      "record": "422",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 3982,
+      "n_beats_extracted": 3981,
+      "n_normal": 1991,
+      "n_abnormal": 1624,
+      "n_excluded": 366,
+      "notes_top": [
+        [
+          "N",
+          1991
+        ],
+        [
+          "VFIB",
+          1188
+        ],
+        [
+          "VT",
+          436
+        ],
+        [
+          "NOISE",
+          366
+        ]
+      ],
+      "elapsed_s": 1.0
+    },
+    {
+      "record": "423",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 2875,
+      "n_beats_extracted": 2874,
+      "n_normal": 1327,
+      "n_abnormal": 1220,
+      "n_excluded": 327,
+      "notes_top": [
+        [
+          "N",
+          1327
+        ],
+        [
+          "VT",
+          1182
+        ],
+        [
+          "NOISE",
+          327
+        ],
+        [
+          "AFIB",
+          31
+        ],
+        [
+          "NOD",
+          7
+        ]
+      ],
+      "elapsed_s": 1.3
+    },
+    {
+      "record": "424",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 3891,
+      "n_beats_extracted": 3890,
+      "n_normal": 3142,
+      "n_abnormal": 654,
+      "n_excluded": 94,
+      "notes_top": [
+        [
+          "N",
+          2677
+        ],
+        [
+          "NSR",
+          465
+        ],
+        [
+          "VFIB",
+          335
+        ],
+        [
+          "VFL",
+          189
+        ],
+        [
+          "NOD",
+          130
+        ],
+        [
+          "NOISE",
+          90
+        ],
+        [
+          "ASYS",
+          4
+        ]
+      ],
+      "elapsed_s": 1.1
+    },
+    {
+      "record": "425",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 2052,
+      "n_beats_extracted": 2051,
+      "n_normal": 1191,
+      "n_abnormal": 489,
+      "n_excluded": 371,
+      "notes_top": [
+        [
+          "N",
+          1191
+        ],
+        [
+          "B",
+          422
+        ],
+        [
+          "NOISE",
+          371
+        ],
+        [
+          "VT",
+          67
+        ]
+      ],
+      "elapsed_s": 1.0
+    },
+    {
+      "record": "426",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 3687,
+      "n_beats_extracted": 3686,
+      "n_normal": 1052,
+      "n_abnormal": 2000,
+      "n_excluded": 634,
+      "notes_top": [
+        [
+          "VF",
+          1655
+        ],
+        [
+          "N",
+          1052
+        ],
+        [
+          "NOISE",
+          634
+        ],
+        [
+          "SVTA",
+          204
+        ],
+        [
+          "VT",
+          141
+        ]
+      ],
+      "elapsed_s": 1.0
+    },
+    {
+      "record": "427",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 4249,
+      "n_beats_extracted": 4247,
+      "n_normal": 803,
+      "n_abnormal": 2479,
+      "n_excluded": 965,
+      "notes_top": [
+        [
+          "VT",
+          2479
+        ],
+        [
+          "ASYS",
+          965
+        ],
+        [
+          "N",
+          803
+        ]
+      ],
+      "elapsed_s": 1.0
+    },
+    {
+      "record": "428",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 3275,
+      "n_beats_extracted": 3274,
+      "n_normal": 0,
+      "n_abnormal": 3256,
+      "n_excluded": 18,
+      "notes_top": [
+        [
+          "BI",
+          3091
+        ],
+        [
+          "VT",
+          165
+        ],
+        [
+          "NOISE",
+          18
+        ]
+      ],
+      "elapsed_s": 1.0
+    },
+    {
+      "record": "429",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 3618,
+      "n_beats_extracted": 3617,
+      "n_normal": 0,
+      "n_abnormal": 3470,
+      "n_excluded": 147,
+      "notes_top": [
+        [
+          "BI",
+          3133
+        ],
+        [
+          "VFL",
+          308
+        ],
+        [
+          "NOISE",
+          147
+        ],
+        [
+          "VT",
+          29
+        ]
+      ],
+      "elapsed_s": 1.1
+    },
+    {
+      "record": "430",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 4842,
+      "n_beats_extracted": 4841,
+      "n_normal": 0,
+      "n_abnormal": 4767,
+      "n_excluded": 74,
+      "notes_top": [
+        [
+          "VF",
+          2700
+        ],
+        [
+          "VT",
+          925
+        ],
+        [
+          "BI",
+          663
+        ],
+        [
+          "VFL",
+          212
+        ],
+        [
+          "HGEA",
+          189
+        ],
+        [
+          "NOISE",
+          65
+        ],
+        [
+          "VER",
+          47
+        ],
+        [
+          "SBR",
+          31
+        ]
+      ],
+      "elapsed_s": 1.1
+    },
+    {
+      "record": "602",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 3225,
+      "n_beats_extracted": 3223,
+      "n_normal": 54,
+      "n_abnormal": 2779,
+      "n_excluded": 390,
+      "notes_top": [
+        [
+          "PM",
+          1927
+        ],
+        [
+          "VT",
+          852
+        ],
+        [
+          "NOISE",
+          383
+        ],
+        [
+          "N",
+          54
+        ],
+        [
+          "ASYS",
+          7
+        ]
+      ],
+      "elapsed_s": 1.0
+    },
+    {
+      "record": "605",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 1865,
+      "n_beats_extracted": 1864,
+      "n_normal": 0,
+      "n_abnormal": 69,
+      "n_excluded": 1795,
+      "notes_top": [
+        [
+          "NOISE",
+          1795
+        ],
+        [
+          "VT",
+          69
+        ]
+      ],
+      "elapsed_s": 0.9
+    },
+    {
+      "record": "607",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 1850,
+      "n_beats_extracted": 1850,
+      "n_normal": 0,
+      "n_abnormal": 1849,
+      "n_excluded": 1,
+      "notes_top": [
+        [
+          "NOD",
+          1230
+        ],
+        [
+          "VT",
+          347
+        ],
+        [
+          "SVTA",
+          272
+        ],
+        [
+          "ASYS",
+          1
+        ]
+      ],
+      "elapsed_s": 1.0
+    },
+    {
+      "record": "609",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 2202,
+      "n_beats_extracted": 2200,
+      "n_normal": 856,
+      "n_abnormal": 1344,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "AFIB",
+          1078
+        ],
+        [
+          "N",
+          856
+        ],
+        [
+          "HGEA",
+          201
+        ],
+        [
+          "VFL",
+          58
+        ],
+        [
+          "VER",
+          4
+        ],
+        [
+          "VT",
+          3
+        ]
+      ],
+      "elapsed_s": 1.0
+    },
+    {
+      "record": "610",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 2125,
+      "n_beats_extracted": 2125,
+      "n_normal": 1326,
+      "n_abnormal": 776,
+      "n_excluded": 23,
+      "notes_top": [
+        [
+          "N",
+          1326
+        ],
+        [
+          "HGEA",
+          772
+        ],
+        [
+          "NOISE",
+          23
+        ],
+        [
+          "VT",
+          4
+        ]
+      ],
+      "elapsed_s": 1.1
+    },
+    {
+      "record": "611",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 4207,
+      "n_beats_extracted": 4205,
+      "n_normal": 0,
+      "n_abnormal": 4205,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "VT",
+          2328
+        ],
+        [
+          "SVTA",
+          1877
+        ]
+      ],
+      "elapsed_s": 1.1
+    },
+    {
+      "record": "612",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 2453,
+      "n_beats_extracted": 2452,
+      "n_normal": 1487,
+      "n_abnormal": 965,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "N",
+          1487
+        ],
+        [
+          "VT",
+          965
+        ]
+      ],
+      "elapsed_s": 0.9
+    },
+    {
+      "record": "614",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 3472,
+      "n_beats_extracted": 3470,
+      "n_normal": 1388,
+      "n_abnormal": 2082,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "VT",
+          1880
+        ],
+        [
+          "N",
+          1388
+        ],
+        [
+          "B",
+          202
+        ]
+      ],
+      "elapsed_s": 1.0
+    },
+    {
+      "record": "615",
+      "type": "vfdb",
+      "fs": 250,
+      "n_xqrs_peaks": 1589,
+      "n_beats_extracted": 1589,
+      "n_normal": 0,
+      "n_abnormal": 1589,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "AFIB",
+          1531
+        ],
+        [
+          "VT",
+          58
+        ]
+      ],
+      "elapsed_s": 1.0
+    },
+    {
+      "record": "cu01",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 925,
+      "n_beats_extracted": 923,
+      "n_normal": 202,
+      "n_abnormal": 721,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "VF",
+          721
+        ],
+        [
+          "PRE_VF",
+          202
+        ]
+      ],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu02",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu03",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu04",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 403,
+      "n_beats_extracted": 401,
+      "n_normal": 321,
+      "n_abnormal": 62,
+      "n_excluded": 18,
+      "notes_top": [
+        [
+          "PRE_VF",
+          321
+        ],
+        [
+          "VF",
+          62
+        ],
+        [
+          "POST_VF",
+          18
+        ]
+      ],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu05",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu06",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu07",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 1159,
+      "n_beats_extracted": 1157,
+      "n_normal": 374,
+      "n_abnormal": 783,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "VF",
+          783
+        ],
+        [
+          "PRE_VF",
+          374
+        ]
+      ],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu08",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu09",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu10",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu11",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu12",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu13",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu14",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu15",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 518,
+      "n_beats_extracted": 516,
+      "n_normal": 280,
+      "n_abnormal": 236,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "PRE_VF",
+          280
+        ],
+        [
+          "VF",
+          236
+        ]
+      ],
+      "elapsed_s": 0.2
+    },
+    {
+      "record": "cu16",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu17",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu18",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 755,
+      "n_beats_extracted": 754,
+      "n_normal": 472,
+      "n_abnormal": 75,
+      "n_excluded": 207,
+      "notes_top": [
+        [
+          "PRE_VF",
+          472
+        ],
+        [
+          "POST_VF",
+          207
+        ],
+        [
+          "VF",
+          75
+        ]
+      ],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu19",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu20",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu21",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu22",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu23",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu24",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu25",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu26",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu27",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu28",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 421,
+      "n_beats_extracted": 418,
+      "n_normal": 388,
+      "n_abnormal": 30,
+      "n_excluded": 0,
+      "notes_top": [
+        [
+          "PRE_VF",
+          388
+        ],
+        [
+          "VF",
+          30
+        ]
+      ],
+      "elapsed_s": 0.4
+    },
+    {
+      "record": "cu29",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu30",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu31",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu32",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu33",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    },
+    {
+      "record": "cu34",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 423,
+      "n_beats_extracted": 422,
+      "n_normal": 270,
+      "n_abnormal": 93,
+      "n_excluded": 59,
+      "notes_top": [
+        [
+          "PRE_VF",
+          270
+        ],
+        [
+          "VF",
+          93
+        ],
+        [
+          "POST_VF",
+          59
+        ]
+      ],
+      "elapsed_s": 0.2
+    },
+    {
+      "record": "cu35",
+      "type": "cudb",
+      "fs": 250,
+      "n_xqrs_peaks": 0,
+      "n_beats_extracted": 0,
+      "n_normal": 0,
+      "n_abnormal": 0,
+      "n_excluded": 0,
+      "notes_top": [],
+      "elapsed_s": 0.3
+    }
+  ],
+  "outputs": {
+    "npz": "models/deploy_match/vfdb_processed_deploy_causal.npz",
+    "audit_json": "models/deploy_match/vfdb_preprocess_audit.json"
+  },
+  "elapsed_s": 36.1
+}

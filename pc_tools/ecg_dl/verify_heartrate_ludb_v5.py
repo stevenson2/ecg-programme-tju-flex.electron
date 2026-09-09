@@ -32,6 +32,10 @@ import argparse
 import json
 import sys
 from pathlib import Path
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+import ecg_refs as _REFS  # noqa: E402
+
 
 import numpy as np
 
@@ -46,13 +50,7 @@ TOLERANCE_MS = 150  # AAMI 标准匹配容差
 TOLERANCE_SAMP = int(TOLERANCE_MS * FS / 1000)  # 75 @500Hz
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_DATA_DIR = (
-    ROOT
-    / "ECG-Database"
-    / "lobachevsky-university-electrocardiography-database-1.0.1"
-    / "lobachevsky-university-electrocardiography-database-1.0.1"
-    / "data"
-)
+DEFAULT_DATA_DIR = _REFS.LUDB_DIR
 
 # ============ 前置滤波链系数 (filter.cpp 完整 double 精度, fs=500) ============
 # HP 0.5Hz (2026-08-13 TH §44: 显示/心率链 HP 0.05→0.5Hz, 基线稳定)

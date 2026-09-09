@@ -1,0 +1,79 @@
+{
+  "date": "2026-09-02 10:03:07",
+  "purpose": "TH §109 容量探针: 宽度×2, 深度不变 (large 预设同深度) (从零, 无 KD)",
+  "provenance": "from scratch; no checkpoint loaded; no teacher targets",
+  "gpu": [
+    "PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')"
+  ],
+  "variant": "cap_w2",
+  "variant_spec": {
+    "description": "宽度×2, 深度不变 (large 预设同深度)",
+    "filters": [
+      32,
+      64,
+      128,
+      256
+    ],
+    "blocks_per_stage": [
+      2,
+      3,
+      3,
+      1
+    ],
+    "kernel_sizes": [
+      7,
+      5,
+      3,
+      3
+    ],
+    "strides": [
+      1,
+      2,
+      2,
+      1
+    ],
+    "dropout": 0.4,
+    "params_frozen": 222018,
+    "params_ratio_vs_v3A": 3.53
+  },
+  "seed": 42,
+  "output_model": "models/deploy_match/best_resnet_capacity_cap_w2_seed42.h5",
+  "data_source": "models/deploy_match/distill_pilot_teacher_targets.npz",
+  "identity_anchor_vs_v3A": {
+    "train_total": 5942,
+    "train_abn": 2500,
+    "train_norm": 3442,
+    "val_total": 4040,
+    "real_holdout": 40,
+    "v3A_anchor": {
+      "train_total": 5942,
+      "train_abn": 2500,
+      "train_norm": 3442,
+      "val_total": 4040,
+      "holdout": 40
+    },
+    "match": true
+  },
+  "config": {
+    "architecture": "build_ecg_resnet_lite",
+    "params": 222018,
+    "dropout": 0.4,
+    "optimizer": "adam",
+    "lr_schedule": "cosine decay from 0.0003",
+    "epochs_requested": 80,
+    "epochs_run": 49,
+    "batch_size": 32,
+    "early_stopping_patience": 20,
+    "val_monitor": "val_auc",
+    "class_weight": null,
+    "loss": "sparse_categorical_crossentropy",
+    "v3A_baseline_params": 62834
+  },
+  "results": {
+    "best_val_auc": 0.8103002450980392,
+    "best_epoch": 29,
+    "real_holdout_mean_prob": 1.2951843473274494e-06,
+    "real_holdout_frac_gt_0.5": 0.0,
+    "train_time_s": 203.4
+  }
+}

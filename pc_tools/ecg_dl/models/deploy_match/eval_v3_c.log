@@ -1,0 +1,21 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788249834.693690    7244 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788249834.750903    7244 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788249836.140680    7244 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+W0000 00:00:1788249837.945252    7244 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+[EVAL3:v3_c] MIT+INCART test: 51883 beats (abn=5636, records=23)
+[EVAL3:v3_c] PTB test: 13058 beats (abn=10204, records=95)
+W0000 00:00:1788249838.958698    7244 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+I0000 00:00:1788249839.232074    7244 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 5199 MB memory:  -> device: 0, name: NVIDIA GeForce RTX 5070 Laptop GPU, pci bus id: 0000:01:00.0, compute capability: 12.0a
+I0000 00:00:1788249841.269459    7330 service.cc:153] XLA service 0x7675700460b0 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1788249841.269504    7330 service.cc:161]   StreamExecutor [0]: NVIDIA GeForce RTX 5070 Laptop GPU, Compute Capability 12.0a (Driver: 13.2.0; Runtime: 12.9.0; Toolkit: 12.5.0; DNN: 9.24.0)
+I0000 00:00:1788249841.286424    7330 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1788249841.490976    7330 cuda_dnn.cc:461] Loaded cuDNN version 92400
+I0000 00:00:1788249848.396955    7330 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+[EVAL3:v3_c] mit_incart: AUC=0.7936 F1=0.3390 Sens=0.7899 Prec=0.2158
+[EVAL3:v3_c] mit_incart: evF1=0.609247 evRec=0.970378 evPrec=0.444008 FP/rec=12.304348 blocks=509
+[EVAL3:v3_c] ptb: AUC=0.7152 F1=0.7224 Sens=0.6068 Prec=0.8925
+[EVAL3:v3_c] ptb: evF1=0.835814 evRec=0.946667 evPrec=0.748201 FP/rec=0.368421 blocks=139
+[EVAL3:v3_c] saved /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/deploy_match/clean_baseline_eval_v3_c.json (22s)

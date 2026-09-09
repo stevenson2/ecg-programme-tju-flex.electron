@@ -1,0 +1,34 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788270321.402418     377 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788270322.719382     377 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788270325.413825     377 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+W0000 00:00:1788270329.883481     377 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+W0000 00:00:1788270330.117815     377 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+I0000 00:00:1788270330.337367     377 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 5199 MB memory:  -> device: 0, name: NVIDIA GeForce RTX 5070 Laptop GPU, pci bus id: 0000:01:00.0, compute capability: 12.0a
+I0000 00:00:1788270334.392219     514 service.cc:153] XLA service 0x74625c045310 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1788270334.393107     514 service.cc:161]   StreamExecutor [0]: NVIDIA GeForce RTX 5070 Laptop GPU, Compute Capability 12.0a (Driver: 13.2.0; Runtime: 12.9.0; Toolkit: 12.5.0; DNN: 9.24.0)
+I0000 00:00:1788270334.538726     514 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1788270334.904067     514 cuda_dnn.cc:461] Loaded cuDNN version 92400
+I0000 00:00:1788270365.460313     514 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+[P1] selfcheck: cache MIT+INCART AUC=0.8651 diag=0.8651 match=True
+[P1] selfcheck: cache PTB AUC=0.7662 diag=0.7662 match=True
+[P1] selfcheck: guard test rids(n=23) vs npz rids(n=23) set_match=True
+[P1] val MIT+INCART: 159294 beats (abn=21385, recs=27)
+[P1] val PTB: 14694 beats (abn=12291, recs=112)
+
+[P1] val 正常拍概率分布:
+  mit      norm: mean=0.299 p95=1.000 >0.5=0.296 >0.95=0.245
+  incart   norm: mean=0.365 p95=1.000 >0.5=0.362 >0.95=0.274
+  ptb      norm: mean=0.208 p95=1.000 >0.5=0.199 >0.95=0.163
+[P1] val 异常拍概率分布:
+  mit      abn: mean=0.639 p95=1.000 >0.5=0.635 >0.95=0.549
+  incart   abn: mean=0.807 p95=1.000 >0.5=0.810 >0.95=0.757
+  ptb      abn: mean=0.739 p95=1.000 >0.5=0.741 >0.95=0.651
+
+[P1] val MIT+INCART 逐记录: recs=27 with_alerts=27 total_alert_blocks=1192
+     纯正常记录: 1 条, 其中 1 条产生误报
+     top10: [(221, 225, 2376), (112, 139, 12), (212, 118, 0), (232, 114, 8292), (222, 107, 1254), (100057, 61, 27), (100011, 58, 4), (100009, 52, 41), (100037, 45, 452), (100021, 44, 112)]
+[P1] val MIT+INCART 拍级 AUC=0.7680 F1=0.3680
+[P1] saved /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/deploy_match/p1_val_overalert_v3.json (170s)

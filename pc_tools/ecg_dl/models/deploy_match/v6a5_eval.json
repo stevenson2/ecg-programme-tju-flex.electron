@@ -1,0 +1,255 @@
+{
+  "date": "2026-09-03 00:00:47",
+  "purpose": "TH106+ multi-seed / variant robustness check of distill pilot",
+  "prereg": "v6_recipe_prereg.json",
+  "zero_test_contact": true,
+  "frozen_operating_point": {
+    "theta": 0.95,
+    "k": 1,
+    "n": 5,
+    "cooldown": 20
+  },
+  "baseline_model": "models/best_resnet_large_clean_baseline_v3.h5",
+  "selfcheck": {
+    "mit_frac_gt_0.95_vs_p1": {
+      "value": 0.24479200893737268,
+      "ok": true,
+      "tol": "tol=0.004185"
+    },
+    "incart_frac_gt_0.95_vs_p1": {
+      "value": 0.27356405690132385,
+      "ok": true,
+      "tol": "tol=0.007039"
+    },
+    "mit_auc_vs_p1": {
+      "value": 0.7679995276252629,
+      "ok": true,
+      "tol": "tol=1e-3"
+    },
+    "ptb_auc_vs_p1": {
+      "value": 0.8262248160022085,
+      "ok": true,
+      "tol": "tol=1e-3"
+    },
+    "frozen_event_recall_vs_sweep": {
+      "value": 0.9803,
+      "ok": true,
+      "tol": "tol=1e-3"
+    },
+    "frozen_alert_blocks_vs_sweep": {
+      "value": 403,
+      "ok": true,
+      "tol": "tol=2"
+    }
+  },
+  "rows": [
+    {
+      "label": "v6a5",
+      "model": "best_v6a5_clean10k_hardnorm_anchor.h5",
+      "verdict": "PARTIAL",
+      "gates": {
+        "primary_pooled_norm_frac_gt_0.95": {
+          "baseline": 0.2545156588765055,
+          "pilot": 0.14803964933398112,
+          "relative_reduction": 0.4183475783475783,
+          "passed": true,
+          "criterion": ">=0.3 relative reduction"
+        },
+        "guardrail_A_mit_auc": {
+          "baseline": 0.7679995276252629,
+          "pilot": 0.6967154916020981,
+          "drop": 0.0712840360231648,
+          "passed": false,
+          "criterion": "drop<=0.02"
+        },
+        "guardrail_B_frozen_event_recall": {
+          "baseline_event_recall": 0.9803,
+          "pilot_event_recall": 0.9072,
+          "pilot_alert_blocks": 624,
+          "passed": false,
+          "criterion": "drop<=0.02 and alert_blocks>=3"
+        },
+        "guardrail_C_real_holdout": {
+          "pilot": {
+            "mean_prob": 0.00020168178889434785,
+            "frac_gt_0.5": 0.0,
+            "n": 40
+          },
+          "passed": true,
+          "criterion": "mean_prob<0.1 and frac_gt_0.5<=0.0"
+        }
+      },
+      "secondary": {
+        "alert_blocks_ratio_pilot_over_baseline": 1.5483870967741935,
+        "p1_caliber_summary": {
+          "baseline": {
+            "clean_normal_records": 1,
+            "clean_normal_alert_blocks_total": 118,
+            "record_212": {
+              "n_beats": 16488,
+              "abn_beats": 0,
+              "alert_blocks": 118,
+              "gt_events": 0
+            },
+            "top5_by_alert_blocks": [
+              {
+                "rid": 221,
+                "n_beats": 14562,
+                "abn_beats": 2376,
+                "alert_blocks": 225,
+                "gt_events": 654
+              },
+              {
+                "rid": 112,
+                "n_beats": 15234,
+                "abn_beats": 12,
+                "alert_blocks": 139,
+                "gt_events": 12
+              },
+              {
+                "rid": 212,
+                "n_beats": 16488,
+                "abn_beats": 0,
+                "alert_blocks": 118,
+                "gt_events": 0
+              },
+              {
+                "rid": 232,
+                "n_beats": 10680,
+                "abn_beats": 8292,
+                "alert_blocks": 114,
+                "gt_events": 13
+              },
+              {
+                "rid": 222,
+                "n_beats": 14898,
+                "abn_beats": 1254,
+                "alert_blocks": 107,
+                "gt_events": 264
+              }
+            ]
+          },
+          "pilot": {
+            "clean_normal_records": 1,
+            "clean_normal_alert_blocks_total": 270,
+            "record_212": {
+              "n_beats": 16488,
+              "abn_beats": 0,
+              "alert_blocks": 270,
+              "gt_events": 0
+            },
+            "top5_by_alert_blocks": [
+              {
+                "rid": 212,
+                "n_beats": 16488,
+                "abn_beats": 0,
+                "alert_blocks": 270,
+                "gt_events": 0
+              },
+              {
+                "rid": 221,
+                "n_beats": 14562,
+                "abn_beats": 2376,
+                "alert_blocks": 222,
+                "gt_events": 654
+              },
+              {
+                "rid": 232,
+                "n_beats": 10680,
+                "abn_beats": 8292,
+                "alert_blocks": 218,
+                "gt_events": 13
+              },
+              {
+                "rid": 112,
+                "n_beats": 15234,
+                "abn_beats": 12,
+                "alert_blocks": 100,
+                "gt_events": 12
+              },
+              {
+                "rid": 100022,
+                "n_beats": 3126,
+                "abn_beats": 310,
+                "alert_blocks": 94,
+                "gt_events": 152
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "summary": {
+    "seeds": [
+      "v6a5"
+    ],
+    "primary_rel_red": {
+      "values": [
+        0.4183475783475783
+      ],
+      "mean": 0.4183475783475783,
+      "std": null
+    },
+    "pilot_frac_gt_0.95": {
+      "values": [
+        0.14803964933398112
+      ],
+      "mean": 0.14803964933398112,
+      "std": null
+    },
+    "pilot_auc": {
+      "values": [
+        0.6967154916020981
+      ],
+      "mean": 0.6967154916020981,
+      "std": null
+    },
+    "auc_drop": {
+      "values": [
+        0.0712840360231648
+      ],
+      "mean": 0.0712840360231648,
+      "std": null
+    },
+    "pilot_event_recall": {
+      "values": [
+        0.9072
+      ],
+      "mean": 0.9072,
+      "std": null
+    },
+    "baseline_event_recall": {
+      "values": [
+        0.9803
+      ],
+      "mean": 0.9803,
+      "std": null
+    },
+    "pilot_alert_blocks": {
+      "values": [
+        624.0
+      ],
+      "mean": 624.0,
+      "std": null
+    },
+    "pilot_holdout_mean": {
+      "values": [
+        0.00020168178889434785
+      ],
+      "mean": 0.00020168178889434785,
+      "std": null
+    },
+    "event_recall_drop": {
+      "values": [
+        0.07309999999999994
+      ],
+      "mean": 0.07309999999999994,
+      "std": null
+    }
+  },
+  "per_model_files": [
+    "distill_pilot_eval_v6a5.json"
+  ],
+  "elapsed_s": 45.1
+}

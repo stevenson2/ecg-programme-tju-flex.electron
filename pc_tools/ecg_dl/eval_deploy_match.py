@@ -23,6 +23,10 @@ import argparse
 import json
 import time
 from pathlib import Path
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+import ecg_refs as _REFS  # noqa: E402
+
 
 import numpy as np
 from scipy import signal as scipy_signal
@@ -58,8 +62,7 @@ from data.dataset import load_mit_incart_merged, load_ptb_data
 
 # Patch INCART_DIR for WSL2 compatibility (preprocess_incart.py hardcodes C:\)
 import data.preprocess_incart as _incart_mod
-_incart_wsldir = Path("/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master"
-                      "/st-petersburg-incart-12-lead-arrhythmia-database-1.0.0/files")
+_incart_wsldir = _REFS.INCART_DIR
 if _incart_wsldir.exists() and not _incart_mod.INCART_DIR.exists():
     _incart_mod.INCART_DIR = _incart_wsldir
 

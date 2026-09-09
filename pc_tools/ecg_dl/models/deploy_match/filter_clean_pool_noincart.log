@@ -1,0 +1,4 @@
+[NOINC] MIT-BIH: {'name': 'MIT-BIH', 'source_code': 0, 'normal': 337356, 'complete': 324102, 'hard_gt_0_5': 17135, 'hard_gt_0_95': 8434, 'hard_gt_0_5_complete': 15407, 'hard_gt_0_95_complete': 7355}
+[NOINC] PTB: {'name': 'PTB', 'source_code': 2, 'normal': 5159, 'complete': 5149, 'hard_gt_0_5': 65, 'hard_gt_0_95': 20, 'hard_gt_0_5_complete': 63, 'hard_gt_0_95_complete': 19}
+[NOINC] SVDB: {'name': 'SVDB', 'source_code': 3, 'normal': 97153, 'complete': 89758, 'hard_gt_0_5': 61675, 'hard_gt_0_95': 53510, 'hard_gt_0_5_complete': 55922, 'hard_gt_0_95_complete': 48231}
+[NOINC] saved beat_pool_noincart_normal_scores.npy, beat_pool_noincart_normal_meta.npz, hard_normal_noincart_audit.json

@@ -1,0 +1,244 @@
+{
+  "date": "2026-09-01 23:49:53",
+  "aborted": false,
+  "purpose": "TH §106 蒸馏试点 Stage 1: 教师 tile 特征 → 训练侧 LORO 读出软伪概率; 测试集零接触",
+  "seed": 42,
+  "anchor_file": "models/deploy_match/train_clean_baseline_v3.json",
+  "identity_checks": {
+    "mit_bih_abn": {
+      "got": 1500,
+      "want": 1500,
+      "ok": true
+    },
+    "mit_bih_norm": {
+      "got": 1500,
+      "want": 1500,
+      "ok": true
+    },
+    "mit_bih_unique_records": {
+      "got": 31,
+      "want": 31,
+      "ok": true
+    },
+    "incart_abn": {
+      "got": 400,
+      "want": 400,
+      "ok": true
+    },
+    "incart_norm": {
+      "got": 400,
+      "want": 400,
+      "ok": true
+    },
+    "incart_unique_records": {
+      "got": 42,
+      "want": 42,
+      "ok": true
+    },
+    "ptb_abn": {
+      "got": 600,
+      "want": 600,
+      "ok": true
+    },
+    "ptb_norm": {
+      "got": 400,
+      "want": 400,
+      "ok": true
+    },
+    "ptb_unique_records": {
+      "got": 273,
+      "want": 273,
+      "ok": true
+    },
+    "real_holdout_indices": {
+      "got": [
+        185,
+        103,
+        247,
+        49,
+        278,
+        63,
+        258,
+        128,
+        288,
+        91,
+        22,
+        218,
+        250,
+        179,
+        125,
+        109,
+        270,
+        3,
+        98,
+        31,
+        141,
+        169,
+        173,
+        200,
+        214,
+        90,
+        104,
+        45,
+        257,
+        260,
+        88,
+        203,
+        42,
+        94,
+        180,
+        248,
+        294,
+        92,
+        148,
+        210
+      ],
+      "want": [
+        185,
+        103,
+        247,
+        49,
+        278,
+        63,
+        258,
+        128,
+        288,
+        91,
+        22,
+        218,
+        250,
+        179,
+        125,
+        109,
+        270,
+        3,
+        98,
+        31,
+        141,
+        169,
+        173,
+        200,
+        214,
+        90,
+        104,
+        45,
+        257,
+        260,
+        88,
+        203,
+        42,
+        94,
+        180,
+        248,
+        294,
+        92,
+        148,
+        210
+      ],
+      "ok": true
+    },
+    "real_afe_train_unique": {
+      "got": 271,
+      "want": 271,
+      "ok": true
+    },
+    "real_afe_train_repeated": {
+      "got": 542,
+      "want": 542,
+      "ok": true
+    },
+    "synthetic_hard_negative": {
+      "got": 600,
+      "want": 600,
+      "ok": true
+    },
+    "train_total": {
+      "got": 5942,
+      "want": 5942,
+      "ok": true
+    },
+    "train_abn": {
+      "got": 2500,
+      "want": 2500,
+      "ok": true
+    },
+    "train_norm": {
+      "got": 3442,
+      "want": 3442,
+      "ok": true
+    },
+    "val_total": {
+      "got": 4040,
+      "want": 4040,
+      "ok": true
+    },
+    "val_abn": {
+      "got": 2000,
+      "want": 2000,
+      "ok": true
+    },
+    "val_norm": {
+      "got": 2040,
+      "want": 2040,
+      "ok": true
+    }
+  },
+  "loro": {
+    "protocol": "L2 normalize + LogisticRegression(C=1, max_iter=2000), leave-one-record-out (train records only)",
+    "auc_public": 0.882208,
+    "auc_per_domain": {
+      "mit_bih": 0.9285444444444445,
+      "incart": 0.94003125,
+      "ptb": 0.8166083333333334
+    },
+    "n_groups": 347,
+    "single_class_folds": [],
+    "abort_gate": 0.75
+  },
+  "real_synth": {
+    "n_beats": 1142,
+    "mean_p_before_swap": 0.8287003255610709,
+    "teacher_target_swap": true,
+    "swap_rule": "mean_p > 0.5 → p=EPS (预注册)",
+    "grouping_rationale": "rec_latest.ecgr 无盘上元数据; synth 源拍横跨两源文件; 任何拆分均有软泄漏风险 → 单一伪记录组"
+  },
+  "val_readout": "单个 LogReg 拟合全部训练拍 → p_val 仅用于 val_loss 打包; val 患者与训练患者不相交",
+  "audit": {
+    "p_dist_train": {
+      "pub_abn": {
+        "n": 2500,
+        "mean": 0.7293488191269338,
+        "p05": 0.1950493298470974,
+        "p50": 0.8345806896686554,
+        "p95": 0.9781775504350662,
+        "entropy_bits_mean": 0.600855400895617
+      },
+      "pub_norm": {
+        "n": 2300,
+        "mean": 0.2972003755690125,
+        "p05": 0.04255395419895649,
+        "p50": 0.23383323103189468,
+        "p95": 0.771062561869621,
+        "entropy_bits_mean": 0.6975367487131716
+      },
+      "real_synth": {
+        "n": 1142,
+        "mean": 9.999999999999998e-08,
+        "p05": 1e-07,
+        "p50": 1e-07,
+        "p95": 1e-07,
+        "entropy_bits_mean": 2.469619163220637e-06
+      }
+    },
+    "p_val": {
+      "mean": 0.5069763660430908,
+      "frac_gt_0.5": 0.47227722772277225
+    }
+  },
+  "outputs": {
+    "npz": "models/deploy_match/distill_pilot_teacher_targets.npz",
+    "features_npy": "models/deploy_match/distill_pilot_teacher_features.npy",
+    "features_layout": "concat(train 5942, val 4040) axis=0"
+  },
+  "elapsed_s": 266.1
+}

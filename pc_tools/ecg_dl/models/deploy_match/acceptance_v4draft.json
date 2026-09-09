@@ -1,0 +1,300 @@
+{
+  "date": "2026-09-01 16:57:36",
+  "purpose": "TH §103: v4 硬负例模型双操作点验收门 (测试集从未参与选择)",
+  "model": "models/best_resnet_large_clean_baseline_v4.h5",
+  "gates": {
+    "mit_incart_auc_min": 0.848,
+    "mit_incart_beat_f1_min": 0.4,
+    "mit_incart_fp_per_record_max": 1.5,
+    "mit_incart_event_f1_min": 0.64,
+    "mit_incart_beat_sensitivity_min": 0.9,
+    "ptb_auc_min": 0.7,
+    "ptb_event_f1_min": 0.75,
+    "alert_blocks_min": 3,
+    "real_holdout_mean_prob_max": 0.1,
+    "real_holdout_frac_gt_0.5_max": 0.0,
+    "train_best_val_auc_min": 0.8
+  },
+  "threshold_independent": {
+    "real_holdout_mean_prob": 0.01907520554959774,
+    "real_holdout_frac_gt_0.5": 0.0,
+    "train_best_val_auc": 0.7535411764705883
+  },
+  "verdicts": {
+    "theta0.5_k1of5_cd5": {
+      "policy": {
+        "theta": 0.5,
+        "k": 1,
+        "n": 5,
+        "cooldown": 5
+      },
+      "beat_raw_theta": {
+        "mit_incart": {
+          "theta": 0.5,
+          "tp": 5031,
+          "fp": 19531,
+          "tn": 26716,
+          "fn": 605,
+          "sensitivity": 0.8926543647977289,
+          "precision": 0.20482859701978667,
+          "f1": 0.3332008742300815,
+          "auc": 0.8385101338090747,
+          "n_beats": 51883
+        },
+        "ptb": {
+          "theta": 0.5,
+          "tp": 7241,
+          "fp": 1159,
+          "tn": 1695,
+          "fn": 2963,
+          "sensitivity": 0.7096236769894159,
+          "precision": 0.8620238095238095,
+          "f1": 0.7784347452160826,
+          "auc": 0.7058278978495318,
+          "n_beats": 13058
+        }
+      },
+      "event_policy": {
+        "mit_incart": {
+          "theta": 0.5,
+          "k": 1,
+          "n": 5,
+          "cooldown": 5,
+          "beat_tp": 5520,
+          "beat_fp": 35551,
+          "beat_tn": 10696,
+          "beat_fn": 116,
+          "beat_recall": 0.9794,
+          "beat_precision": 0.1344,
+          "beat_f1": 0.2364,
+          "gt_events": 979,
+          "alert_blocks": 394,
+          "matched_gt_events": 959,
+          "false_alarm_blocks": 235,
+          "event_recall": 0.9796,
+          "event_precision": 0.4036,
+          "event_f1": 0.5716,
+          "fp_per_record": 10.2174,
+          "median_latency_beats": 0.0,
+          "n_records": 23
+        },
+        "ptb": {
+          "theta": 0.5,
+          "k": 1,
+          "n": 5,
+          "cooldown": 5,
+          "beat_tp": 8764,
+          "beat_fp": 1837,
+          "beat_tn": 1017,
+          "beat_fn": 1440,
+          "beat_recall": 0.8589,
+          "beat_precision": 0.8267,
+          "beat_f1": 0.8425,
+          "gt_events": 75,
+          "alert_blocks": 167,
+          "matched_gt_events": 72,
+          "false_alarm_blocks": 53,
+          "event_recall": 0.96,
+          "event_precision": 0.6826,
+          "event_f1": 0.7979,
+          "fp_per_record": 0.5579,
+          "median_latency_beats": 1.0,
+          "n_records": 95
+        }
+      },
+      "gates": {
+        "checks": {
+          "mit_incart_auc": {
+            "passed": false,
+            "value": 0.8385101338090747
+          },
+          "mit_incart_beat_f1": {
+            "passed": false,
+            "value": 0.3332008742300815
+          },
+          "mit_incart_fp_per_record": {
+            "passed": false,
+            "value": 10.2174
+          },
+          "mit_incart_event_f1": {
+            "passed": false,
+            "value": 0.5716
+          },
+          "mit_incart_beat_sensitivity": {
+            "passed": false,
+            "value": 0.8926543647977289
+          },
+          "ptb_auc": {
+            "passed": true,
+            "value": 0.7058278978495318
+          },
+          "ptb_event_f1": {
+            "passed": true,
+            "value": 0.7979
+          },
+          "collapse_detector": {
+            "passed": true,
+            "value": 394
+          },
+          "real_afe_holdout": {
+            "passed": true,
+            "value": {
+              "mean_prob": 0.01907520554959774,
+              "frac_gt_0.5": 0.0
+            }
+          },
+          "train_best_val_auc": {
+            "passed": false,
+            "value": 0.7535411764705883
+          }
+        },
+        "failed": [
+          "mit_incart_auc",
+          "mit_incart_beat_f1",
+          "mit_incart_fp_per_record",
+          "mit_incart_event_f1",
+          "mit_incart_beat_sensitivity",
+          "train_best_val_auc"
+        ],
+        "overall": "FAIL"
+      }
+    },
+    "theta0.95_k1of5_cd20": {
+      "policy": {
+        "theta": 0.95,
+        "k": 1,
+        "n": 5,
+        "cooldown": 20
+      },
+      "beat_raw_theta": {
+        "mit_incart": {
+          "theta": 0.95,
+          "tp": 2666,
+          "fp": 3847,
+          "tn": 42400,
+          "fn": 2970,
+          "sensitivity": 0.4730305180979418,
+          "precision": 0.40933517580224166,
+          "f1": 0.4388838587538069,
+          "auc": 0.8385101338090747,
+          "n_beats": 51883
+        },
+        "ptb": {
+          "theta": 0.95,
+          "tp": 2282,
+          "fp": 158,
+          "tn": 2696,
+          "fn": 7922,
+          "sensitivity": 0.22363778910231283,
+          "precision": 0.9352459016393443,
+          "f1": 0.36096172097437523,
+          "auc": 0.7058278978495318,
+          "n_beats": 13058
+        }
+      },
+      "event_policy": {
+        "mit_incart": {
+          "theta": 0.95,
+          "k": 1,
+          "n": 5,
+          "cooldown": 20,
+          "beat_tp": 3722,
+          "beat_fp": 12543,
+          "beat_tn": 33704,
+          "beat_fn": 1914,
+          "beat_recall": 0.6604,
+          "beat_precision": 0.2288,
+          "beat_f1": 0.3399,
+          "gt_events": 979,
+          "alert_blocks": 290,
+          "matched_gt_events": 630,
+          "false_alarm_blocks": 73,
+          "event_recall": 0.6435,
+          "event_precision": 0.7483,
+          "event_f1": 0.692,
+          "fp_per_record": 3.1739,
+          "median_latency_beats": 0.0,
+          "n_records": 23
+        },
+        "ptb": {
+          "theta": 0.95,
+          "k": 1,
+          "n": 5,
+          "cooldown": 20,
+          "beat_tp": 3838,
+          "beat_fp": 324,
+          "beat_tn": 2530,
+          "beat_fn": 6366,
+          "beat_recall": 0.3761,
+          "beat_precision": 0.9222,
+          "beat_f1": 0.5343,
+          "gt_events": 75,
+          "alert_blocks": 72,
+          "matched_gt_events": 46,
+          "false_alarm_blocks": 7,
+          "event_recall": 0.6133,
+          "event_precision": 0.9028,
+          "event_f1": 0.7304,
+          "fp_per_record": 0.0737,
+          "median_latency_beats": 4.0,
+          "n_records": 95
+        }
+      },
+      "gates": {
+        "checks": {
+          "mit_incart_auc": {
+            "passed": false,
+            "value": 0.8385101338090747
+          },
+          "mit_incart_beat_f1": {
+            "passed": true,
+            "value": 0.4388838587538069
+          },
+          "mit_incart_fp_per_record": {
+            "passed": false,
+            "value": 3.1739
+          },
+          "mit_incart_event_f1": {
+            "passed": true,
+            "value": 0.692
+          },
+          "mit_incart_beat_sensitivity": {
+            "passed": false,
+            "value": 0.4730305180979418
+          },
+          "ptb_auc": {
+            "passed": true,
+            "value": 0.7058278978495318
+          },
+          "ptb_event_f1": {
+            "passed": false,
+            "value": 0.7304
+          },
+          "collapse_detector": {
+            "passed": true,
+            "value": 290
+          },
+          "real_afe_holdout": {
+            "passed": true,
+            "value": {
+              "mean_prob": 0.01907520554959774,
+              "frac_gt_0.5": 0.0
+            }
+          },
+          "train_best_val_auc": {
+            "passed": false,
+            "value": 0.7535411764705883
+          }
+        },
+        "failed": [
+          "mit_incart_auc",
+          "mit_incart_fp_per_record",
+          "mit_incart_beat_sensitivity",
+          "ptb_event_f1",
+          "train_best_val_auc"
+        ],
+        "overall": "FAIL"
+      }
+    }
+  }
+}

@@ -8,6 +8,10 @@
 """
 import sys
 from pathlib import Path
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+import ecg_refs as _REFS  # noqa: E402
+
 import numpy as np
 import tensorflow as tf
 from sklearn.metrics import roc_auc_score
@@ -90,10 +94,7 @@ def tflite_predict(it, in_d, out_d, x):
 
 
 # PTB 独立测试集 (患者级留出, 与 eval_ptb_holdout 一致)
-RECORDS = next((Path(c) for c in [
-    r"C:\Users\cai\OneDrive\Desktop\Fe programme 25261\ecg-programme-tju-flex.electron-master\ECG-Database\RECORDS",
-    "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/ECG-Database/RECORDS",
-] if Path(c).exists()), None)
+RECORDS = _REFS.RECORDS_FILE if _REFS.RECORDS_FILE.exists() else None
 recs = [l.strip() for l in open(RECORDS) if l.strip()]
 d = np.load(PTB_NPZ)
 x_ptb, y_ptb, rids = d["beats"], d["labels"], d["record_ids"]

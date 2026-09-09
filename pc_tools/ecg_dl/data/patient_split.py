@@ -25,6 +25,10 @@ import json
 import re
 import sys
 from pathlib import Path
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+import ecg_refs as _REFS  # noqa: E402
+
 
 import numpy as np
 
@@ -39,8 +43,8 @@ TEST_FRAC = 0.2
 
 # ---------------- 路径解析 ----------------
 ROOT = Path(__file__).resolve().parents[3]   # 项目根
-ECG_DIR = ROOT / "ECG-Database"
-INCART_DIR = ROOT / "st-petersburg-incart-12-lead-arrhythmia-database-1.0.0" / "files"
+ECG_DIR = _REFS.ECG_DATABASE_DIR
+INCART_DIR = _REFS.INCART_DIR
 MIT_DIR = PROCESSED_DIR  # 使用预处理后的 npz 中 record_ids
 
 

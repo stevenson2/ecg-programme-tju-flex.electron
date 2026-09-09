@@ -1,0 +1,15 @@
+train_total=9442 train_abn=4000 train_norm=5442 val_total=4040 val_abn=2000 val_norm=2040 val_contains_svdb=False
+svdb_addition keys=['tag', 'seed', 'requested', 'assert_train_only', 'sampled_records_vs_test_intersection', 'sampled_unique_records', 'sampled_records', 'source_arrays', 'build_log', 'guard_split']
+svdb.tag=svdb
+svdb.seed=5501
+svdb.requested={'n_abn': 1500, 'n_norm': 2000}
+svdb.assert_train_only=passed
+svdb.sampled_records_vs_test_intersection=0
+svdb.sampled_unique_records=48
+svdb.sampled_records: len=48 first=[802, 803, 806, 808, 809]
+svdb.source_arrays=/home/devcontainers/ecg_data/svdb_processed_deploy_causal_{beats,labels,record_ids}.npy
+svdb.build_log=pc_tools/ecg_dl/svdb_deploy_build.log
+svdb.guard_split=??????? 78 = train 48 / val 15 / test 15
+provenance=from scratch; no checkpoint loaded; SVDB ???? ?104 ?? (184,407 ??????, ???? 78/78 ??, ?? pc_tools/ecg_dl/svdb_deploy_build.log)
+config={'architecture': 'build_ecg_resnet_lite_large', 'params': 62834, 'dropout': 0.4, 'optimizer': 'adam', 'lr_schedule': 'cosine decay from 0.0003', 'epochs_requested': 80, 'epochs_run': 27, 'batch_size': 32, 'early_stopping_patience': 20, 'val_monitor': 'val_auc', 'class_weight': {'0': 1.0, '1': 1.0}, 'loss': 'sparse_categorical_crossentropy'}
+results={'best_val_auc': 0.7628100490196078, 'best_epoch': 7, 'real_holdout_mean_prob': 0.22906427085399628, 'real_holdout_frac_gt_0.5': 0.225, 'train_time_s': 228.4}

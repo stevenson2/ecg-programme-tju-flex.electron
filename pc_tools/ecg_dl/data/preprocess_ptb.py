@@ -22,22 +22,19 @@ PTB Database:
 
 import sys
 from pathlib import Path
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+import ecg_refs as _REFS  # noqa: E402
+
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from config import PROCESSED_DIR, TARGET_FS, BEAT_WINDOW_SAMPLES
 from data.preprocess_incart import apply_filters, resample_ecg
 
-PTB_DIR = None
-for cand in [
-    Path(r"C:\Users\cai\OneDrive\Desktop\Fe programme 25261\ecg-programme-tju-flex.electron-master\ECG-Database"),
-    Path("/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/ECG-Database"),
-]:
-    if cand.exists():
-        PTB_DIR = cand
-        break
+PTB_DIR = _REFS.ECG_DATABASE_DIR if _REFS.ECG_DATABASE_DIR.exists() else None
 if PTB_DIR is None:
-    raise RuntimeError("PTB 数据库目录未找到, 请放到 ECG-Database/")
+    raise RuntimeError("PTB 数据库目录未找到, 请放到统一资料库 ecg_database/")
 
 
 def load_records():

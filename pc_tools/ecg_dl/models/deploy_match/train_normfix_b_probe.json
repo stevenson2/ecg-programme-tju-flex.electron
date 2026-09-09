@@ -1,0 +1,178 @@
+{
+  "date": "2026-09-01 21:51:32",
+  "purpose": "TH §105 Phase A-2: normfix 探针 (单变量隔离, 配方=v3 A)",
+  "provenance": "from scratch; no checkpoint loaded",
+  "gpu": [
+    "PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')"
+  ],
+  "patient_split_seed": 42,
+  "split_stats": {
+    "mit_bih": {
+      "n_patients": 79,
+      "n_train": 49,
+      "n_val": 15,
+      "n_test": 15,
+      "beats_train": 512369,
+      "beats_val": 159294,
+      "beats_test": 163078
+    },
+    "incart": {
+      "n_patients": 79,
+      "n_train": 49,
+      "n_val": 15,
+      "n_test": 15,
+      "beats_train": 512369,
+      "beats_val": 159294,
+      "beats_test": 163078
+    },
+    "ptb": {
+      "n_patients": 286,
+      "n_train": 172,
+      "n_val": 57,
+      "n_test": 57,
+      "beats_train": 41730,
+      "beats_val": 14694,
+      "beats_test": 13058
+    }
+  },
+  "normfix_spec": "normfix_spec_v1_b",
+  "single_variable_isolation": {
+    "mit_bih": "normfix arrays (mit_bih_processed_deploy_causal_normfix_b)",
+    "incart": "normfix arrays (incart_processed_deploy_causal_normfix_b)",
+    "ptb": "old deploy_causal arrays (unchanged)",
+    "real_afe": "recomputed with B normalization (210+101=311)"
+  },
+  "data": {
+    "main": {
+      "mit_bih_abn": 1500,
+      "mit_bih_norm": 1500,
+      "incart_abn": 400,
+      "incart_norm": 400,
+      "ptb_abn": 600,
+      "ptb_norm": 400
+    },
+    "sampling_audit": {
+      "mit_bih": {
+        "assert_train_only": "passed",
+        "sampled_records_vs_test_intersection": 0,
+        "sampled_unique_records": 31,
+        "beats_source": "normfix"
+      },
+      "incart": {
+        "assert_train_only": "passed",
+        "sampled_records_vs_test_intersection": 0,
+        "sampled_unique_records": 42,
+        "beats_source": "normfix"
+      },
+      "ptb": {
+        "assert_train_only": "passed",
+        "sampled_records_vs_test_intersection": 0,
+        "sampled_unique_records": 273,
+        "beats_source": "old_deploy_causal"
+      }
+    },
+    "real_afe_normfix": {
+      "exp7c": {
+        "n_peaks": 211,
+        "n_extracted": 210,
+        "n_beats": 210,
+        "fs_eff_hz": 225.6830601092896
+      },
+      "rec_latest": {
+        "n_peaks": 102,
+        "n_extracted": 101,
+        "n_beats": 101,
+        "fs_eff_hz": 245.0625
+      }
+    },
+    "real_afe_train_unique": 271,
+    "real_afe_train_repeated": 542,
+    "real_afe_holdout": 40,
+    "synthetic_hard_negative": 600,
+    "train_total": 5942,
+    "train_abn": 2500,
+    "train_norm": 3442,
+    "val_total": 4040,
+    "val_abn": 2000,
+    "val_norm": 2040,
+    "real_holdout_indices": [
+      185,
+      103,
+      247,
+      49,
+      278,
+      63,
+      258,
+      128,
+      288,
+      91,
+      22,
+      218,
+      250,
+      179,
+      125,
+      109,
+      270,
+      3,
+      98,
+      31,
+      141,
+      169,
+      173,
+      200,
+      214,
+      90,
+      104,
+      45,
+      257,
+      260,
+      88,
+      203,
+      42,
+      94,
+      180,
+      248,
+      294,
+      92,
+      148,
+      210
+    ]
+  },
+  "config": {
+    "architecture": "build_ecg_resnet_lite_large",
+    "params": 62834,
+    "dropout": 0.4,
+    "optimizer": "adam",
+    "lr_schedule": "cosine decay from 0.0003",
+    "epochs_requested": 80,
+    "epochs_run": 24,
+    "batch_size": 32,
+    "early_stopping_patience": 20,
+    "val_monitor": "val_auc",
+    "class_weight": {
+      "0": 1.0,
+      "1": 1.0
+    },
+    "loss": "sparse_categorical_crossentropy"
+  },
+  "results": {
+    "best_val_auc": 0.8222094362745099,
+    "real_holdout_mean_prob": 0.019924089312553406,
+    "real_holdout_frac_gt_0.5": 0.0,
+    "train_time_s": 363.8
+  },
+  "probe_gates": {
+    "gate1_best_val_auc_ge_0.80": {
+      "passed": true,
+      "value": 0.8222094362745099
+    },
+    "gate2_real_holdout_mean_lt_0.10_and_frac_eq_0": {
+      "passed": true,
+      "value": {
+        "mean_prob": 0.019924089312553406,
+        "frac_gt_0.5": 0.0
+      }
+    },
+    "verdict": "PASS"
+  }
+}

@@ -1,0 +1,34 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788319754.860413     371 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788319755.696388     371 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788319757.879494     371 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+[AFP] 04015: qrs=44005 beats=44004 N=43479 A=525 X=0 (2s)
+[AFP] 04043: qrs=61915 beats=61915 N=47256 A=14659 X=0 (3s)
+[AFP] 04048: qrs=39934 beats=39934 N=39121 A=813 X=0 (2s)
+[AFP] 04126: qrs=42860 beats=42860 N=39567 A=3293 X=0 (2s)
+[AFP] 04746: qrs=47873 beats=47872 N=16999 A=30873 X=0 (2s)
+[AFP] progress 5/23
+[AFP] 04908: qrs=61760 beats=61759 N=55318 A=6441 X=0 (2s)
+[AFP] 04936: qrs=53646 beats=53645 N=7641 A=46004 X=0 (2s)
+[AFP] 05091: qrs=36793 beats=36793 N=36655 A=138 X=0 (2s)
+[AFP] 05121: qrs=49881 beats=49880 N=15925 A=33955 X=0 (2s)
+[AFP] 05261: qrs=45534 beats=45534 N=44600 A=934 X=0 (2s)
+[AFP] progress 10/23
+[AFP] 06426: qrs=55155 beats=55154 N=1684 A=53470 X=0 (2s)
+[AFP] 06453: qrs=34837 beats=34837 N=34392 A=445 X=0 (1s)
+[AFP] 06995: qrs=55189 beats=55188 N=27637 A=27551 X=0 (2s)
+[AFP] 07162: qrs=39298 beats=39298 N=0 A=39298 X=0 (2s)
+[AFP] 07859: qrs=60266 beats=60266 N=0 A=60266 X=0 (5s)
+[AFP] progress 15/23
+[AFP] 07879: qrs=56594 beats=56593 N=16551 A=40042 X=0 (4s)
+[AFP] 07910: qrs=36599 beats=36599 N=28981 A=7618 X=0 (2s)
+[AFP] 08215: qrs=43356 beats=43356 N=10149 A=33207 X=0 (2s)
+[AFP] 08219: qrs=59293 beats=59293 N=45099 A=14194 X=0 (3s)
+[AFP] 08378: qrs=45515 beats=45515 N=30493 A=15022 X=0 (2s)
+[AFP] progress 20/23
+[AFP] 08405: ERROR could not broadcast input array from shape (1250537,) into shape (9205760,)
+[AFP] 08434: qrs=39850 beats=39849 N=37539 A=2310 X=0 (2s)
+[AFP] 08455: qrs=59552 beats=59552 N=15288 A=44264 X=0 (2s)
+[AFP] saved afdb_processed_deploy_causal.npz, total_beats=1069696, N=594374 A=475322 X=0

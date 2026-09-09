@@ -1,0 +1,68 @@
+{
+  "date": "2026-09-01 20:11:22",
+  "purpose": "TH §104 clean_baseline_v5 (SVDB 扩训) 患者级测试集评估; 模型未见任何测试数据, SVDB 取数仅限其训练患者 (48/15/15 独立划分)",
+  "model": "models/best_resnet_large_clean_baseline_v5.h5",
+  "reference_policy": {
+    "theta": 0.5,
+    "policy": "1-of-5",
+    "cooldown": 5
+  },
+  "results": {
+    "mit_incart": {
+      "beat": {
+        "n_beats": 51883,
+        "n_abnormal": 5636,
+        "theta": 0.5,
+        "tp": 5477,
+        "fp": 28118,
+        "tn": 18129,
+        "fn": 159,
+        "sensitivity": 0.9717885024840313,
+        "precision": 0.16303021282929006,
+        "f1": 0.2792179653845173,
+        "auc": 0.8636330455087314
+      },
+      "event": {
+        "event_recall": 0.996936,
+        "event_precision": 0.549801,
+        "event_f1": 0.708739,
+        "fp_per_record": 4.913043,
+        "fp_per_1000_beats": 2.177977,
+        "alert_rate": 0.897789,
+        "gt_events": 979,
+        "alert_blocks": 251,
+        "false_alarm_blocks": 113,
+        "matched_gt_events": 976,
+        "matched_pred_blocks": 138
+      }
+    },
+    "ptb": {
+      "beat": {
+        "n_beats": 13058,
+        "n_abnormal": 10204,
+        "theta": 0.5,
+        "tp": 9020,
+        "fp": 1811,
+        "tn": 1043,
+        "fn": 1184,
+        "sensitivity": 0.8839670717365739,
+        "precision": 0.8327947557935556,
+        "f1": 0.8576182552888044,
+        "auc": 0.787574698985819
+      },
+      "event": {
+        "event_recall": 1.0,
+        "event_precision": 0.682927,
+        "event_f1": 0.811594,
+        "fp_per_record": 0.410526,
+        "fp_per_1000_beats": 2.986675,
+        "alert_rate": 0.952443,
+        "gt_events": 75,
+        "alert_blocks": 123,
+        "false_alarm_blocks": 39,
+        "matched_gt_events": 75,
+        "matched_pred_blocks": 84
+      }
+    }
+  }
+}

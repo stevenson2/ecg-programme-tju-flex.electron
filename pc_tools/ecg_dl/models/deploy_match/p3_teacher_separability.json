@@ -1,0 +1,73 @@
+{
+  "date": "2026-09-01 22:18:27",
+  "purpose": "P3: ECGFounder 1-lead 教师 1024 维特征能否在 val 侧分开 FP 正常拍与异常拍; 蒸馏路线先行验证",
+  "teacher": {
+    "ckpt": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ECGFounder/checkpoint/1_lead_ECGFounder.pth",
+    "feature_dim": 1024,
+    "input": "10s@500Hz (1,5000)",
+    "preprocess": "filter_bandpass(500Hz) + per-segment z-score"
+  },
+  "beat_to_segment": {
+    "resample": "250@250Hz -> resample_poly x2 -> 500@500Hz",
+    "padding": "tile x10 -> 5000 samples",
+    "limitation": "周期化输入强化节律特征、弱化一次性形态事件; 教师在真实 10s 段上训练, 域偏移对本探针保守 (分不开→否决蒸馏仍成立; 分得开→需蒸馏阶段复核)"
+  },
+  "student_model": "models/best_resnet_large_clean_baseline_v3.h5",
+  "selfcheck": {
+    "npz_mit_incart_auc": 0.8650453290101198,
+    "diag_v3_auc": 0.865055547768982
+  },
+  "group_defs": {
+    "FP": "label=0 & prob>0.95",
+    "TN": "label=0 & prob<=0.5",
+    "TP": "label=1 & prob>0.5",
+    "gray_norm": "label=0 & 0.5<prob<=0.95 (不抽样/不判定)",
+    "miss_abn": "label=1 & prob<=0.5"
+  },
+  "sampling": {
+    "per_group_cap": 4000,
+    "seed": 0
+  },
+  "n_beats": 16000,
+  "n_records": 27,
+  "method": "leave-one-record-out 原型; dist_ratio=dn/(dn+da); 另加留一记录线性读出 (L2 归一化 + LogReg)",
+  "values": {
+    "embedding_auc_label_vs_ratio": 0.47286074218749996,
+    "linear_readout_auc_all": 0.7345043906250001,
+    "linear_readout_auc_fp_vs_tp": 0.7301781875
+  },
+  "groups": {
+    "FP": {
+      "n": 4000,
+      "mean_dist_ratio": 0.4975193130671978,
+      "frac_nearest_abn": 0.49225,
+      "mean_prob": 0.9948328144997358
+    },
+    "TN": {
+      "n": 4000,
+      "mean_dist_ratio": 0.47956931702792643,
+      "frac_nearest_abn": 0.17,
+      "mean_prob": 0.026813627723955843
+    },
+    "TP": {
+      "n": 4000,
+      "mean_dist_ratio": 0.49386300348490475,
+      "frac_nearest_abn": 0.38225,
+      "mean_prob": 0.9748584796488285
+    },
+    "gray_norm": {
+      "n": 0,
+      "mean_dist_ratio": null,
+      "frac_nearest_abn": null,
+      "mean_prob": null
+    },
+    "miss_abn": {
+      "n": 4000,
+      "mean_dist_ratio": 0.4813143351525068,
+      "frac_nearest_abn": 0.10075,
+      "mean_prob": 0.06166170486052352
+    }
+  },
+  "verdict": "INCONCLUSIVE: 教师特征部分可分, 需人工复核数字后再定路线",
+  "elapsed_s": 198.4
+}

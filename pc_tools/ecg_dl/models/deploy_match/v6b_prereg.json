@@ -1,0 +1,61 @@
+{
+  "title": "v6b 从零训练 100k 挖掘池预注册",
+  "date": "2026-09-02 12:07:02",
+  "purpose": "From-scratch v3 A on the same 100k mined dataset to see if the hard-normal pool can produce a new, more stable representation.",
+  "recipe": {
+    "name": "v6b",
+    "arch": "v3 A (62,834 params), built from scratch, no v3 A weights",
+    "data": "v6a_train_100k.npz (50k hard normal + 50k external abnormal)",
+    "optimizer": "Adam + CosineDecay(3e-4, 40*steps)",
+    "batch": 128,
+    "epochs_requested": 40,
+    "early_stopping": {
+      "monitor": "val_auc",
+      "patience": 8,
+      "restore_best": true
+    },
+    "loss": "sparse categorical crossentropy",
+    "augmentation": "none"
+  },
+  "gates": {
+    "primary_relative_reduction_min": 0.3,
+    "guardrail_auc_max_drop": 0.02,
+    "guardrail_event_recall_max_drop": 0.02,
+    "guardrail_alert_blocks_min": 3,
+    "real_holdout_mean_prob_max": 0.1,
+    "real_holdout_frac_gt_0.5_max": 0.0
+  },
+  "frozen_operating_point": {
+    "theta": 0.95,
+    "k": 1,
+    "n": 5,
+    "cooldown": 20
+  },
+  "baseline_references_from_disk": {
+    "p1_mit_frac_gt_0.95": 0.24480296159996495,
+    "p1_incart_frac_gt_0.95": 0.2735855129057867,
+    "p1_mit_auc": 0.7679994798154276,
+    "p1_ptb_auc": 0.8262335343912346,
+    "sweep_mit_event_recall": 0.9807,
+    "sweep_mit_alert_blocks": 401,
+    "sweep_mit_false_alarm_blocks": 188,
+    "sweep_mit_fp_per_record": 6.963,
+    "sweep_ptb_event_recall": 0.9348
+  },
+  "calibration_protection": {
+    "real_afe_holdout_not_worse": "same as v6 prereg",
+    "theta05_false_alarm_not_worse": "same as v6 prereg",
+    "frozen_event_recall_drop_max": 0.02
+  },
+  "verdict_semantics": {
+    "PASS": "primary + guardrail A/B/C + calibration pass",
+    "PARTIAL": "primary passes but a guardrail/calibration breaks",
+    "UNPROVEN": "primary does not pass"
+  },
+  "zero_test_contact": true,
+  "outputs": {
+    "model": "models/deploy_match/best_v6b_scratch_v3a_100k.h5",
+    "train_json": "models/deploy_match/train_v6b_scratch_v3a_100k.json",
+    "log": "models/deploy_match/train_v6b_scratch_v3a_100k.log"
+  }
+}

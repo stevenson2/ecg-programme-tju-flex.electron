@@ -17,12 +17,16 @@ import csv
 import json
 import time
 from pathlib import Path
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+import ecg_refs as _REFS  # noqa: E402
+
 
 import numpy as np
 from sklearn.metrics import roc_auc_score
 
 ROOT = Path(__file__).resolve().parents[2]
-PTBXL_DIR = ROOT / "PTB-XL_ECG"
+PTBXL_DIR = _REFS.PTBXL_DIR
 PTBXL_CSV = PTBXL_DIR / "ptbxl_database.csv"
 MODELS = Path(__file__).resolve().parent / "models"
 DEFAULT_NPZ = MODELS / "ptbxl_record_level_eval_kd_mi_vs_abnormal.npz"

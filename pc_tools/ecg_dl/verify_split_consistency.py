@@ -10,11 +10,15 @@
 检查3 (蹊跷点2): 历史 37 条 MIT npz 是否含增强拍 (与"新旧数据域可比性"相关)。
 
 运行 (WSL2 Ubuntu):
-  cd /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl
+  cd <repo>/pc_tools/ecg_dl
   python3 verify_split_consistency.py
 """
 import sys
 from pathlib import Path
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+import ecg_refs as _REFS  # noqa: E402
+
 
 import numpy as np
 
@@ -27,10 +31,7 @@ from data.preprocess_3beat import stitch_3beat
 SEED = 42
 TEST_FRAC = 0.2
 
-RECORDS = next((Path(c) for c in [
-    r"C:\Users\cai\OneDrive\Desktop\Fe programme 25261\ecg-programme-tju-flex.electron-master\ECG-Database\RECORDS",
-    "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/ECG-Database/RECORDS",
-] if Path(c).exists()), None)
+RECORDS = _REFS.RECORDS_FILE if _REFS.RECORDS_FILE.exists() else None
 if RECORDS is None:
     raise RuntimeError("RECORDS 文件未找到")
 

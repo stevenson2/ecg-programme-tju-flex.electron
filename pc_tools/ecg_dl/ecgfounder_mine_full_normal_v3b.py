@@ -12,6 +12,10 @@
 """
 import sys, json, time, argparse
 from pathlib import Path
+import sys as _sys  # noqa: E402
+_sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+import ecg_refs as _REFS  # noqa: E402
+
 
 import numpy as np
 import tensorflow as tf
@@ -21,7 +25,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from eval_deploy_match import corrected_deployment_chain, extract_beats_deploy
 
 ROOT = Path(__file__).resolve().parents[2]
-PTBXL_DIR = ROOT / "PTB-XL_ECG"
+PTBXL_DIR = _REFS.PTBXL_DIR
 OUT_DIR = Path(__file__).resolve().parent / "models" / "ecgfounder"
 MODEL = Path(__file__).resolve().parent / "models" / "ecg_model_exp7c_ecgfounder_v3b_qat_int8.tflite"
 NORMAL_CODES = {"NORM", "SR", "SBRAD", "STACH", "SARRH"}

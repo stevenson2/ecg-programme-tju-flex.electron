@@ -1,0 +1,60 @@
+{
+  "date": "2026-09-02 00:09:25",
+  "purpose": "TH §106 蒸馏试点 Stage 2: 教师 tile LORO 软伪概率 KD 重训 (与 v3 配置 a 同架构同优化器); 全部裁定门在 val 侧, 测试集零接触",
+  "provenance": "from scratch; no checkpoint loaded",
+  "gpu": [
+    "PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')"
+  ],
+  "output_model": "models/best_resnet_large_distill_pilot.h5",
+  "teacher_targets": {
+    "source_npz": "models/deploy_match/distill_pilot_teacher_targets.npz",
+    "source_json": "models/deploy_match/distill_pilot_teacher_targets.json",
+    "loro_auc_public": 0.882208,
+    "real_synth_teacher_target_swap": true,
+    "real_synth_mean_p_before_swap": 0.8287003255610709,
+    "identity_anchors": "见 distill_pilot_teacher_targets.json identity_checks (全部 PASS, 对照 train_clean_baseline_v3.json)"
+  },
+  "kd": {
+    "alpha": 0.5,
+    "temperature": 1.0,
+    "packing": "y_kd = concat([onehot(2), [log(clip(1-p,1e-7)), log(clip(p,1e-7))]], axis=1); T=1 时 softmax 严格还原 [1-p, p]",
+    "packing_rationale": "教师输出是已校准概率; T=1 使损失 (1-α)CE + α·KL(p_teacher||y_pred) 可直接对账; 拒绝 T>1 (无依据压平置信度)",
+    "eps": 1e-07,
+    "class_weight": null
+  },
+  "data": {
+    "train_total": 5942,
+    "train_abn": 2500,
+    "train_norm": 3442,
+    "val_total": 4040,
+    "val_abn": 2000,
+    "val_norm": 2040,
+    "real_holdout": 40,
+    "p_train_mean": 0.42190057039260864,
+    "p_val_mean": 0.5069763660430908
+  },
+  "config": {
+    "architecture": "build_ecg_resnet_lite_large (dropout 0.4, 与 v3 配置 a 相同)",
+    "params": 62834,
+    "optimizer": "adam",
+    "lr_schedule": "cosine decay from 0.0003",
+    "epochs_requested": 80,
+    "epochs_run": 24,
+    "batch_size": 32,
+    "early_stopping_patience": 20,
+    "val_monitor": "val_auc (ValAucCB predict 口径, 与 v3 相同)",
+    "loss": "kd_loss(alpha=0.5, temperature=1.0)"
+  },
+  "results": {
+    "best_val_auc": 0.7763443627450981,
+    "real_holdout_mean_prob": 0.03671179339289665,
+    "real_holdout_frac_gt_0.5": 0.0,
+    "train_time_s": 173.8
+  },
+  "known_limitations": [
+    "val 双重使用: 早停监控与试点门共用 val 患者 → 一切数字是相对指标",
+    "教师域偏移事实: 真 10s 读出 0.7794 未过 0.80 GO 线; 本试点教的是 tile 视图 (0.8893)",
+    "伪目标含噪 (LORO AUC≈0.89 非 1): α=0.5 保留硬标签锚",
+    "单种子运行; 多种子复跑为后续工作"
+  ]
+}

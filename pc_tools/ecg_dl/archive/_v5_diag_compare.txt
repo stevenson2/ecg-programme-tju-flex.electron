@@ -1,0 +1,30 @@
+=== v3 top10 FP records (diag_v3.json) ===
+{'rid': 100060, 'n_beats': 2474, 'abn_beats': 0, 'alert_blocks': 58, 'gt_events': 0}
+{'rid': 100002, 'n_beats': 2673, 'abn_beats': 229, 'alert_blocks': 50, 'gt_events': 83}
+{'rid': 100068, 'n_beats': 2644, 'abn_beats': 163, 'alert_blocks': 38, 'gt_events': 155}
+{'rid': 105, 'n_beats': 2567, 'abn_beats': 41, 'alert_blocks': 36, 'gt_events': 41}
+{'rid': 100001, 'n_beats': 2756, 'abn_beats': 344, 'alert_blocks': 33, 'gt_events': 96}
+{'rid': 201, 'n_beats': 1963, 'abn_beats': 328, 'alert_blocks': 32, 'gt_events': 20}
+{'rid': 100059, 'n_beats': 2147, 'abn_beats': 81, 'alert_blocks': 27, 'gt_events': 3}
+{'rid': 119, 'n_beats': 1987, 'abn_beats': 444, 'alert_blocks': 26, 'gt_events': 54}
+{'rid': 202, 'n_beats': 2136, 'abn_beats': 75, 'alert_blocks': 25, 'gt_events': 24}
+{'rid': 205, 'n_beats': 2656, 'abn_beats': 85, 'alert_blocks': 23, 'gt_events': 26}
+v3 total_alert_blocks=415 records_with_alerts=23
+=== v5 top10 FP records (diag_v5.json) ===
+{'rid': 205, 'n_beats': 2656, 'abn_beats': 85, 'alert_blocks': 80, 'gt_events': 26}
+{'rid': 100069, 'n_beats': 2168, 'abn_beats': 169, 'alert_blocks': 53, 'gt_events': 141}
+{'rid': 100061, 'n_beats': 1453, 'abn_beats': 1, 'alert_blocks': 31, 'gt_events': 1}
+{'rid': 119, 'n_beats': 1987, 'abn_beats': 444, 'alert_blocks': 25, 'gt_events': 54}
+{'rid': 202, 'n_beats': 2136, 'abn_beats': 75, 'alert_blocks': 15, 'gt_events': 24}
+{'rid': 100059, 'n_beats': 2147, 'abn_beats': 81, 'alert_blocks': 13, 'gt_events': 3}
+{'rid': 100008, 'n_beats': 2129, 'abn_beats': 353, 'alert_blocks': 6, 'gt_events': 33}
+{'rid': 100001, 'n_beats': 2756, 'abn_beats': 344, 'alert_blocks': 5, 'gt_events': 96}
+{'rid': 100068, 'n_beats': 2644, 'abn_beats': 163, 'alert_blocks': 5, 'gt_events': 155}
+{'rid': 100013, 'n_beats': 2023, 'abn_beats': 230, 'alert_blocks': 3, 'gt_events': 74}
+v5 total_alert_blocks=251 records_with_alerts=23
+=== per-domain merged (theta 0.5 caliber) ===
+v3 merged: AUC=0.8651 F1=0.3582 Sens=0.9049 Prec=0.2233 evF1=0.7105 FP/rec=7.9565 alerts=415
+v5 merged: AUC=0.8636 F1=0.2792 Sens=0.9718 Prec=0.1630 evF1=0.7087 FP/rec=4.9130 alerts=251
+=== prob dist norm frac_gt_0.5 ===
+v3 mit_norm=0.3518 incart_norm=0.4060 ptb_norm=0.2523 | mit_abn=0.9374 incart_abn=0.8665 ptb_abn=0.6506
+v5 mit_norm=0.6260 incart_norm=0.5953 ptb_norm=0.6345 | mit_abn=0.9666 incart_abn=0.9779 ptb_abn=0.8840
