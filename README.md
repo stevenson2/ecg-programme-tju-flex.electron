@@ -27,7 +27,7 @@
   实验证据见 `docs/03_Software_Docs/TUNING_HISTORY.md` §100；权威数字见
   `docs/FINAL_RESULTS.md`。
 - **公开/私密**：本仓库 `main` = 固件 + PC 工具 + App；研究树快照在
-  **`meeti-research` 分支**；会话提示词/`PLAN_STATE.json`/论文全文等私密文件永不推送
+  **私有远端（R17 起研究树私有化，公开 `meeti-research` 已删除）**；会话提示词/`PLAN_STATE.json`/论文全文等私密文件永不推送
   （见 `AGENTS.md` §4）。
 
 ---
