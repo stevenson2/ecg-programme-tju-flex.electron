@@ -1,0 +1,698 @@
+{
+  "_comment": "Whitelist for scripts/check_paths.py: files allowed to match named rules because they predate the no-hardcode rule and their outputs are frozen research artifacts. Retire entries (do not extend) - new code must use scripts/project_paths.*. Canonical copy: meeti/scripts/.",
+  "ecg-programme-tju-flex.electron-master:deliverables/gen_figures.py": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:ecg_app/ios/Flutter/flutter_export_environment.sh": [
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:ecg_app/macos/Flutter/ephemeral/flutter_export_environment.sh": [
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:ecg_toolbox.ps1": [
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/audit_beat_databases.py": [
+    "legacy-refs",
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/audit_incart_lead2_quality.py": [
+    "legacy-refs",
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/audit_leakage.py": [
+    "legacy-refs",
+    "mnt-c",
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/audit_ptb_diagnosis_strata.py": [
+    "legacy-refs",
+    "mnt-c",
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/audit_s_class.py": [
+    "legacy-refs",
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/check_exp7b.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/check_h19.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/check_ptbdb_ptbxl_overlap.py": [
+    "legacy-refs"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/data/patient_split.py": [
+    "legacy-refs"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/data/preprocess_ecg1000.py": [
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/data/preprocess_incart.py": [
+    "legacy-refs",
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/data/preprocess_ptb.py": [
+    "legacy-refs",
+    "mnt-c",
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/data/preprocess_ptbxl.py": [
+    "legacy-refs",
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/data/preprocess_ptbxl_records.py": [
+    "legacy-refs"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/data/preprocess_ptbxl_rhythm.py": [
+    "legacy-refs",
+    "mnt-c",
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/data/split_guard.py": [
+    "legacy-refs"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/ecgfounder_embed_1lead.py": [
+    "legacy-refs"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/ecgfounder_hardneg_beats.py": [
+    "legacy-refs"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/ecgfounder_mine_full_normal_v3b.py": [
+    "legacy-refs"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/ecgfounder_normal_beats.py": [
+    "legacy-refs"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/eval_binary_all.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/eval_context_fusion.py": [
+    "legacy-refs",
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/eval_deploy_decision.py": [
+    "legacy-refs",
+    "mnt-c",
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/eval_deploy_match.py": [
+    "legacy-refs",
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/eval_expert_combo.py": [
+    "legacy-refs",
+    "mnt-c",
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/eval_fusion.py": [
+    "legacy-refs",
+    "mnt-c",
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/eval_ptb_holdout.py": [
+    "legacy-refs",
+    "mnt-c",
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/eval_ptbxl_mi_subtypes.py": [
+    "legacy-refs"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/eval_ptbxl_mi_vs_abnormal.py": [
+    "legacy-refs"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/eval_ptbxl_record_level.py": [
+    "legacy-refs"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/eval_rhythm_af_ptbxl.py": [
+    "legacy-refs"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/eval_st_morphology.py": [
+    "legacy-refs"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/eval_vf_detect_ablation.py": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/eval_vf_detect_ablation2.py": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/eval_weighted_fusion.py": [
+    "legacy-refs",
+    "mnt-c",
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/exp6_deploy_train.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/export_dual_tflite.py": [
+    "legacy-refs",
+    "mnt-c",
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/gen_paper_figures_task12.py": [
+    "legacy-refs",
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/generate_esp_model.py": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/launch_exp7b.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/make_replay_data.py": [
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/p3_smoke.py": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/plot_incart_all_lead2_montage.py": [
+    "legacy-refs",
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/plot_incart_annotation_alignment.py": [
+    "legacy-refs",
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/plot_incart_annotation_refined.py": [
+    "legacy-refs",
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/plot_incart_leads.py": [
+    "legacy-refs",
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/plot_incart_leads_filtered.py": [
+    "legacy-refs",
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/preprocess_incart_lead2_deploy.py": [
+    "legacy-refs",
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/run_3beat_deploy.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/run_aami_breakdown.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/run_bal_mixed.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/run_clean_ab_3beat.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/run_clean_ab_single.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/run_eval_aami_3beat.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/run_exp4_patient_clean.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/run_exp5_patient_clean.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/run_exp6_deploy.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/run_exp6_hp005.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/run_exp6_phase.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/run_exp6_sgd.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/run_exp7.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/run_exp7b.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/run_kd_screen.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/run_retest_ai.sh": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/setup_esp_dual_board.py": [
+    "mnt-c",
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/smoke_patient_split.py": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/train_ssl.py": [
+    "legacy-refs",
+    "mnt-c",
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/verify_exp6_sgd_int8.py": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/verify_heartrate_ludb.py": [
+    "legacy-refs"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/verify_heartrate_ludb_v5.py": [
+    "legacy-refs"
+  ],
+  "ecg-programme-tju-flex.electron-master:pc_tools/ecg_dl/verify_split_consistency.py": [
+    "legacy-refs",
+    "mnt-c",
+    "win-users"
+  ],
+  "ecg-programme-tju-flex.electron-master:scripts/project_paths.py": [
+    "mnt-c"
+  ],
+  "ecg-programme-tju-flex.electron-master:tools/consolidate_docs.py": [
+    "win-users"
+  ],
+  "meeti:runs/eval_init_matrix_runner.sh": [
+    "meeti-root"
+  ],
+  "meeti:runs/eval_init_matrix_runner2.sh": [
+    "meeti-root"
+  ],
+  "meeti:runs/init_matrix_runner.sh": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/analyze_local_kd_failure.py": [
+    "legacy-data",
+    "meeti-root"
+  ],
+  "meeti:scripts/bench_teacher_extract.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/build_selected_manifest_from_archive.py": [
+    "legacy-data",
+    "meeti-root"
+  ],
+  "meeti:scripts/ecg_bench.py": [
+    "legacy-data",
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/eval_dual_head_probe_pair.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/eval_legacy_models_same_test.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/eval_record_head_ptb_holdout.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/eval_repo_manifest.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/eval_tflite_selected.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/extract_ecg_fm_local_features.py": [
+    "legacy-data",
+    "meeti-root"
+  ],
+  "meeti:scripts/extract_ecg_fm_teacher.py": [
+    "legacy-data",
+    "meeti-root"
+  ],
+  "meeti:scripts/m3_local_feature_probe.py": [
+    "legacy-data",
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/m4_afe_event_eval.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/m4_diagnose_head_r.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/m4_event_specificity_sweep.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/m4_export_tflite.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/m4_postproc_eval.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/m4_ptbval_gate_check.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/m4_tflite_e2e_gate.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/m4_threshold_sweep.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/models_patch/ptbxl_builders.py": [
+    "mnt-c"
+  ],
+  "meeti:scripts/plot_s_ranking.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/prepare_mimic_subset.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/process_mimic_raw.py": [
+    "legacy-data",
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/process_mimic_raw_beat_centered.py": [
+    "legacy-data",
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/project_paths.py": [
+    "mnt-c"
+  ],
+  "meeti:scripts/push_sanitized.sh": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r10_lit_fm_linear_probe.py": [
+    "legacy-data",
+    "meeti-root"
+  ],
+  "meeti:scripts/r10_lit_strodthoff.py": [
+    "legacy-data",
+    "meeti-root"
+  ],
+  "meeti:scripts/r10_merge_lit_rows.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r10_ptbxl_fold10_prep.py": [
+    "legacy-refs",
+    "mnt-c"
+  ],
+  "meeti:scripts/r10_strodthoff_ext.py": [
+    "legacy-refs",
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r10d_legacy_all.sh": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r10e_verify.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r11_bench_bundle.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r11_deploy_select.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r11_pc_parity.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r11_train_aug.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r12_t2_kd_beat.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r12_t3_dann.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r12_t4_temp.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r12_t5_specr90.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r12_t6_beat_readout.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r12_wrap_plan_state.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r13_ptbxl_5cls_smoke.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r13_ptbxl_prep.py": [
+    "legacy-refs",
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r14_af_head.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r14_af_opmetrics.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r14_af_prep.py": [
+    "legacy-refs",
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r14_af_seeds.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r14_afdb_af_eval.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r14_afdb_prep.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r14_meeti_af_scan.py": [
+    "legacy-data",
+    "meeti-root"
+  ],
+  "meeti:scripts/r14_rr_baseline.py": [
+    "legacy-refs",
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r14_two_lane_sim.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r14_write_report.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r15_af_adapt.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r15_af_pool.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r15_b1_diagnose.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r15_b1_rr_shape.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r15_laneA_rr_gate.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r15_ltafdb_prep.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r15_ltafdb_rr_eval.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r15_write_report.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r16_af_head_adapt.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r16_annot_qrs_sensitivity.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r16_detector_qc.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r16_device_replay_ref.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r16_ltafdb_sensitivity.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r16_posthoc_gate.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r16_rr_data.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r16_rr_seq.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r16_rr_shape_gate.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r16_rr_shape_prep.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r16_theta_crossfit.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r16_write_report.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r1_qat_dual.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r1b_qat_legacy.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r4_train_label_fix.py": [
+    "legacy-data",
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r5_fullgate_eval.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r6_qat_gain_finetune.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r6b_ptq_gaincal_test.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r7_lead2_teacher_probe.py": [
+    "legacy-data",
+    "meeti-root"
+  ],
+  "meeti:scripts/r8_data_5s.py": [
+    "legacy-data",
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/r8_eval_ptb_holdout.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r8a_caliber_bridge.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r8a_train_5s_student.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r9_6seed_summary.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r9_agg_sensitivity.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r9_data.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r9_probe_scale_stats.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r9_resummarize.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/r9_train.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/render_summary.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/run_legacy_evals.sh": [
+    "meeti-root"
+  ],
+  "meeti:scripts/scan_local_meeti_metadata.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/summarize_init_vs_scratch.py": [
+    "meeti-root"
+  ],
+  "meeti:scripts/task.ps1": [
+    "win-users"
+  ],
+  "meeti:scripts/teacher_supervised_subspace.py": [
+    "legacy-data",
+    "meeti-root"
+  ],
+  "meeti:scripts/train_dual_head_kd_record_small.py": [
+    "legacy-data",
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/train_dual_head_kd_record_v3_small.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/train_dual_head_local_kd_small.py": [
+    "legacy-data",
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/train_dual_head_record_pls_kd_small.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/train_dual_head_small.py": [
+    "legacy-data",
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/train_dual_head_v2_small.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/train_dual_head_v3_fc1w_small.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/train_dual_head_v3_init_small.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/train_dual_head_v3_small.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/train_ecgfm_feature_kd_small.py": [
+    "legacy-data",
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/train_ecgfm_feature_probe_small.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/train_meeti_weak_small.py": [
+    "legacy-data",
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/train_public_small.py": [
+    "meeti-root",
+    "mnt-c"
+  ],
+  "meeti:scripts/validate_mimic_subset.py": [
+    "meeti-root"
+  ]
+}

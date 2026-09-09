@@ -17,7 +17,9 @@
     "esp_idf": "/mnt/c/esp/v6.0.1/esp-idf",
     "idf_python": "/mnt/c/Users/cai/.espressif/python_env/idf6.0_py3.13_env/Scripts/python.exe",
     "device_052": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/data/real/ecg_real_052.ecgr",
-    "device_rec_latest": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/rec_latest.ecgr"
+    "device_rec_latest": "/mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/rec_latest.ecgr",
+    "idf_tools_path": "/mnt/c/Users/cai/.espressif",
+    "idf_python_env": "/mnt/c/Users/cai/.espressif/python_env/idf6.0_py3.13_env"
   },
   "windows": {
     "meeti_root": "\\\\wsl.localhost\\Ubuntu\\home\\devcontainers\\meeti",
@@ -31,7 +33,9 @@
     "pio": "C:\\Users\\cai\\.platformio\\penv\\Scripts\\pio.exe",
     "com_port": "COM3",
     "device_052": "C:\\Users\\cai\\OneDrive\\Desktop\\Fe programme 25261\\ecg-programme-tju-flex.electron-master\\pc_tools\\ecg_dl\\data\\real\\ecg_real_052.ecgr",
-    "device_rec_latest": "C:\\Users\\cai\\OneDrive\\Desktop\\Fe programme 25261\\ecg-programme-tju-flex.electron-master\\rec_latest.ecgr"
+    "device_rec_latest": "C:\\Users\\cai\\OneDrive\\Desktop\\Fe programme 25261\\ecg-programme-tju-flex.electron-master\\rec_latest.ecgr",
+    "idf_tools_path": "C:\\Users\\cai\\.espressif",
+    "idf_python_env": "C:\\Users\\cai\\.espressif\\python_env\\idf6.0_py3.13_env"
   },
   "task_routing": {
     "wsl": [
