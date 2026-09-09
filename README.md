@@ -5,7 +5,30 @@
 
 **便携式单导联（Lead II）心电采集 + 板载深度学习逐拍异常检测。** 500 Hz 采样，片上完成滤波、心率检测与异常推理，异常经 BLE 推送手机 App，数据以 ECGR 格式板载录制并支持 WiFi 下载。
 
-> **固件线状态（2026-09-01）**：官方固件为 **ESP-IDF 迁移工程** `experiments/esp_idf_ecg_migration/`（2026-08-28 转正，含 AI/存储/WiFi/BLE/心率/规则组件与录制链）。旧 **Arduino + PlatformIO** 线已归档至 `legacy_arduino/`，仅作历史参考。
+> **固件线状态（2026-09-10）**：官方固件为 **ESP-IDF 迁移工程** `experiments/esp_idf_ecg_migration/`（2026-08-28 转正，含 AI/存储/WiFi/BLE/心率/规则组件与录制链）。
+> 旧 **Arduino + PlatformIO** 线已归档至 `legacy_arduino/`，**仅历史参考，不再构建/烧录**。
+> 板上模型 **exp7c** INT8（167,376 B），固件运行 θ=0.50 + 1-of-5 + 冷却 5（以 `main.cc` 为准）。
+
+## 当前状态（2026-09-10）
+
+- **设备闭环**：官方 ESP-IDF 固件已烧录到 ESP32-S3-WROOM-1-N16R8（COM3，app 1,613,824 B，
+  哈希校验通过），并完成固件内置 **SIMULATOR / MIT-BIH 回放** 三模式 90 s 板上测试：
+  - MIT-BIH 106（VEB 密集，真实异位拍率 49.3%）：设备 raw abnormal **51.2%**、中位置信度 0.77
+    → 检出与真值吻合；
+  - MIT-BIH 100（窦性，真实异位拍率 1.8%）：中位置信度 0，但 raw abnormal **16.7%**
+    （PC 位级参考 11.4%）→ 约 15% 窗级假阳性，属模型工作点问题；
+  - SIMULATOR（合成 ECG）：中位 0.99 / raw 61.9% → **对 AI 是 OOD，不能作正常对照**；
+  - 设备 vs PC 相关 0.886/0.827、平均绝对差 0.050/0.128 → 板上实现与 PC 部署链一致。
+  - 详细报告：`runs/SESSION_REPORT_R16_DEVICE.md`（研究树）。
+- **研究线**：Lane B（M4 v1 门控）不变；Lane A 的 RR 形状通道为研究级正信号
+  （事后两段式门禁 052 FP=0 / afdb 0.971 / ltafdb 0.916），**AF 头形态学跨域修复路线
+  已于 R16 关闭**（A4 FAIL）。下一步：正常段特异性修复 + 设备 AF 正样本采集 + R17 预注册。
+- **文档**：开发规则见 `docs/03_Software_Docs/AGENTS.md`（ESP-IDF 时代重写）；
+  实验证据见 `docs/03_Software_Docs/TUNING_HISTORY.md` §100；权威数字见
+  `docs/FINAL_RESULTS.md`。
+- **公开/私密**：本仓库 `main` = 固件 + PC 工具 + App；研究树快照在
+  **`meeti-research` 分支**；会话提示词/`PLAN_STATE.json`/论文全文等私密文件永不推送
+  （见 `AGENTS.md` §4）。
 
 ---
 
