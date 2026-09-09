@@ -97,3 +97,21 @@ components/ecg_ai/
 # 2026-09-01 Arduino 线归档：孤儿 vendor / 嵌入 git 副本不提交（避免嵌入嵌套 git 仓库）
 legacy_arduino/components/
 legacy_arduino/esp-nn/
+
+# 2026-09-01 内部实验日志：保留本地，不公开推流
+/docs/03_Software_Docs/TUNING_HISTORY.md
+
+# 2026-09-01 内部研究文档：全部保留本地，不推公开
+docs/
+.dsh/
+pc_tools/ecg_dl/PATIENT_SPLIT_PROGRESS.md
+pc_tools/ecg_dl/_archive_oneoff/
+ecg_app_backup/
+
+# ---- 私密会话/交接产物：不得上传（研究树见 meeti-research 分支） ----
+NEXT_SESSION_PROMPT*.md
+PLAN_STATE.json
+SESSION_LOG.md
+runs/LOOP_LOG.md
+local_meeti_metadata_manifest.*
+papers_fulltext/
