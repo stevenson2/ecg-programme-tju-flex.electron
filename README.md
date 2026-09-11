@@ -1,17 +1,18 @@
 # ESP32-ECG 心电采集与 AI 异常检测系统
 
-> **ESP32-S3 · ESP-IDF · TFLite Micro + ESP-NN · exp7c INT8 · BLE NUS · Flutter**  
+> **ESP32-S3 · ESP-IDF · TFLite Micro + ESP-NN · v3-A INT8 · BLE NUS · Flutter**  
 > [English](README.en.md) | 中文
 
 **便携式单导联（Lead II）心电采集 + 板载深度学习逐拍异常检测。** 500 Hz 采样，片上完成滤波、心率检测与异常推理，异常经 BLE 推送手机 App，数据以 ECGR 格式板载录制并支持 WiFi 下载。
 
 > **固件线状态（2026-09-10）**：官方固件为 **ESP-IDF 迁移工程** `experiments/esp_idf_ecg_migration/`（2026-08-28 转正，含 AI/存储/WiFi/BLE/心率/规则组件与录制链）。
 > 旧 **Arduino + PlatformIO** 线已归档至 `legacy_arduino/`，**仅历史参考，不再构建/烧录**。
-> 板上模型 **exp7c** INT8（167,376 B），固件运行 θ=0.50 + 1-of-5 + 冷却 5（以 `main.cc` 为准）。
+> 板上模型 **v3-A** INT8（167,376 B，`models_ecg_model_v3a_int8_tflite`），固件运行 θ=0.50 + 1-of-5 + 冷却 5（以 `main.cc` 为准）。
 
-## 当前状态（2026-09-10）
+## 当前状态（2026-09-11）
 
-- **设备闭环**：官方 ESP-IDF 固件已烧录到 ESP32-S3-WROOM-1-N16R8（COM3，app 1,613,824 B，
+- **板上模型（2026-09-11）**：工作区已从 exp7c 换成 **v3-A** INT8；N16R8 / SuperMini 双板配置见 `experiments/esp_idf_ecg_migration/FLASH_DUAL_BOARD.md`。R16 设备闭环数字仍是 **exp7c** 烧录结果，不能直接当成 v3-A 指标。
+- **设备闭环（R16 / exp7c）**：官方 ESP-IDF 固件已烧录到 ESP32-S3-WROOM-1-N16R8（当时 COM3，app 1,613,824 B，
   哈希校验通过），并完成固件内置 **SIMULATOR / MIT-BIH 回放** 三模式 90 s 板上测试：
   - MIT-BIH 106（VEB 密集，真实异位拍率 49.3%）：设备 raw abnormal **51.2%**、中位置信度 0.77
     → 检出与真值吻合；
@@ -39,7 +40,7 @@
 | 采集 | 500 Hz 三通道（clean / noisy / filtered），信号源：模拟发生器 / 真实 AFE / MIT-BIH 回放 |
 | 滤波 | 双级梳状（50/100 Hz 陷零，-119.2 dB）→ HP → LP 40 Hz |
 | 心率 | 能量包络 QRS 检测 v6（LUDB：F1 0.868、Se 96.4%、BPM MAE 4.16） |
-| AI | exp7c ResNet-L INT8（167,376 B），TFLite Micro + ESP-NN 推理，逐拍异常检测 |
+| AI | v3-A ResNet-L INT8（167,376 B），TFLite Micro + ESP-NN 推理，逐拍异常检测 |
 | 心律 | 停搏 / 过缓 / 过速（规则）、房颤（CV+熵）、VF/VT（DSP 特征+LR） |
 | 报警 | 5 s 锁存，BLE/串口 abnormal 标志 + 异常位图 |
 | 记录 | ECGR 格式（32B 头 + int16 流 + 1 B/s 异常位图），异常触发自动录制，WiFi REST 下载 |
@@ -80,7 +81,7 @@ flowchart LR
     E --> G[2:1 抽取<br/>250 Hz]
     G --> H[250 点窗]
     H --> I[Z-score + INT8]
-    I --> J[TFLite Micro + ESP-NN<br/>exp7c INT8]
+    I --> J[TFLite Micro + ESP-NN<br/>v3-A INT8]
     J --> K[异常概率]
     K --> L[报警锁存 5 s]
     E --> M[ECGR 录制 + 异常位图]
@@ -116,7 +117,7 @@ papers/                            # 文献
 
 ## AI 模型与指标
 
-**板上模型**：exp7c（ResNet-L，~80K 参数），INT8 **167,376 B**，2026-08-14 上板。论文口径最优操作点 beat θ≈0.35 / patient θ≈0.5；**固件运行 θ=0.60 + 5 拍确认**。
+**板上模型**：v3-A clean baseline（ResNet-L，~80K 参数），INT8 **167,376 B**，2026-09 上板（接替 exp7c）。论文口径最优操作点 beat θ≈0.35 / patient θ≈0.5；**固件运行 θ=0.50 + 1-of-5 + 冷却 5**（以 `main.cc` 为准，不是 0.60 / 5 拍确认）。
 
 | 口径 | 模型 | MIT-AUC | MIT-R@0.5 | PTB-AUC | PTB-R@0.5 |
 |------|------|:---:|:---:|:---:|:---:|

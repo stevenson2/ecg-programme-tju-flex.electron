@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_timer.h"
@@ -33,6 +34,19 @@ static int s_mode = SOURCE_SIMULATOR;
 static uint32_t s_lastButtonMs = 0;
 static bool s_buttonWasLow = false;
 static bool s_secondAbnormal = false;   /* 本秒内是否出现 AI 确认异常 (录制位图用) */
+/* BLE 批量发送：攒 BLE_BATCH_SIZE 帧再 Notify 一次，降低射频占空比/发热。 */
+#define BLE_BATCH_SIZE   2
+#define BLE_BATCH_BUF_SIZE (160 * BLE_BATCH_SIZE + 1)
+static char s_bleBatchBuf[BLE_BATCH_BUF_SIZE];
+static int  s_bleBatchLen   = 0;
+static int  s_bleBatchCount = 0;
+static volatile bool s_storageReady = false;
+/* REC_SCHEDULE <间隔秒> <时长秒>：上电秒数调度（无 RTC）。 */
+static uint32_t s_schedInterval = 0;
+static uint32_t s_schedDuration = 0;
+static uint32_t s_schedNextStart = 0;
+static bool s_schedActiveRec = false;
+
 
 static float s_combBuf1[COMB_TAPS] = {0};
 static int s_combIdx1 = 0;
@@ -103,6 +117,142 @@ static void checkButton(void) {
     s_buttonWasLow = low;
 }
 
+static bool strEqualsIgnoreCase(const char *a, const char *b) {
+    return strcasecmp(a, b) == 0;
+}
+
+static bool strStartsWithIgnoreCase(const char *s, const char *prefix) {
+    while (*prefix) {
+        if (*s == '\0') return false;
+        char cs = (*s >= 'a' && *s <= 'z') ? (char)(*s - 'a' + 'A') : *s;
+        char cp = (*prefix >= 'a' && *prefix <= 'z') ? (char)(*prefix - 'a' + 'A') : *prefix;
+        if (cs != cp) return false;
+        s++; prefix++;
+    }
+    return true;
+}
+
+static void sendBleReply(const char *reply) {
+    if (reply && reply[0]) sendBLEMessage(reply);
+}
+
+/* BLE NUS RX 命令：与 Arduino 线 REC_*/WIFI_* 对齐。此前队列有入无出，App 录制指令全丢。 */
+static void handleBleCommands(void) {
+    char cmd[64];
+    char reply[96];
+    while (bleCommandQueueTake(cmd, sizeof(cmd))) {
+        if (!s_storageReady) {
+            sendBleReply("REC_ERR not_ready");
+            continue;
+        }
+        if (strEqualsIgnoreCase(cmd, "REC_STOP")) {
+            uint32_t dur = ecgRecorderCurrentDurationSec();
+            bool ok = ecgRecorderStop();
+            s_schedActiveRec = false;
+            if (s_schedInterval > 0) {
+                s_schedNextStart = (uint32_t)(esp_timer_get_time() / 1000000ULL) + s_schedInterval;
+            }
+            snprintf(reply, sizeof(reply), "REC_STOP %s %lus", ok ? "ok" : "fail",
+                     (unsigned long)dur);
+            sendBleReply(reply);
+            continue;
+        }
+        if (strEqualsIgnoreCase(cmd, "REC_START")) {
+            bool ok = ecgRecorderStart();
+            s_schedActiveRec = false;
+            snprintf(reply, sizeof(reply), "REC_START %s", ok ? "ok" : "fail");
+            sendBleReply(reply);
+            continue;
+        }
+        if (strEqualsIgnoreCase(cmd, "REC_STATUS")) {
+            snprintf(reply, sizeof(reply), "REC_STATUS rec=%d auto=%d count=%lu",
+                     ecgRecorderIsRecording() ? 1 : 0,
+                     ecgRecorderAutoRecordEnabled() ? 1 : 0,
+                     (unsigned long)ecgRecorderRecordCount());
+            sendBleReply(reply);
+            continue;
+        }
+        if (strEqualsIgnoreCase(cmd, "REC_LIST")) {
+            char listBuf[512];
+            int n = ecgRecorderList(listBuf, (int)sizeof(listBuf));
+            if (n <= 0 || listBuf[0] == '\0') {
+                sendBleReply("REC_LIST empty");
+            } else {
+                sendBleReply("REC_LIST ok");
+                char *line = listBuf;
+                while (line && *line) {
+                    char *nl = strchr(line, '\n');
+                    if (nl) *nl = '\0';
+                    if (line[0]) sendBleReply(line);
+                    line = nl ? (nl + 1) : NULL;
+                }
+            }
+            continue;
+        }
+        if (strEqualsIgnoreCase(cmd, "REC_AUTO 0")) {
+            ecgRecorderSetAutoRecord(false);
+            sendBleReply("REC_AUTO 0 ok");
+            continue;
+        }
+        if (strEqualsIgnoreCase(cmd, "REC_AUTO 1")) {
+            ecgRecorderSetAutoRecord(true);
+            sendBleReply("REC_AUTO 1 ok");
+            continue;
+        }
+        if (strStartsWithIgnoreCase(cmd, "REC_SCHEDULE")) {
+            const char *arg = cmd + 12;
+            while (*arg == ' ') arg++;
+            if (strEqualsIgnoreCase(arg, "OFF")) {
+                s_schedInterval = 0;
+                s_schedDuration = 0;
+                if (s_schedActiveRec) {
+                    ecgRecorderStop();
+                    s_schedActiveRec = false;
+                }
+                sendBleReply("REC_SCHEDULE OFF ok");
+                continue;
+            }
+            unsigned long iv = 0, dur = 0;
+            if (sscanf(arg, "%lu %lu", &iv, &dur) == 2 && iv >= 10 && dur >= 5) {
+                s_schedInterval = (uint32_t)iv;
+                s_schedDuration = (uint32_t)dur;
+                s_schedNextStart = (uint32_t)(esp_timer_get_time() / 1000000ULL) + (uint32_t)iv;
+                snprintf(reply, sizeof(reply), "REC_SCHEDULE ok %lus %lus", iv, dur);
+                sendBleReply(reply);
+            } else {
+                sendBleReply("REC_SCHEDULE fail");
+            }
+            continue;
+        }
+        if (strEqualsIgnoreCase(cmd, "WIFI_ON")) {
+            bool ok = ecgWifiStart();
+            snprintf(reply, sizeof(reply), "WIFI_ON %s", ok ? "ok" : "fail");
+            sendBleReply(reply);
+            continue;
+        }
+        if (strEqualsIgnoreCase(cmd, "WIFI_OFF")) {
+            ecgWifiStop();
+            sendBleReply("WIFI_OFF ok");
+            continue;
+        }
+    }
+}
+
+static void processRecSchedule(void) {
+    if (s_schedInterval == 0 || !s_storageReady) return;
+    uint32_t nowSec = (uint32_t)(esp_timer_get_time() / 1000000ULL);
+    if (!s_schedActiveRec && nowSec >= s_schedNextStart) {
+        if (ecgRecorderStart()) {
+            s_schedActiveRec = true;
+        }
+        s_schedNextStart = nowSec + s_schedInterval;
+    }
+    if (s_schedActiveRec && ecgRecorderCurrentDurationSec() >= s_schedDuration) {
+        ecgRecorderStop();
+        s_schedActiveRec = false;
+    }
+}
+
 static void storage_init_task(void *arg) {
     (void)arg;
     if (!ecgRecorderInit()) {
@@ -111,8 +261,9 @@ static void storage_init_task(void *arg) {
         return;
     }
     /* 异常触发自动录制: 异常秒 -> 启动, 连续 N 秒正常 -> 停止。
-     * IDF 线无 BLE/串口 REC_* 命令通道, 故默认启用 auto-record 保证录制功能可用。 */
+     * BLE REC_* 命令已接入；auto-record 仍默认开，保证无 App 时也能落盘。 */
     ecgRecorderSetAutoRecord(true);
+    s_storageReady = true;
     printf("[storage] recorder init OK, auto-record enabled\n");
     vTaskDelete(NULL);
 }
@@ -124,8 +275,8 @@ extern "C" void app_main(void) {
     cfg.confirm_mode = ECG_AI_CONFIRM_ONE_OF_N;
     cfg.confirm_n = 5;
     cfg.cooldown_beats = 5;
-    if (!ecg_ai_init(models_ecg_model_exp7c_int8_tflite,
-                     models_ecg_model_exp7c_int8_tflite_len, &cfg)) {
+    if (!ecg_ai_init(models_ecg_model_v3a_int8_tflite,
+                     models_ecg_model_v3a_int8_tflite_len, &cfg)) {
         printf("[main] ecg_ai init failed\n");
         return;
     }
@@ -162,6 +313,8 @@ extern "C" void app_main(void) {
 
     while (true) {
         checkButton();
+        handleBleCommands();
+        processRecSchedule();
 
         float noisySample, cleanSample;
         if (s_mode == SOURCE_SIMULATOR) {
@@ -219,7 +372,20 @@ extern "C" void app_main(void) {
                      cleanSample, noisyNoDC, displaySample,
                      (unsigned)hr.bpm, (unsigned)trueBPM, hr.sqi,
                      last_abnormal, last_conf);
-            sendBLEMessage(ble_line);
+            /* 可穿戴低功耗：攒 2 帧再发一次 Notify，减少 BLE 射频活动。
+             * 对 App 仍等效 125 样本/s（每次 Notify 2 个分号帧）。 */
+            int lineLen = (int)strlen(ble_line);
+            if (lineLen > 0 && s_bleBatchLen + lineLen < (int)sizeof(s_bleBatchBuf)) {
+                memcpy(s_bleBatchBuf + s_bleBatchLen, ble_line, lineLen);
+                s_bleBatchLen += lineLen;
+                s_bleBatchCount++;
+            }
+            if (s_bleBatchCount >= BLE_BATCH_SIZE) {
+                s_bleBatchBuf[s_bleBatchLen] = '\0';
+                sendBLEMessage(s_bleBatchBuf);
+                s_bleBatchLen = 0;
+                s_bleBatchCount = 0;
+            }
         }
 
         if (frame % 500 == 0) {

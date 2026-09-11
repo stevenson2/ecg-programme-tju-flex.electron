@@ -1,0 +1,7 @@
+# ESP-IDF Partition Table - ESP32-S3 SuperMini (ESP32S3FH4R2)
+# 4MB Quad Flash / 2MB Quad PSRAM
+# Name,   Type, SubType, Offset,  Size, Flags
+nvs,      data, nvs,     0x9000,   24K,
+phy_init, data, phy,     0xf000,   4K,
+factory,  app,  factory, 0x10000,  2816K,
+storage,  data, spiffs,  0x2d0000,  960K,

@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include "esp_log.h"
 #include "nvs_flash.h"
+#include "esp_bt.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "nimble/nimble_port.h"
@@ -101,7 +102,10 @@ static void start_advertising(void) {
     adv_params.disc_mode = BLE_GAP_DISC_MODE_GEN;
     rc = ble_gap_adv_start(g_own_addr_type, NULL, BLE_HS_FOREVER,
                            &adv_params, gap_event, NULL);
-    (void)rc;
+    if (rc) {
+        ESP_LOGE(TAG, "adv start failed rc=%d", rc);
+        return;
+    }
     ESP_LOGI(TAG, "advertising started");
 }
 
@@ -111,7 +115,10 @@ static int gap_event(struct ble_gap_event *event, void *arg) {
         if (event->connect.status == 0) {
             g_connected = true;
             g_conn_handle = event->connect.conn_handle;
-            ESP_LOGI(TAG, "connected");
+            /* 控制器连接功率档是 HDL0..HDL8（连接序号），不是 NimBLE conn_handle。
+             * MAX_CONNECTIONS=1 时第一条链路就是 HDL0。 */
+            esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_CONN_HDL0, ESP_PWR_LVL_N0);
+            ESP_LOGI(TAG, "connected handle=%u", (unsigned)g_conn_handle);
         } else {
             ESP_LOGI(TAG, "connect failed");
             start_advertising();
@@ -126,7 +133,10 @@ static int gap_event(struct ble_gap_event *event, void *arg) {
         start_advertising();
         return 0;
     case BLE_GAP_EVENT_SUBSCRIBE:
-        ESP_LOGI(TAG, "subscribe");
+        ESP_LOGI(TAG, "subscribe attr=%d notify=%d ind=%d",
+                 event->subscribe.attr_handle,
+                 event->subscribe.cur_notify,
+                 event->subscribe.cur_indicate);
         return 0;
     default:
         return 0;
@@ -172,7 +182,8 @@ static void host_task(void *param) {
 
 extern "C" void initBLE(void) {
     if (g_cmd_queue == nullptr) {
-        g_cmd_queue = xQueueCreate(4, 32);
+        /* 与 g_rx_line[64] 对齐，避免 REC_SCHEDULE 等长命令被截断。 */
+        g_cmd_queue = xQueueCreate(4, 64);
     }
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -184,6 +195,10 @@ extern "C" void initBLE(void) {
         ESP_LOGE(TAG, "nimble_port_init failed");
         return;
     }
+    /* 可穿戴低功耗：BLE 默认发射功率从 +9dBm 降到 0dBm。
+     * 手机贴身场景 0dBm 足够，能明显降低射频发热。 */
+    esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_ADV, ESP_PWR_LVL_N0);
+    esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_DEFAULT, ESP_PWR_LVL_N0);
     ble_svc_gap_init();
     ble_svc_gatt_init();
     ble_svc_gap_device_name_set(DEVICE_NAME);
@@ -218,7 +233,7 @@ extern "C" bool isBLEConnected(void) {
 }
 
 extern "C" bool bleCommandQueueTake(char *out, size_t len) {
-    char buf[32];
+    char buf[64];
     if (!g_cmd_queue || !out || len == 0) return false;
     if (xQueueReceive(g_cmd_queue, buf, 0) != pdTRUE) return false;
     strncpy(out, buf, len);

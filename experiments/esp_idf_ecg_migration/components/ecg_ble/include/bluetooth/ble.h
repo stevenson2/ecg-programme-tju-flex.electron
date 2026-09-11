@@ -15,6 +15,7 @@
  */
 
 #include <stdint.h>
+#include <stddef.h>   /* size_t */
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,7 +32,7 @@ void initBLE(void);
 /**
  * @brief 通过 BLE 发送 CSV 文本行
  *
- * @param message 以 null 结尾的字符串，最大长度 20 字节
+ * @param message 以 null 结尾的字符串（当前固件 2 帧批量，约 160 字节；需 MTU≥185）
  */
 void sendBLEMessage(const char* message);
 

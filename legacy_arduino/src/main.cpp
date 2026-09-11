@@ -15,6 +15,7 @@
 #include "vf_detect/vf_detect.h"
 #include "thermal/thermal.h"
 #include "ai_inference/ai_inference.h"
+#include "ai_inference/ecg_bench.h"
 #include "storage/ecg_recorder.h"
 #include "wifi/ecg_wifi.h"
 
@@ -1362,6 +1363,12 @@ void loop()
         }
 
         /* ======== 串口指令处理 ======== */
+#ifdef ECG_AI_BENCH
+        if (Serial.available() > 0) {
+            ecg_bench_on_byte((uint8_t)Serial.read());
+        }
+#else
+        /* ======== 串口指令处理 ======== */
         if (Serial.available() > 0)
         {
             char cmd = Serial.read();
@@ -1481,5 +1488,6 @@ void loop()
                     break;
             }
         }
+#endif /* ECG_AI_BENCH */
     }
 }

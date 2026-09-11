@@ -29,7 +29,7 @@ import '../config/app_config.dart';
  *     "abnormal_ratio": <double>,
  *     "start_unix": <int>,
  *     "onboard_ai_summary": {
- *       "model": "exp6-SGD",
+ *       "model": "v3a",
  *       "abnormal_seconds": <int>,
  *       "abnormal_ratio": <double>,
  *       "total_duration": <int>
@@ -213,7 +213,7 @@ class CloudUploadService {
       'abnormal_ratio': double.parse(abnormalRatio.toStringAsFixed(4)),
       'start_unix': record.startUnixTime,
       'onboard_ai_summary': {
-        'model': 'exp6-SGD',
+        'model': 'v3a',
         'abnormal_seconds': record.abnormalSeconds,
         'abnormal_ratio':
             double.parse(abnormalRatio.toStringAsFixed(4)),

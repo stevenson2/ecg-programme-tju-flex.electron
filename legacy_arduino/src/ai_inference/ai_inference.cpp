@@ -207,7 +207,7 @@ bool ai_inference_init(void) {
 
     g_model = tflite::GetModel(ecg_model_data);
     Serial.print("[AI] model bytes: ");
-    Serial.println((int)sizeof(ecg_model_data));
+    Serial.println((int)ecg_model_data_len);
     Serial.print("[AI] model schema ver: ");
     Serial.print((int)g_model->version());
     Serial.print(" vs lib TFLITE_SCHEMA_VERSION: ");

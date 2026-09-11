@@ -3,7 +3,7 @@
 本工程验证从 Arduino 固件向 ESP-IDF 迁移的第一步：
 
 - `components/ecg_core`：滤波、心率、心律安全、AF、VF、模拟/回放源码（从原 Arduino 移植，算法参数未动）。
-- `components/ecg_ai`：esp-tflite-micro + ESP-NN 的 exp7c INT8 推理组件。
+- `components/ecg_ai`：esp-tflite-micro + ESP-NN 的 INT8 推理组件（当前板上模型 **v3-A**）。
 - `components/ecg_storage`：SPIFFS ECGR 录制。
 - `components/ecg_wifi`：SoftAP + HTTP 记录列表/下载。
 - `components/ecg_ble`：NimBLE NUS 服务。

@@ -1,6 +1,6 @@
 # ESP32-ECG — Portable ECG Acquisition & On-device AI Anomaly Detection
 
-> **ESP32-S3 · ESP-IDF · TFLite Micro + ESP-NN · exp7c INT8 · BLE NUS · Flutter**  
+> **ESP32-S3 · ESP-IDF · TFLite Micro + ESP-NN · v3-A INT8 · BLE NUS · Flutter**  
 > English | [中文](README.md)
 
 **Portable single-lead (Lead II) ECG acquisition with on-device deep-learning beat-level anomaly detection.** 500 Hz sampling; filtering, heart-rate detection and anomaly inference run on the chip; alarms are pushed to a Flutter app over BLE, and recordings are stored on-board in the ECGR format with WiFi download support.
@@ -16,7 +16,7 @@
 | Acquisition | 500 Hz, 3-channel (clean / noisy / filtered); sources: simulator, real AFE, MIT-BIH replay |
 | Filtering | Two-stage comb (50/100 Hz nulling, -119.2 dB) → HP → LP 40 Hz |
 | Heart rate | Energy-envelope QRS detector v6 (LUDB: F1 0.868, Se 96.4%, BPM MAE 4.16) |
-| AI | exp7c ResNet-L INT8 (167,376 B); TFLite Micro + ESP-NN inference; beat-level anomaly detection |
+| AI | v3-A ResNet-L INT8 (167,376 B); TFLite Micro + ESP-NN inference; beat-level anomaly detection |
 | Rhythm | Asystole / bradycardia / tachycardia (rules), AF (CV+entropy), VF/VT (DSP features + LR) |
 | Alarm | 5 s latch; `abnormal` flag + per-second bitmap over BLE/serial |
 | Recording | ECGR format (32 B header + int16 stream + 1 B/s abnormal bitmap); auto-record on anomaly; WiFi REST download |
@@ -57,7 +57,7 @@ flowchart LR
     E --> G[2:1 decimate<br/>250 Hz]
     G --> H[250-pt window]
     H --> I[Z-score + INT8]
-    I --> J[TFLite Micro + ESP-NN<br/>exp7c INT8]
+    I --> J[TFLite Micro + ESP-NN<br/>v3-A INT8]
     J --> K[Anomaly probability]
     K --> L[Alarm latch 5 s]
     E --> M[ECGR record + bitmap]
@@ -93,7 +93,7 @@ papers/                            # literature
 
 ## AI Model & Metrics
 
-**On-board model**: exp7c (ResNet-L, ~80K params), INT8 **167,376 B**, on-device since 2026-08-14. Paper operating point: beat θ≈0.35 / patient θ≈0.5; **firmware runs θ=0.60 + 5-beat confirmation**.
+**On-board model**: v3-A clean baseline (ResNet-L, ~80K params), INT8 **167,376 B**, on-device since 2026-09 (replaces exp7c). Paper operating point: beat θ≈0.35 / patient θ≈0.5; **firmware runs θ=0.50 + 1-of-5 + cooldown 5** (`main.cc` is authoritative — not 0.60 / 5-beat confirmation).
 
 | Cadence | Model | MIT-AUC | MIT-R@0.5 | PTB-AUC | PTB-R@0.5 |
 |------|------|:---:|:---:|:---:|:---:|

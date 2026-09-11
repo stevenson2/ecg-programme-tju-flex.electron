@@ -54,7 +54,7 @@ ECGSample? parseEcgCsvLine(String line) {
 }
 
 /**
- * 解析一次 BLE Notify 收到的批量帧数据（固件 4 帧以 ';' 拼接，每帧 9 列）。
+ * 解析一次 BLE Notify 收到的批量帧数据（固件 2 帧以 ';' 拼接，每帧 9 列；Arduino 线曾为 4 帧）。
  * 2026-08-10 修复：原实现把整串当一行解析，多帧拼接导致 abnormal 列错位，
  * App 报警状态机在真实 BLE 链路下无法触发。
  *

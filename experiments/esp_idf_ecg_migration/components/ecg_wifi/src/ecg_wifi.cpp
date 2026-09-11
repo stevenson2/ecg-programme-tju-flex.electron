@@ -275,6 +275,9 @@ bool ecgWifiStart(void) {
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wc));
     ESP_ERROR_CHECK(esp_wifi_start());
+    /* 与 Arduino 线的 setSleep(false) 对齐：AP 下关闭 WiFi 省电，
+     * 避免省电/共存调度挤压 BLE 广播与连接响应。 */
+    esp_wifi_set_ps(WIFI_PS_NONE);
 
     httpd_config_t hc = HTTPD_DEFAULT_CONFIG();
     hc.lru_purge_enable = true;

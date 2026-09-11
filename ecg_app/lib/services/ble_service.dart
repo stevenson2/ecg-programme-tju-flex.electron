@@ -240,7 +240,7 @@ class BLEService {
 
   /// 收到 CSV 数据：解析为 ECGSample
   /// CSV 格式: clean,noisy,filtered,bpm,true_bpm,sqi,motion,abnormal_flag,confidence
-  /// 固件 4 帧以 ';' 批量拼接，按帧分割解析（2026-08-10 修复多帧错位）
+  /// 固件 2 帧以 ';' 批量拼接（Arduino 线曾为 4 帧），按帧分割解析（2026-08-10 修复多帧错位）
   void _onDataReceived(List<int> value) {
     final str = utf8.decode(value).trim();
     if (str.isEmpty) return;
