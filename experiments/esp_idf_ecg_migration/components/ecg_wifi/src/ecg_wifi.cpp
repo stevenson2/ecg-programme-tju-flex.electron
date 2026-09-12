@@ -32,6 +32,10 @@ static httpd_handle_t g_server = NULL;
 static int s_diagTxPower = 78;
 static int s_diagChannel = 6;
 static bool s_diagSeqSlow = false;
+/* esp_wifi_init + 默认 AP netif 全生命周期只做一次: WIFI_OFF/ON 反复切换时
+ * 只 stop/start WiFi 与 httpd, 不 deinit — 避免 netif 重复创建/deinit 失败
+ * (2026-09-12 修复: 命令泵打通后 WIFI_ON/OFF 已成为可达路径)。 */
+static bool s_wifiInited = false;
 
 /* ======================== 内部辅助 ======================== */
 
@@ -255,26 +259,38 @@ bool ecgWifiInit(void) {
 bool ecgWifiStart(void) {
     if (g_wifi_on) return false;
 
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    esp_wifi_init(&cfg);
-    esp_netif_create_default_wifi_ap();
+    if (!s_wifiInited) {
+        wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+        esp_err_t ierr = esp_wifi_init(&cfg);
+        if (ierr != ESP_OK) {
+            ESP_LOGE(TAG, "esp_wifi_init failed: %s", esp_err_to_name(ierr));
+            return false;
+        }
+        esp_netif_create_default_wifi_ap();
 
-    uint8_t mac[6] = {0};
-    esp_wifi_get_mac(WIFI_IF_AP, mac);
-    char ssid[32];
-    snprintf(ssid, sizeof(ssid), "ESP32-ECG-%02X%02X", mac[4], mac[5]);
+        uint8_t mac[6] = {0};
+        esp_wifi_get_mac(WIFI_IF_AP, mac);
+        char ssid[32];
+        snprintf(ssid, sizeof(ssid), "ESP32-ECG-%02X%02X", mac[4], mac[5]);
 
-    wifi_config_t wc = {};
-    strncpy((char *)wc.ap.ssid, ssid, sizeof(wc.ap.ssid) - 1);
-    strncpy((char *)wc.ap.password, ECG_WIFI_AP_PASSWORD, sizeof(wc.ap.password) - 1);
-    wc.ap.ssid_len = strlen(ssid);
-    wc.ap.channel = (uint8_t)s_diagChannel;
-    wc.ap.authmode = WIFI_AUTH_WPA2_PSK;
-    wc.ap.max_connection = 4;
+        wifi_config_t wc = {};
+        snprintf((char *)wc.ap.ssid, sizeof(wc.ap.ssid), "%s", ssid);
+        snprintf((char *)wc.ap.password, sizeof(wc.ap.password), "%s", ECG_WIFI_AP_PASSWORD);
+        wc.ap.ssid_len = strlen(ssid);
+        wc.ap.channel = (uint8_t)s_diagChannel;
+        wc.ap.authmode = WIFI_AUTH_WPA2_PSK;
+        wc.ap.max_connection = 4;
 
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
-    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wc));
-    ESP_ERROR_CHECK(esp_wifi_start());
+        ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
+        ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wc));
+        s_wifiInited = true;
+    }
+
+    esp_err_t serr = esp_wifi_start();
+    if (serr != ESP_OK) {
+        ESP_LOGE(TAG, "esp_wifi_start failed: %s", esp_err_to_name(serr));
+        return false;
+    }
     /* 与 Arduino 线的 setSleep(false) 对齐：AP 下关闭 WiFi 省电，
      * 避免省电/共存调度挤压 BLE 广播与连接响应。 */
     esp_wifi_set_ps(WIFI_PS_NONE);
@@ -284,21 +300,24 @@ bool ecgWifiStart(void) {
     esp_err_t herr = httpd_start(&g_server, &hc);
     if (herr != ESP_OK || !g_server) {
         ESP_LOGE(TAG, "httpd_start failed: %s", esp_err_to_name(herr));
+        esp_wifi_stop();
         return false;
     }
     register_uri_handlers(g_server);
     g_wifi_on = true;
-    ESP_LOGI(TAG, "AP started, SSID=%s", ssid);
+    ESP_LOGI(TAG, "AP started");
     return true;
 }
 
 void ecgWifiStop(void) {
+    if (!g_wifi_on) return;
     if (g_server) {
         httpd_stop(g_server);
         g_server = NULL;
     }
+    /* 只 stop 不 deinit: 默认 AP netif 与驱动配置保留, 下次 WIFI_ON 直接
+     * esp_wifi_start 即可, 避免反复 deinit/init 踩 netif 生命周期问题。 */
     esp_wifi_stop();
-    esp_wifi_deinit();
     g_wifi_on = false;
 }
 

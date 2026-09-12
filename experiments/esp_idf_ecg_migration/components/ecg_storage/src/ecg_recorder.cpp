@@ -64,7 +64,7 @@ static void makeFullPath(char *out, size_t outLen, const char *name) {
 
 static void removeRecordFile(const char *name) {
     if (!name || name[0] == '\0') return;
-    char full[160];
+    char full[320];
     makeFullPath(full, sizeof(full), name);
     remove(full);
 }
@@ -83,11 +83,11 @@ static void deleteOldestRecord(uint32_t protectUnix) {
     DIR *d = opendir(ECGR_BASE_PATH);
     if (!d) return;
     uint32_t oldestUnix = UINT32_MAX;
-    char oldestPath[160] = "";
+    char oldestPath[320] = "";
     struct dirent *e;
     while ((e = readdir(d)) != NULL) {
         if (!nameIsEcgr(e->d_name)) continue;
-        char full[160];
+        char full[320];
         makeFullPath(full, sizeof(full), e->d_name);
         uint32_t st = readHeaderStart(full);
         if (st == UINT32_MAX) continue;
@@ -109,7 +109,7 @@ static void scanAndCleanInvalid(void) {
     struct dirent *e;
     while ((e = readdir(d)) != NULL) {
         if (!nameIsEcgr(e->d_name)) continue;
-        char full[160];
+        char full[320];
         makeFullPath(full, sizeof(full), e->d_name);
         FILE *f = fopen(full, "rb");
         if (!f) {
@@ -152,7 +152,7 @@ static void rebuildIndex(void) {
     struct dirent *e;
     while ((e = readdir(d)) != NULL) {
         if (!nameIsEcgr(e->d_name)) continue;
-        char full[160];
+        char full[320];
         makeFullPath(full, sizeof(full), e->d_name);
         FILE *f = fopen(full, "rb");
         if (!f) continue;

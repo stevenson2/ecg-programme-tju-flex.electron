@@ -6,6 +6,8 @@
 **Portable single-lead (Lead II) ECG acquisition with on-device deep-learning beat-level anomaly detection.** 500 Hz sampling; filtering, heart-rate detection and anomaly inference run on the chip; alarms are pushed to a Flutter app over BLE, and recordings are stored on-board in the ECGR format with WiFi download support.
 
 > **Firmware status (2026-09-01)**: the **official firmware is the ESP-IDF migration project** `experiments/esp_idf_ecg_migration/` (promoted 2026-08-28; AI/storage/WiFi/BLE/heart-rate/rule components plus the recorder chain). The legacy **Arduino + PlatformIO** line is archived under `legacy_arduino/` for reference only.
+>
+> **Power pass + first board run (2026-09-12, M0 validated on device)**: -Og→-O2, two-stage BLE advertising (fast 60 s → ~1 s slow), idle connection-interval stretch when notifications are off, display filter skipped while disconnected; TICK gains busy%/ovr telemetry. **CPU stays at 240 MHz**: the 160 MHz build showed the same ovr signature as 240 on device (one structural timeout per window caused by in-loop AI inference, not a clock-margin issue), so per the acceptance gate it was reverted (TUNING_HISTORY §104). Also fixed a main-task stack overflow on v3-A's first board run (3584→8192; TFLM inference runs inside the main task). WiFi AP still starts at boot (on-demand switching needs an app-side WIFI_ON entry, not done).
 
 ---
 

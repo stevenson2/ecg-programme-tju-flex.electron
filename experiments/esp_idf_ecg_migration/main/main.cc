@@ -41,6 +41,17 @@ static char s_bleBatchBuf[BLE_BATCH_BUF_SIZE];
 static int  s_bleBatchLen   = 0;
 static int  s_bleBatchCount = 0;
 static volatile bool s_storageReady = false;
+
+/* 热路径日志开关: 1=打印 AI_RESULT/TICK (调试), 0=关闭 (release/功耗实测)。
+ * 两行/秒 @460800 对功耗影响极小, 默认保持开启。 */
+#define ECG_HOT_LOG 1
+
+/* 功耗/性能观测: 每轮处理耗时累计, TICK 打 busy% 与 2ms 节拍超时次数。
+ * 处理一旦超 2ms, vTaskDelay 节拍会被拉长, 采样率静默下降 — ovr 必须为 0。 */
+static uint64_t s_busyAccumUs = 0;
+static uint64_t s_lastTickUs = 0;
+static uint32_t s_loopOverruns = 0;
+static bool s_bleWasConnected = false;
 /* REC_SCHEDULE <间隔秒> <时长秒>：上电秒数调度（无 RTC）。 */
 static uint32_t s_schedInterval = 0;
 static uint32_t s_schedDuration = 0;
@@ -136,7 +147,10 @@ static void sendBleReply(const char *reply) {
     if (reply && reply[0]) sendBLEMessage(reply);
 }
 
-/* BLE NUS RX 命令：与 Arduino 线 REC_*/WIFI_* 对齐。此前队列有入无出，App 录制指令全丢。 */
+/* BLE NUS RX 命令：与 Arduino 线 REC_ 前缀与 WIFI_ 前缀命令对齐。
+ * 此前队列有入无出，App 录制指令全丢（2026-09-11 修复）。
+ * 注意：注释里不要写 "REC_*\/WIFI_*" —— 其中的 *\/ 会提前终结块注释，
+ * 该写法曾导致 2e759e4 提交后固件无法编译（2026-09-12 构建验证时发现）。 */
 static void handleBleCommands(void) {
     char cmd[64];
     char reply[96];
@@ -312,6 +326,7 @@ extern "C" void app_main(void) {
     printf("[main] ESP-IDF ECG demo start, mode=%s\n", modeName(s_mode));
 
     while (true) {
+        uint64_t tWork0 = esp_timer_get_time();
         checkButton();
         handleBleCommands();
         processRecSchedule();
@@ -330,7 +345,17 @@ extern "C" void app_main(void) {
 
         float noisyNoDC = noisySample - DC_OFFSET_REMOVE;
         float combOut = applyCombFilter(noisyNoDC);
-        float displaySample = applyDisplayFilter(combOut);
+        /* 显示滤波只喂 BLE 波形与 TICK: 未连接时跳过 (省 ~2 个双精度 biquad/样本),
+         * TICK 的 disp 列降级为梳状输出; 重连时清一次状态消瞬态。 */
+        bool bleNowConnected = isBLEConnected();
+        float displaySample;
+        if (bleNowConnected) {
+            if (!s_bleWasConnected) displayFilterReset();
+            displaySample = applyDisplayFilter(combOut);
+        } else {
+            displaySample = combOut;
+        }
+        s_bleWasConnected = bleNowConnected;
         float filteredSample = applyFilter(combOut);
 
         float ai_in = applyFilterAI(combOut);
@@ -346,7 +371,9 @@ extern "C" void app_main(void) {
             last_conf = r.confidence;
             last_abnormal = (int)r.confirmed;
             if (r.confirmed) s_secondAbnormal = true;
+#if ECG_HOT_LOG
             printf("AI_RESULT,%.4f,%u,%u\n", r.confidence, (unsigned)r.raw_abnormal, (unsigned)r.confirmed);
+#endif
         }
 
         /* ECG 录制: 2:1 抽取 (500->250Hz) 喂 int16 样本, 每秒更新异常位图。
@@ -389,11 +416,25 @@ extern "C" void app_main(void) {
         }
 
         if (frame % 500 == 0) {
-            printf("TICK,%lu,src=%s,bpm=%u,sqi=%.3f,disp=%.4f,comb=%.4f\n",
+            uint64_t nowUs = esp_timer_get_time();
+#if ECG_HOT_LOG
+            uint32_t busyPct = s_lastTickUs
+                ? (uint32_t)((s_busyAccumUs * 100) / (nowUs - s_lastTickUs)) : 0;
+            printf("TICK,%lu,src=%s,bpm=%u,sqi=%.3f,disp=%.4f,comb=%.4f,busy=%u%%,ovr=%lu\n",
                    (unsigned long)frame, modeName(s_mode),
-                   (unsigned)hr.bpm, hr.sqi, displaySample, combOut);
+                   (unsigned)hr.bpm, hr.sqi, displaySample, combOut,
+                   (unsigned)busyPct, (unsigned long)s_loopOverruns);
+#endif
+            s_busyAccumUs = 0;
+            s_loopOverruns = 0;
+            s_lastTickUs = nowUs;
         }
         frame++;
+        {
+            uint64_t dtWorkUs = (uint64_t)esp_timer_get_time() - tWork0;
+            s_busyAccumUs += dtWorkUs;
+            if (dtWorkUs > 2000) s_loopOverruns++;
+        }
         vTaskDelay(pdMS_TO_TICKS(2));
     }
 }

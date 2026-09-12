@@ -42,6 +42,16 @@ static QueueHandle_t g_cmd_queue = nullptr;
 static char g_rx_line[64];
 static int g_rx_len = 0;
 
+/* 可穿戴低功耗广播策略 (2026-09-12):
+ * 开机/断连后先快速广播 60s 方便回连, 无人连接则切 ~1s 慢广播常驻。
+ * 广播间隔单位 0.625ms; 慢档射频占空比相比快档降 ~95%。 */
+static bool g_adv_slow = false;
+#define ADV_FAST_ITVL_MIN   48     /* 30ms */
+#define ADV_FAST_ITVL_MAX   96     /* 60ms */
+#define ADV_SLOW_ITVL_MIN   1536   /* 960ms */
+#define ADV_SLOW_ITVL_MAX   1600   /* 1000ms */
+#define ADV_FAST_DURATION_MS 60000 /* 快档持续时间, 到期触发 ADV_COMPLETE 切慢档 */
+
 static int nus_rx_access(uint16_t conn_handle, uint16_t attr_handle,
                          struct ble_gatt_access_ctxt *ctxt, void *arg) {
     if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
@@ -100,13 +110,49 @@ static void start_advertising(void) {
     if (rc) { ESP_LOGE(TAG, "adv set fields rc=%d", rc); return; }
     adv_params.conn_mode = BLE_GAP_CONN_MODE_UND;
     adv_params.disc_mode = BLE_GAP_DISC_MODE_GEN;
-    rc = ble_gap_adv_start(g_own_addr_type, NULL, BLE_HS_FOREVER,
+    if (g_adv_slow) {
+        adv_params.itvl_min = ADV_SLOW_ITVL_MIN;
+        adv_params.itvl_max = ADV_SLOW_ITVL_MAX;
+    } else {
+        adv_params.itvl_min = ADV_FAST_ITVL_MIN;
+        adv_params.itvl_max = ADV_FAST_ITVL_MAX;
+    }
+    /* 快档带 60s 时长, 到期走 ADV_COMPLETE 切慢档; 慢档常驻。 */
+    int32_t duration_ms = g_adv_slow ? BLE_HS_FOREVER : ADV_FAST_DURATION_MS;
+    rc = ble_gap_adv_start(g_own_addr_type, NULL, duration_ms,
                            &adv_params, gap_event, NULL);
     if (rc) {
         ESP_LOGE(TAG, "adv start failed rc=%d", rc);
         return;
     }
-    ESP_LOGI(TAG, "advertising started");
+    ESP_LOGI(TAG, "advertising started (%s)", g_adv_slow ? "slow" : "fast");
+}
+
+/* 空闲 (Notify 关闭) 时拉长连接间隔降功耗, 恢复 Notify 时收回短间隔保波形流畅。
+ * itvl 单位 1.25ms, supervision_timeout 单位 10ms; App 端连接时自己也会请求
+ * high priority, 两者最终都以短间隔为准, 不冲突。 */
+static const struct ble_gap_upd_params kConnParamsIdle = {
+    .itvl_min = 160,   /* 200ms */
+    .itvl_max = 320,   /* 400ms */
+    .latency = 0,
+    .supervision_timeout = 500, /* 5s */
+    .min_ce_len = 0,
+    .max_ce_len = 0,
+};
+static const struct ble_gap_upd_params kConnParamsActive = {
+    .itvl_min = 12,    /* 15ms */
+    .itvl_max = 24,    /* 30ms */
+    .latency = 0,
+    .supervision_timeout = 300, /* 3s */
+    .min_ce_len = 0,
+    .max_ce_len = 0,
+};
+
+static void update_conn_interval_idle(bool idle) {
+    if (g_conn_handle == BLE_HS_CONN_HANDLE_NONE) return;
+    int rc = ble_gap_update_params(g_conn_handle,
+                                   idle ? &kConnParamsIdle : &kConnParamsActive);
+    if (rc != 0) ESP_LOGD(TAG, "conn interval update rc=%d (idle=%d)", rc, idle);
 }
 
 static int gap_event(struct ble_gap_event *event, void *arg) {
@@ -121,15 +167,19 @@ static int gap_event(struct ble_gap_event *event, void *arg) {
             ESP_LOGI(TAG, "connected handle=%u", (unsigned)g_conn_handle);
         } else {
             ESP_LOGI(TAG, "connect failed");
+            g_adv_slow = false; /* 回连窗口重开: 快档 60s */
             start_advertising();
         }
         return 0;
     case BLE_GAP_EVENT_DISCONNECT:
         g_connected = false;
         g_conn_handle = BLE_HS_CONN_HANDLE_NONE;
+        g_adv_slow = false; /* 断连后重开快速广播 60s, 方便立即回连 */
         start_advertising();
         return 0;
     case BLE_GAP_EVENT_ADV_COMPLETE:
+        /* 60s 快速广播无人连接 → 切慢广播常驻 (功耗优化) */
+        g_adv_slow = true;
         start_advertising();
         return 0;
     case BLE_GAP_EVENT_SUBSCRIBE:
@@ -137,6 +187,10 @@ static int gap_event(struct ble_gap_event *event, void *arg) {
                  event->subscribe.attr_handle,
                  event->subscribe.cur_notify,
                  event->subscribe.cur_indicate);
+        /* TX 特征值 Notify 关闭 (App 退后台) → 长连接间隔; 重开 → 短间隔。 */
+        if (event->subscribe.attr_handle == g_tx_handle) {
+            update_conn_interval_idle(!event->subscribe.cur_notify);
+        }
         return 0;
     default:
         return 0;
@@ -148,6 +202,7 @@ static void on_sync(void) {
     ble_hs_util_ensure_addr(0);
     ble_hs_id_infer_auto(0, &addr_type);
     g_own_addr_type = addr_type;
+    g_adv_slow = false; /* 主机重启 (on_reset/on_sync) 后从快档重来 */
     start_advertising();
 }
 

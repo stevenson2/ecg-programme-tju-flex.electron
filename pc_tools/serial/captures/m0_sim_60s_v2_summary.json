@@ -1,0 +1,105 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "M0: 8192 栈修复后 SIMULATOR 60s",
+  "port": "COM4",
+  "seconds": 60.0,
+  "capture_start": "2026-09-12 17:51:49",
+  "ai_result": {
+    "windows": 56,
+    "rate_hz": 0.948,
+    "confirmed_rate": 0.1607,
+    "raw_rate": 0.5,
+    "conf_median": 0.6191,
+    "conf_mean": 0.5013,
+    "confirmed_runs_s": {
+      "count": 9,
+      "max": 1,
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 8,
+      "max": 5,
+      "min": 5,
+      "median": 5.0,
+      "mean": 5,
+      "all": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    "raw_runs_s": {
+      "count": 14,
+      "max": 2,
+      "min": 2,
+      "median": 2.0,
+      "mean": 2,
+      "all": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 13,
+      "max": 2,
+      "min": 2,
+      "median": 2,
+      "mean": 2,
+      "all": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    }
+  },
+  "tick": {
+    "count": 56,
+    "sources": [
+      "SIMULATOR"
+    ],
+    "busy_pct_max": 13,
+    "busy_pct_mean": 12.4,
+    "ovr_total": 56,
+    "ovr_max": 1
+  }
+}

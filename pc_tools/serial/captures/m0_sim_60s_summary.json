@@ -1,0 +1,18 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "M0 基线: 默认 SIMULATOR 模式 60s (160MHz/-O2 首次上板, v3-A INT8)",
+  "port": "COM4",
+  "seconds": 60.0,
+  "capture_start": "2026-09-12 17:45:44",
+  "ai_result": {},
+  "tick": {
+    "count": 34,
+    "sources": [
+      "SIMULATOR"
+    ],
+    "busy_pct_max": 37,
+    "busy_pct_mean": 7.4,
+    "ovr_total": 42,
+    "ovr_max": 4
+  }
+}
