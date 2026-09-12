@@ -11,8 +11,8 @@
 
 ## 当前状态（2026-09-12）
 
+- **报警持续性修复（2026-09-12，M1 已上板验收）**：BLE 第 8 列改为固件侧**擎住报警位**（任一生理报警源触发后擎住 ≥30s：AI 密度判据 / 规则停搏-过缓-过速 / 时间停搏(电极脱落等效) / VF-VT）。修复前后对照（MIT-106 持续异常 90s）：报警位连续段 **max 1s → 70s**；正常回放（MIT-100）5 分钟**零误报**；平线段（拔接头模拟）报警 67s 连续 + 自动录制触发。规则通道（rs/vf）结果此前被丢弃、vfDetect 从未调用——均已接线。固件新增 **UART/USB 命令通道**（与 BLE 命令同集 + `MODE`/`REPLAY`/`STATUS`），pc_tools 可免重烧全自动驱动（TUNING_HISTORY §105）。
 - **功耗优化 + 首次上板（2026-09-12，M0 已上板验证）**：编译档 -Og→**-O2**；BLE **两档广播**（快 30–60 ms 广播 60 s → 慢 ~1 s 常驻）；App 关 Notify 时连接间隔自动拉长到 200–400 ms；未连接时跳过显示滤波；TICK 新增 `busy=%`/`ovr=` 观测。**CPU 维持 240 MHz**：160 MHz 档上板实测 ovr 与 240 相同（均为 AI 推理在环的结构性超时，每窗 1 次，非余量问题），按验收线回退 240（TUNING_HISTORY §104）；另修复 v3-A 首次上板的 **main 任务栈溢出**（3584→8192，TFLM 推理在 main 任务内联执行）。WiFi AP 仍为开机常开（按需开关需 App 增加 WIFI_ON 入口，未做）。
-- **报警持续性（2026-09-12，修复前基线）**：REPLAY_ABNORMAL 90 s（raw 异常率 51.2%）下，confirmed 报警位连续段 **max=1 s**、间隔恒 5 s（冷却机制把持续异常切成 1/6 占空比闪断）——M1 修复对象，工具 `pc_tools/serial/alarm_repro.py`，证据 `pc_tools/serial/captures/`（TUNING_HISTORY §104）。
 - **板上模型（2026-09-11）**：工作区已从 exp7c 换成 **v3-A** INT8；N16R8 / SuperMini 双板配置见 `experiments/esp_idf_ecg_migration/FLASH_DUAL_BOARD.md`。R16 设备闭环数字仍是 **exp7c** 烧录结果，不能直接当成 v3-A 指标。
 - **设备闭环（R16 / exp7c）**：官方 ESP-IDF 固件已烧录到 ESP32-S3-WROOM-1-N16R8（当时 COM3，app 1,613,824 B，
   哈希校验通过），并完成固件内置 **SIMULATOR / MIT-BIH 回放** 三模式 90 s 板上测试：

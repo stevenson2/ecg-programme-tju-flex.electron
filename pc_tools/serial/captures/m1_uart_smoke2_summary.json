@@ -1,0 +1,89 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "M1 UART(USJ) 命令通道冒烟",
+  "port": "COM4",
+  "seconds": 10.0,
+  "cmds": [
+    "PING",
+    "STATUS",
+    "MODE replay_abnormal",
+    "STATUS"
+  ],
+  "capture_start": "2026-09-12 18:35:29",
+  "ai_result": {
+    "windows": 9,
+    "rate_hz": 1.032,
+    "confirmed_rate": 0.2222,
+    "raw_rate": 0.6667,
+    "conf_median": 0.9922,
+    "conf_mean": 0.7027,
+    "confirmed_runs_s": {
+      "count": 2,
+      "max": 1,
+      "min": 1,
+      "median": 1.0,
+      "mean": 1,
+      "all": [
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 1,
+      "max": 5,
+      "min": 5,
+      "median": 5,
+      "mean": 5,
+      "all": [
+        5
+      ]
+    },
+    "raw_runs_s": {
+      "count": 3,
+      "max": 3,
+      "min": 1,
+      "median": 2,
+      "mean": 2,
+      "all": [
+        1,
+        2,
+        3
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 2,
+      "max": 2,
+      "min": 1,
+      "median": 1.5,
+      "mean": 1.5,
+      "all": [
+        1,
+        2
+      ]
+    },
+    "latency_us_median": 50028,
+    "latency_us_max": 50169
+  },
+  "tick": {
+    "count": 9,
+    "sources": [
+      "REPLAY_ABNORMAL"
+    ],
+    "busy_pct_max": 35,
+    "busy_pct_mean": 10.1,
+    "ovr_total": 11,
+    "ovr_max": 2,
+    "segments": [
+      "1"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.0,
+    "runs_s": {
+      "count": 0
+    },
+    "asrc_seen": [
+      "0x00"
+    ]
+  }
+}

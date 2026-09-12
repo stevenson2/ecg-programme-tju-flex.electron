@@ -23,12 +23,29 @@ void ecgReplayInit(void)
     s_index   = 0;
 }
 
+/* 段 2 (M1 平线段): MIT-100 前 15s 正常 -> 45s 平线 (0.2 基线), 60s 循环。
+ * 平线模拟电极脱落/拔接头: 无 QRS -> 主循环时间停搏路径 (ALARM_SRC_FLAT)。 */
+#define REPLAY_FLAT_LEAD_SAMPLES   (15 * ECG_REPLAY_SR)
+#define REPLAY_FLAT_TOTAL_SAMPLES  (60 * ECG_REPLAY_SR)
+#define REPLAY_FLAT_BASELINE       0.2f
+
 float ecgReplayNextSample(void)
 {
+    if (s_segment == ECG_REPLAY_SEG_FLAT) {
+        float v = (s_index < REPLAY_FLAT_LEAD_SAMPLES)
+                    ? ecg_replay_normal[s_index]
+                    : REPLAY_FLAT_BASELINE;
+        s_index++;
+        if (s_index >= REPLAY_FLAT_TOTAL_SAMPLES) {
+            s_index = 0;   /* 循环播放 */
+        }
+        return v;
+    }
+
     const float* data;
     uint32_t len;
 
-    if (s_segment == 1) {
+    if (s_segment == ECG_REPLAY_SEG_ABNORMAL) {
         data = ecg_replay_abnormal;
         len  = ECG_REPLAY_ABNORMAL_LEN;
     } else {
@@ -46,7 +63,7 @@ float ecgReplayNextSample(void)
 
 void ecgReplaySetSegment(uint8_t segment)
 {
-    if (segment > 1) segment = 1;
+    if (segment > ECG_REPLAY_SEG_FLAT) segment = ECG_REPLAY_SEG_FLAT;
     s_segment = segment;
     s_index   = 0;
 }

@@ -1,0 +1,656 @@
+   0.206 TICK,47000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-[main] mode -> REPLAY_NORMAL
+   0.206 CMD MODE ok REPLAY_NORMAL
+   0.206 TICK,53000,src=REPLAY_NORMAL,bpm=0,sqi=0.542,disp=-1.5097,comb=-1.5097,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+   0.206 AI_RESULT,0.9922,1,1,50117
+   0.206 TICK,53500,src=REPLAY_NORMAL,bpm=0,sqi=0.784,disp=-1.6903,comb=-1.6903,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+   0.206 AI_RESULT,0.0352,0,0,50098
+   1.013 TICK,54000,src=REPLAY_NORMAL,bpm=93,sqi=0.983,disp=-1.7205,comb=-1.7205,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+   1.013 AI_RESULT,0.0000,0,0,50046
+   2.050 TICK,54500,src=REPLAY_NORMAL,bpm=75,sqi=0.985,disp=-1.6379,comb=-1.6379,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+   2.050 AI_RESULT,0.0000,0,0,50108
+   3.084 TICK,55000,src=REPLAY_NORMAL,bpm=73,sqi=0.987,disp=-1.5624,comb=-1.5624,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+   3.084 AI_RESULT,0.0000,0,0,50082
+   4.094 TICK,55500,src=REPLAY_NORMAL,bpm=72,sqi=0.986,disp=-1.6813,comb=-1.6813,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+   4.295 AI_RESULT,0.0000,0,0,50235
+   4.700 [ECGR] auto-record: consecutive normal, stopping...
+   5.302 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_16.ecgr
+   5.909 [ECGR] index rebuilt: 10 records
+   5.909 [ECGR] stopped: 21374 samples, 90 sec, 85 abn, size=42870
+   6.314 TICK,56000,src=REPLAY_NORMAL,bpm=72,sqi=0.988,disp=-1.6190,comb=-1.6190,busy=56%,ovr=2,alarm=0,asrc=0x00,seg=0
+   6.515 AI_RESULT,0.0117,0,0,50094
+   7.532 TICK,56500,src=REPLAY_NORMAL,bpm=71,sqi=0.990,disp=-1.6245,comb=-1.6245,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+   7.532 AI_RESULT,0.0000,0,0,50034
+   8.554 TICK,57000,src=REPLAY_NORMAL,bpm=71,sqi=0.990,disp=-1.6306,comb=-1.6306,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+   8.554 AI_RESULT,0.0000,0,0,50097
+   9.563 TICK,57500,src=REPLAY_NORMAL,bpm=69,sqi=0.991,disp=-1.6897,comb=-1.6897,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+   9.563 AI_RESULT,0.0000,0,0,50093
+  10.583 TICK,58000,src=REPLAY_NORMAL,bpm=69,sqi=0.991,disp=-1.6964,comb=-1.6964,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+  10.583 AI_RESULT,0.7188,1,1,50144
+  10.783 [ECGR] auto-record: abnormal edge, starting...
+  10.783 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_126.ecgr
+  11.791 TICK,58500,src=REPLAY_NORMAL,bpm=67,sqi=0.991,disp=-1.5561,comb=-1.5561,busy=13%,ovr=2,alarm=0,asrc=0x00,seg=0
+  11.791 AI_RESULT,0.0078,0,0,50107
+  12.799 TICK,59000,src=REPLAY_NORMAL,bpm=66,sqi=0.992,disp=-1.6284,comb=-1.6284,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  12.799 AI_RESULT,0.0000,0,0,50096
+  13.809 TICK,59500,src=REPLAY_NORMAL,bpm=67,sqi=0.992,disp=-1.5711,comb=-1.5711,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  13.809 AI_RESULT,0.0000,0,0,50774
+  14.816 TICK,60000,src=REPLAY_NORMAL,bpm=68,sqi=0.992,disp=-1.6334,comb=-1.6334,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  15.019 AI_RESULT,0.9648,1,0,50072
+  15.823 [ECGR] auto-record: consecutive normal, stopping...
+  16.025 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_30.ecgr
+  16.630 [ECGR] index rebuilt: 10 records
+  16.630 [ECGR] stopped: 1179 samples, 5 sec, 0 abn, size=2390
+  16.832 TICK,60500,src=REPLAY_NORMAL,bpm=68,sqi=0.993,disp=-1.6639,comb=-1.6639,busy=51%,ovr=3,alarm=0,asrc=0x00,seg=0
+  17.037 AI_RESULT,0.0000,0,0,50138
+  18.042 TICK,61000,src=REPLAY_NORMAL,bpm=68,sqi=0.993,disp=-1.6408,comb=-1.6408,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  18.042 AI_RESULT,0.0391,0,1,50067
+  19.064 TICK,61500,src=REPLAY_NORMAL,bpm=68,sqi=0.993,disp=-1.5095,comb=-1.5095,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  19.064 AI_RESULT,0.0117,0,0,50115
+  20.097 TICK,62000,src=REPLAY_NORMAL,bpm=69,sqi=0.993,disp=-1.6802,comb=-1.6802,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  20.097 AI_RESULT,0.0000,0,0,50061
+  21.108 TICK,62500,src=REPLAY_NORMAL,bpm=69,sqi=0.993,disp=-1.7163,comb=-1.7163,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  21.108 AI_RESULT,0.9883,1,0,50094
+  22.141 TICK,63000,src=REPLAY_NORMAL,bpm=69,sqi=0.993,disp=-1.5725,comb=-1.5725,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+  22.141 AI_RESULT,0.0000,0,0,50131
+  23.165 TICK,63500,src=REPLAY_NORMAL,bpm=70,sqi=0.993,disp=-1.6036,comb=-1.6036,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  23.366 AI_RESULT,0.0000,0,0,50076
+  24.174 TICK,64000,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.2939,comb=-1.2939,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  24.389 AI_RESULT,0.0000,0,1,50060
+  24.806 [ECGR] auto-record: abnormal edge, starting...
+  24.806 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_140.ecgr
+  25.410 TICK,64500,src=REPLAY_NORMAL,bpm=71,sqi=0.993,disp=-1.7553,comb=-1.7553,busy=13%,ovr=2,alarm=0,asrc=0x00,seg=0
+  25.410 AI_RESULT,0.0000,0,0,50139
+  26.418 TICK,65000,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6867,comb=-1.6867,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  26.418 AI_RESULT,0.0000,0,0,50111
+  27.438 TICK,65500,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.7431,comb=-1.7431,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+  27.642 AI_RESULT,0.0000,0,0,50135
+  28.447 TICK,66000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.6337,comb=-1.6337,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+  28.648 AI_RESULT,0.0000,0,0,50059
+  29.658 TICK,66500,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7277,comb=-1.7277,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  29.658 AI_RESULT,0.0000,0,0,50102
+  29.658 [ECGR] auto-record: consecutive normal, stopping...
+  30.062 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_103.ecgr
+  30.464 [ECGR] index rebuilt: 10 records
+  30.464 [ECGR] stopped: 1165 samples, 5 sec, 0 abn, size=2362
+  31.475 TICK,67000,src=REPLAY_NORMAL,bpm=0,sqi=0.992,disp=-1.7010,comb=-1.7010,busy=46%,ovr=2,alarm=0,asrc=0x00,seg=0
+  31.475 AI_RESULT,0.0000,0,0,50177
+  32.498 TICK,67500,src=REPLAY_NORMAL,bpm=0,sqi=0.991,disp=-1.6766,comb=-1.6766,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+  32.498 AI_RESULT,0.0000,0,0,50102
+  33.506 TICK,68000,src=REPLAY_NORMAL,bpm=63,sqi=0.993,disp=-1.5817,comb=-1.5817,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+  33.506 AI_RESULT,0.0000,0,0,50062
+  34.527 TICK,68500,src=REPLAY_NORMAL,bpm=65,sqi=0.993,disp=-1.1834,comb=-1.1834,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  34.730 AI_RESULT,0.0312,0,0,50077
+  35.549 TICK,69000,src=REPLAY_NORMAL,bpm=68,sqi=0.993,disp=-1.7373,comb=-1.7373,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  35.765 AI_RESULT,0.0898,0,0,50115
+  36.570 TICK,69500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6251,comb=-1.6251,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+  36.770 AI_RESULT,0.0000,0,0,50109
+  37.791 TICK,70000,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6799,comb=-1.6799,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  37.791 AI_RESULT,0.0000,0,0,50093
+  38.800 TICK,70500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.7847,comb=-1.7847,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+  38.800 AI_RESULT,0.0000,0,0,50028
+  39.809 TICK,71000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7730,comb=-1.7730,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  39.809 AI_RESULT,0.0117,0,0,50713
+  40.832 TICK,71500,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7332,comb=-1.7332,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  41.033 AI_RESULT,0.0000,0,0,50118
+  41.841 TICK,72000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.6507,comb=-1.6507,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  42.042 AI_RESULT,0.0000,0,0,50087
+  43.051 TICK,72500,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.5288,comb=-1.5288,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  43.051 AI_RESULT,0.0000,0,0,50059
+  44.071 TICK,73000,src=REPLAY_NORMAL,bpm=70,sqi=0.995,disp=-1.4931,comb=-1.4931,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+  44.071 AI_RESULT,0.9961,1,1,50024
+  44.678 [ECGR] auto-record: abnormal edge, starting...
+  44.893 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_160.ecgr
+  45.094 TICK,73500,src=REPLAY_NORMAL,bpm=69,sqi=0.995,disp=-1.7884,comb=-1.7884,busy=13%,ovr=2,alarm=0,asrc=0x00,seg=0
+  45.297 AI_RESULT,0.0000,0,0,50152
+  46.129 TICK,74000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6177,comb=-1.6177,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  46.332 AI_RESULT,0.0195,0,0,50126
+  47.340 TICK,74500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6512,comb=-1.6512,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  47.340 AI_RESULT,0.0000,0,0,50039
+  48.350 TICK,75000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6874,comb=-1.6874,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  48.350 AI_RESULT,0.0000,0,0,50078
+  49.386 TICK,75500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.5097,comb=-1.5097,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+  49.386 AI_RESULT,0.9883,1,0,50114
+  49.789 [ECGR] auto-record: consecutive normal, stopping...
+  50.192 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_124.ecgr
+  50.608 [ECGR] index rebuilt: 10 records
+  50.608 [ECGR] stopped: 1165 samples, 5 sec, 0 abn, size=2362
+  51.227 TICK,76000,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6903,comb=-1.6903,busy=48%,ovr=2,alarm=0,asrc=0x00,seg=0
+  51.428 AI_RESULT,0.9805,1,1,50130
+  52.234 TICK,76500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.7205,comb=-1.7205,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  52.435 AI_RESULT,0.0078,0,0,50073
+  53.457 TICK,77000,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6378,comb=-1.6378,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  53.457 AI_RESULT,0.0000,0,0,50135
+  54.480 TICK,77500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.5624,comb=-1.5624,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+  54.480 AI_RESULT,0.0000,0,0,50179
+  55.505 TICK,78000,src=REPLAY_NORMAL,bpm=70,sqi=0.993,disp=-1.6813,comb=-1.6813,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+  55.505 AI_RESULT,0.0000,0,0,50265
+  56.520 TICK,78500,src=REPLAY_NORMAL,bpm=71,sqi=0.993,disp=-1.6189,comb=-1.6189,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  56.520 AI_RESULT,0.0000,0,0,50061
+  57.527 TICK,79000,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6244,comb=-1.6244,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+  57.728 AI_RESULT,0.0000,0,0,50100
+  58.536 TICK,79500,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6306,comb=-1.6306,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  58.739 AI_RESULT,0.0000,0,0,50089
+  59.748 TICK,80000,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6897,comb=-1.6897,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  59.748 AI_RESULT,0.0000,0,0,50122
+  60.758 TICK,80500,src=REPLAY_NORMAL,bpm=71,sqi=0.993,disp=-1.6963,comb=-1.6963,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+  60.758 AI_RESULT,0.9961,1,1,50077
+  60.758 [ECGR] auto-record: abnormal edge, starting...
+  60.959 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_176.ecgr
+  61.779 TICK,81000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.5561,comb=-1.5561,busy=13%,ovr=1,alarm=0,asrc=0x00,seg=0
+  61.984 AI_RESULT,0.6758,1,0,50051
+  62.991 TICK,81500,src=REPLAY_NORMAL,bpm=67,sqi=0.994,disp=-1.6283,comb=-1.6283,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  62.991 AI_RESULT,0.0000,0,0,50081
+  64.000 TICK,82000,src=REPLAY_NORMAL,bpm=67,sqi=0.994,disp=-1.5711,comb=-1.5711,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  64.000 AI_RESULT,0.0000,0,0,50123
+  65.021 TICK,82500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6334,comb=-1.6334,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  65.021 AI_RESULT,0.9648,1,0,50070
+  65.830 [ECGR] auto-record: consecutive normal, stopping...
+  66.031 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_126.ecgr
+  66.636 [ECGR] index rebuilt: 10 records
+  66.636 [ECGR] stopped: 1166 samples, 5 sec, 0 abn, size=2364
+  66.839 TICK,83000,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6638,comb=-1.6638,busy=48%,ovr=3,alarm=0,asrc=0x00,seg=0
+  67.039 AI_RESULT,0.0000,0,0,50147
+  68.052 TICK,83500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6408,comb=-1.6408,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  68.052 AI_RESULT,0.0078,0,1,50061
+  69.073 TICK,84000,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.5095,comb=-1.5095,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  69.073 AI_RESULT,0.0117,0,0,50164
+  70.110 TICK,84500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6802,comb=-1.6802,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  70.110 AI_RESULT,0.0000,0,0,50043
+  71.120 TICK,85000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.7163,comb=-1.7163,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  71.120 AI_RESULT,0.9883,1,0,50132
+  72.169 TICK,85500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.5725,comb=-1.5725,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+  72.169 AI_RESULT,0.0000,0,0,50124
+  73.178 TICK,86000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.6036,comb=-1.6036,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  73.379 AI_RESULT,0.0000,0,0,50147
+  74.201 TICK,86500,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.2939,comb=-1.2939,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  74.403 AI_RESULT,0.0000,0,1,50072
+  74.807 [ECGR] auto-record: abnormal edge, starting...
+  74.807 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_190.ecgr
+  75.410 TICK,87000,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.7553,comb=-1.7553,busy=13%,ovr=2,alarm=0,asrc=0x00,seg=0
+  75.410 AI_RESULT,0.0000,0,0,50104
+  76.431 TICK,87500,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6867,comb=-1.6867,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  76.431 AI_RESULT,0.0000,0,0,50113
+  77.442 TICK,88000,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.7431,comb=-1.7431,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+  77.645 AI_RESULT,0.0000,0,0,50138
+  78.652 TICK,88500,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.6336,comb=-1.6336,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  78.652 AI_RESULT,0.0000,0,0,50151
+  79.661 TICK,89000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7277,comb=-1.7277,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  79.661 AI_RESULT,0.0000,0,0,50122
+  79.661 [ECGR] auto-record: consecutive normal, stopping...
+  80.064 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_139.ecgr
+  80.468 [ECGR] index rebuilt: 10 records
+  80.468 [ECGR] stopped: 1166 samples, 5 sec, 0 abn, size=2364
+  81.474 TICK,89500,src=REPLAY_NORMAL,bpm=0,sqi=0.992,disp=-1.7010,comb=-1.7010,busy=46%,ovr=2,alarm=0,asrc=0x00,seg=0
+  81.474 AI_RESULT,0.0000,0,0,50173
+  82.511 TICK,90000,src=REPLAY_NORMAL,bpm=0,sqi=0.992,disp=-1.6766,comb=-1.6766,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+  82.511 AI_RESULT,0.0000,0,0,50095
+  83.521 TICK,90500,src=REPLAY_NORMAL,bpm=63,sqi=0.993,disp=-1.5817,comb=-1.5817,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+  83.521 AI_RESULT,0.0000,0,0,50028
+  84.530 TICK,91000,src=REPLAY_NORMAL,bpm=65,sqi=0.993,disp=-1.1834,comb=-1.1834,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  84.730 AI_RESULT,0.0312,0,0,50249
+  85.536 TICK,91500,src=REPLAY_NORMAL,bpm=68,sqi=0.993,disp=-1.7373,comb=-1.7373,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  85.740 AI_RESULT,0.0898,0,0,50131
+  86.574 TICK,92000,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6251,comb=-1.6251,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  86.789 AI_RESULT,0.0000,0,0,50122
+  87.798 TICK,92500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6799,comb=-1.6799,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+  87.798 AI_RESULT,0.0000,0,0,50070
+  88.810 TICK,93000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.7847,comb=-1.7847,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+  88.810 AI_RESULT,0.0000,0,0,50034
+  89.843 TICK,93500,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7730,comb=-1.7730,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+  89.843 AI_RESULT,0.0117,0,0,50800
+  90.865 TICK,94000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7332,comb=-1.7332,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  90.865 AI_RESULT,0.0000,0,0,50099
+  91.874 TICK,94500,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.6507,comb=-1.6507,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  92.078 AI_RESULT,0.0000,0,0,50102
+  92.886 TICK,95000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.5288,comb=-1.5288,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  93.086 AI_RESULT,0.0000,0,0,50047
+  94.094 TICK,95500,src=REPLAY_NORMAL,bpm=70,sqi=0.995,disp=-1.4931,comb=-1.4931,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+  94.094 AI_RESULT,0.9961,1,1,50027
+  94.711 [ECGR] auto-record: abnormal edge, starting...
+  94.911 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_210.ecgr
+  95.112 TICK,96000,src=REPLAY_NORMAL,bpm=69,sqi=0.995,disp=-1.7884,comb=-1.7884,busy=13%,ovr=2,alarm=0,asrc=0x00,seg=0
+  95.314 AI_RESULT,0.0000,0,0,50156
+  96.119 TICK,96500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6177,comb=-1.6177,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  96.323 AI_RESULT,0.0195,0,0,50106
+  97.329 TICK,97000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6512,comb=-1.6512,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  97.329 AI_RESULT,0.0000,0,0,50067
+  98.353 TICK,97500,src=REPLAY_NORMAL,bpm=69,sqi=0.995,disp=-1.6874,comb=-1.6874,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+  98.353 AI_RESULT,0.0000,0,0,50074
+  99.363 TICK,98000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.5097,comb=-1.5097,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+  99.363 AI_RESULT,0.9883,1,0,50143
+  99.766 [ECGR] auto-record: consecutive normal, stopping...
+ 100.170 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_140.ecgr
+ 100.572 [ECGR] index rebuilt: 10 records
+ 100.572 [ECGR] stopped: 1166 samples, 5 sec, 0 abn, size=2364
+ 101.177 TICK,98500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6903,comb=-1.6903,busy=48%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 101.380 AI_RESULT,0.9805,1,1,50103
+ 102.387 TICK,99000,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.7205,comb=-1.7205,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 102.387 AI_RESULT,0.0078,0,0,50076
+ 103.398 TICK,99500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6378,comb=-1.6378,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 103.398 AI_RESULT,0.0000,0,0,50123
+ 104.434 TICK,100000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.5624,comb=-1.5624,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 104.434 AI_RESULT,0.0000,0,0,50097
+ 105.441 TICK,100500,src=REPLAY_NORMAL,bpm=70,sqi=0.993,disp=-1.6813,comb=-1.6813,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 105.656 AI_RESULT,0.0000,0,0,50031
+ 106.460 TICK,101000,src=REPLAY_NORMAL,bpm=71,sqi=0.993,disp=-1.6189,comb=-1.6189,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 106.661 AI_RESULT,0.0000,0,0,50050
+ 107.668 TICK,101500,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6244,comb=-1.6244,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 107.668 AI_RESULT,0.0000,0,0,50073
+ 108.677 TICK,102000,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6306,comb=-1.6306,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 108.677 AI_RESULT,0.0000,0,0,50101
+ 109.686 TICK,102500,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6896,comb=-1.6896,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 109.686 AI_RESULT,0.0000,0,0,50079
+ 110.706 TICK,103000,src=REPLAY_NORMAL,bpm=71,sqi=0.993,disp=-1.6963,comb=-1.6963,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 110.706 AI_RESULT,0.9961,1,1,50144
+ 111.743 [ECGR] auto-record: abnormal edge, starting...
+ 111.743 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_227.ecgr
+ 111.944 TICK,103500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.5561,comb=-1.5561,busy=13%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 111.944 AI_RESULT,0.6758,1,0,50010
+ 112.967 TICK,104000,src=REPLAY_NORMAL,bpm=67,sqi=0.994,disp=-1.6283,comb=-1.6283,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 112.967 AI_RESULT,0.0000,0,0,50142
+ 113.975 TICK,104500,src=REPLAY_NORMAL,bpm=67,sqi=0.994,disp=-1.5711,comb=-1.5711,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 113.975 AI_RESULT,0.0000,0,0,50092
+ 114.983 TICK,105000,src=REPLAY_NORMAL,bpm=67,sqi=0.993,disp=-1.6334,comb=-1.6334,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 115.183 AI_RESULT,0.9648,1,0,50082
+ 116.001 TICK,105500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6638,comb=-1.6638,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 116.202 AI_RESULT,0.0000,0,0,50096
+ 116.803 [ECGR] auto-record: consecutive normal, stopping...
+ 117.004 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_152.ecgr
+ 117.421 [ECGR] index rebuilt: 10 records
+ 117.421 [ECGR] stopped: 1166 samples, 5 sec, 0 abn, size=2364
+ 117.837 TICK,106000,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6408,comb=-1.6408,busy=46%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 118.038 AI_RESULT,0.0078,0,1,50111
+ 118.855 TICK,106500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.5095,comb=-1.5095,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 119.057 AI_RESULT,0.0117,0,0,50109
+ 120.068 TICK,107000,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6801,comb=-1.6801,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 120.068 AI_RESULT,0.0000,0,0,50050
+ 121.071 TICK,107500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.7163,comb=-1.7163,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 121.071 AI_RESULT,0.9883,1,0,50121
+ 122.095 TICK,108000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.5725,comb=-1.5725,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 122.095 AI_RESULT,0.0000,0,0,50110
+ 123.107 TICK,108500,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6036,comb=-1.6036,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 123.308 AI_RESULT,0.0000,0,0,50152
+ 124.143 TICK,109000,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.2939,comb=-1.2939,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 124.346 AI_RESULT,0.0000,0,1,50060
+ 124.764 [ECGR] auto-record: abnormal edge, starting...
+ 124.965 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_241.ecgr
+ 125.384 TICK,109500,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.7553,comb=-1.7553,busy=19%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 125.384 AI_RESULT,0.0000,0,0,50120
+ 126.407 TICK,110000,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6867,comb=-1.6867,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 126.608 AI_RESULT,0.0000,0,0,50118
+ 127.428 TICK,110500,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.7431,comb=-1.7431,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 127.630 AI_RESULT,0.0000,0,0,50127
+ 128.639 TICK,111000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.6336,comb=-1.6336,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 128.639 AI_RESULT,0.0000,0,0,50084
+ 129.665 TICK,111500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.7277,comb=-1.7277,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 129.665 AI_RESULT,0.0000,0,0,50122
+ 129.665 [ECGR] auto-record: consecutive normal, stopping...
+ 130.067 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_160.ecgr
+ 130.472 [ECGR] index rebuilt: 10 records
+ 130.472 [ECGR] stopped: 1146 samples, 5 sec, 0 abn, size=2324
+ 131.277 TICK,112000,src=REPLAY_NORMAL,bpm=0,sqi=0.992,disp=-1.7010,comb=-1.7010,busy=43%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 131.480 AI_RESULT,0.0000,0,0,50168
+ 132.485 TICK,112500,src=REPLAY_NORMAL,bpm=0,sqi=0.992,disp=-1.6766,comb=-1.6766,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 132.485 AI_RESULT,0.0000,0,0,50112
+ 133.501 TICK,113000,src=REPLAY_NORMAL,bpm=63,sqi=0.993,disp=-1.5817,comb=-1.5817,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 133.501 AI_RESULT,0.0000,0,0,50028
+ 134.545 TICK,113500,src=REPLAY_NORMAL,bpm=65,sqi=0.993,disp=-1.1834,comb=-1.1834,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 134.545 AI_RESULT,0.0312,0,0,50101
+ 135.568 TICK,114000,src=REPLAY_NORMAL,bpm=68,sqi=0.993,disp=-1.7373,comb=-1.7373,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 135.568 AI_RESULT,0.0898,0,0,50138
+ 136.578 TICK,114500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6251,comb=-1.6251,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 136.578 AI_RESULT,0.0000,0,0,50155
+ 137.601 TICK,115000,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6799,comb=-1.6799,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 137.803 AI_RESULT,0.0000,0,0,50088
+ 138.638 TICK,115500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.7847,comb=-1.7847,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 138.838 AI_RESULT,0.0000,0,0,50016
+ 139.848 TICK,116000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7730,comb=-1.7730,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 139.848 AI_RESULT,0.0117,0,0,50109
+ 140.860 TICK,116500,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7332,comb=-1.7332,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 140.860 AI_RESULT,0.0000,0,0,50839
+ 141.882 TICK,117000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.6507,comb=-1.6507,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 141.882 AI_RESULT,0.0000,0,0,50245
+ 142.888 TICK,117500,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.5288,comb=-1.5288,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 142.888 AI_RESULT,0.0000,0,0,50055
+ 143.900 TICK,118000,src=REPLAY_NORMAL,bpm=70,sqi=0.995,disp=-1.4931,comb=-1.4931,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 144.114 AI_RESULT,0.9961,1,1,50055
+ 144.725 [ECGR] auto-record: abnormal edge, starting...
+ 144.725 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_260.ecgr
+ 145.128 TICK,118500,src=REPLAY_NORMAL,bpm=69,sqi=0.995,disp=-1.7884,comb=-1.7884,busy=13%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 145.128 AI_RESULT,0.0000,0,0,50154
+ 146.139 TICK,119000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6177,comb=-1.6177,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 146.139 AI_RESULT,0.0195,0,0,50101
+ 147.146 TICK,119500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6512,comb=-1.6512,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 147.347 AI_RESULT,0.0000,0,0,50024
+ 148.148 TICK,120000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6874,comb=-1.6874,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 148.350 AI_RESULT,0.0000,0,0,50118
+ 149.357 TICK,120500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.5097,comb=-1.5097,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 149.357 AI_RESULT,0.9883,1,0,50141
+ 149.761 [ECGR] auto-record: consecutive normal, stopping...
+ 149.964 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_173.ecgr
+ 150.366 [ECGR] index rebuilt: 10 records
+ 150.366 [ECGR] stopped: 1166 samples, 5 sec, 0 abn, size=2364
+ 150.969 TICK,121000,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6903,comb=-1.6903,busy=43%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 151.169 AI_RESULT,0.9805,1,1,50123
+ 152.188 TICK,121500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.7205,comb=-1.7205,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 152.188 AI_RESULT,0.0078,0,0,50037
+ 153.195 TICK,122000,src=REPLAY_NORMAL,bpm=68,sqi=0.993,disp=-1.6378,comb=-1.6378,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 153.195 AI_RESULT,0.0000,0,0,50117
+ 154.214 TICK,122500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.5624,comb=-1.5624,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 154.214 AI_RESULT,0.0000,0,0,50110
+ 155.223 TICK,123000,src=REPLAY_NORMAL,bpm=70,sqi=0.993,disp=-1.6813,comb=-1.6813,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 155.223 AI_RESULT,0.0000,0,0,50055
+ 156.260 TICK,123500,src=REPLAY_NORMAL,bpm=71,sqi=0.993,disp=-1.6189,comb=-1.6189,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 156.461 AI_RESULT,0.0000,0,0,50087
+ 157.268 TICK,124000,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6244,comb=-1.6244,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 157.470 AI_RESULT,0.0000,0,0,50081
+ 158.492 TICK,124500,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6306,comb=-1.6306,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 158.492 AI_RESULT,0.0000,0,0,50072
+ 159.515 TICK,125000,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6896,comb=-1.6896,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 159.515 AI_RESULT,0.0000,0,0,50085
+ 160.551 TICK,125500,src=REPLAY_NORMAL,bpm=71,sqi=0.993,disp=-1.6963,comb=-1.6963,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 160.551 AI_RESULT,0.9961,1,1,50069
+ 160.753 [ECGR] auto-record: abnormal edge, starting...
+ 160.753 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_276.ecgr
+ 161.574 TICK,126000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.5561,comb=-1.5561,busy=13%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 161.777 AI_RESULT,0.6758,1,0,50127
+ 162.594 TICK,126500,src=REPLAY_NORMAL,bpm=67,sqi=0.994,disp=-1.6283,comb=-1.6283,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 162.796 AI_RESULT,0.0000,0,0,50148
+ 163.817 TICK,127000,src=REPLAY_NORMAL,bpm=67,sqi=0.994,disp=-1.5711,comb=-1.5711,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 163.817 AI_RESULT,0.0000,0,0,50098
+ 164.824 TICK,127500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6334,comb=-1.6334,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 164.824 AI_RESULT,0.9648,1,0,50045
+ 165.828 [ECGR] auto-record: consecutive normal, stopping...
+ 166.029 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_176.ecgr
+ 166.445 [ECGR] index rebuilt: 10 records
+ 166.445 [ECGR] stopped: 1178 samples, 5 sec, 0 abn, size=2388
+ 166.445 TICK,128000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6638,comb=-1.6638,busy=44%,ovr=3,alarm=0,asrc=0x00,seg=0
+ 166.660 AI_RESULT,0.0000,0,0,50151
+ 167.683 TICK,128500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6408,comb=-1.6408,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 167.683 AI_RESULT,0.0078,0,1,50058
+ 168.701 TICK,129000,src=REPLAY_NORMAL,bpm=68,sqi=0.993,disp=-1.5095,comb=-1.5095,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 168.701 AI_RESULT,0.0117,0,0,50156
+ 169.748 TICK,129500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6801,comb=-1.6801,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 169.748 AI_RESULT,0.0000,0,0,50043
+ 170.754 TICK,130000,src=REPLAY_NORMAL,bpm=69,sqi=0.993,disp=-1.7163,comb=-1.7163,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 170.754 AI_RESULT,0.9883,1,0,50122
+ 171.774 TICK,130500,src=REPLAY_NORMAL,bpm=69,sqi=0.993,disp=-1.5725,comb=-1.5725,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 171.774 AI_RESULT,0.0000,0,0,50127
+ 172.792 TICK,131000,src=REPLAY_NORMAL,bpm=70,sqi=0.993,disp=-1.6036,comb=-1.6036,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 172.995 AI_RESULT,0.0000,0,0,50707
+ 173.801 TICK,131500,src=REPLAY_NORMAL,bpm=70,sqi=0.993,disp=-1.2939,comb=-1.2939,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 174.003 AI_RESULT,0.0000,0,1,50051
+ 174.810 [ECGR] auto-record: abnormal edge, starting...
+ 174.810 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_290.ecgr
+ 175.011 TICK,132000,src=REPLAY_NORMAL,bpm=70,sqi=0.993,disp=-1.7553,comb=-1.7553,busy=13%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 175.011 AI_RESULT,0.0000,0,0,50279
+ 176.022 TICK,132500,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.6867,comb=-1.6867,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 176.222 AI_RESULT,0.0000,0,0,50110
+ 177.031 TICK,133000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7431,comb=-1.7431,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 177.233 AI_RESULT,0.0000,0,0,50135
+ 178.253 TICK,133500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6336,comb=-1.6336,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 178.253 AI_RESULT,0.0000,0,0,50055
+ 179.278 TICK,134000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7277,comb=-1.7277,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 179.278 AI_RESULT,0.0000,0,0,50099
+ 179.681 [ECGR] auto-record: consecutive normal, stopping...
+ 180.085 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_189.ecgr
+ 180.502 [ECGR] index rebuilt: 10 records
+ 180.502 [ECGR] stopped: 1165 samples, 5 sec, 0 abn, size=2362
+ 180.904 TICK,134500,src=REPLAY_NORMAL,bpm=0,sqi=0.992,disp=-1.7010,comb=-1.7010,busy=43%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 181.106 AI_RESULT,0.0000,0,0,50178
+ 182.112 TICK,135000,src=REPLAY_NORMAL,bpm=0,sqi=0.992,disp=-1.6766,comb=-1.6766,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 182.112 AI_RESULT,0.0000,0,0,50102
+ 183.137 TICK,135500,src=REPLAY_NORMAL,bpm=63,sqi=0.993,disp=-1.5817,comb=-1.5817,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 183.137 AI_RESULT,0.0000,0,0,50191
+ 184.160 TICK,136000,src=REPLAY_NORMAL,bpm=65,sqi=0.993,disp=-1.1834,comb=-1.1834,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 184.160 AI_RESULT,0.0312,0,0,50109
+ 185.198 TICK,136500,src=REPLAY_NORMAL,bpm=68,sqi=0.993,disp=-1.7373,comb=-1.7373,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 185.198 AI_RESULT,0.0898,0,0,50106
+ 186.211 TICK,137000,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6251,comb=-1.6251,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 186.211 AI_RESULT,0.0000,0,0,50127
+ 187.233 TICK,137500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6799,comb=-1.6799,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 187.435 AI_RESULT,0.0000,0,0,50112
+ 188.259 TICK,138000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.7847,comb=-1.7847,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 188.464 AI_RESULT,0.0000,0,0,50029
+ 189.471 TICK,138500,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7730,comb=-1.7730,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 189.471 AI_RESULT,0.0117,0,0,50123
+ 190.506 TICK,139000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7332,comb=-1.7332,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 190.506 AI_RESULT,0.0000,0,0,50124
+ 191.518 TICK,139500,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.6507,comb=-1.6507,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 191.518 AI_RESULT,0.0000,0,0,50086
+ 192.524 TICK,140000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.5288,comb=-1.5288,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 192.524 AI_RESULT,0.0000,0,0,50073
+ 193.537 TICK,140500,src=REPLAY_NORMAL,bpm=70,sqi=0.995,disp=-1.4931,comb=-1.4931,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 193.740 AI_RESULT,0.9961,1,1,50031
+ 193.740 [ECGR] auto-record: abnormal edge, starting...
+ 193.740 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_309.ecgr
+ 194.762 TICK,141000,src=REPLAY_NORMAL,bpm=69,sqi=0.995,disp=-1.7884,comb=-1.7884,busy=13%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 194.762 AI_RESULT,0.0000,0,0,50161
+ 195.797 TICK,141500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6177,comb=-1.6177,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 195.797 AI_RESULT,0.7383,1,0,50093
+ 196.805 TICK,142000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6512,comb=-1.6512,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 196.805 AI_RESULT,0.0000,0,0,50656
+ 197.826 TICK,142500,src=REPLAY_NORMAL,bpm=69,sqi=0.995,disp=-1.6874,comb=-1.6874,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 198.041 AI_RESULT,0.0000,0,0,50140
+ 198.660 [ECGR] auto-record: consecutive normal, stopping...
+ 199.064 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_190.ecgr
+ 199.467 [ECGR] index rebuilt: 10 records
+ 199.467 [ECGR] stopped: 1179 samples, 5 sec, 0 abn, size=2390
+ 199.667 TICK,143000,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.5097,comb=-1.5097,busy=46%,ovr=3,alarm=0,asrc=0x00,seg=0
+ 199.667 AI_RESULT,0.9883,1,0,50152
+ 200.685 TICK,143500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6903,comb=-1.6903,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 200.887 AI_RESULT,0.9805,1,1,50073
+ 201.897 TICK,144000,src=REPLAY_NORMAL,bpm=68,sqi=0.993,disp=-1.7205,comb=-1.7205,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 201.897 AI_RESULT,0.0078,0,0,50093
+ 202.908 TICK,144500,src=REPLAY_NORMAL,bpm=68,sqi=0.993,disp=-1.6378,comb=-1.6378,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 202.908 AI_RESULT,0.0000,0,0,50768
+ 203.927 TICK,145000,src=REPLAY_NORMAL,bpm=68,sqi=0.993,disp=-1.5624,comb=-1.5624,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 203.927 AI_RESULT,0.0000,0,0,50135
+ 204.974 TICK,145500,src=REPLAY_NORMAL,bpm=69,sqi=0.992,disp=-1.6813,comb=-1.6813,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 204.974 AI_RESULT,0.0000,0,0,50039
+ 205.985 TICK,146000,src=REPLAY_NORMAL,bpm=71,sqi=0.993,disp=-1.6189,comb=-1.6189,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 205.985 AI_RESULT,0.0000,0,0,50067
+ 207.009 TICK,146500,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6244,comb=-1.6244,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 207.212 AI_RESULT,0.0000,0,0,50056
+ 208.031 TICK,147000,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6306,comb=-1.6306,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 208.232 AI_RESULT,0.0000,0,0,50109
+ 209.065 TICK,147500,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6896,comb=-1.6896,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 209.267 AI_RESULT,0.0000,0,0,50096
+ 210.276 TICK,148000,src=REPLAY_NORMAL,bpm=71,sqi=0.993,disp=-1.6963,comb=-1.6963,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 210.276 AI_RESULT,0.9961,1,1,50272
+ 210.677 [ECGR] auto-record: abnormal edge, starting...
+ 210.892 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_326.ecgr
+ 211.293 TICK,148500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.5561,comb=-1.5561,busy=13%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 211.495 AI_RESULT,0.6758,1,0,50111
+ 212.300 TICK,149000,src=REPLAY_NORMAL,bpm=67,sqi=0.994,disp=-1.6283,comb=-1.6283,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 212.501 AI_RESULT,0.0000,0,0,50109
+ 213.511 TICK,149500,src=REPLAY_NORMAL,bpm=67,sqi=0.994,disp=-1.5711,comb=-1.5711,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 213.511 AI_RESULT,0.0000,0,0,50091
+ 214.532 TICK,150000,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6334,comb=-1.6334,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 214.532 AI_RESULT,0.9648,1,0,50063
+ 215.538 TICK,150500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6638,comb=-1.6638,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 215.538 AI_RESULT,0.0000,0,0,50083
+ 215.742 [ECGR] auto-record: consecutive normal, stopping...
+ 215.944 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_202.ecgr
+ 216.360 [ECGR] index rebuilt: 10 records
+ 216.360 [ECGR] stopped: 1166 samples, 5 sec, 0 abn, size=2364
+ 217.381 TICK,151000,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6408,comb=-1.6408,busy=43%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 217.381 AI_RESULT,0.0078,0,1,50115
+ 218.390 TICK,151500,src=REPLAY_NORMAL,bpm=68,sqi=0.993,disp=-1.5095,comb=-1.5095,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 218.390 AI_RESULT,0.0117,0,0,50077
+ 219.398 TICK,152000,src=REPLAY_NORMAL,bpm=69,sqi=0.993,disp=-1.6802,comb=-1.6802,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 219.398 AI_RESULT,0.0000,0,0,50063
+ 220.411 TICK,152500,src=REPLAY_NORMAL,bpm=69,sqi=0.993,disp=-1.7163,comb=-1.7163,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 220.411 AI_RESULT,0.9883,1,0,50087
+ 221.419 TICK,153000,src=REPLAY_NORMAL,bpm=69,sqi=0.993,disp=-1.5725,comb=-1.5725,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 221.619 AI_RESULT,0.0000,0,0,50119
+ 222.640 TICK,153500,src=REPLAY_NORMAL,bpm=70,sqi=0.993,disp=-1.6036,comb=-1.6036,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 222.640 AI_RESULT,0.0000,0,0,50108
+ 223.650 TICK,154000,src=REPLAY_NORMAL,bpm=70,sqi=0.993,disp=-1.2939,comb=-1.2939,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 223.650 AI_RESULT,0.0000,0,1,50082
+ 223.650 [ECGR] auto-record: abnormal edge, starting...
+ 223.853 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_339.ecgr
+ 224.661 TICK,154500,src=REPLAY_NORMAL,bpm=70,sqi=0.993,disp=-1.7553,comb=-1.7553,busy=13%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 224.864 AI_RESULT,0.0000,0,0,50134
+ 225.873 TICK,155000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.6867,comb=-1.6867,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 225.873 AI_RESULT,0.0000,0,0,50107
+ 226.892 TICK,155500,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7431,comb=-1.7431,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 226.892 AI_RESULT,0.0000,0,0,50802
+ 227.918 TICK,156000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6336,comb=-1.6336,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 227.918 AI_RESULT,0.0000,0,0,50053
+ 228.723 [ECGR] auto-record: consecutive normal, stopping...
+ 228.924 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_210.ecgr
+ 229.529 [ECGR] index rebuilt: 10 records
+ 229.529 [ECGR] stopped: 1179 samples, 5 sec, 0 abn, size=2390
+ 229.732 TICK,156500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.7277,comb=-1.7277,busy=46%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 229.732 AI_RESULT,0.0000,0,0,50098
+ 230.740 TICK,157000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.7010,comb=-1.7010,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 230.740 AI_RESULT,0.0000,0,0,50107
+ 231.751 TICK,157500,src=REPLAY_NORMAL,bpm=69,sqi=0.993,disp=-1.6766,comb=-1.6766,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 231.952 AI_RESULT,0.0000,0,0,50369
+ 232.757 TICK,158000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.5817,comb=-1.5817,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 232.958 AI_RESULT,0.0000,0,0,50031
+ 233.980 TICK,158500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.1834,comb=-1.1834,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 233.980 AI_RESULT,0.0312,0,0,50092
+ 234.995 TICK,159000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.7373,comb=-1.7373,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 234.995 AI_RESULT,0.0898,0,0,50139
+ 236.001 TICK,159500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6251,comb=-1.6251,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 236.001 AI_RESULT,0.0000,0,0,50114
+ 237.011 TICK,160000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.6799,comb=-1.6799,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 237.226 AI_RESULT,0.0000,0,0,50074
+ 238.032 TICK,160500,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7847,comb=-1.7847,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 238.235 AI_RESULT,0.0000,0,0,50036
+ 239.256 TICK,161000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7730,comb=-1.7730,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 239.256 AI_RESULT,0.0117,0,0,50104
+ 240.280 TICK,161500,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7332,comb=-1.7332,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 240.280 AI_RESULT,0.0000,0,0,50129
+ 241.288 TICK,162000,src=REPLAY_NORMAL,bpm=70,sqi=0.995,disp=-1.6507,comb=-1.6507,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 241.288 AI_RESULT,0.0000,0,0,50095
+ 242.299 TICK,162500,src=REPLAY_NORMAL,bpm=70,sqi=0.995,disp=-1.5288,comb=-1.5288,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 242.299 AI_RESULT,0.0000,0,0,50042
+ 243.307 TICK,163000,src=REPLAY_NORMAL,bpm=70,sqi=0.995,disp=-1.4931,comb=-1.4931,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 243.508 AI_RESULT,0.9961,1,1,50217
+ 243.709 [ECGR] auto-record: abnormal edge, starting...
+ 243.910 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_359.ecgr
+ 244.515 TICK,163500,src=REPLAY_NORMAL,bpm=69,sqi=0.995,disp=-1.7884,comb=-1.7884,busy=13%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 244.515 AI_RESULT,0.0000,0,0,50148
+ 245.522 TICK,164000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6177,comb=-1.6177,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 245.522 AI_RESULT,0.7383,1,0,50110
+ 246.544 TICK,164500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6512,comb=-1.6512,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 246.745 AI_RESULT,0.0000,0,0,50051
+ 247.563 TICK,165000,src=REPLAY_NORMAL,bpm=69,sqi=0.995,disp=-1.6874,comb=-1.6874,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 247.764 AI_RESULT,0.0000,0,0,50084
+ 248.774 TICK,165500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.5097,comb=-1.5097,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 248.774 AI_RESULT,0.9883,1,0,50116
+ 248.774 [ECGR] auto-record: consecutive normal, stopping...
+ 248.977 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_223.ecgr
+ 249.394 [ECGR] index rebuilt: 10 records
+ 249.394 [ECGR] stopped: 1174 samples, 5 sec, 0 abn, size=2380
+ 250.403 TICK,166000,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6903,comb=-1.6903,busy=43%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 250.606 AI_RESULT,0.9805,1,1,50114
+ 251.427 TICK,166500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.7205,comb=-1.7205,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 251.627 AI_RESULT,0.0078,0,0,50072
+ 252.638 TICK,167000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6378,comb=-1.6378,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 252.638 AI_RESULT,0.0000,0,0,50100
+ 253.645 TICK,167500,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.5624,comb=-1.5624,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 253.645 AI_RESULT,0.0000,0,0,50095
+ 254.654 TICK,168000,src=REPLAY_NORMAL,bpm=71,sqi=0.993,disp=-1.6813,comb=-1.6813,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 254.654 AI_RESULT,0.0000,0,0,50074
+ 255.662 TICK,168500,src=REPLAY_NORMAL,bpm=71,sqi=0.993,disp=-1.6189,comb=-1.6189,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 255.863 AI_RESULT,0.0000,0,0,50085
+ 256.674 TICK,169000,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6244,comb=-1.6244,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 256.876 AI_RESULT,0.0000,0,0,50061
+ 257.886 TICK,169500,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6306,comb=-1.6306,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 257.886 AI_RESULT,0.0000,0,0,50728
+ 258.894 TICK,170000,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6896,comb=-1.6896,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 258.894 AI_RESULT,0.0000,0,0,50117
+ 259.899 TICK,170500,src=REPLAY_NORMAL,bpm=71,sqi=0.994,disp=-1.6963,comb=-1.6963,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 259.899 AI_RESULT,0.9961,1,1,50088
+ 260.704 [ECGR] auto-record: abnormal edge, starting...
+ 260.908 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_376.ecgr
+ 261.123 TICK,171000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.5561,comb=-1.5561,busy=13%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 261.123 AI_RESULT,0.6758,1,0,50119
+ 262.133 TICK,171500,src=REPLAY_NORMAL,bpm=67,sqi=0.994,disp=-1.6283,comb=-1.6283,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 262.133 AI_RESULT,0.0000,0,0,50131
+ 263.140 TICK,172000,src=REPLAY_NORMAL,bpm=67,sqi=0.994,disp=-1.5711,comb=-1.5711,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 263.140 AI_RESULT,0.0000,0,0,50105
+ 264.178 TICK,172500,src=REPLAY_NORMAL,bpm=67,sqi=0.994,disp=-1.6334,comb=-1.6334,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 264.178 AI_RESULT,0.9648,1,0,50092
+ 265.183 TICK,173000,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6638,comb=-1.6638,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 265.387 AI_RESULT,0.0000,0,0,50116
+ 265.788 [ECGR] auto-record: consecutive normal, stopping...
+ 265.992 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_227.ecgr
+ 266.598 [ECGR] index rebuilt: 10 records
+ 266.598 [ECGR] stopped: 1166 samples, 5 sec, 0 abn, size=2364
+ 267.000 TICK,173500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6408,comb=-1.6408,busy=46%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 267.203 AI_RESULT,0.0078,0,1,50107
+ 268.214 TICK,174000,src=REPLAY_NORMAL,bpm=68,sqi=0.993,disp=-1.5095,comb=-1.5095,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 268.214 AI_RESULT,0.0117,0,0,50077
+ 269.221 TICK,174500,src=REPLAY_NORMAL,bpm=68,sqi=0.993,disp=-1.6801,comb=-1.6801,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 269.221 AI_RESULT,0.0000,0,0,50038
+ 270.231 TICK,175000,src=REPLAY_NORMAL,bpm=69,sqi=0.993,disp=-1.7163,comb=-1.7163,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 270.231 AI_RESULT,0.9883,1,0,50124
+ 271.253 TICK,175500,src=REPLAY_NORMAL,bpm=69,sqi=0.993,disp=-1.5725,comb=-1.5725,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 271.253 AI_RESULT,0.0000,0,0,50120
+ 272.264 TICK,176000,src=REPLAY_NORMAL,bpm=70,sqi=0.993,disp=-1.6036,comb=-1.6036,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 272.479 AI_RESULT,0.0000,0,0,50114
+ 273.287 TICK,176500,src=REPLAY_NORMAL,bpm=70,sqi=0.993,disp=-1.2939,comb=-1.2939,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 273.489 AI_RESULT,0.0000,0,1,50047
+ 273.691 [ECGR] auto-record: abnormal edge, starting...
+ 273.892 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_389.ecgr
+ 274.511 TICK,177000,src=REPLAY_NORMAL,bpm=70,sqi=0.993,disp=-1.7553,comb=-1.7553,busy=13%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 274.511 AI_RESULT,0.0000,0,0,50142
+ 275.519 TICK,177500,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.6867,comb=-1.6867,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 275.720 AI_RESULT,0.0000,0,0,50210
+ 276.527 TICK,178000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7431,comb=-1.7431,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 276.729 AI_RESULT,0.0000,0,0,50132
+ 277.736 TICK,178500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6336,comb=-1.6336,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 277.736 AI_RESULT,0.0000,0,0,50081
+ 278.758 TICK,179000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7277,comb=-1.7277,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 278.758 AI_RESULT,0.0000,0,0,50076
+ 278.758 [ECGR] auto-record: consecutive normal, stopping...
+ 278.962 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_240.ecgr
+ 279.565 [ECGR] index rebuilt: 10 records
+ 279.565 [ECGR] stopped: 1175 samples, 5 sec, 0 abn, size=2382
+ 280.571 TICK,179500,src=REPLAY_NORMAL,bpm=0,sqi=0.992,disp=-1.7010,comb=-1.7010,busy=46%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 280.571 AI_RESULT,0.0000,0,0,50157
+ 281.580 TICK,180000,src=REPLAY_NORMAL,bpm=0,sqi=0.991,disp=-1.6766,comb=-1.6766,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 281.580 AI_RESULT,0.0000,0,0,50278
+ 282.586 TICK,180500,src=REPLAY_NORMAL,bpm=63,sqi=0.993,disp=-1.5817,comb=-1.5817,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 282.787 AI_RESULT,0.0000,0,0,50031
+ 283.595 TICK,181000,src=REPLAY_NORMAL,bpm=65,sqi=0.993,disp=-1.1834,comb=-1.1834,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 283.797 AI_RESULT,0.0312,0,0,50110
+ 284.646 TICK,181500,src=REPLAY_NORMAL,bpm=68,sqi=0.993,disp=-1.7373,comb=-1.7373,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 284.848 AI_RESULT,0.0898,0,0,50110
+ 285.856 TICK,182000,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6251,comb=-1.6251,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 285.856 AI_RESULT,0.0000,0,0,50117
+ 286.865 TICK,182500,src=REPLAY_NORMAL,bpm=68,sqi=0.994,disp=-1.6799,comb=-1.6799,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 286.865 AI_RESULT,0.0000,0,0,50734
+ 287.873 TICK,183000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.7847,comb=-1.7847,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 287.873 AI_RESULT,0.0000,0,0,50028
+ 288.879 TICK,183500,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7730,comb=-1.7730,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 289.081 AI_RESULT,0.0117,0,0,50130
+ 290.089 TICK,184000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.7332,comb=-1.7332,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 290.089 AI_RESULT,0.0000,0,0,50119
+ 291.098 TICK,184500,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.6507,comb=-1.6507,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 291.098 AI_RESULT,0.0000,0,0,50095
+ 292.119 TICK,185000,src=REPLAY_NORMAL,bpm=70,sqi=0.994,disp=-1.5288,comb=-1.5288,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 292.119 AI_RESULT,0.0000,0,0,50048
+ 293.125 TICK,185500,src=REPLAY_NORMAL,bpm=70,sqi=0.995,disp=-1.4931,comb=-1.4931,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 293.125 AI_RESULT,0.9961,1,1,50030
+ 293.744 [ECGR] auto-record: abnormal edge, starting...
+ 293.744 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_409.ecgr
+ 294.355 TICK,186000,src=REPLAY_NORMAL,bpm=69,sqi=0.995,disp=-1.7884,comb=-1.7884,busy=13%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 294.355 AI_RESULT,0.0000,0,0,50126
+ 295.378 TICK,186500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6176,comb=-1.6176,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 295.378 AI_RESULT,0.0195,0,0,50102
+ 296.386 TICK,187000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6512,comb=-1.6512,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 296.386 AI_RESULT,0.0000,0,0,50048
+ 297.397 TICK,187500,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.6874,comb=-1.6874,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=0
+ 297.600 AI_RESULT,0.0000,0,0,50097
+ 298.432 TICK,188000,src=REPLAY_NORMAL,bpm=69,sqi=0.994,disp=-1.5097,comb=-1.5097,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=0
+ 298.635 AI_RESULT,0.9883,1,0,50123
+ 298.835 [ECGR] auto-record: consecutive normal, stopping...
+ 299.037 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_241.ecgr
+ 299.643 [ECGR] index rebuilt: 10 records
+ 299.643 [ECGR] stopped: 1165 samples, 5 sec, 0 abn, size=2362

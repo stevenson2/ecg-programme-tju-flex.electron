@@ -1,0 +1,128 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "M1: v3-A replay_normal (MIT-100) 120s 基线, 定 AI 进入门槛",
+  "port": "COM4",
+  "seconds": 120.0,
+  "cmds": [
+    "MODE replay_normal"
+  ],
+  "capture_start": "2026-09-12 18:38:01",
+  "ai_result": {
+    "windows": 111,
+    "rate_hz": 0.926,
+    "confirmed_rate": 0.0991,
+    "raw_rate": 0.1351,
+    "conf_median": 0.0039,
+    "conf_mean": 0.1594,
+    "confirmed_runs_s": {
+      "count": 11,
+      "max": 1,
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 10,
+      "max": 19,
+      "min": 5,
+      "median": 8.0,
+      "mean": 9.6,
+      "all": [
+        5,
+        9,
+        10,
+        19,
+        5,
+        7,
+        10,
+        19,
+        5,
+        7
+      ]
+    },
+    "raw_runs_s": {
+      "count": 15,
+      "max": 1,
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 14,
+      "max": 19,
+      "min": 1,
+      "median": 5.5,
+      "mean": 6.71,
+      "all": [
+        3,
+        2,
+        1,
+        8,
+        10,
+        19,
+        2,
+        1,
+        8,
+        10,
+        19,
+        2,
+        1,
+        8
+      ]
+    },
+    "latency_us_median": 49914,
+    "latency_us_max": 50748
+  },
+  "tick": {
+    "count": 111,
+    "sources": [
+      "REPLAY_NORMAL"
+    ],
+    "busy_pct_max": 50,
+    "busy_pct_mean": 9.4,
+    "ovr_total": 148,
+    "ovr_max": 3,
+    "segments": [
+      "0"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.0,
+    "runs_s": {
+      "count": 0
+    },
+    "asrc_seen": [
+      "0x00"
+    ]
+  }
+}

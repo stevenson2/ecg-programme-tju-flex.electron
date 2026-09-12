@@ -23,9 +23,10 @@ import serial
 import statistics
 import time
 
-AI_RE = re.compile(r"^AI_RESULT,([0-9.eE+-]+),(\d+),(\d+)")
+AI_RE = re.compile(r"^AI_RESULT,([0-9.eE+-]+),(\d+),(\d+)(?:,(\d+))?")
 TICK_RE = re.compile(
-    r"^TICK,(\d+),src=(\S+),bpm=(\d+),sqi=([0-9.eE+-]+),.*busy=(\d+)%,ovr=(\d+)")
+    r"^TICK,(\d+),src=(\S+?),bpm=(\d+),sqi=([0-9.eE+-]+),.*busy=(\d+)%,ovr=(\d+)"
+    r"(?:,alarm=(\d+))?(?:,asrc=0x([0-9a-fA-F]+))?(?:,seg=(\d+))?")
 
 
 def run_lengths(flags):
@@ -69,6 +70,8 @@ def main():
     ap.add_argument("--seconds", type=float, default=90.0)
     ap.add_argument("--out", default="alarm_repro", help="输出文件前缀")
     ap.add_argument("--label", default="", help="本次取证的说明 (写进 JSON)")
+    ap.add_argument("--cmd", action="append", default=[],
+                    help="抓取前发送的 UART 命令 (可重复, 如 --cmd 'MODE replay_flat')")
     args = ap.parse_args()
 
     s = serial.Serial(args.port, 460800, timeout=0.2)
@@ -79,6 +82,14 @@ def main():
     time.sleep(0.2)
     s.dtr = False
     s.rts = False
+    s.reset_input_buffer()
+
+    if args.cmd:
+        for c in args.cmd:
+            s.write((c + "\n").encode("ascii"))
+            time.sleep(0.3)
+        time.sleep(1.0)   # 等模式切换/滤波器收敛, 再开始计时取证
+        # 注意: 不清缓冲 —— CMD 回复与模式切换日志留在取证头部作为证据
 
     t0 = time.time()
     lines = []
@@ -100,7 +111,9 @@ def main():
     ai = [(ts, float(m.group(1)), int(m.group(2)), int(m.group(3)))
           for ts, text in lines
           for m in [AI_RE.match(text)] if m]
-    ticks = [(ts, m.group(2), int(m.group(5)), int(m.group(6)))
+    ai_lat = [int(m.group(4)) for _, text in lines
+              for m in [AI_RE.match(text)] if m and m.group(4)]
+    ticks = [(ts, m.group(2), int(m.group(5)), int(m.group(6)), m.group(7), m.group(8), m.group(9))
              for ts, text in lines
              for m in [TICK_RE.match(text)] if m]
 
@@ -109,6 +122,7 @@ def main():
         "label": args.label,
         "port": args.port,
         "seconds": args.seconds,
+        "cmds": args.cmd,
         "capture_start": time.strftime("%Y-%m-%d %H:%M:%S"),
         "ai_result": {},
         "tick": {},
@@ -130,6 +144,9 @@ def main():
             "raw_runs_s": stats_of(raw_runs),
             "raw_gaps_s": stats_of(raw_gaps),
         }
+        if ai_lat:
+            summary["ai_result"]["latency_us_median"] = statistics.median(ai_lat)
+            summary["ai_result"]["latency_us_max"] = max(ai_lat)
     if ticks:
         srcs = sorted(set(t[1] for t in ticks))
         summary["tick"] = {
@@ -140,6 +157,21 @@ def main():
             "ovr_total": sum(t[3] for t in ticks),
             "ovr_max": max(t[3] for t in ticks),
         }
+        # M1 固件起 TICK 尾部带 alarm=/asrc=/seg= (旧固件无这些字段则跳过)
+        alarm_flags = [t[4] == "1" for t in ticks if t[4] is not None]
+        if alarm_flags:
+            alarm_runs, _ = run_lengths(alarm_flags)
+            summary["alarm_latch"] = {
+                "rate": round(sum(alarm_flags) / len(alarm_flags), 4),
+                "runs_s": stats_of(alarm_runs),   # 1 TICK ~= 1 s
+            }
+        asrcs = sorted(set(t[5] for t in ticks if t[5] is not None))
+        if asrcs:
+            summary["alarm_latch"] = summary.get("alarm_latch", {})
+            summary["alarm_latch"]["asrc_seen"] = ["0x" + a for a in asrcs]
+        segs = sorted(set(t[6] for t in ticks if t[6] is not None))
+        if segs:
+            summary["tick"]["segments"] = segs
 
     with open(args.out + "_summary.json", "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)

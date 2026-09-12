@@ -1,0 +1,119 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "M1 验收1(重跑): replay_flat 90s, 含录制再武装修复",
+  "port": "COM4",
+  "seconds": 90.0,
+  "cmds": [
+    "MODE replay_flat",
+    "REC_AUTO 1"
+  ],
+  "capture_start": "2026-09-12 18:44:16",
+  "ai_result": {
+    "windows": 86,
+    "rate_hz": 0.96,
+    "confirmed_rate": 0.1047,
+    "raw_rate": 0.3256,
+    "conf_median": 0.0039,
+    "conf_mean": 0.3262,
+    "confirmed_runs_s": {
+      "count": 9,
+      "max": 1,
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 8,
+      "max": 17,
+      "min": 5,
+      "median": 5.0,
+      "mean": 7.25,
+      "all": [
+        5,
+        17,
+        10,
+        5,
+        5,
+        5,
+        6,
+        5
+      ]
+    },
+    "raw_runs_s": {
+      "count": 7,
+      "max": 20,
+      "min": 1,
+      "median": 1,
+      "mean": 4,
+      "all": [
+        1,
+        1,
+        2,
+        1,
+        20,
+        1,
+        2
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 6,
+      "max": 17,
+      "min": 4,
+      "median": 4.5,
+      "mean": 7.33,
+      "all": [
+        4,
+        4,
+        17,
+        10,
+        5,
+        4
+      ]
+    },
+    "latency_us_median": 50143.0,
+    "latency_us_max": 50879
+  },
+  "tick": {
+    "count": 86,
+    "sources": [
+      "REPLAY_NORMAL"
+    ],
+    "busy_pct_max": 48,
+    "busy_pct_mean": 7.0,
+    "ovr_total": 106,
+    "ovr_max": 2,
+    "segments": [
+      "2"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.7791,
+    "runs_s": {
+      "count": 1,
+      "max": 67,
+      "min": 67,
+      "median": 67,
+      "mean": 67,
+      "all": [
+        67
+      ]
+    },
+    "asrc_seen": [
+      "0x00",
+      "0x04",
+      "0x0c",
+      "0x0d"
+    ]
+  }
+}

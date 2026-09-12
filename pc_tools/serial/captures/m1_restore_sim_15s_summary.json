@@ -1,0 +1,93 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "M1 收尾: 恢复默认 SIMULATOR + STATUS 冒烟",
+  "port": "COM4",
+  "seconds": 15.0,
+  "cmds": [
+    "MODE sim",
+    "STATUS"
+  ],
+  "capture_start": "2026-09-12 18:51:49",
+  "ai_result": {
+    "windows": 15,
+    "rate_hz": 1.029,
+    "confirmed_rate": 0.1333,
+    "raw_rate": 0.8667,
+    "conf_median": 0.9453,
+    "conf_mean": 0.8471,
+    "confirmed_runs_s": {
+      "count": 2,
+      "max": 1,
+      "min": 1,
+      "median": 1.0,
+      "mean": 1,
+      "all": [
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 1,
+      "max": 5,
+      "min": 5,
+      "median": 5,
+      "mean": 5,
+      "all": [
+        5
+      ]
+    },
+    "raw_runs_s": {
+      "count": 2,
+      "max": 12,
+      "min": 1,
+      "median": 6.5,
+      "mean": 6.5,
+      "all": [
+        1,
+        12
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 1,
+      "max": 1,
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "all": [
+        1
+      ]
+    },
+    "latency_us_median": 50091,
+    "latency_us_max": 50221
+  },
+  "tick": {
+    "count": 15,
+    "sources": [
+      "SIMULATOR"
+    ],
+    "busy_pct_max": 60,
+    "busy_pct_mean": 17.7,
+    "ovr_total": 19,
+    "ovr_max": 2,
+    "segments": [
+      "1"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.2,
+    "runs_s": {
+      "count": 1,
+      "max": 3,
+      "min": 3,
+      "median": 3,
+      "mean": 3,
+      "all": [
+        3
+      ]
+    },
+    "asrc_seen": [
+      "0x00",
+      "0x01"
+    ]
+  }
+}

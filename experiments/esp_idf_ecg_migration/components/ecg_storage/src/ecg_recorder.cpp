@@ -32,6 +32,7 @@ static size_t g_bmpCap = 0;
 
 static bool g_autoRecord = false;
 static uint8_t g_consecutiveNormal = 0;
+static uint8_t g_rearmCooldown = 0;   /* M1: 停止后自动录制的再武装冷却 (秒) */
 static bool g_currentSecondAbnormal = false;
 static char g_currentPath[128];
 static uint32_t g_recordCount = 0;
@@ -295,12 +296,14 @@ void ecgRecorderPushSample(int16_t sample) {
 void ecgRecorderSetSecondAbnormal(bool abnormal) {
     g_currentSecondAbnormal = abnormal;
     if (!g_isRecording) {
-        if (g_autoRecord && abnormal) {
-            if (g_consecutiveNormal >= ECG_REC_AUTO_STOP_ABNORMAL_SECS || g_consecutiveNormal == 0) {
-                printf("[ECGR] auto-record: abnormal edge, starting...\n");
-                ecgRecorderStart();
-                g_consecutiveNormal = 0;
-            }
+        /* M1 修复: 再武装改为时间冷却 (停止后 5 秒), 逐秒递减不受 abnormal 冻结。
+         * 原条件 "连续正常>=5s 或计数==0" 在持续 abnormal (如 M1 报警擎住 >=30s)
+         * 下死锁: 计数冻结在 <5, 录制永远不再自动启动 (2026-09-12 平线验收发现)。 */
+        if (g_rearmCooldown > 0) g_rearmCooldown--;
+        if (g_autoRecord && abnormal && g_rearmCooldown == 0) {
+            printf("[ECGR] auto-record: abnormal edge, starting...\n");
+            ecgRecorderStart();
+            g_consecutiveNormal = 0;
         }
         if (!abnormal && g_autoRecord) g_consecutiveNormal++;
         return;
@@ -374,6 +377,7 @@ bool ecgRecorderStop(void) {
     rebuildIndex();
     printf("[ECGR] stopped: %u samples, %u sec, %u abn, size=%u\n",
            (unsigned)g_totalSamples, (unsigned)finalDur, (unsigned)g_abnormalSec, (unsigned)fileSize);
+    g_rearmCooldown = ECG_REC_AUTO_STOP_ABNORMAL_SECS;   /* M1: 时间冷却式再武装 */
     free(g_psramBuf); free(g_bmpBuf); g_psramBuf = NULL; g_bmpBuf = NULL;
     g_psramCap = 0; g_bmpCap = 0;
     g_totalSamples = 0; g_durationSec = 0; g_abnormalSec = 0;

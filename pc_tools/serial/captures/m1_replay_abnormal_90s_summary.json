@@ -1,0 +1,174 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "M1 修复后: REPLAY_ABNORMAL (MIT-106) 90s 对照",
+  "port": "COM4",
+  "seconds": 90.0,
+  "cmds": [
+    "MODE replay_abnormal"
+  ],
+  "capture_start": "2026-09-12 18:51:19",
+  "ai_result": {
+    "windows": 86,
+    "rate_hz": 0.963,
+    "confirmed_rate": 0.1628,
+    "raw_rate": 0.5581,
+    "conf_median": 0.9688,
+    "conf_mean": 0.5549,
+    "confirmed_runs_s": {
+      "count": 14,
+      "max": 1,
+      "min": 1,
+      "median": 1.0,
+      "mean": 1,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 13,
+      "max": 5,
+      "min": 5,
+      "median": 5,
+      "mean": 5,
+      "all": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    "raw_runs_s": {
+      "count": 31,
+      "max": 3,
+      "min": 1,
+      "median": 1,
+      "mean": 1.55,
+      "all": [
+        3,
+        1,
+        2,
+        1,
+        1,
+        1,
+        3,
+        1,
+        1,
+        3,
+        1,
+        1,
+        1,
+        1,
+        3,
+        1,
+        3,
+        1,
+        2,
+        1,
+        1,
+        1,
+        2,
+        1,
+        1,
+        3,
+        1,
+        1,
+        1,
+        1,
+        3
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 30,
+      "max": 3,
+      "min": 1,
+      "median": 1.0,
+      "mean": 1.23,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        3,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        1,
+        2,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "latency_us_median": 50094.5,
+    "latency_us_max": 50771
+  },
+  "tick": {
+    "count": 86,
+    "sources": [
+      "REPLAY_ABNORMAL"
+    ],
+    "busy_pct_max": 48,
+    "busy_pct_mean": 7.3,
+    "ovr_total": 105,
+    "ovr_max": 2,
+    "segments": [
+      "1"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.814,
+    "runs_s": {
+      "count": 1,
+      "max": 70,
+      "min": 70,
+      "median": 70,
+      "mean": 70,
+      "all": [
+        70
+      ]
+    },
+    "asrc_seen": [
+      "0x00",
+      "0x01"
+    ]
+  }
+}
