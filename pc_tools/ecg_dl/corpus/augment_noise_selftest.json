@@ -1,0 +1,21 @@
+{
+  "selftest": "ok",
+  "n_in": 32,
+  "n_out": 64,
+  "mean_abs_dev_30db": 0.0689,
+  "mean_abs_dev_0db": 0.5682,
+  "types": [
+    "baseline_wander",
+    "respiratory",
+    "mains",
+    "emg",
+    "motion"
+  ],
+  "snrs": [
+    30,
+    20,
+    10,
+    5,
+    0
+  ]
+}

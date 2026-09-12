@@ -1,0 +1,377 @@
+{
+  "generator": "make_replay_corpus.py",
+  "seed": 20260912,
+  "fs": 500,
+  "dur_s": 30,
+  "n_cases": 30,
+  "segment_base": 3,
+  "units": "header int16 microvolt (x0.001 -> mV numeric at runtime)",
+  "snr_convention": "10*log10(P_sig/P_noise) @500Hz raw domain, mean-removed",
+  "ludb_loaded": true,
+  "leakage_note": "语料仅用于板上评估, 不入训练。MIT-100/106 的患者划分归属由 split_guard 口径披露于 split_membership 字段。",
+  "cases": [
+    {
+      "index": 0,
+      "segment": 3,
+      "name": "clean_normal",
+      "params": {
+        "carrier": "mit100_0_30s",
+        "noise": null
+      },
+      "md5_int16uv": "c281d5a5133b609ab871d3eb85f7e271",
+      "p2p_mV": 1.7327
+    },
+    {
+      "index": 1,
+      "segment": 4,
+      "name": "clean_abnormal",
+      "params": {
+        "carrier": "mit106_90_120s",
+        "noise": null
+      },
+      "md5_int16uv": "c4152b038e0ded9a3cc0c4457630f7c8",
+      "p2p_mV": 3.3741
+    },
+    {
+      "index": 2,
+      "segment": 5,
+      "name": "normal_baseline_wander_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "baseline_wander",
+        "snr_db": 0
+      },
+      "md5_int16uv": "147703af8f9a59c49178d2f8907be53c",
+      "p2p_mV": 2.2648
+    },
+    {
+      "index": 3,
+      "segment": 6,
+      "name": "normal_baseline_wander_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "baseline_wander",
+        "snr_db": 10
+      },
+      "md5_int16uv": "328cfcc6feda2984da6909c743fea05f",
+      "p2p_mV": 1.8196
+    },
+    {
+      "index": 4,
+      "segment": 7,
+      "name": "normal_baseline_wander_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "baseline_wander",
+        "snr_db": 20
+      },
+      "md5_int16uv": "f8f5e9091a4a579dd82f0d38c1cae291",
+      "p2p_mV": 1.7566
+    },
+    {
+      "index": 5,
+      "segment": 8,
+      "name": "normal_respiratory_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "respiratory",
+        "snr_db": 0
+      },
+      "md5_int16uv": "f2ce07d6d4ae85493207486e3d07873f",
+      "p2p_mV": 2.2626
+    },
+    {
+      "index": 6,
+      "segment": 9,
+      "name": "normal_respiratory_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "respiratory",
+        "snr_db": 10
+      },
+      "md5_int16uv": "899618b748917b4c7de921fc003c06e2",
+      "p2p_mV": 1.9529
+    },
+    {
+      "index": 7,
+      "segment": 10,
+      "name": "normal_respiratory_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "respiratory",
+        "snr_db": 20
+      },
+      "md5_int16uv": "082adb16cc3cbfcdf60898589abddc55",
+      "p2p_mV": 1.892
+    },
+    {
+      "index": 8,
+      "segment": 11,
+      "name": "normal_mains_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "mains",
+        "snr_db": 0
+      },
+      "md5_int16uv": "ebc157c20aa7a811292fcfc8e4c30357",
+      "p2p_mV": 2.2076
+    },
+    {
+      "index": 9,
+      "segment": 12,
+      "name": "normal_mains_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "mains",
+        "snr_db": 10
+      },
+      "md5_int16uv": "1afe31b5aaf4ffed565ab7a37c5266ee",
+      "p2p_mV": 1.8497
+    },
+    {
+      "index": 10,
+      "segment": 13,
+      "name": "normal_mains_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "mains",
+        "snr_db": 20
+      },
+      "md5_int16uv": "1b7b30a69373a464554545e417b95eb7",
+      "p2p_mV": 1.7695
+    },
+    {
+      "index": 11,
+      "segment": 14,
+      "name": "normal_emg_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "emg",
+        "snr_db": 0
+      },
+      "md5_int16uv": "977a43676a53dce9ad5a41f94b795062",
+      "p2p_mV": 2.3988
+    },
+    {
+      "index": 12,
+      "segment": 15,
+      "name": "normal_emg_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "emg",
+        "snr_db": 10
+      },
+      "md5_int16uv": "19b1913ec78e59fd4770af6512e8d9ba",
+      "p2p_mV": 1.9373
+    },
+    {
+      "index": 13,
+      "segment": 16,
+      "name": "normal_emg_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "emg",
+        "snr_db": 20
+      },
+      "md5_int16uv": "2cb990d5ab3fb168ff2fcdeb8ae2c0b4",
+      "p2p_mV": 1.7381
+    },
+    {
+      "index": 14,
+      "segment": 17,
+      "name": "normal_motion_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "motion",
+        "snr_db": 0
+      },
+      "md5_int16uv": "5b123477d13c86caba30ae079d781b40",
+      "p2p_mV": 2.3824
+    },
+    {
+      "index": 15,
+      "segment": 18,
+      "name": "normal_motion_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "motion",
+        "snr_db": 10
+      },
+      "md5_int16uv": "87853ddfcb1cdc5298027e03f8b125b6",
+      "p2p_mV": 1.7723
+    },
+    {
+      "index": 16,
+      "segment": 19,
+      "name": "normal_motion_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "motion",
+        "snr_db": 20
+      },
+      "md5_int16uv": "c5bd9f1ea4343d6a4d5d131e3f312b57",
+      "p2p_mV": 1.7344
+    },
+    {
+      "index": 17,
+      "segment": 20,
+      "name": "normal_elec_off_mild",
+      "params": {
+        "carrier": "mit100",
+        "noise": "electrode_off",
+        "events": 2
+      },
+      "md5_int16uv": "dc03fb557525299d31a83a5b0dec5042",
+      "p2p_mV": 2.1352
+    },
+    {
+      "index": 18,
+      "segment": 21,
+      "name": "normal_elec_off_severe",
+      "params": {
+        "carrier": "mit100",
+        "noise": "electrode_off",
+        "events": 5
+      },
+      "md5_int16uv": "02851622cedb1931e6350a143ecdcee7",
+      "p2p_mV": 2.1352
+    },
+    {
+      "index": 19,
+      "segment": 22,
+      "name": "normal_adc_quant_12bit",
+      "params": {
+        "carrier": "mit100",
+        "noise": "adc_quant",
+        "bits": 12
+      },
+      "md5_int16uv": "3a0c34af47a58d04a0961bd0ee7172f4",
+      "p2p_mV": 1.7324
+    },
+    {
+      "index": 20,
+      "segment": 23,
+      "name": "normal_adc_quant_10bit",
+      "params": {
+        "carrier": "mit100",
+        "noise": "adc_quant",
+        "bits": 10
+      },
+      "md5_int16uv": "470dddba68b96c3d981dd9a6a91b65b6",
+      "p2p_mV": 1.7344
+    },
+    {
+      "index": 21,
+      "segment": 24,
+      "name": "normal_adc_quant_8bit",
+      "params": {
+        "carrier": "mit100",
+        "noise": "adc_quant",
+        "bits": 8
+      },
+      "md5_int16uv": "58af7ca28282a03f39712ca0cb5fa8ba",
+      "p2p_mV": 1.7188
+    },
+    {
+      "index": 22,
+      "segment": 25,
+      "name": "abnormal_baseline_wander_snr10",
+      "params": {
+        "carrier": "mit106",
+        "noise": "baseline_wander",
+        "snr_db": 10
+      },
+      "md5_int16uv": "9de1858d0f02da6f580a2186ad9af6ed",
+      "p2p_mV": 3.7573
+    },
+    {
+      "index": 23,
+      "segment": 26,
+      "name": "abnormal_emg_snr10",
+      "params": {
+        "carrier": "mit106",
+        "noise": "emg",
+        "snr_db": 10
+      },
+      "md5_int16uv": "2687c30a600d2d44d6aa54778d757bd1",
+      "p2p_mV": 3.6732
+    },
+    {
+      "index": 24,
+      "segment": 27,
+      "name": "abnormal_motion_snr10",
+      "params": {
+        "carrier": "mit106",
+        "noise": "motion",
+        "snr_db": 10
+      },
+      "md5_int16uv": "735334579b703f05b2f48d984af22f14",
+      "p2p_mV": 3.7855
+    },
+    {
+      "index": 25,
+      "segment": 28,
+      "name": "abnormal_mains_snr10",
+      "params": {
+        "carrier": "mit106",
+        "noise": "mains",
+        "snr_db": 10
+      },
+      "md5_int16uv": "89be4b73c76c8616b6c5bfc91ff41d75",
+      "p2p_mV": 3.7731
+    },
+    {
+      "index": 26,
+      "segment": 29,
+      "name": "pure_emg",
+      "params": {
+        "carrier": null,
+        "noise": "emg",
+        "note": "无载波纯噪声"
+      },
+      "md5_int16uv": "fbd9da1a8b241a914412395bd9f8713e",
+      "p2p_mV": 2.5798
+    },
+    {
+      "index": 27,
+      "segment": 30,
+      "name": "pure_motion",
+      "params": {
+        "carrier": null,
+        "noise": "motion",
+        "note": "无载波纯噪声"
+      },
+      "md5_int16uv": "8b1a8deb83803fe66d71aebba145c531",
+      "p2p_mV": 1.8824
+    },
+    {
+      "index": 28,
+      "segment": 31,
+      "name": "ludb_normal",
+      "params": {
+        "carrier": "ludb_s0010_re_leadii_5_35s",
+        "noise": null,
+        "fs_src": 1000
+      },
+      "md5_int16uv": "fa616f37d0bb014a18e7312b75ce9201",
+      "p2p_mV": 1.1162
+    },
+    {
+      "index": 29,
+      "segment": 32,
+      "name": "ludb_noise_on_mit",
+      "params": {
+        "carrier": "mit100",
+        "noise": "ludb_real_artifact",
+        "snr_db": 10
+      },
+      "md5_int16uv": "89c2a9268b97c2a8a02553e425e579b3",
+      "p2p_mV": 1.74
+    }
+  ],
+  "split_membership": {
+    "mit100": "train",
+    "mit106": "train",
+    "disclosure": "载波 MIT-100/106 属训练患者记录 (split_guard seed=42 口径重算)。语料结论口径 = 同载波噪声敏感性自对照 (noisy vs clean, 同模型), 不构成泛化能力证据; 泛化以干净 test 双门槛 (M3) 为准。"
+  }
+}

@@ -307,11 +307,12 @@ static void processCommand(const char *cmd, bool fromUart) {
     }
     if (strStartsWithIgnoreCase(cmd, "REPLAY ")) {
         int n = atoi(cmd + 7);
-        if (n >= 0 && n <= ECG_REPLAY_SEG_FLAT) {
+        int maxSeg = (int)ecgReplayMaxSegment();
+        if (n >= 0 && n <= maxSeg) {
             ecgReplaySetSegment((uint8_t)n);
             snprintf(reply, sizeof(reply), "REPLAY ok %d", n);
         } else {
-            snprintf(reply, sizeof(reply), "REPLAY fail (0..%d)", ECG_REPLAY_SEG_FLAT);
+            snprintf(reply, sizeof(reply), "REPLAY fail (0..%d)", maxSeg);
         }
         cmdReply(fromUart, reply);
         return;

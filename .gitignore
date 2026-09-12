@@ -115,3 +115,6 @@ SESSION_LOG.md
 runs/LOOP_LOG.md
 local_meeti_metadata_manifest.*
 papers_fulltext/
+
+# M2 语料生成缓存 (npy 大文件不入库; provenance JSON 与固件头入库)
+pc_tools/ecg_dl/corpus/*.npy

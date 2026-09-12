@@ -9,6 +9,9 @@
 
 #include "signal_generator/ecg_replay.h"
 #include "signal_generator/ecg_replay_data.h"
+#ifdef ECG_REPLAY_CORPUS
+#include "signal_generator/ecg_replay_corpus.h"
+#endif
 
 /* ======================== 状态 ======================== */
 
@@ -23,6 +26,15 @@ void ecgReplayInit(void)
     s_index   = 0;
 }
 
+uint8_t ecgReplayMaxSegment(void)
+{
+#ifdef ECG_REPLAY_CORPUS
+    return (uint8_t)(ECG_REPLAY_SEG_FLAT + ECG_REPLAY_CORPUS_N);
+#else
+    return ECG_REPLAY_SEG_FLAT;
+#endif
+}
+
 /* 段 2 (M1 平线段): MIT-100 前 15s 正常 -> 45s 平线 (0.2 基线), 60s 循环。
  * 平线模拟电极脱落/拔接头: 无 QRS -> 主循环时间停搏路径 (ALARM_SRC_FLAT)。 */
 #define REPLAY_FLAT_LEAD_SAMPLES   (15 * ECG_REPLAY_SR)
@@ -31,6 +43,19 @@ void ecgReplayInit(void)
 
 float ecgReplayNextSample(void)
 {
+#ifdef ECG_REPLAY_CORPUS
+    /* M2 噪声语料段: int16 微伏 -> float mV 数值域 (与段 0/1 一致) */
+    if (s_segment > ECG_REPLAY_SEG_FLAT) {
+        float v = (float)ecg_corpus[s_segment - ECG_REPLAY_SEG_FLAT - 1][s_index]
+                  * 0.001f;
+        s_index++;
+        if (s_index >= ECG_REPLAY_CORPUS_LEN) {
+            s_index = 0;   /* 循环播放 */
+        }
+        return v;
+    }
+#endif
+
     if (s_segment == ECG_REPLAY_SEG_FLAT) {
         float v = (s_index < REPLAY_FLAT_LEAD_SAMPLES)
                     ? ecg_replay_normal[s_index]
@@ -63,7 +88,8 @@ float ecgReplayNextSample(void)
 
 void ecgReplaySetSegment(uint8_t segment)
 {
-    if (segment > ECG_REPLAY_SEG_FLAT) segment = ECG_REPLAY_SEG_FLAT;
+    uint8_t maxSeg = ecgReplayMaxSegment();
+    if (segment > maxSeg) segment = maxSeg;
     s_segment = segment;
     s_index   = 0;
 }

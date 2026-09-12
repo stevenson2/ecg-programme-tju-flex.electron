@@ -1,0 +1,428 @@
+{
+  "tool": "eval_corpus_pc.py",
+  "model_label": "v3a_int8",
+  "model_path": "models/deploy_match/ecg_model_v3a_int8.tflite",
+  "settle_s": 5.0,
+  "chain": "comb×2 + HP0.05/LP40 + 2:1 + causal HP0.5@250 (ai_hp_coeffs_fs250)",
+  "timestamp": "2026-09-12 20:32:10",
+  "results": [
+    {
+      "index": 0,
+      "segment": 3,
+      "name": "clean_normal",
+      "params": {
+        "carrier": "mit100_0_30s",
+        "noise": null
+      },
+      "windows": 25,
+      "raw_rate": 0.16,
+      "conf_median": 0.0,
+      "conf_mean": 0.1722
+    },
+    {
+      "index": 1,
+      "segment": 4,
+      "name": "clean_abnormal",
+      "params": {
+        "carrier": "mit106_90_120s",
+        "noise": null
+      },
+      "windows": 25,
+      "raw_rate": 0.56,
+      "conf_median": 0.9883,
+      "conf_mean": 0.567
+    },
+    {
+      "index": 2,
+      "segment": 5,
+      "name": "normal_baseline_wander_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "baseline_wander",
+        "snr_db": 0
+      },
+      "windows": 25,
+      "raw_rate": 0.2,
+      "conf_median": 0.0117,
+      "conf_mean": 0.1955
+    },
+    {
+      "index": 3,
+      "segment": 6,
+      "name": "normal_baseline_wander_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "baseline_wander",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.16,
+      "conf_median": 0.0,
+      "conf_mean": 0.1812
+    },
+    {
+      "index": 4,
+      "segment": 7,
+      "name": "normal_baseline_wander_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "baseline_wander",
+        "snr_db": 20
+      },
+      "windows": 25,
+      "raw_rate": 0.24,
+      "conf_median": 0.0039,
+      "conf_mean": 0.2141
+    },
+    {
+      "index": 5,
+      "segment": 8,
+      "name": "normal_respiratory_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "respiratory",
+        "snr_db": 0
+      },
+      "windows": 25,
+      "raw_rate": 0.2,
+      "conf_median": 0.0039,
+      "conf_mean": 0.1988
+    },
+    {
+      "index": 6,
+      "segment": 9,
+      "name": "normal_respiratory_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "respiratory",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.12,
+      "conf_median": 0.0039,
+      "conf_mean": 0.1236
+    },
+    {
+      "index": 7,
+      "segment": 10,
+      "name": "normal_respiratory_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "respiratory",
+        "snr_db": 20
+      },
+      "windows": 25,
+      "raw_rate": 0.16,
+      "conf_median": 0.0,
+      "conf_mean": 0.1603
+    },
+    {
+      "index": 8,
+      "segment": 11,
+      "name": "normal_mains_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "mains",
+        "snr_db": 0
+      },
+      "windows": 25,
+      "raw_rate": 0.16,
+      "conf_median": 0.0,
+      "conf_mean": 0.1722
+    },
+    {
+      "index": 9,
+      "segment": 12,
+      "name": "normal_mains_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "mains",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.16,
+      "conf_median": 0.0,
+      "conf_mean": 0.1722
+    },
+    {
+      "index": 10,
+      "segment": 13,
+      "name": "normal_mains_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "mains",
+        "snr_db": 20
+      },
+      "windows": 25,
+      "raw_rate": 0.16,
+      "conf_median": 0.0,
+      "conf_mean": 0.1722
+    },
+    {
+      "index": 11,
+      "segment": 14,
+      "name": "normal_emg_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "emg",
+        "snr_db": 0
+      },
+      "windows": 25,
+      "raw_rate": 0.08,
+      "conf_median": 0.0,
+      "conf_mean": 0.1248
+    },
+    {
+      "index": 12,
+      "segment": 15,
+      "name": "normal_emg_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "emg",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.2,
+      "conf_median": 0.0,
+      "conf_mean": 0.2062
+    },
+    {
+      "index": 13,
+      "segment": 16,
+      "name": "normal_emg_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "emg",
+        "snr_db": 20
+      },
+      "windows": 25,
+      "raw_rate": 0.2,
+      "conf_median": 0.0,
+      "conf_mean": 0.2333
+    },
+    {
+      "index": 14,
+      "segment": 17,
+      "name": "normal_motion_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "motion",
+        "snr_db": 0
+      },
+      "windows": 25,
+      "raw_rate": 0.24,
+      "conf_median": 0.0,
+      "conf_mean": 0.2292
+    },
+    {
+      "index": 15,
+      "segment": 18,
+      "name": "normal_motion_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "motion",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.16,
+      "conf_median": 0.0,
+      "conf_mean": 0.1664
+    },
+    {
+      "index": 16,
+      "segment": 19,
+      "name": "normal_motion_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "motion",
+        "snr_db": 20
+      },
+      "windows": 25,
+      "raw_rate": 0.28,
+      "conf_median": 0.0039,
+      "conf_mean": 0.2933
+    },
+    {
+      "index": 17,
+      "segment": 20,
+      "name": "normal_elec_off_mild",
+      "params": {
+        "carrier": "mit100",
+        "noise": "electrode_off",
+        "events": 2
+      },
+      "windows": 25,
+      "raw_rate": 0.12,
+      "conf_median": 0.0,
+      "conf_mean": 0.1209
+    },
+    {
+      "index": 18,
+      "segment": 21,
+      "name": "normal_elec_off_severe",
+      "params": {
+        "carrier": "mit100",
+        "noise": "electrode_off",
+        "events": 5
+      },
+      "windows": 25,
+      "raw_rate": 0.24,
+      "conf_median": 0.0078,
+      "conf_mean": 0.2387
+    },
+    {
+      "index": 19,
+      "segment": 22,
+      "name": "normal_adc_quant_12bit",
+      "params": {
+        "carrier": "mit100",
+        "noise": "adc_quant",
+        "bits": 12
+      },
+      "windows": 25,
+      "raw_rate": 0.24,
+      "conf_median": 0.0,
+      "conf_mean": 0.2259
+    },
+    {
+      "index": 20,
+      "segment": 23,
+      "name": "normal_adc_quant_10bit",
+      "params": {
+        "carrier": "mit100",
+        "noise": "adc_quant",
+        "bits": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.24,
+      "conf_median": 0.0039,
+      "conf_mean": 0.2319
+    },
+    {
+      "index": 21,
+      "segment": 24,
+      "name": "normal_adc_quant_8bit",
+      "params": {
+        "carrier": "mit100",
+        "noise": "adc_quant",
+        "bits": 8
+      },
+      "windows": 25,
+      "raw_rate": 0.28,
+      "conf_median": 0.0,
+      "conf_mean": 0.2444
+    },
+    {
+      "index": 22,
+      "segment": 25,
+      "name": "abnormal_baseline_wander_snr10",
+      "params": {
+        "carrier": "mit106",
+        "noise": "baseline_wander",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.56,
+      "conf_median": 0.9336,
+      "conf_mean": 0.5791
+    },
+    {
+      "index": 23,
+      "segment": 26,
+      "name": "abnormal_emg_snr10",
+      "params": {
+        "carrier": "mit106",
+        "noise": "emg",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.56,
+      "conf_median": 0.6289,
+      "conf_mean": 0.5297
+    },
+    {
+      "index": 24,
+      "segment": 27,
+      "name": "abnormal_motion_snr10",
+      "params": {
+        "carrier": "mit106",
+        "noise": "motion",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.64,
+      "conf_median": 0.9961,
+      "conf_mean": 0.6317
+    },
+    {
+      "index": 25,
+      "segment": 28,
+      "name": "abnormal_mains_snr10",
+      "params": {
+        "carrier": "mit106",
+        "noise": "mains",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.56,
+      "conf_median": 0.9883,
+      "conf_mean": 0.567
+    },
+    {
+      "index": 26,
+      "segment": 29,
+      "name": "pure_emg",
+      "params": {
+        "carrier": null,
+        "noise": "emg",
+        "note": "无载波纯噪声"
+      },
+      "windows": 25,
+      "raw_rate": 0.08,
+      "conf_median": 0.0,
+      "conf_mean": 0.0797
+    },
+    {
+      "index": 27,
+      "segment": 30,
+      "name": "pure_motion",
+      "params": {
+        "carrier": null,
+        "noise": "motion",
+        "note": "无载波纯噪声"
+      },
+      "windows": 25,
+      "raw_rate": 0.88,
+      "conf_median": 0.9961,
+      "conf_mean": 0.877
+    },
+    {
+      "index": 28,
+      "segment": 31,
+      "name": "ludb_normal",
+      "params": {
+        "carrier": "ludb_s0010_re_leadii_5_35s",
+        "noise": null,
+        "fs_src": 1000
+      },
+      "windows": 25,
+      "raw_rate": 0.96,
+      "conf_median": 0.9961,
+      "conf_mean": 0.9273
+    },
+    {
+      "index": 29,
+      "segment": 32,
+      "name": "ludb_noise_on_mit",
+      "params": {
+        "carrier": "mit100",
+        "noise": "ludb_real_artifact",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.32,
+      "conf_median": 0.0078,
+      "conf_mean": 0.2942
+    }
+  ]
+}

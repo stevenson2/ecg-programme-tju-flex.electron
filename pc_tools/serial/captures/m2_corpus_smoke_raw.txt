@@ -1,0 +1,38 @@
+   0.210 CMD STATUS mode=SIMULATOR seg=0 alarm=0 asrc=0x00 rec=0 ai_conf=2
+   0.210 CMD REPLAY fail (0..32)
+   0.210 [main] mode -> REPLAY_NORMAL
+   0.210 CMD MODE ok REPLAY_NORMAL
+   0.210 TICK,6000,src=REPLAY_NORMAL,bpm=0,sqi=0.823,disp=-1.3046,comb=-1.3046,busy=14%,ovr=1,alarm=0,asrc=0x00,seg=0
+   0.210 AI_RESULT,0.0117,0,0,49631
+   0.210 CMD REPLAY ok 10
+   0.210 CMD STATUS mode=REPLAY_NORMAL seg=10 alarm=0 asrc=0x00 rec=0 ai_conf=2
+   0.210 TICK,6500,src=REPLAY_NORMAL,bpm=0,sqi=0.822,disp=-1.6651,comb=-1.6651,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=10
+   0.210 AI_RESULT,0.0000,0,1,49688
+   0.210 [ECGR] auto-record: abnormal edge, starting...
+   0.210 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_16.ecgr
+   0.618 TICK,7000,src=REPLAY_NORMAL,bpm=68,sqi=0.870,disp=-1.7066,comb=-1.7066,busy=13%,ovr=2,alarm=0,asrc=0x00,seg=10
+   0.618 AI_RESULT,0.0391,0,0,49560
+   1.643 TICK,7500,src=REPLAY_NORMAL,bpm=71,sqi=0.899,disp=-1.5951,comb=-1.5951,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=10
+   1.847 AI_RESULT,0.0039,0,0,49584
+   2.682 TICK,8000,src=REPLAY_NORMAL,bpm=71,sqi=0.927,disp=-1.6786,comb=-1.6786,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=10
+   2.885 AI_RESULT,0.0000,0,0,49722
+   3.689 TICK,8500,src=REPLAY_NORMAL,bpm=71,sqi=0.945,disp=-1.6577,comb=-1.6577,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=10
+   3.891 AI_RESULT,0.0000,0,0,49616
+   4.914 TICK,9000,src=REPLAY_NORMAL,bpm=71,sqi=0.961,disp=-1.6998,comb=-1.6998,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=10
+   4.914 AI_RESULT,0.9766,1,0,49664
+   5.115 [ECGR] auto-record: consecutive normal, stopping...
+   5.545 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_2.ecgr
+   5.949 [ECGR] index rebuilt: 10 records
+   5.949 [ECGR] stopped: 1167 samples, 5 sec, 0 abn, size=2366
+   6.792 TICK,9500,src=REPLAY_NORMAL,bpm=71,sqi=0.973,disp=-1.7842,comb=-1.7842,busy=48%,ovr=2,alarm=0,asrc=0x00,seg=10
+   6.792 AI_RESULT,0.5781,1,1,49434
+   7.814 TICK,10000,src=REPLAY_NORMAL,bpm=70,sqi=0.979,disp=-1.6495,comb=-1.6495,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=10
+   7.814 AI_RESULT,0.9805,1,0,49675
+   8.851 TICK,10500,src=REPLAY_NORMAL,bpm=70,sqi=0.984,disp=-1.5174,comb=-1.5174,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=10
+   8.851 AI_RESULT,0.7578,1,0,49689
+   9.871 TICK,11000,src=REPLAY_NORMAL,bpm=70,sqi=0.986,disp=-1.6592,comb=-1.6592,busy=7%,ovr=2,alarm=0,asrc=0x00,seg=10
+   9.871 AI_RESULT,0.0117,0,0,49718
+  10.878 TICK,11500,src=REPLAY_NORMAL,bpm=68,sqi=0.988,disp=-1.6668,comb=-1.6668,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=10
+  11.079 AI_RESULT,0.0000,0,0,49700
+  11.886 TICK,12000,src=REPLAY_NORMAL,bpm=67,sqi=0.990,disp=-1.5961,comb=-1.5961,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=10
+  12.086 AI_RESULT,0.2031,0,0,49452

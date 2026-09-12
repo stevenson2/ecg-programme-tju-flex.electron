@@ -1,0 +1,31 @@
+[ 1/30] seg3  clean_normal                     raw=0.103 conf=0.000 alarm=0.0 sqi=0.99
+[ 2/30] seg4  clean_abnormal                   raw=0.533 conf=0.949 alarm=0.7 sqi=0.97
+[ 3/30] seg5  normal_baseline_wander_snr0      raw=0.233 conf=0.000 alarm=0.0 sqi=0.99
+[ 4/30] seg6  normal_baseline_wander_snr10     raw=0.103 conf=0.000 alarm=0.0 sqi=0.99
+[ 5/30] seg7  normal_baseline_wander_snr20     raw=0.100 conf=0.000 alarm=0.0 sqi=0.99
+[ 6/30] seg8  normal_respiratory_snr0          raw=0.200 conf=0.000 alarm=0.0 sqi=0.99
+[ 7/30] seg9  normal_respiratory_snr10         raw=0.133 conf=0.000 alarm=0.0 sqi=0.99
+[ 8/30] seg10 normal_respiratory_snr20         raw=0.310 conf=0.008 alarm=0.0 sqi=0.99
+[ 9/30] seg11 normal_mains_snr0                raw=0.100 conf=0.000 alarm=0.0 sqi=0.99
+[10/30] seg12 normal_mains_snr10               raw=0.167 conf=0.000 alarm=0.0 sqi=0.99
+[11/30] seg13 normal_mains_snr20               raw=0.345 conf=0.019 alarm=0.1379 sqi=0.99
+[12/30] seg14 normal_emg_snr0                  raw=0.133 conf=0.000 alarm=0.0 sqi=0.98
+[13/30] seg15 normal_emg_snr10                 raw=0.100 conf=0.000 alarm=0.0 sqi=0.99
+[14/30] seg16 normal_emg_snr20                 raw=0.241 conf=0.012 alarm=0.0 sqi=0.99
+[15/30] seg17 normal_motion_snr0               raw=0.100 conf=0.004 alarm=0.0 sqi=0.99
+[16/30] seg18 normal_motion_snr10              raw=0.100 conf=0.000 alarm=0.0 sqi=0.99
+[17/30] seg19 normal_motion_snr20              raw=0.172 conf=0.000 alarm=0.0 sqi=0.99
+[18/30] seg20 normal_elec_off_mild             raw=0.000 conf=0.000 alarm=0.0 sqi=0.99
+[19/30] seg21 normal_elec_off_severe           raw=0.100 conf=0.002 alarm=0.0 sqi=0.99
+[20/30] seg22 normal_adc_quant_12bit           raw=0.103 conf=0.000 alarm=0.0 sqi=0.99
+[21/30] seg23 normal_adc_quant_10bit           raw=0.100 conf=0.000 alarm=0.0 sqi=0.99
+[22/30] seg24 normal_adc_quant_8bit            raw=0.167 conf=0.000 alarm=0.0 sqi=0.99
+[23/30] seg25 abnormal_baseline_wander_snr10   raw=0.414 conf=0.008 alarm=0.3103 sqi=0.97
+[24/30] seg26 abnormal_emg_snr10               raw=0.500 conf=0.385 alarm=0.6 sqi=0.98
+[25/30] seg27 abnormal_motion_snr10            raw=0.700 conf=0.996 alarm=0.7333 sqi=0.97
+[26/30] seg28 abnormal_mains_snr10             raw=0.567 conf=0.938 alarm=0.5 sqi=0.97
+[27/30] seg29 pure_emg                         raw=0.103 conf=0.000 alarm=0.0 sqi=0.73
+[28/30] seg30 pure_motion                      raw=0.900 conf=0.996 alarm=0.7667 sqi=0.66
+[29/30] seg31 ludb_normal                      raw=0.933 conf=0.996 alarm=0.7667 sqi=0.86
+[30/30] seg32 ludb_noise_on_mit                raw=0.345 conf=0.223 alarm=0.2759 sqi=0.99
+-> corpus_eval_v3a_20260912_2045.json

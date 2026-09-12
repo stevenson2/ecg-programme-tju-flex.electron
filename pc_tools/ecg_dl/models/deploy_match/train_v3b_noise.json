@@ -1,0 +1,122 @@
+{
+  "date": "2026-09-12 20:39:01",
+  "purpose": "M3 v3-B: v3-A 配方 + 逐拍独立链整形噪声增强 (TH §107)",
+  "provenance": "from scratch; no checkpoint loaded; main rng stream identical to v3-A (aug on rng_aug)",
+  "gpu": [
+    "PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')"
+  ],
+  "output_model": "models/best_resnet_large_v3b_noise.h5",
+  "patient_split_seed": 42,
+  "rng_aug_seed": 1042,
+  "variants_per_beat": 1,
+  "augmentation": {
+    "types": [
+      "baseline_wander",
+      "respiratory",
+      "mains",
+      "emg",
+      "motion"
+    ],
+    "snrs": [
+      30,
+      20,
+      10,
+      5,
+      0
+    ],
+    "chain_shaped": true,
+    "prov": {
+      "per_beat_independent": true,
+      "variants_per_beat": 1,
+      "counts": {
+        "baseline_wander@0dB": 169,
+        "baseline_wander@10dB": 204,
+        "baseline_wander@20dB": 200,
+        "baseline_wander@30dB": 175,
+        "baseline_wander@5dB": 189,
+        "emg@0dB": 183,
+        "emg@10dB": 172,
+        "emg@20dB": 206,
+        "emg@30dB": 164,
+        "emg@5dB": 198,
+        "mains@0dB": 196,
+        "mains@10dB": 203,
+        "mains@20dB": 197,
+        "mains@30dB": 191,
+        "mains@5dB": 213,
+        "motion@0dB": 204,
+        "motion@10dB": 191,
+        "motion@20dB": 176,
+        "motion@30dB": 183,
+        "motion@5dB": 196,
+        "respiratory@0dB": 204,
+        "respiratory@10dB": 201,
+        "respiratory@20dB": 189,
+        "respiratory@30dB": 207,
+        "respiratory@5dB": 189
+      }
+    },
+    "note": "noise shaped by PC deploy-chain replica before mixing; val kept clean"
+  },
+  "data": {
+    "main_gold": 4800,
+    "noisy_variants": 4800,
+    "real_afe_train_unique": 271,
+    "real_afe_holdout": 40,
+    "synth_hard": 600,
+    "train_total": 10742
+  },
+  "audits": {
+    "mit_bih": {
+      "assert_train_only": "passed",
+      "sampled_records_vs_test_intersection": 0,
+      "sampled_unique_records": 31
+    },
+    "incart": {
+      "assert_train_only": "passed",
+      "sampled_records_vs_test_intersection": 0,
+      "sampled_unique_records": 42
+    },
+    "ptb": {
+      "assert_train_only": "passed",
+      "sampled_records_vs_test_intersection": 0,
+      "sampled_unique_records": 273
+    }
+  },
+  "split_stats": {
+    "mit_bih": {
+      "n_patients": 79,
+      "n_train": 49,
+      "n_val": 15,
+      "n_test": 15,
+      "beats_train": 512369,
+      "beats_val": 159294,
+      "beats_test": 163078
+    },
+    "incart": {
+      "n_patients": 79,
+      "n_train": 49,
+      "n_val": 15,
+      "n_test": 15,
+      "beats_train": 512369,
+      "beats_val": 159294,
+      "beats_test": 163078
+    },
+    "ptb": {
+      "n_patients": 286,
+      "n_train": 172,
+      "n_val": 57,
+      "n_test": 57,
+      "beats_train": 41730,
+      "beats_val": 14694,
+      "beats_test": 13058
+    }
+  },
+  "best_val_auc": 0.7435928921568629,
+  "real_holdout": {
+    "mean": 0.6676148176193237,
+    "frac_gt_05": 1.0
+  },
+  "history_best_epoch": 20,
+  "wall_s": 133.7
+}

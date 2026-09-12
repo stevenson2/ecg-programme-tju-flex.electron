@@ -1,0 +1,81 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "M2 语料段冒烟: seg10=normal_emg_snr0",
+  "port": "COM4",
+  "seconds": 12.0,
+  "cmds": [
+    "STATUS",
+    "REPLAY 99",
+    "MODE replay_normal",
+    "REPLAY 10",
+    "STATUS"
+  ],
+  "capture_start": "2026-09-12 20:23:44",
+  "ai_result": {
+    "windows": 13,
+    "rate_hz": 1.095,
+    "confirmed_rate": 0.1538,
+    "raw_rate": 0.3077,
+    "conf_median": 0.0117,
+    "conf_mean": 0.274,
+    "confirmed_runs_s": {
+      "count": 2,
+      "max": 1,
+      "min": 1,
+      "median": 1.0,
+      "mean": 1,
+      "all": [
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 1,
+      "max": 5,
+      "min": 5,
+      "median": 5,
+      "mean": 5,
+      "all": [
+        5
+      ]
+    },
+    "raw_runs_s": {
+      "count": 1,
+      "max": 4,
+      "min": 4,
+      "median": 4,
+      "mean": 4,
+      "all": [
+        4
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 0
+    },
+    "latency_us_median": 49664,
+    "latency_us_max": 49722
+  },
+  "tick": {
+    "count": 13,
+    "sources": [
+      "REPLAY_NORMAL"
+    ],
+    "busy_pct_max": 48,
+    "busy_pct_mean": 11,
+    "ovr_total": 17,
+    "ovr_max": 2,
+    "segments": [
+      "0",
+      "10"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.0,
+    "runs_s": {
+      "count": 0
+    },
+    "asrc_seen": [
+      "0x00"
+    ]
+  }
+}
