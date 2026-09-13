@@ -1,0 +1,108 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1789301255.871725     365 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1789301256.693706     365 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1789301258.870426     365 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+W0000 00:00:1789301262.324829     365 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+[V3B] GPU: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+[V3B] main gold: 4800 (abn=2500, norm=2300)
+[V3B] noisy variants: 1200 (10 种 type x SNR 组合)
+[V3B] real AFE: train_unique=271 holdout=40
+[V3B] train total=7142 abn=4842 norm=2300 (含噪声变体 1200)
+[V3B] val total=4040 abn=2000 norm=2040 (干净, 不增强)
+W0000 00:00:1789301265.345175     365 gpu_device.cc:2459] TensorFlow was not built with CUDA kernel binaries compatible with compute capability 12.0a. CUDA kernels will be jit-compiled from PTX, which could take 30 minutes or longer.
+I0000 00:00:1789301265.707575     365 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 5198 MB memory:  -> device: 0, name: NVIDIA GeForce RTX 5070 Laptop GPU, pci bus id: 0000:01:00.0, compute capability: 12.0a
+[V3B] params=62,834 (随机初始化, dropout=0.4)
+Epoch 1/80
+I0000 00:00:1789301273.836990     453 service.cc:153] XLA service 0x73e41c0754b0 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1789301273.837326     453 service.cc:161]   StreamExecutor [0]: NVIDIA GeForce RTX 5070 Laptop GPU, Compute Capability 12.0a (Driver: 13.2.0; Runtime: 12.9.0; Toolkit: 12.5.0; DNN: 9.24.0)
+I0000 00:00:1789301274.109124     453 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1789301275.560975     453 cuda_dnn.cc:461] Loaded cuDNN version 92400
+I0000 00:00:1789301275.781772     453 dot_merger.cc:481] Merging Dots in computation: a_inference_one_step_on_data_20969__.182
+I0000 00:00:1789301276.022929     453 dot_search_space.cc:240] All configs were filtered out because none of them sufficiently match the hints. Maybe the hints set does not contain a good representative set of valid configs? Working around this by using the full hints set instead.
+I0000 00:00:1789301276.623644     528 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_124', 16 bytes spill stores, 16 bytes spill loads
+
+I0000 00:00:1789301278.202817     453 dot_search_space.cc:240] All configs were filtered out because none of them sufficiently match the hints. Maybe the hints set does not contain a good representative set of valid configs? Working around this by using the full hints set instead.
+I0000 00:00:1789301284.012628     528 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_1_44', 28 bytes spill stores, 20 bytes spill loads
+
+I0000 00:00:1789301284.506203     523 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_1_46', 24 bytes spill stores, 16 bytes spill loads
+
+I0000 00:00:1789301285.654453     532 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_2', 8 bytes spill stores, 8 bytes spill loads
+
+I0000 00:00:1789301288.772621     524 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_1', 4 bytes spill stores, 4 bytes spill loads
+
+I0000 00:00:1789301289.309804     533 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_3', 8 bytes spill stores, 8 bytes spill loads
+
+I0000 00:00:1789301299.611050     453 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'input_reduce_select_fusion_1', 4 bytes spill stores, 4 bytes spill loads
+
+I0000 00:00:1789301299.701615     453 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+I0000 00:00:1789301306.065030     454 dot_merger.cc:481] Merging Dots in computation: a_inference_one_step_on_data_20969__.182
+I0000 00:00:1789301307.612586    1386 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_122', 4 bytes spill stores, 4 bytes spill loads
+
+I0000 00:00:1789301328.431534    2188 subprocess_compilation.cc:348] ptxas warning : Registers are spilled to local memory in function 'gemm_fusion_MatMul_76', 4 bytes spill stores, 4 bytes spill loads
+
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+  * saved best val_auc=0.5062 (epoch 1)
+224/224 - 74s - 329ms/step - accuracy: 0.7621 - loss: 0.4686 - val_accuracy: 0.4970 - val_loss: 0.6980 - val_auc: 0.5062
+Epoch 2/80
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+  * saved best val_auc=0.7048 (epoch 2)
+224/224 - 5s - 22ms/step - accuracy: 0.8124 - loss: 0.3757 - val_accuracy: 0.6037 - val_loss: 0.7308 - val_auc: 0.7048
+Epoch 3/80
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+  * saved best val_auc=0.7795 (epoch 3)
+224/224 - 3s - 12ms/step - accuracy: 0.8330 - loss: 0.3420 - val_accuracy: 0.6832 - val_loss: 0.7675 - val_auc: 0.7795
+Epoch 4/80
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+  * saved best val_auc=0.7964 (epoch 4)
+224/224 - 4s - 16ms/step - accuracy: 0.8516 - loss: 0.3115 - val_accuracy: 0.7045 - val_loss: 0.7779 - val_auc: 0.7964
+Epoch 5/80
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+  * saved best val_auc=0.7979 (epoch 5)
+224/224 - 3s - 14ms/step - accuracy: 0.8642 - loss: 0.2900 - val_accuracy: 0.7106 - val_loss: 0.7838 - val_auc: 0.7979
+Epoch 6/80
+224/224 - 3s - 13ms/step - accuracy: 0.8734 - loss: 0.2733 - val_accuracy: 0.7153 - val_loss: 0.7680 - val_auc: 0.7894
+Epoch 7/80
+224/224 - 4s - 16ms/step - accuracy: 0.8848 - loss: 0.2574 - val_accuracy: 0.6943 - val_loss: 0.9426 - val_auc: 0.7771
+Epoch 8/80
+224/224 - 3s - 15ms/step - accuracy: 0.8926 - loss: 0.2377 - val_accuracy: 0.6592 - val_loss: 1.3857 - val_auc: 0.7647
+Epoch 9/80
+224/224 - 3s - 13ms/step - accuracy: 0.8979 - loss: 0.2298 - val_accuracy: 0.6970 - val_loss: 1.0099 - val_auc: 0.7591
+Epoch 10/80
+224/224 - 3s - 12ms/step - accuracy: 0.9076 - loss: 0.2133 - val_accuracy: 0.6802 - val_loss: 1.2835 - val_auc: 0.7565
+Epoch 11/80
+224/224 - 3s - 14ms/step - accuracy: 0.9121 - loss: 0.2025 - val_accuracy: 0.6423 - val_loss: 1.8512 - val_auc: 0.7493
+Epoch 12/80
+224/224 - 3s - 13ms/step - accuracy: 0.9181 - loss: 0.1952 - val_accuracy: 0.6785 - val_loss: 1.6142 - val_auc: 0.7563
+Epoch 13/80
+224/224 - 3s - 12ms/step - accuracy: 0.9202 - loss: 0.1869 - val_accuracy: 0.6475 - val_loss: 2.0524 - val_auc: 0.7629
+Epoch 14/80
+224/224 - 2s - 9ms/step - accuracy: 0.9250 - loss: 0.1815 - val_accuracy: 0.6847 - val_loss: 1.5630 - val_auc: 0.7452
+Epoch 15/80
+224/224 - 3s - 13ms/step - accuracy: 0.9278 - loss: 0.1725 - val_accuracy: 0.6792 - val_loss: 1.6721 - val_auc: 0.7702
+Epoch 16/80
+224/224 - 3s - 11ms/step - accuracy: 0.9341 - loss: 0.1660 - val_accuracy: 0.6921 - val_loss: 1.4520 - val_auc: 0.7569
+Epoch 17/80
+224/224 - 3s - 14ms/step - accuracy: 0.9374 - loss: 0.1545 - val_accuracy: 0.6894 - val_loss: 1.6302 - val_auc: 0.7791
+Epoch 18/80
+224/224 - 3s - 14ms/step - accuracy: 0.9444 - loss: 0.1437 - val_accuracy: 0.6530 - val_loss: 1.7702 - val_auc: 0.7448
+Epoch 19/80
+224/224 - 3s - 13ms/step - accuracy: 0.9441 - loss: 0.1392 - val_accuracy: 0.6874 - val_loss: 1.4652 - val_auc: 0.7401
+Epoch 20/80
+224/224 - 3s - 12ms/step - accuracy: 0.9461 - loss: 0.1330 - val_accuracy: 0.6552 - val_loss: 2.2972 - val_auc: 0.7832
+Epoch 21/80
+224/224 - 3s - 14ms/step - accuracy: 0.9528 - loss: 0.1219 - val_accuracy: 0.6802 - val_loss: 1.5387 - val_auc: 0.7491
+Epoch 22/80
+224/224 - 3s - 14ms/step - accuracy: 0.9579 - loss: 0.1159 - val_accuracy: 0.6703 - val_loss: 1.9911 - val_auc: 0.7717
+Epoch 23/80
+224/224 - 3s - 13ms/step - accuracy: 0.9583 - loss: 0.1114 - val_accuracy: 0.6673 - val_loss: 2.1808 - val_auc: 0.7691
+Epoch 24/80
+224/224 - 1s - 6ms/step - accuracy: 0.9622 - loss: 0.1011 - val_accuracy: 0.6131 - val_loss: 2.8691 - val_auc: 0.7614
+Epoch 25/80
+224/224 - 3s - 13ms/step - accuracy: 0.9637 - loss: 0.0992 - val_accuracy: 0.6040 - val_loss: 2.7605 - val_auc: 0.7631
+Epoch 25: early stopping
+Restoring model weights from the end of the best epoch: 5.
+[V3B] training done in 151s
+[V3B] BEST: val AUC=0.7979; real holdout mean=0.9998 frac>0.5=1.0000
+[V3B] report -> /mnt/c/Users/cai/OneDrive/Desktop/Fe programme 25261/ecg-programme-tju-flex.electron-master/pc_tools/ecg_dl/models/deploy_match/train_v3b_noise.json

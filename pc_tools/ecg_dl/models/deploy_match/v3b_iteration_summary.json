@@ -1,0 +1,52 @@
+{
+  "verdict": "KEEP v3-A. v3-B 全系 (v1/v2/v3) 未过门槛1 (干净 test), 尽管 v2/v3 过门槛2 (带噪语料全面更优).",
+  "date": "2026-09-13",
+  "protocol": "gate1 = eval_clean_test 口径 (patient-level test, θ=0.5, 1-of-5, cd=5, tolerance 0.02); gate2 = eval_corpus_pc 30 case (同 h5 格)",
+  "variants": {
+    "v1_fullsnr(30..0dB, 100%拍)": {
+      "train_log": "pc_tools/ecg_dl/models/deploy_match/train_v3b_noise_v1_fullsnr_ladder.json",
+      "result": "FAIL-训练退化: val AUC epoch1 见顶 0.7436 后劣化; 真实AFE frac>0.5=1.0 (0/5dB 淹没载波 -> 记忆化)",
+      "gate1": "未评 (训练已坍缩)"
+    },
+    "v2_snr(30,20,10, 100%拍)": {
+      "train_log": "pc_tools/ecg_dl/train_v3b_v3.log (val AUC 0.7924, real holdout mean 0.0035)",
+      "gate1_mit_incart": {
+        "v3a_auc": 0.8651,
+        "v3b_auc": 0.8256,
+        "v3a_evf1": 0.7094,
+        "v3b_evf1": 0.4767
+      },
+      "gate1_ptb": {
+        "v3a_auc": 0.7662,
+        "v3b_auc": 0.6831,
+        "v3a_evf1": 0.8527,
+        "v3b_evf1": 0.8583
+      },
+      "gate2_h5_groups_delta_vs_v3a": {
+        "normal+noise": -0.157,
+        "abnormal+noise": 0.0,
+        "pure_motion": -0.12,
+        "ludb_normal": 0.04
+      },
+      "result": "门槛2 PASS 向 (带噪FP大降, 敏感度保持), 门槛1 FAIL (MIT evF1 -0.23)"
+    },
+    "v3_mild(30,20dB, 25%拍)": {
+      "train_json": "train_v3b_noise.json (val AUC 0.7979; real holdout mean 0.9998 全异常 Canary 又亮)",
+      "gate1_json": "v3ab_gate1_clean_test_v3c_mild25.json",
+      "gate1_mit_incart": {
+        "v3a_auc": 0.8651,
+        "v3b_auc": 0.8453,
+        "v3a_evf1": 0.7094,
+        "v3b_evf1": 0.562
+      },
+      "gate1_ptb": {
+        "v3a_auc": 0.7662,
+        "v3b_auc": 0.7327,
+        "v3a_evf1": 0.8527,
+        "v3b_evf1": 0.8328
+      },
+      "result": "门槛1 仍 FAIL (MIT evF1 -0.15); 门槛2 全组更优 (见 corpus_pc_v3a_h5 vs v3b_h5)"
+    }
+  },
+  "conclusion": "链整形逐拍噪声增强在 v3-A 配方上一致地 '带噪更稳/干净更差': 两迭代均以干净 test 事件F1 大幅退化为代价. 依据简报双门槛规则保留 v3-A. 后续若重启: 干/噪双头或噪声条件BN, 需干净 val 加噪验证集联合选模."
+}

@@ -1,0 +1,12 @@
+{
+  "note": "板上 30 case, sqi_mean 为 hr.sqi 秒级读数; raw_rate 同 case",
+  "spearman_like_pearson_sqi_vs_raw_all": -0.5015,
+  "pearson_sqi_vs_raw_normal_group": -0.6324,
+  "big_FP_cases_sqi": {
+    "pure_motion": 0.656,
+    "ludb_normal": 0.861,
+    "normal_mains_snr20": 0.99
+  },
+  "clean_cases_sqi_mean": 0.99,
+  "verdict": "SQI 对运动伪迹 (0.66) 与跨库正常 (0.86) 的读数仍处高位, 与干净正常 (~0.99) 差距 0.13-0.33 —— 以 <0.5 阈值做挂起门控对本语料的两大 FP 源无效; SQI 门控路线天花板被本数据限定。更隐蔽的是 mains@20dB FP (raw 0.35) 的 SQI=0.99, SQI 完全不可见。"
+}

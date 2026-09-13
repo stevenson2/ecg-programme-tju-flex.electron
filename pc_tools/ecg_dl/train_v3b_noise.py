@@ -50,6 +50,11 @@ VARIANTS_PER_BEAT = 1
 # 相反标签 -> 模型记忆化 (train acc 98.9%, val AUC epoch1 见顶 0.744 后劣化,
 # 真实 AFE frac>0.5=1.0 全异常坍缩)。评估语料保持全梯度 (含 0/5dB) 作硬考题。
 TRAIN_SNRS = (30, 20, 10)
+# v3 (温和化迭代): v2 过了门槛2 (带噪 FP 0.181->0.024) 但门槛1 FAIL
+# (干净 test MIT evF1 -0.23)——50% 训练数据带噪把决策边界拉偏。
+# v3 只对 25% 主数据拍生成变体 (noisy:clean = 1:4), SNR 收敛 (30,20)。
+AUG_FRACTION = 0.25
+TRAIN_SNRS = (30, 20)
 
 
 def main():
@@ -86,7 +91,9 @@ def main():
           f"(abn={int((y_main == 1).sum())}, norm={int((y_main == 0).sum())})", flush=True)
 
     # ---------- 噪声增强变体 (M3 核心; 逐拍独立 type/SNR/实现) ----------
-    x_noisy, aug_prov = augment_beats(x_main, rng_aug,
+    n_aug = int(round(len(x_main) * AUG_FRACTION))
+    aug_idx = rng_aug.choice(len(x_main), n_aug, replace=False)
+    x_noisy, aug_prov = augment_beats(x_main[np.sort(aug_idx)], rng_aug,
                                       variants_per_beat=VARIANTS_PER_BEAT,
                                       snrs=TRAIN_SNRS)
     y_noisy = y_main.copy()
