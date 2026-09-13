@@ -1,0 +1,87 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "Round-E 收尾恢复",
+  "port": "COM4",
+  "seconds": 12.0,
+  "cmds": [
+    "MODE sim",
+    "REC_AUTO 1"
+  ],
+  "capture_start": "2026-09-14 00:09:59",
+  "ai_result": {
+    "windows": 12,
+    "rate_hz": 1.038,
+    "confirmed_rate": 0.1667,
+    "raw_rate": 0.5833,
+    "conf_median": 0.7911,
+    "conf_mean": 0.5518,
+    "confirmed_runs_s": {
+      "count": 2,
+      "max": 1,
+      "min": 1,
+      "median": 1.0,
+      "mean": 1,
+      "all": [
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 1,
+      "max": 5,
+      "min": 5,
+      "median": 5,
+      "mean": 5,
+      "all": [
+        5
+      ]
+    },
+    "raw_runs_s": {
+      "count": 3,
+      "max": 3,
+      "min": 1,
+      "median": 3,
+      "mean": 2.33,
+      "all": [
+        3,
+        3,
+        1
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 2,
+      "max": 1,
+      "min": 1,
+      "median": 1.0,
+      "mean": 1,
+      "all": [
+        1,
+        1
+      ]
+    },
+    "latency_us_median": 49321.5,
+    "latency_us_max": 50043
+  },
+  "tick": {
+    "count": 12,
+    "sources": [
+      "SIMULATOR"
+    ],
+    "busy_pct_max": 59,
+    "busy_pct_mean": 17.3,
+    "ovr_total": 15,
+    "ovr_max": 2,
+    "segments": [
+      "2"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.0,
+    "runs_s": {
+      "count": 0
+    },
+    "asrc_seen": [
+      "0x00"
+    ]
+  }
+}

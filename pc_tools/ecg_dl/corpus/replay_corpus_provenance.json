@@ -3,7 +3,7 @@
   "seed": 20260912,
   "fs": 500,
   "dur_s": 30,
-  "n_cases": 30,
+  "n_cases": 31,
   "segment_base": 3,
   "units": "header int16 microvolt (x0.001 -> mV numeric at runtime)",
   "snr_convention": "10*log10(P_sig/P_noise) @500Hz raw domain, mean-removed",
@@ -347,36 +347,39 @@
     {
       "index": 28,
       "segment": 31,
-      "name": "ludb_normal",
+      "name": "synthetic_vf_probe",
       "params": {
-        "carrier": "ludb_s0010_re_leadii_5_35s",
-        "noise": null,
-        "fs_src": 1000,
-        "erratum": "carrier is PTB patient001/s0010_re (test, label=1), NOT LUDB normal"
+        "carrier": null,
+        "noise": "synthetic_vf_proxy",
+        "note": "合成 VF 探针: 门控可达性验证用, 非真值 VF, 不作检出能力证据"
       },
-      "md5_int16uv": "fa616f37d0bb014a18e7312b75ce9201",
-      "p2p_mV": 1.1162,
-      "name_erratum": "ptb001_s0010_re_abnormal"
+      "md5_int16uv": "f22c24d45fb83c1c6642200c1df31b7c",
+      "p2p_mV": 1.3997
     },
     {
       "index": 29,
       "segment": 32,
+      "name": "ludb_normal",
+      "params": {
+        "carrier": "PTB_patient001_s0010_re_leadii_5_35s",
+        "noise": null,
+        "fs_src": 1000,
+        "erratum": "PTB test patient, gt label=1 (NOT LUDB normal)"
+      },
+      "md5_int16uv": "fa616f37d0bb014a18e7312b75ce9201",
+      "p2p_mV": 1.1162
+    },
+    {
+      "index": 30,
+      "segment": 33,
       "name": "ludb_noise_on_mit",
       "params": {
         "carrier": "mit100",
         "noise": "ludb_real_artifact",
-        "snr_db": 10,
-        "erratum": "noise source was PTB s0010_re, not LUDB artifact"
+        "snr_db": 10
       },
       "md5_int16uv": "89c2a9268b97c2a8a02553e425e579b3",
-      "p2p_mV": 1.74,
-      "name_erratum": "ptb_noise_extract_on_mit"
+      "p2p_mV": 1.74
     }
-  ],
-  "split_membership": {
-    "mit100": "train",
-    "mit106": "train",
-    "ptb_s0010_re": "test (rid 400000, 51 beats, ground-truth label=1 异常记录)",
-    "erratum": "2026-09-13 D0 勘误: 原 'ludb_normal'/'ludb_noise_on_mit' 两 case 载波经 RECORDS 核实为 PTB 数据库 patient001/s0010_re (非 LUDB, 非正常) — split_guard 重算属 PTB test 患者, 且该记录全部 51 拍 真值 label=1。对它的 raw 0.93-0.96 是正确异常检出, 不是误报。 原 M4 '跨库正常 93% FP' 结论作废 (§109)。"
-  }
+  ]
 }

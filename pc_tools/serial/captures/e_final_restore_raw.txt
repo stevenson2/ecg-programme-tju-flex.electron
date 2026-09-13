@@ -1,0 +1,31 @@
+   0.203 TICK,122000,src=REPLAY_NORMAL,bpm=0,sqi=0.992,disp=-1.4499,comb=[main] mode -> SIMULATOR
+   0.203 CMD MODE ok SIMULATOR
+   0.203 CMD REC_AUTO 1 ok
+   0.203 TICK,132000,src=SIMULATOR,bpm=0,sqi=0.781,disp=-0.6871,comb=-0.6871,busy=9%,ovr=1,alarm=0,asrc=0x00,seg=2,sqimin=0.442,vrms=0.0000
+   0.203 AI_RESULT,0.0508,0,0,49327
+   0.203 TICK,132500,src=SIMULATOR,bpm=119,sqi=0.970,disp=-0.7272,comb=-0.7272,busy=13%,ovr=1,alarm=0,asrc=0x00,seg=2,sqimin=0.693,vrms=0.0000
+   0.203 AI_RESULT,0.0078,0,0,49297
+   1.012 TICK,133000,src=SIMULATOR,bpm=109,sqi=0.948,disp=0.1055,comb=0.1055,busy=14%,ovr=1,alarm=0,asrc=0x00,seg=2,sqimin=0.948,vrms=0.0000
+   1.012 AI_RESULT,0.0078,0,0,49340
+   2.025 TICK,133500,src=SIMULATOR,bpm=86,sqi=0.944,disp=-0.4529,comb=-0.4529,busy=15%,ovr=1,alarm=0,asrc=0x00,seg=2,sqimin=0.944,vrms=0.0000
+   2.025 AI_RESULT,0.9961,1,1,50043
+   3.033 TICK,134000,src=SIMULATOR,bpm=75,sqi=0.938,disp=-0.6871,comb=-0.6871,busy=15%,ovr=1,alarm=0,asrc=0x00,seg=2,sqimin=0.938,vrms=0.0000
+   3.236 AI_RESULT,0.9961,1,0,49331
+   4.042 TICK,134500,src=SIMULATOR,bpm=73,sqi=0.938,disp=-0.7272,comb=-0.7272,busy=15%,ovr=2,alarm=0,asrc=0x00,seg=2,sqimin=0.937,vrms=0.1553
+   4.244 AI_RESULT,0.6016,1,0,49306
+   5.254 TICK,135000,src=SIMULATOR,bpm=71,sqi=0.938,disp=0.1055,comb=0.1055,busy=14%,ovr=1,alarm=0,asrc=0x00,seg=2,sqimin=0.938,vrms=0.1553
+   5.254 AI_RESULT,0.0000,0,0,49340
+   6.267 TICK,135500,src=SIMULATOR,bpm=71,sqi=0.941,disp=-0.4529,comb=-0.4529,busy=15%,ovr=1,alarm=0,asrc=0x00,seg=2,sqimin=0.939,vrms=0.1553
+   6.267 AI_RESULT,0.9805,1,0,49521
+   7.291 TICK,136000,src=SIMULATOR,bpm=71,sqi=0.941,disp=-0.6871,comb=-0.6871,busy=15%,ovr=1,alarm=0,asrc=0x00,seg=2,sqimin=0.941,vrms=0.1553
+   7.291 AI_RESULT,0.9961,1,0,49288
+   7.910 [ECGR] auto-record: consecutive normal, stopping...
+   8.514 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_167.ecgr
+   9.132 [ECGR] index rebuilt: 10 records
+   9.132 [ECGR] stopped: 21627 samples, 91 sec, 82 abn, size=43377
+   9.537 TICK,136500,src=SIMULATOR,bpm=0,sqi=0.944,disp=-0.7272,comb=-0.7272,busy=59%,ovr=2,alarm=0,asrc=0x00,seg=2,sqimin=0.942,vrms=0.1553
+   9.537 AI_RESULT,0.9961,1,1,49294
+  10.547 TICK,137000,src=SIMULATOR,bpm=0,sqi=0.958,disp=0.1055,comb=0.1055,busy=12%,ovr=2,alarm=0,asrc=0x00,seg=2,sqimin=0.957,vrms=0.1295
+  10.748 AI_RESULT,0.0000,0,0,49291
+  11.558 TICK,137500,src=SIMULATOR,bpm=87,sqi=0.966,disp=-0.4529,comb=-0.4529,busy=12%,ovr=1,alarm=0,asrc=0x00,seg=2,sqimin=0.966,vrms=0.1295
+  11.760 AI_RESULT,0.9883,1,0,49316

@@ -54,7 +54,7 @@ CORPUS_DIR = BASE / "corpus"
 
 FS = 500
 DUR_S = 30
-N_CASES = 30
+N_CASES = 31
 SEED = 20260912
 
 
@@ -160,6 +160,18 @@ def main():
         synth_noise("emg", DUR_S * FS, FS, rng) * 0.3)
     add("pure_motion", {"carrier": None, "noise": "motion", "note": "无载波纯噪声"},
         synth_noise("motion", DUR_S * FS, FS, rng) * 0.3)
+
+    # Round-E1: 合成 VF 探针 (非真值 VF, 仅信号链探针) — 4.5-6.5Hz 正弦频率
+    # 游走 (VF 频段) × 慢幅度调制, rms ~0.5mV (= VF 训练域 rms 均值量级)。
+    # 用途: 验证固件 VF rms 下限门控不误杀 VF 域幅度信号 (§111)。
+    t_vf = np.arange(DUR_S * FS) / FS
+    wander = np.sin(2 * np.pi * 5.5 * t_vf
+                    + 6.0 * np.sin(2 * np.pi * 0.4 * t_vf))
+    vf_amp = 0.5 * (1 + 0.4 * np.sin(2 * np.pi * 0.8 * t_vf + 1.0))
+    add("synthetic_vf_probe", {"carrier": None, "noise": "synthetic_vf_proxy",
+                               "note": ("合成 VF 探针: 门控可达性验证用, "
+                                        "非真值 VF, 不作检出能力证据")},
+        wander * vf_amp)
 
     ludb_loaded = False
     if not args.skip_ludb:

@@ -49,6 +49,12 @@
 #define ALARM_REL_SQI_MIN    0.50f   /* 解除判据: SQI 需恢复到此线 */
 #define ALARM_ASYSTOLE_MS    4000u   /* 距最近心拍超时 -> 时间停搏 (电极脱落等效) */
 #define ALARM_VF_GATE_MS     2500u   /* VF 互锁: 距最近拍小于此值不放行 (压正常窦律误报) */
+#define ALARM_VF_RMS_MIN     0.05f   /* VF rms 下限 (Round-E1, TH §111):
+ * 平线/死线 (rms≈0) 上的 "VF" 是物理无意义信号 — 该场景已由 0x04 时间停搏
+ * 覆盖。门控只压 asrc 的 0x08 标记 (M1 平线实测曾 +0x08)。训练域 rms 均值
+ * 0.425mV (VF_STD_0 0.419), 0.05 = 训练均值 1/8, 真实 VF (VFDB rms 定义)
+ * 与载波 case (0.2-0.4mV) 远在其上; 合成 VF 探针 (seg33, rms≈0.4) 用于
+ * 上板验证门控不误杀 VF 域幅度信号。 */
 #define ALARM_SRC_AI         0x01u   /* AI 持续密度判据 */
 #define ALARM_SRC_RS         0x02u   /* 规则: RR 停搏 / 30s 窗过缓 / 过速 */
 #define ALARM_SRC_FLAT       0x04u   /* 时间停搏 (无拍 >= 4s) */
@@ -100,6 +106,7 @@ static int      s_aiRawHistIdx = 0;
 static uint32_t s_lastBeatSeenMs = 0;      /* 主循环侧独立跟踪最近拍 (hr 内部软复位会刷新自己的时间戳) */
 static bool     s_beatEverSeen = false;    /* 本模式会话内是否见过心拍 (时间停搏的武装条件) */
 static float    s_sqiSecMin = 1.0f;        /* 秒内 min-SQI (AI 源门控用, Round-D2) */
+static float    s_lastVfRmsMv = -1.0f;     /* 最近一次 vfProcess 的窗 RMS (TICK 遥测, E1) */
 
 
 static float s_combBuf1[COMB_TAPS] = {0};
@@ -593,6 +600,7 @@ extern "C" void app_main(void) {
         /* ---- M1: 规则通道接线 (此前 rs 结果被丢弃, vfDetect 只 init 从未调用) ---- */
         uint32_t nowMs = (uint32_t)(esp_timer_get_time() / 1000);
         if (hr.sqi < s_sqiSecMin) s_sqiSecMin = hr.sqi;
+        s_lastVfRmsMv = -1.0f;   /* 每帧重置, 帧内 vfProcess 更新 (TICK 遥测) */
         if (rs.asystole || rs.bradycardia || rs.tachycardia) {
             s_ruleHitSec |= ALARM_SRC_RS;
         }
@@ -616,8 +624,10 @@ extern "C" void app_main(void) {
                 vfIn *= 0.763f;
             }
             VF_Result vf = vfProcess(vfIn);
+            s_lastVfRmsMv = vf.lastRms;
             if (vf.vfAlarm && s_beatEverSeen
-                && (nowMs - s_lastBeatSeenMs) > ALARM_VF_GATE_MS) {
+                && (nowMs - s_lastBeatSeenMs) > ALARM_VF_GATE_MS
+                && vf.lastRms >= ALARM_VF_RMS_MIN) {
                 s_ruleHitSec |= ALARM_SRC_VF;
             }
         }
@@ -686,12 +696,13 @@ extern "C" void app_main(void) {
 #if ECG_HOT_LOG
             uint32_t busyPct = s_lastTickUs
                 ? (uint32_t)((s_busyAccumUs * 100) / (nowUs - s_lastTickUs)) : 0;
-            printf("TICK,%lu,src=%s,bpm=%u,sqi=%.3f,disp=%.4f,comb=%.4f,busy=%u%%,ovr=%lu,alarm=%u,asrc=0x%02x,seg=%u,sqimin=%.3f\n",
+            printf("TICK,%lu,src=%s,bpm=%u,sqi=%.3f,disp=%.4f,comb=%.4f,busy=%u%%,ovr=%lu,alarm=%u,asrc=0x%02x,seg=%u,sqimin=%.3f,vrms=%.4f\n",
                    (unsigned long)frame, modeName(s_mode),
                    (unsigned)hr.bpm, hr.sqi, displaySample, combOut,
                    (unsigned)busyPct, (unsigned long)s_loopOverruns,
                    s_alarmLatched ? 1u : 0u, s_alarmSrc,
-                   (unsigned)ecgReplayGetSegment(), s_sqiSecMin);
+                   (unsigned)ecgReplayGetSegment(), s_sqiSecMin,
+                   (double)s_lastVfRmsMv);
 #endif
             s_busyAccumUs = 0;
             s_loopOverruns = 0;

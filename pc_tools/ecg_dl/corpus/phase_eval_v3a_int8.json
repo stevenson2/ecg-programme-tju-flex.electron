@@ -1,0 +1,1629 @@
+{
+  "tool": "phase_eval.py",
+  "label": "v3a_int8",
+  "protocol": "每 case 5 个互不重叠 2s 段 × 250 相位稠密窗; dense_rate_mean = 全相位窗 conf>0.5 占比 (对比 1s 步进稀疏扫)",
+  "timestamp": "2026-09-13 23:55:02",
+  "wall_s": 1.9,
+  "cases": [
+    {
+      "index": 0,
+      "segment": 3,
+      "name": "clean_normal",
+      "params": {
+        "carrier": "mit100_0_30s",
+        "noise": null
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.076,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.924
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.18,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.82
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.176,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.812
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.12,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.876
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.164,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.836
+        }
+      ],
+      "dense_rate_mean": 0.1432,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 1,
+      "segment": 4,
+      "name": "clean_abnormal",
+      "params": {
+        "carrier": "mit106_90_120s",
+        "noise": null
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.248,
+          "conf_median": 0.0039,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.752
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.776,
+          "conf_median": 0.9961,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.224
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.7,
+          "conf_median": 0.9961,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.3
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.292,
+          "conf_median": 0.0117,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.708
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.764,
+          "conf_median": 0.9961,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.236
+        }
+      ],
+      "dense_rate_mean": 0.556,
+      "conf_median_min_across_segs": 0.0039
+    },
+    {
+      "index": 2,
+      "segment": 5,
+      "name": "normal_baseline_wander_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "baseline_wander",
+        "snr_db": 0
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.076,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.924
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.228,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.768
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.196,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.796
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.132,
+          "conf_median": 0.0039,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.868
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.188,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.812
+        }
+      ],
+      "dense_rate_mean": 0.164,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 3,
+      "segment": 6,
+      "name": "normal_baseline_wander_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "baseline_wander",
+        "snr_db": 10
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.064,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.936
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.164,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.836
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.152,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.848
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.124,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.872
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.152,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.844
+        }
+      ],
+      "dense_rate_mean": 0.1312,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 4,
+      "segment": 7,
+      "name": "normal_baseline_wander_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "baseline_wander",
+        "snr_db": 20
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.096,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.904
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.188,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.808
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.18,
+          "conf_median": 0.0039,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.816
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.108,
+          "conf_median": 0.0039,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.888
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.164,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.836
+        }
+      ],
+      "dense_rate_mean": 0.1472,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 5,
+      "segment": 8,
+      "name": "normal_respiratory_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "respiratory",
+        "snr_db": 0
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.092,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.908
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.168,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.832
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.148,
+          "conf_median": 0.0039,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.852
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.112,
+          "conf_median": 0.0039,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.888
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.16,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.84
+        }
+      ],
+      "dense_rate_mean": 0.136,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 6,
+      "segment": 9,
+      "name": "normal_respiratory_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "respiratory",
+        "snr_db": 10
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.08,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.92
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.164,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.836
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.136,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.864
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.156,
+          "conf_median": 0.0039,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.832
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.132,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.868
+        }
+      ],
+      "dense_rate_mean": 0.1336,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 7,
+      "segment": 10,
+      "name": "normal_respiratory_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "respiratory",
+        "snr_db": 20
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.088,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.912
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.204,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.796
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.192,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.804
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.148,
+          "conf_median": 0.0039,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.848
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.14,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.86
+        }
+      ],
+      "dense_rate_mean": 0.1544,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 8,
+      "segment": 11,
+      "name": "normal_mains_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "mains",
+        "snr_db": 0
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.076,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.924
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.18,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.82
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.176,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.812
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.12,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.876
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.164,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.836
+        }
+      ],
+      "dense_rate_mean": 0.1432,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 9,
+      "segment": 12,
+      "name": "normal_mains_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "mains",
+        "snr_db": 10
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.076,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.924
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.18,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.82
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.176,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.812
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.12,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.876
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.164,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.836
+        }
+      ],
+      "dense_rate_mean": 0.1432,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 10,
+      "segment": 13,
+      "name": "normal_mains_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "mains",
+        "snr_db": 20
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.076,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.924
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.18,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.82
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.176,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.812
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.12,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.876
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.164,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.836
+        }
+      ],
+      "dense_rate_mean": 0.1432,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 11,
+      "segment": 14,
+      "name": "normal_emg_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "emg",
+        "snr_db": 0
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.04,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.96
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.112,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.888
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.124,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.876
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.04,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.956
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.104,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.896
+        }
+      ],
+      "dense_rate_mean": 0.084,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 12,
+      "segment": 15,
+      "name": "normal_emg_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "emg",
+        "snr_db": 10
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.076,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.92
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.168,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.828
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.124,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.876
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.124,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.872
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.172,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.824
+        }
+      ],
+      "dense_rate_mean": 0.1328,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 13,
+      "segment": 16,
+      "name": "normal_emg_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "emg",
+        "snr_db": 20
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.072,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.924
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.208,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.784
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.132,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.868
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.136,
+          "conf_median": 0.0039,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.864
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.152,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.848
+        }
+      ],
+      "dense_rate_mean": 0.14,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 14,
+      "segment": 17,
+      "name": "normal_motion_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "motion",
+        "snr_db": 0
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.076,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.924
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.148,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.852
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.124,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.876
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.14,
+          "conf_median": 0.0039,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.86
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.164,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.836
+        }
+      ],
+      "dense_rate_mean": 0.1304,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 15,
+      "segment": 18,
+      "name": "normal_motion_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "motion",
+        "snr_db": 10
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.076,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.924
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.176,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.824
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.164,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.832
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.228,
+          "conf_median": 0.0039,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.768
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.168,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.832
+        }
+      ],
+      "dense_rate_mean": 0.1624,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 16,
+      "segment": 19,
+      "name": "normal_motion_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "motion",
+        "snr_db": 20
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.064,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.932
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.18,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.82
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.16,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.84
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.156,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.844
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.14,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.86
+        }
+      ],
+      "dense_rate_mean": 0.14,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 17,
+      "segment": 20,
+      "name": "normal_elec_off_mild",
+      "params": {
+        "carrier": "mit100",
+        "noise": "electrode_off",
+        "events": 2
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.292,
+          "conf_median": 0.0195,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.704
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.196,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.804
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.152,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.844
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.12,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.872
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.16,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.84
+        }
+      ],
+      "dense_rate_mean": 0.184,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 18,
+      "segment": 21,
+      "name": "normal_elec_off_severe",
+      "params": {
+        "carrier": "mit100",
+        "noise": "electrode_off",
+        "events": 5
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.076,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.924
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.176,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.824
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.34,
+          "conf_median": 0.0176,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.656
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.136,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.86
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.168,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.832
+        }
+      ],
+      "dense_rate_mean": 0.1792,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 19,
+      "segment": 22,
+      "name": "normal_adc_quant_12bit",
+      "params": {
+        "carrier": "mit100",
+        "noise": "adc_quant",
+        "bits": 12
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.076,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.924
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.188,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.812
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.156,
+          "conf_median": 0.0039,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.836
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.104,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.884
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.156,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.84
+        }
+      ],
+      "dense_rate_mean": 0.136,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 20,
+      "segment": 23,
+      "name": "normal_adc_quant_10bit",
+      "params": {
+        "carrier": "mit100",
+        "noise": "adc_quant",
+        "bits": 10
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.088,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.912
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.184,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.812
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.164,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.836
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.112,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.884
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.176,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.824
+        }
+      ],
+      "dense_rate_mean": 0.1448,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 21,
+      "segment": 24,
+      "name": "normal_adc_quant_8bit",
+      "params": {
+        "carrier": "mit100",
+        "noise": "adc_quant",
+        "bits": 8
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.052,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.948
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.164,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.832
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.144,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.856
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.132,
+          "conf_median": 0.0039,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.86
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.148,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.852
+        }
+      ],
+      "dense_rate_mean": 0.128,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 22,
+      "segment": 25,
+      "name": "abnormal_baseline_wander_snr10",
+      "params": {
+        "carrier": "mit106",
+        "noise": "baseline_wander",
+        "snr_db": 10
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.248,
+          "conf_median": 0.0039,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.748
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.792,
+          "conf_median": 0.9961,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.208
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.692,
+          "conf_median": 0.9961,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.308
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.264,
+          "conf_median": 0.0078,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.736
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.776,
+          "conf_median": 0.9961,
+          "conf_p10": 0.0039,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.224
+        }
+      ],
+      "dense_rate_mean": 0.5544,
+      "conf_median_min_across_segs": 0.0039
+    },
+    {
+      "index": 23,
+      "segment": 26,
+      "name": "abnormal_emg_snr10",
+      "params": {
+        "carrier": "mit106",
+        "noise": "emg",
+        "snr_db": 10
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.252,
+          "conf_median": 0.0078,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.74
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.78,
+          "conf_median": 0.9961,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.22
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.632,
+          "conf_median": 0.9961,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.368
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.172,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.828
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.74,
+          "conf_median": 0.9961,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.26
+        }
+      ],
+      "dense_rate_mean": 0.5152,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 24,
+      "segment": 27,
+      "name": "abnormal_motion_snr10",
+      "params": {
+        "carrier": "mit106",
+        "noise": "motion",
+        "snr_db": 10
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.224,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.776
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.772,
+          "conf_median": 0.9961,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.228
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.7,
+          "conf_median": 0.9961,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.3
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.328,
+          "conf_median": 0.0098,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.672
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.796,
+          "conf_median": 0.9961,
+          "conf_p10": 0.0078,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.204
+        }
+      ],
+      "dense_rate_mean": 0.564,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 25,
+      "segment": 28,
+      "name": "abnormal_mains_snr10",
+      "params": {
+        "carrier": "mit106",
+        "noise": "mains",
+        "snr_db": 10
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.244,
+          "conf_median": 0.0039,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.756
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.776,
+          "conf_median": 0.9961,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.224
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.7,
+          "conf_median": 0.9961,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.3
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.292,
+          "conf_median": 0.0117,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.708
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.764,
+          "conf_median": 0.9961,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.236
+        }
+      ],
+      "dense_rate_mean": 0.5552,
+      "conf_median_min_across_segs": 0.0039
+    },
+    {
+      "index": 26,
+      "segment": 29,
+      "name": "pure_emg",
+      "params": {
+        "carrier": null,
+        "noise": "emg",
+        "note": "无载波纯噪声"
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.068,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.932
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.076,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.924
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.016,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.984
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.076,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.924
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.072,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.928
+        }
+      ],
+      "dense_rate_mean": 0.0616,
+      "conf_median_min_across_segs": 0.0
+    },
+    {
+      "index": 27,
+      "segment": 30,
+      "name": "pure_motion",
+      "params": {
+        "carrier": null,
+        "noise": "motion",
+        "note": "无载波纯噪声"
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.98,
+          "conf_median": 0.9961,
+          "conf_p10": 0.9922,
+          "conf_min": 0.1445,
+          "frac_conf_lt_05": 0.02
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.968,
+          "conf_median": 0.9961,
+          "conf_p10": 0.9883,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.028
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.96,
+          "conf_median": 0.9961,
+          "conf_p10": 0.9797,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.04
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.98,
+          "conf_median": 0.9961,
+          "conf_p10": 0.9961,
+          "conf_min": 0.0234,
+          "frac_conf_lt_05": 0.02
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.868,
+          "conf_median": 0.9961,
+          "conf_p10": 0.2227,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.132
+        }
+      ],
+      "dense_rate_mean": 0.9512,
+      "conf_median_min_across_segs": 0.9961
+    },
+    {
+      "index": 28,
+      "segment": 31,
+      "name": "ludb_normal",
+      "params": {
+        "carrier": "ludb_s0010_re_leadii_5_35s",
+        "noise": null,
+        "fs_src": 1000,
+        "erratum": "carrier is PTB patient001/s0010_re (test, label=1), NOT LUDB normal"
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.964,
+          "conf_median": 0.9961,
+          "conf_p10": 0.9883,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.036
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.948,
+          "conf_median": 0.9961,
+          "conf_p10": 0.9723,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.052
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.948,
+          "conf_median": 0.9961,
+          "conf_p10": 0.9883,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.048
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.964,
+          "conf_median": 0.9961,
+          "conf_p10": 0.9918,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.036
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.968,
+          "conf_median": 0.9961,
+          "conf_p10": 0.9961,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.032
+        }
+      ],
+      "dense_rate_mean": 0.9584,
+      "conf_median_min_across_segs": 0.9961
+    },
+    {
+      "index": 29,
+      "segment": 32,
+      "name": "ludb_noise_on_mit",
+      "params": {
+        "carrier": "mit100",
+        "noise": "ludb_real_artifact",
+        "snr_db": 10,
+        "erratum": "noise source was PTB s0010_re, not LUDB artifact"
+      },
+      "segments": [
+        {
+          "seg": 0,
+          "fp_or_det_rate": 0.132,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.864
+        },
+        {
+          "seg": 1,
+          "fp_or_det_rate": 0.16,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.84
+        },
+        {
+          "seg": 2,
+          "fp_or_det_rate": 0.216,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.784
+        },
+        {
+          "seg": 3,
+          "fp_or_det_rate": 0.12,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.876
+        },
+        {
+          "seg": 4,
+          "fp_or_det_rate": 0.176,
+          "conf_median": 0.0,
+          "conf_p10": 0.0,
+          "conf_min": 0.0,
+          "frac_conf_lt_05": 0.824
+        }
+      ],
+      "dense_rate_mean": 0.1608,
+      "conf_median_min_across_segs": 0.0
+    }
+  ]
+}
