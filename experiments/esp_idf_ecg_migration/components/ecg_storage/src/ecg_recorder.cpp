@@ -16,6 +16,10 @@
 #include "esp_timer.h"
 #include "esp_spiffs.h"
 #include "esp_heap_caps.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/queue.h"
+#include "freertos/semphr.h"
 
 #define ECGR_BASE_PATH "/spiffs/ecgdata"
 
@@ -38,6 +42,31 @@ static char g_currentPath[128];
 static uint32_t g_recordCount = 0;
 
 static bool g_storageMounted = false;
+
+/* ---- Round-G: 录制终结异步化 ----
+ * STOP 的写文件+保留策略+索引重建曾阻塞采样循环 0.8-2.2s (§112)。
+ * 现在 STOP 只把会话所有权 (缓冲+元数据) 打包入队立即返回;
+ * worker (核 1) 带互斥锁执行全部 SPIFFS 文件操作。
+ * g_ioMutex 同时覆盖 Start 的 stat 循环与 REC_LIST 读 —— SPIFFS 无内核级
+ * 锁, 所有录制路径的文件操作必须串行。PushSample 只写 RAM, 不取锁。 */
+typedef struct {
+    char path[128];
+    uint8_t *psram;
+    size_t psramLen;
+    uint8_t *bmp;
+    size_t bmpLen;
+    uint32_t startUnix;
+    uint32_t totalSamples;
+    uint32_t durationSec;
+    uint32_t abnormalSec;
+} EcgrFinalize;
+
+static QueueHandle_t g_finQueue = NULL;
+static TaskHandle_t g_workerTask = NULL;
+static SemaphoreHandle_t g_ioMutex = NULL;
+static volatile uint32_t g_finPending = 0;
+
+static void ecgrWorkerInit(void);   /* Round-G: 定义于文件后部 */
 
 static void *ecgrAlloc(size_t size) {
     void *p = heap_caps_malloc_prefer(size, 2, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT, MALLOC_CAP_8BIT);
@@ -224,6 +253,7 @@ static void pushSampleToBuffer(int16_t sample) {
 }
 
 bool ecgRecorderInit(void) {
+    ecgrWorkerInit();   /* Round-G: 先起终结 worker (幂等) */
     if (!g_storageMounted) {
         esp_vfs_spiffs_conf_t conf = {
             .base_path = "/spiffs",
@@ -241,6 +271,7 @@ bool ecgRecorderInit(void) {
     mkdir(ECGR_BASE_PATH, 0755);
     scanAndCleanInvalid();
     rebuildIndex();
+    enforceRetention(0);   /* Round-G: 保留策略仅在开机维护 (§113) */
     if (g_psramBuf) { free(g_psramBuf); g_psramBuf = NULL; g_psramCap = 0; }
     if (g_bmpBuf) { free(g_bmpBuf); g_bmpBuf = NULL; g_bmpCap = 0; }
     g_isRecording = false;
@@ -258,6 +289,9 @@ bool ecgRecorderInit(void) {
 bool ecgRecorderStart(void) {
     if (g_isRecording) return false;
     uint32_t startBase = (uint32_t)(esp_timer_get_time() / 1000000ULL);
+    /* Round-G: stat 循环触 SPIFFS, 与 worker 终结互斥; 非阻塞拿锁 ——
+     * 撞上终结中则本秒放弃 (自动路径下秒重试), 绝不阻塞采样循环 */
+    if (xSemaphoreTake(g_ioMutex, 0) != pdTRUE) return false;
     g_startUnix = startBase;
     snprintf(g_currentPath, sizeof(g_currentPath),
              ECGR_BASE_PATH "/ecg_rec_%u.ecgr", (unsigned)g_startUnix);
@@ -268,6 +302,7 @@ bool ecgRecorderStart(void) {
         snprintf(g_currentPath, sizeof(g_currentPath),
                  ECGR_BASE_PATH "/ecg_rec_%u.ecgr", (unsigned)g_startUnix);
     }
+    xSemaphoreGive(g_ioMutex);
     g_psramBuf = (uint8_t *)ecgrAlloc(64 * 1024);
     g_bmpBuf = (uint8_t *)ecgrAlloc(1024);
     if (!g_psramBuf || !g_bmpBuf) {
@@ -336,52 +371,118 @@ void ecgRecorderSetSecondAbnormal(bool abnormal) {
     }
 }
 
-bool ecgRecorderStop(void) {
-    if (!g_isRecording) return false;
-    g_isRecording = false;
-    uint32_t durFromSamples = (g_totalSamples + ECG_REC_SAMPLE_RATE - 1) / ECG_REC_SAMPLE_RATE;
-    uint32_t finalDur = (g_durationSec > durFromSamples) ? g_durationSec : durFromSamples;
+/* Round-G: 终结一个会话 (写文件+索引+保留策略)。worker 任务或队列满时的
+ * 主线程回退路径共用。调用方必须持有 g_ioMutex (回退路径自行取锁)。 */
+static void finalizeItem(EcgrFinalize *it) {
+    uint64_t t0 = esp_timer_get_time();
     bool ok = false;
     {
-        uint8_t hdr[ECGR_HEADER_SIZE];
-        ecgrHeaderInit(hdr, ECG_REC_SAMPLE_RATE, g_startUnix, g_totalSamples, finalDur, g_abnormalSec, 0);
-        FILE *f = fopen(g_currentPath, "wb");
+        FILE *f = fopen(it->path, "wb");
         if (f) {
+            uint8_t hdr[ECGR_HEADER_SIZE];
+            uint32_t durFromSamples =
+                (it->totalSamples + ECG_REC_SAMPLE_RATE - 1) / ECG_REC_SAMPLE_RATE;
+            uint32_t finalDur = (it->durationSec > durFromSamples)
+                                    ? it->durationSec : durFromSamples;
+            ecgrHeaderInit(hdr, ECG_REC_SAMPLE_RATE, it->startUnix,
+                           it->totalSamples, finalDur, it->abnormalSec, 0);
             fwrite(hdr, 1, ECGR_HEADER_SIZE, f);
-            if (g_totalSamples > 0 && g_psramBuf) fwrite(g_psramBuf, 1, (size_t)g_totalSamples * 2, f);
-            if (g_abnormalSec > 0 && g_bmpBuf) {
-                if (g_bmpCap < finalDur) {
-                    uint8_t *p = (uint8_t *)ecgrRealloc(g_bmpBuf, finalDur);
-                    if (p) { g_bmpBuf = p; g_bmpCap = finalDur; }
-                }
-                if (g_bmpBuf && g_bmpCap >= finalDur) {
-                    if (finalDur > g_durationSec) memset(g_bmpBuf + g_durationSec, 0, finalDur - g_durationSec);
-                    fwrite(g_bmpBuf, 1, finalDur, f);
+            if (it->totalSamples > 0 && it->psram)
+                fwrite(it->psram, 1, (size_t)it->totalSamples * 2, f);
+            if (it->abnormalSec > 0 && it->bmp) {
+                if (it->bmpLen < finalDur) {
+                    fwrite(it->bmp, 1, it->bmpLen, f);
+                    /* 尾部零填充到 finalDur */
+                    for (size_t i = it->bmpLen; i < finalDur; i++) fputc(0, f);
+                } else {
+                    fwrite(it->bmp, 1, finalDur, f);
                 }
             }
             fclose(f);
             ok = true;
         }
     }
-    if (!ok) {
-        printf("[ECGR] stop failed: cannot write %s\n", g_currentPath);
-        free(g_psramBuf); free(g_bmpBuf); g_psramBuf = NULL; g_bmpBuf = NULL;
-        g_psramCap = 0; g_bmpCap = 0; g_totalSamples = 0; g_durationSec = 0;
-        g_abnormalSec = 0; g_startUnix = 0; g_currentPath[0] = '\0';
-        return false;
+    if (ok) {
+        uint32_t fileSize = ecgrFileSize(it->totalSamples, it->durationSec,
+                                         it->abnormalSec > 0);
+        appendIdxLine(it->startUnix, it->durationSec, it->totalSamples,
+                      it->abnormalSec, fileSize);
+        /* Round-G: 保留删除/索引重建挪到仅 Init 时执行 (§113)。
+         * 实测 SPIFFS 删除+重建在 flash 擦写期间全局禁 cache, 两个核一起
+         * 冻结 ~1.1s —— 任务卸载救不了, 只能减少擦写次数。
+         * appendIdxLine 是增量追加, records.idx 对 REC_LIST/下载保持最新;
+         * 保留策略推迟到下次 Init (开机), SPIFFS 4MB 对 2.5KB/记录可攒
+         * ~1600 条, 单次上电会话内不会满。 */
+        printf("[ECGR] finalized %s (%u samples, %u sec, %u abn, %u B) in %ums\n",
+               it->path, (unsigned)it->totalSamples, (unsigned)it->durationSec,
+               (unsigned)it->abnormalSec, (unsigned)fileSize,
+               (unsigned)((esp_timer_get_time() - t0) / 1000));
+    } else {
+        printf("[ECGR] ERROR: finalize write failed: %s\n", it->path);
     }
-    uint32_t fileSize = ecgrFileSize(g_totalSamples, finalDur, g_abnormalSec > 0);
-    appendIdxLine(g_startUnix, finalDur, g_totalSamples, g_abnormalSec, fileSize);
-    g_recordCount++;
-    enforceRetention(g_startUnix);
-    rebuildIndex();
-    printf("[ECGR] stopped: %u samples, %u sec, %u abn, size=%u\n",
-           (unsigned)g_totalSamples, (unsigned)finalDur, (unsigned)g_abnormalSec, (unsigned)fileSize);
-    g_rearmCooldown = ECG_REC_AUTO_STOP_ABNORMAL_SECS;   /* M1: 时间冷却式再武装 */
-    free(g_psramBuf); free(g_bmpBuf); g_psramBuf = NULL; g_bmpBuf = NULL;
-    g_psramCap = 0; g_bmpCap = 0;
+    free(it->psram);
+    free(it->bmp);
+}
+
+static void ecgrWorkerTask(void *arg) {
+    (void)arg;
+    EcgrFinalize *it = NULL;
+    while (true) {
+        if (xQueueReceive(g_finQueue, &it, portMAX_DELAY) == pdTRUE && it) {
+            if (xSemaphoreTake(g_ioMutex, pdMS_TO_TICKS(10000)) == pdTRUE) {
+                finalizeItem(it);
+                xSemaphoreGive(g_ioMutex);
+            } else {
+                printf("[ECGR] ERROR: io mutex timeout, recording lost\n");
+                free(it->psram);
+                free(it->bmp);
+            }
+            free(it);
+            g_finPending = g_finPending - 1;
+        }
+    }
+}
+
+static void ecgrWorkerInit(void) {
+    if (g_workerTask) return;
+    g_ioMutex = xSemaphoreCreateMutex();
+    g_finQueue = xQueueCreate(4, sizeof(EcgrFinalize *));
+    if (!g_ioMutex || !g_finQueue) return;
+    xTaskCreatePinnedToCore(ecgrWorkerTask, "ecgr_worker", 4096, NULL, 3,
+                            &g_workerTask, 1);
+}
+
+bool ecgRecorderStop(void) {
+    if (!g_isRecording) return false;
+    g_isRecording = false;
+    uint32_t durFromSamples = (g_totalSamples + ECG_REC_SAMPLE_RATE - 1) / ECG_REC_SAMPLE_RATE;
+    uint32_t finalDur = (g_durationSec > durFromSamples) ? g_durationSec : durFromSamples;
+    (void)finalDur;
+    EcgrFinalize *it = (EcgrFinalize *)malloc(sizeof(EcgrFinalize));
+    if (!it) return false;
+    it->path[0] = '\0';
+    snprintf(it->path, sizeof(it->path), "%s", g_currentPath);
+    it->psram = g_psramBuf; it->psramLen = g_psramCap;
+    it->bmp = g_bmpBuf; it->bmpLen = g_bmpCap;
+    it->startUnix = g_startUnix;
+    it->totalSamples = g_totalSamples;
+    it->durationSec = g_durationSec;
+    it->abnormalSec = g_abnormalSec;
+    g_psramBuf = NULL; g_psramCap = 0;
+    g_bmpBuf = NULL; g_bmpCap = 0;
     g_totalSamples = 0; g_durationSec = 0; g_abnormalSec = 0;
     g_startUnix = 0; g_currentPath[0] = '\0';
+    g_rearmCooldown = ECG_REC_AUTO_STOP_ABNORMAL_SECS;   /* M1: 时间冷却式再武装 */
+    if (xQueueSend(g_finQueue, &it, 0) != pdTRUE) {
+        /* 队列满 (4 个未终结会话): 回退为同步终结, 保数据不保节拍 */
+        if (xSemaphoreTake(g_ioMutex, pdMS_TO_TICKS(10000)) == pdTRUE) {
+            finalizeItem(it);
+            xSemaphoreGive(g_ioMutex);
+        }
+        free(it);
+    } else {
+        g_finPending = g_finPending + 1;
+    }
     return true;
 }
 
@@ -391,11 +492,16 @@ int ecgRecorderList(char *outBuf, int bufLen) {
     if (!outBuf || bufLen <= 0) return -1;
     char idxPath[160];
     snprintf(idxPath, sizeof(idxPath), ECGR_BASE_PATH "/records.idx");
+    /* Round-G: records.idx 由 worker 维护, 读时与终结互斥 */
+    if (g_ioMutex && xSemaphoreTake(g_ioMutex, pdMS_TO_TICKS(5000)) != pdTRUE) {
+        return -1;
+    }
     FILE *f = fopen(idxPath, "rb");
-    if (!f) { outBuf[0] = '\0'; return 0; }
+    if (!f) { outBuf[0] = '\0'; if (g_ioMutex) xSemaphoreGive(g_ioMutex); return 0; }
     size_t n = fread(outBuf, 1, (size_t)(bufLen - 1), f);
     fclose(f);
     outBuf[n] = '\0';
+    if (g_ioMutex) xSemaphoreGive(g_ioMutex);
     return (int)n;
 }
 

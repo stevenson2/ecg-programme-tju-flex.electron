@@ -1,0 +1,51 @@
+   0.207 [main] mode -> SIMULATOR
+   0.207 CMD MODE ok SIMULATOR
+   0.207 CMD REC_AUTO 1 ok
+   0.207 CMD REC_LIST ok
+   0.207 CMD 369,74,18472,68,37050
+   0.207 CMD 255,5,1223,0,2478
+   0.207 CMD 1357,5,1166,0,2364
+   0.207 CMD 1094,5,1167,0,2366
+   0.207 CMD 1112,5,1179,0,2390
+   0.207 CMD 1128,5,1166,0,2364
+   0.207 CMD 1143,5,1166,0,2364
+   0.207 CMD 1162,5,1179,0,2390
+   0.207 CMD 1178,5,1166,0,2364
+   0.207 CMD 1194,5,1166,0,2364
+   0.207 CMD 1207,5,1170,0,2372
+   0.207 CMD 3,5,1222,0,2476
+   0.207 CMD 16,5,1221,0,2474
+   0.207 CMD 28,11,2723,4,5489
+   0.207 CMD 46,5,1223,0,2478
+   0.207 CMD 60,5,1210,0,2452
+   0.207 CMD 80,5,1222,0,2476
+   0.207 CMD 92,5,1223,0,2478
+   0.207 TICK,48000,src=SIMULATOR,bpm=0,sqi=0.892,disp=-0.7662,comb=-0.7662,busy=11%,ovr=1,alarm=0,asrc=0x00,seg=0,sqimin=0.892,vrms=0.0000,aidrop=0,nw=99004,nt=99004
+   0.207 AI_RESULT,0.0000,0,0,83272
+   0.207 CMD REC_STATUS rec=0 auto=1 count=10
+   0.207 TICK,48500,src=SIMULATOR,bpm=89,sqi=0.912,disp=-0.8126,comb=-0.8126,busy=14%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.912,vrms=0.0000,aidrop=0,nw=100004,nt=100004
+   0.207 AI_RESULT,0.9922,1,0,80905
+   0.636 TICK,49000,src=SIMULATOR,bpm=82,sqi=0.925,disp=-0.8309,comb=-0.8309,busy=14%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.925,vrms=0.0000,aidrop=0,nw=101004,nt=101004
+   0.850 AI_RESULT,0.9961,1,0,81433
+   1.681 TICK,49500,src=SIMULATOR,bpm=75,sqi=0.933,disp=-0.5064,comb=-0.5064,busy=15%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.933,vrms=0.0000,aidrop=0,nw=102004,nt=102004
+   1.681 AI_RESULT,0.9805,1,0,83433
+   2.693 TICK,50000,src=SIMULATOR,bpm=75,sqi=0.938,disp=-0.7662,comb=-0.7662,busy=15%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.938,vrms=0.0000,aidrop=0,nw=103004,nt=103004
+   2.693 AI_RESULT,0.0039,0,0,83977
+   3.702 TICK,50500,src=SIMULATOR,bpm=75,sqi=0.942,disp=-0.8126,comb=-0.8126,busy=16%,ovr=1,alarm=0,asrc=0x00,seg=0,sqimin=0.942,vrms=0.1578,aidrop=0,nw=104004,nt=104004
+   3.702 AI_RESULT,0.0078,0,1,80729
+   4.738 [ECGR] auto-record: abnormal edge, starting...
+   4.738 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_105.ecgr
+   4.738 TICK,51000,src=SIMULATOR,bpm=75,sqi=0.946,disp=-0.8309,comb=-0.8309,busy=22%,ovr=1,alarm=0,asrc=0x00,seg=0,sqimin=0.946,vrms=0.1578,aidrop=0,nw=105114,nt=105114
+   4.940 AI_RESULT,0.9961,1,0,81369
+   5.758 TICK,51500,src=SIMULATOR,bpm=75,sqi=0.947,disp=-0.5064,comb=-0.5064,busy=15%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.947,vrms=0.1578,aidrop=0,nw=106114,nt=106114
+   5.959 AI_RESULT,0.9883,1,0,84004
+   6.783 TICK,52000,src=SIMULATOR,bpm=75,sqi=0.948,disp=-0.7662,comb=-0.7662,busy=15%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.948,vrms=0.1578,aidrop=0,nw=107114,nt=107114
+   6.783 AI_RESULT,0.0000,0,0,83981
+   7.823 TICK,52500,src=SIMULATOR,bpm=75,sqi=0.950,disp=-0.8126,comb=-0.8126,busy=16%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.949,vrms=0.1578,aidrop=0,nw=108114,nt=108114
+   7.823 AI_RESULT,0.0039,0,0,80902
+   8.866 TICK,53000,src=SIMULATOR,bpm=75,sqi=0.952,disp=-0.8309,comb=-0.8309,busy=14%,ovr=1,alarm=0,asrc=0x00,seg=0,sqimin=0.951,vrms=0.1316,aidrop=0,nw=109114,nt=109114
+   8.866 AI_RESULT,0.9961,1,0,81398
+   9.711 [ECGR] auto-record: consecutive normal, stopping...
+   9.711 TICK,53500,src=SIMULATOR,bpm=75,sqi=0.952,disp=-0.5064,comb=-0.5064,busy=24%,ovr=8,alarm=0,asrc=0x00,seg=0,sqimin=0.952,vrms=0.1316,aidrop=0,nw=110114,nt=110116
+   9.925 AI_RESULT,0.9961,1,1,84832
+  10.140 [ECGR] finalized /spiffs/ecgdata/ecg_rec_105.ecgr (1222 samples, 5 sec, 0 abn, 2476 B) in 524ms
