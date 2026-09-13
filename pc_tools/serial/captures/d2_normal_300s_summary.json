@@ -1,0 +1,168 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "D2: 正常回放 5min 回归 (SQI 门控后应仍零误报)",
+  "port": "COM4",
+  "seconds": 300.0,
+  "cmds": [
+    "MODE replay_normal"
+  ],
+  "capture_start": "2026-09-13 22:02:07",
+  "ai_result": {
+    "windows": 270,
+    "rate_hz": 0.903,
+    "confirmed_rate": 0.0852,
+    "raw_rate": 0.1074,
+    "conf_median": 0.0,
+    "conf_mean": 0.1191,
+    "confirmed_runs_s": {
+      "count": 23,
+      "max": 1,
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 22,
+      "max": 16,
+      "min": 5,
+      "median": 10.0,
+      "mean": 10.14,
+      "all": [
+        13,
+        5,
+        7,
+        16,
+        13,
+        5,
+        7,
+        16,
+        13,
+        5,
+        7,
+        16,
+        13,
+        5,
+        7,
+        16,
+        13,
+        5,
+        7,
+        16,
+        13,
+        5
+      ]
+    },
+    "raw_runs_s": {
+      "count": 23,
+      "max": 2,
+      "min": 1,
+      "median": 1,
+      "mean": 1.26,
+      "all": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        2,
+        1,
+        1,
+        1,
+        2,
+        1,
+        1,
+        1,
+        2,
+        1,
+        1,
+        1,
+        2,
+        1,
+        1,
+        1,
+        2,
+        1
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 22,
+      "max": 16,
+      "min": 1,
+      "median": 11.5,
+      "mean": 9.73,
+      "all": [
+        13,
+        1,
+        10,
+        16,
+        13,
+        1,
+        10,
+        16,
+        13,
+        1,
+        10,
+        16,
+        13,
+        1,
+        10,
+        16,
+        13,
+        1,
+        10,
+        16,
+        13,
+        1
+      ]
+    },
+    "latency_us_median": 49654.5,
+    "latency_us_max": 50584
+  },
+  "tick": {
+    "count": 270,
+    "sources": [
+      "REPLAY_NORMAL"
+    ],
+    "busy_pct_max": 56,
+    "busy_pct_mean": 10.7,
+    "ovr_total": 357,
+    "ovr_max": 2,
+    "segments": [
+      "0"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.0,
+    "runs_s": {
+      "count": 0
+    },
+    "asrc_seen": [
+      "0x00"
+    ]
+  }
+}

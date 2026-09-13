@@ -1,0 +1,80 @@
+{
+  "tool": "board_corpus_eval.py",
+  "model": "v3a_sqigate",
+  "port": "COM4",
+  "seconds_per_case": 36.0,
+  "settle_s": 5.0,
+  "timestamp": "2026-09-13 21:55:12",
+  "total_wall_s": 111.9,
+  "results": [
+    {
+      "windows": 30,
+      "raw_rate": 0.6,
+      "conf_median": 0.9589,
+      "conf_mean": 0.6019,
+      "confirmed_rate": 0.1667,
+      "alarm_rate": 0.6667,
+      "asrc_seen": [
+        "00",
+        "01"
+      ],
+      "sqi_mean": 0.973,
+      "seg_seen": [
+        "4"
+      ],
+      "index": 1,
+      "segment": 4,
+      "name": "clean_abnormal",
+      "params": {
+        "carrier": "mit106_90_120s",
+        "noise": null
+      }
+    },
+    {
+      "windows": 30,
+      "raw_rate": 0.2,
+      "conf_median": 0.0,
+      "conf_mean": 0.184,
+      "confirmed_rate": 0.1333,
+      "alarm_rate": 0.0,
+      "asrc_seen": [
+        "00"
+      ],
+      "sqi_mean": 0.99,
+      "seg_seen": [
+        "7"
+      ],
+      "index": 4,
+      "segment": 7,
+      "name": "normal_baseline_wander_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "baseline_wander",
+        "snr_db": 20
+      }
+    },
+    {
+      "windows": 29,
+      "raw_rate": 0.1379,
+      "conf_median": 0.0039,
+      "conf_mean": 0.1338,
+      "confirmed_rate": 0.1034,
+      "alarm_rate": 0.0,
+      "asrc_seen": [
+        "00"
+      ],
+      "sqi_mean": 0.991,
+      "seg_seen": [
+        "16"
+      ],
+      "index": 13,
+      "segment": 16,
+      "name": "normal_emg_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "emg",
+        "snr_db": 20
+      }
+    }
+  ]
+}

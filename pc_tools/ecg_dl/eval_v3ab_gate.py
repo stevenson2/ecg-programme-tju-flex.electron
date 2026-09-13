@@ -26,7 +26,30 @@ MODELS = {
 TOLERANCE = 0.02
 
 
+def _parse_cli_models(pairs):
+    """--model name=path (可重复); 覆盖默认 MODELS。"""
+    out = dict(MODELS)
+    for p in pairs or []:
+        name, _, path = p.partition("=")
+        if not path:
+            raise SystemExit(f"--model 需要 name=path: {p}")
+        out[name] = ("h5", BASE / "models" / path)
+    return out
+
+
 def main():
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--model", action="append", default=[],
+                    help="name=<h5 文件名于 models/>, 可重复; 恰两个参与对比")
+    ap.add_argument("--baseline", default="v3a", help="基准模型名")
+    ap.add_argument("--out", default="v3ab_gate1_clean_test.json")
+    args = ap.parse_args()
+    models = _parse_cli_models(args.model)
+    baseline = args.baseline
+    others = [k for k in models if k != baseline]
+    assert len(models) >= 2, "至少两个模型"
+    names = [baseline] + others
     t0 = time.time()
     dmi = np.load(MIT_NPZ)
     dpt = np.load(PTB_NPZ)
@@ -40,7 +63,8 @@ def main():
               f"records={len(np.unique(r))}", flush=True)
 
     results = {}
-    for name, (kind, path) in MODELS.items():
+    for name in names:
+        kind, path = models[name]
         assert path.exists(), path
         predict = make_predictor(kind, path)
         entry = {}
@@ -52,14 +76,15 @@ def main():
             print(f"[GATE1] {name} {dom}: AUC={e['beat']['auc']:.4f} "
                   f"evF1={e['event'].get('event_f1')} FP/rec="
                   f"{e['event'].get('fp_per_record')}", flush=True)
-        results[name] = {"file": str(path.name), "domains": entry}
+        results[name] = {"file": str(path.name), "kind": kind, "domains": entry}
 
-    # ---- 判定 ----
-    verdict = {"tolerance": TOLERANCE, "per_domain": {}}
+    # ---- 判定: 每个候选 vs 基准 ----
+    verdict = {"tolerance": TOLERANCE, "baseline": baseline, "per_domain": {}}
     overall = True
+    cand = others[0] if others else baseline
     for dom in sets:
-        a = results["v3a"]["domains"][dom]
-        b = results["v3b"]["domains"][dom]
+        a = results[baseline]["domains"][dom]
+        b = results[cand]["domains"][dom]
         dauc = b["beat"]["auc"] - a["beat"]["auc"]
         ef1a, ef1b = a["event"].get("event_f1"), b["event"].get("event_f1")
         ef1a = float(ef1a) if ef1a is not None else None
@@ -68,9 +93,9 @@ def main():
         ok = (dauc >= -TOLERANCE) and (df1 is None or df1 >= -TOLERANCE)
         overall &= ok
         verdict["per_domain"][dom] = {
-            "v3a_auc": a["beat"]["auc"], "v3b_auc": b["beat"]["auc"],
+            "baseline_auc": a["beat"]["auc"], "cand_auc": b["beat"]["auc"],
             "delta_auc": round(dauc, 4),
-            "v3a_evf1": ef1a, "v3b_evf1": ef1b,
+            "baseline_evf1": ef1a, "cand_evf1": ef1b,
             "delta_evf1": round(df1, 4) if df1 is not None else None,
             "pass": bool(ok),
         }
@@ -81,7 +106,7 @@ def main():
            "protocol": "eval_clean_test.py口径 (θ=0.5, 1-of-5, cooldown=5, "
                        "patient-level test, from-scratch models → full=clean)",
            "results": results, "verdict": verdict}
-    outp = CACHE / "v3ab_gate1_clean_test.json"
+    outp = CACHE / args.out
     outp.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(verdict, ensure_ascii=False, indent=2))
     print(f"[GATE1] {'PASS' if overall else 'FAIL'} -> {outp} "

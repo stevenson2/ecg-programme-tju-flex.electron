@@ -1,0 +1,59 @@
+{
+  "tool": "board_corpus_eval.py",
+  "model": "v3a_sqigate",
+  "port": "COM4",
+  "seconds_per_case": 36.0,
+  "settle_s": 5.0,
+  "timestamp": "2026-09-13 21:53:01",
+  "total_wall_s": 74.6,
+  "results": [
+    {
+      "windows": 30,
+      "raw_rate": 0.8,
+      "conf_median": 0.9961,
+      "conf_mean": 0.8191,
+      "confirmed_rate": 0.1667,
+      "alarm_rate": 0.0,
+      "asrc_seen": [
+        "00"
+      ],
+      "sqi_mean": 0.673,
+      "seg_seen": [
+        "30"
+      ],
+      "index": 27,
+      "segment": 30,
+      "name": "pure_motion",
+      "params": {
+        "carrier": null,
+        "noise": "motion",
+        "note": "无载波纯噪声"
+      }
+    },
+    {
+      "windows": 30,
+      "raw_rate": 0.9333,
+      "conf_median": 0.9961,
+      "conf_mean": 0.9367,
+      "confirmed_rate": 0.1667,
+      "alarm_rate": 0.8,
+      "asrc_seen": [
+        "00",
+        "01"
+      ],
+      "sqi_mean": 0.861,
+      "seg_seen": [
+        "31"
+      ],
+      "index": 28,
+      "segment": 31,
+      "name": "ludb_normal",
+      "params": {
+        "carrier": "ludb_s0010_re_leadii_5_35s",
+        "noise": null,
+        "fs_src": 1000,
+        "erratum": "carrier is PTB patient001/s0010_re (test, label=1), NOT LUDB normal"
+      }
+    }
+  ]
+}

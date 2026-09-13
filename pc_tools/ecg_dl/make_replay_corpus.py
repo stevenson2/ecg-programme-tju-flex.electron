@@ -169,8 +169,10 @@ def main():
             ludb = ludb - np.mean(ludb)
             ludb_noise = extract_ludb_noise()
             # 两段素材都拿到才入列 (避免半成功后回退重复追加)
-            add("ludb_normal", {"carrier": "ludb_s0010_re_leadii_5_35s", "noise": None,
-                                "fs_src": 1000}, ludb)
+            add("ludb_normal", {"carrier": "PTB_patient001_s0010_re_leadii_5_35s",
+                                "noise": None, "fs_src": 1000,
+                                "erratum": "PTB test patient, gt label=1 (NOT LUDB normal)"},
+                ludb)
             add("ludb_noise_on_mit",
                 {"carrier": "mit100", "noise": "ludb_real_artifact", "snr_db": 10},
                 mix_at_snr(carriers["normal"], ludb_noise, 10))

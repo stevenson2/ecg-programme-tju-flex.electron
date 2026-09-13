@@ -1,0 +1,132 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "D2: 平线 90s (SQI 门控后, 规则源 0x04 应不受影响)",
+  "port": "COM4",
+  "seconds": 90.0,
+  "cmds": [
+    "MODE replay_flat"
+  ],
+  "capture_start": "2026-09-13 21:56:57",
+  "ai_result": {
+    "windows": 87,
+    "rate_hz": 0.967,
+    "confirmed_rate": 0.1379,
+    "raw_rate": 0.3678,
+    "conf_median": 0.0039,
+    "conf_mean": 0.3649,
+    "confirmed_runs_s": {
+      "count": 12,
+      "max": 1,
+      "min": 1,
+      "median": 1.0,
+      "mean": 1,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 11,
+      "max": 10,
+      "min": 5,
+      "median": 5,
+      "mean": 5.82,
+      "all": [
+        5,
+        5,
+        5,
+        9,
+        10,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    "raw_runs_s": {
+      "count": 11,
+      "max": 20,
+      "min": 1,
+      "median": 1,
+      "mean": 2.91,
+      "all": [
+        1,
+        1,
+        1,
+        2,
+        1,
+        1,
+        20,
+        1,
+        1,
+        2,
+        1
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 10,
+      "max": 13,
+      "min": 1,
+      "median": 2.5,
+      "mean": 4.5,
+      "all": [
+        2,
+        2,
+        2,
+        5,
+        13,
+        10,
+        3,
+        1,
+        2,
+        5
+      ]
+    },
+    "latency_us_median": 49659,
+    "latency_us_max": 50554
+  },
+  "tick": {
+    "count": 86,
+    "sources": [
+      "REPLAY_NORMAL"
+    ],
+    "busy_pct_max": 48,
+    "busy_pct_mean": 8.0,
+    "ovr_total": 89,
+    "ovr_max": 2,
+    "segments": [
+      "2"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.7907,
+    "runs_s": {
+      "count": 1,
+      "max": 68,
+      "min": 68,
+      "median": 68,
+      "mean": 68,
+      "all": [
+        68
+      ]
+    },
+    "asrc_seen": [
+      "0x00",
+      "0x04",
+      "0x0c",
+      "0x0d"
+    ]
+  }
+}

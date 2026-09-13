@@ -1,0 +1,77 @@
+{
+  "date": "2026-09-13 21:43:22",
+  "purpose": "Round-D1 v3-N: v3-A 配方 + 纯噪声硬负例 (TH §110)",
+  "provenance": "from scratch; main rng identical to v3-A; pure-noise windows on rng seed=2042 (no patient data)",
+  "gpu": [
+    "PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')"
+  ],
+  "output_model": "models/best_resnet_large_v3n_purenoise.h5",
+  "patient_split_seed": 42,
+  "noise_mix": {
+    "motion": 600,
+    "emg": 240,
+    "mains": 240,
+    "baseline_wander": 60,
+    "respiratory": 60
+  },
+  "data": {
+    "main_gold": 4800,
+    "pure_noise_neg": 1200,
+    "real_afe_train_unique": 271,
+    "real_afe_holdout": 40,
+    "synth_hard": 600,
+    "train_total": 7142
+  },
+  "audits": {
+    "mit_bih": {
+      "assert_train_only": "passed",
+      "sampled_records_vs_test_intersection": 0,
+      "sampled_unique_records": 31
+    },
+    "incart": {
+      "assert_train_only": "passed",
+      "sampled_records_vs_test_intersection": 0,
+      "sampled_unique_records": 42
+    },
+    "ptb": {
+      "assert_train_only": "passed",
+      "sampled_records_vs_test_intersection": 0,
+      "sampled_unique_records": 273
+    }
+  },
+  "split_stats": {
+    "mit_bih": {
+      "n_patients": 79,
+      "n_train": 49,
+      "n_val": 15,
+      "n_test": 15,
+      "beats_train": 512369,
+      "beats_val": 159294,
+      "beats_test": 163078
+    },
+    "incart": {
+      "n_patients": 79,
+      "n_train": 49,
+      "n_val": 15,
+      "n_test": 15,
+      "beats_train": 512369,
+      "beats_val": 159294,
+      "beats_test": 163078
+    },
+    "ptb": {
+      "n_patients": 286,
+      "n_train": 172,
+      "n_val": 57,
+      "n_test": 57,
+      "beats_train": 41730,
+      "beats_val": 14694,
+      "beats_test": 13058
+    }
+  },
+  "best_val_auc": 0.7291900735294119,
+  "real_holdout": {
+    "mean": 0.0043528517708182335,
+    "frac_gt_05": 0.0
+  },
+  "wall_s": 263.9
+}

@@ -1,0 +1,35 @@
+{
+  "tool": "board_corpus_eval.py",
+  "model": "v3a",
+  "port": "COM4",
+  "seconds_per_case": 36.0,
+  "settle_s": 5.0,
+  "timestamp": "2026-09-13 21:46:45",
+  "total_wall_s": 37.6,
+  "results": [
+    {
+      "windows": 30,
+      "raw_rate": 0.9,
+      "conf_median": 0.9961,
+      "conf_mean": 0.8656,
+      "confirmed_rate": 0.1667,
+      "alarm_rate": 0.7333,
+      "asrc_seen": [
+        "00",
+        "01"
+      ],
+      "sqi_mean": 0.656,
+      "seg_seen": [
+        "30"
+      ],
+      "index": 27,
+      "segment": 30,
+      "name": "pure_motion",
+      "params": {
+        "carrier": null,
+        "noise": "motion",
+        "note": "无载波纯噪声"
+      }
+    }
+  ]
+}

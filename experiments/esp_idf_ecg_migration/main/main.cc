@@ -39,6 +39,11 @@
 #define ALARM_MIN_HOLD_S     30      /* 最短擎住时长 (秒) */
 #define ALARM_AI_WIN         30      /* AI 进入判据: 最近 30 窗中 raw 异常 >= ALARM_AI_TH */
 #define ALARM_AI_TH          10      /* (v3-A replay_normal raw 密度实测后再定稿) */
+#define ALARM_AI_SQI_MIN     0.80f   /* AI 源 SQI 门控 (Round-D2, TH §110):
+ * 语料定标: pure_motion FP 时秒内 min-SQI 恒 0.667, 而 alarm 中 TP case 最低
+ * 0.861 (PTB s0010) / 0.973 (MIT-106)。门控只作用于 0x01 AI 密度源;
+ * 规则源 (停搏/过缓过速/VF) 不受影响。口径披露: 语料 n=1/条件, 阈值
+ * 0.80 居中 (0.667 vs 0.861), 待更多条件数据复核。 */
 #define ALARM_REL_WIN        10      /* 解除判据: 最近 10 窗 raw 异常 <= ALARM_REL_TH */
 #define ALARM_REL_TH         1
 #define ALARM_REL_SQI_MIN    0.50f   /* 解除判据: SQI 需恢复到此线 */
@@ -94,7 +99,7 @@ static int      s_aiRawHistLen = 0;
 static int      s_aiRawHistIdx = 0;
 static uint32_t s_lastBeatSeenMs = 0;      /* 主循环侧独立跟踪最近拍 (hr 内部软复位会刷新自己的时间戳) */
 static bool     s_beatEverSeen = false;    /* 本模式会话内是否见过心拍 (时间停搏的武装条件) */
-static float    s_sqiSec = 0.0f;           /* 秒边界 SQI 快照 (解除判据用) */
+static float    s_sqiSecMin = 1.0f;        /* 秒内 min-SQI (AI 源门控用, Round-D2) */
 
 
 static float s_combBuf1[COMB_TAPS] = {0};
@@ -140,7 +145,7 @@ static void alarmReset(void) {
     s_aiConfirmedSec = false;
     s_lastBeatSeenMs = 0;
     s_beatEverSeen = false;
-    s_sqiSec = 0.0f;
+    s_sqiSecMin = 1.0f;
 }
 
 static void alarmPushAiRaw(uint8_t raw) {
@@ -160,11 +165,12 @@ static int alarmAiDensity(int win) {
     return cnt;
 }
 
-/* 秒边界推进: ruleHits = 本秒规则源命中位图 (传入后本函数负责消费) */
-static void alarmSecondTick(uint32_t nowSec, uint8_t ruleHits) {
+/* 秒边界推进: ruleHits = 本秒规则源命中位图 (传入后本函数负责消费)。
+ * sqiMin = 本秒逐帧 min-SQI (AI 密度源的门控, Round-D2)。 */
+static void alarmSecondTick(uint32_t nowSec, uint8_t ruleHits, float sqiMin) {
     uint8_t trig = ruleHits;
     int dens = alarmAiDensity(ALARM_AI_WIN);
-    if (dens >= ALARM_AI_TH) trig |= ALARM_SRC_AI;
+    if (dens >= ALARM_AI_TH && sqiMin >= ALARM_AI_SQI_MIN) trig |= ALARM_SRC_AI;
     if (trig != 0) {
         if (!s_alarmLatched) {
             printf("[ALARM] LATCH src=0x%02x t=%lus dens=%d\n",
@@ -178,7 +184,7 @@ static void alarmSecondTick(uint32_t nowSec, uint8_t ruleHits) {
         s_alarmLastTrigSec = nowSec;   /* 持续触发 -> 擎住窗顺延 */
     } else if (s_alarmLatched
                && (nowSec - s_alarmLastTrigSec) >= ALARM_MIN_HOLD_S
-               && s_sqiSec >= ALARM_REL_SQI_MIN
+               && sqiMin >= ALARM_REL_SQI_MIN
                && alarmAiDensity(ALARM_REL_WIN) <= ALARM_REL_TH) {
         printf("[ALARM] CLEAR held=%lus src=0x%02x t=%lus\n",
                (unsigned long)(nowSec - s_alarmLastTrigSec),
@@ -586,6 +592,7 @@ extern "C" void app_main(void) {
 
         /* ---- M1: 规则通道接线 (此前 rs 结果被丢弃, vfDetect 只 init 从未调用) ---- */
         uint32_t nowMs = (uint32_t)(esp_timer_get_time() / 1000);
+        if (hr.sqi < s_sqiSecMin) s_sqiSecMin = hr.sqi;
         if (rs.asystole || rs.bradycardia || rs.tachycardia) {
             s_ruleHitSec |= ALARM_SRC_RS;
         }
@@ -638,8 +645,8 @@ extern "C" void app_main(void) {
             if (nowSec != s_lastRecSec) {
                 s_lastRecSec = nowSec;
                 uint8_t ruleHits = s_ruleHitSec;
-                s_sqiSec = hr.sqi;
-                alarmSecondTick(nowSec, ruleHits);
+                alarmSecondTick(nowSec, ruleHits, s_sqiSecMin);
+                s_sqiSecMin = 1.0f;   /* 秒内 min 重置 */
                 /* 录制位图 (M1): 擎住位 OR 本秒规则命中 OR 本秒 AI confirmed。
                  * 平线/停搏现在会触发自动录制 (修复前只有 AI confirmed 能触发)。 */
                 bool abnormalSec = s_alarmLatched || (ruleHits != 0) || s_aiConfirmedSec;
@@ -679,12 +686,12 @@ extern "C" void app_main(void) {
 #if ECG_HOT_LOG
             uint32_t busyPct = s_lastTickUs
                 ? (uint32_t)((s_busyAccumUs * 100) / (nowUs - s_lastTickUs)) : 0;
-            printf("TICK,%lu,src=%s,bpm=%u,sqi=%.3f,disp=%.4f,comb=%.4f,busy=%u%%,ovr=%lu,alarm=%u,asrc=0x%02x,seg=%u\n",
+            printf("TICK,%lu,src=%s,bpm=%u,sqi=%.3f,disp=%.4f,comb=%.4f,busy=%u%%,ovr=%lu,alarm=%u,asrc=0x%02x,seg=%u,sqimin=%.3f\n",
                    (unsigned long)frame, modeName(s_mode),
                    (unsigned)hr.bpm, hr.sqi, displaySample, combOut,
                    (unsigned)busyPct, (unsigned long)s_loopOverruns,
                    s_alarmLatched ? 1u : 0u, s_alarmSrc,
-                   (unsigned)ecgReplayGetSegment());
+                   (unsigned)ecgReplayGetSegment(), s_sqiSecMin);
 #endif
             s_busyAccumUs = 0;
             s_loopOverruns = 0;
