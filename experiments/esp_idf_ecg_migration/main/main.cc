@@ -107,6 +107,7 @@ static uint32_t s_lastBeatSeenMs = 0;      /* 主循环侧独立跟踪最近拍 
 static bool     s_beatEverSeen = false;    /* 本模式会话内是否见过心拍 (时间停搏的武装条件) */
 static float    s_sqiSecMin = 1.0f;        /* 秒内 min-SQI (AI 源门控用, Round-D2) */
 static float    s_lastVfRmsMv = -1.0f;     /* 最近一次 vfProcess 的窗 RMS (TICK 遥测, E1) */
+static bool     s_vfHitSec = false;        /* 本秒 VF 命中 (Round-F: 佐证语义, 单独不擎住) */
 
 
 static float s_combBuf1[COMB_TAPS] = {0};
@@ -173,11 +174,26 @@ static int alarmAiDensity(int win) {
 }
 
 /* 秒边界推进: ruleHits = 本秒规则源命中位图 (传入后本函数负责消费)。
- * sqiMin = 本秒逐帧 min-SQI (AI 密度源的门控, Round-D2)。 */
-static void alarmSecondTick(uint32_t nowSec, uint8_t ruleHits, float sqiMin) {
+ * sqiMin = 本秒逐帧 min-SQI (AI 密度源的门控, Round-D2)。
+ * vfHit = 本秒 VF 命中 (Round-F): 设备上无真值 VF 数据, vfDetect 在真
+ * 250Hz 节奏下对正常流的特异性未经验证 (曾在正常回放单独误擎住) ——
+ * 所以 VF 单独只做遥测 (asrc 位 + 一次性日志), 需 AI/规则源佐证或已擎住
+ * 时才参与 (延长语义)。 */
+static void alarmSecondTick(uint32_t nowSec, uint8_t ruleHits, float sqiMin,
+                            bool vfHit) {
     uint8_t trig = ruleHits;
     int dens = alarmAiDensity(ALARM_AI_WIN);
     if (dens >= ALARM_AI_TH && sqiMin >= ALARM_AI_SQI_MIN) trig |= ALARM_SRC_AI;
+    if (vfHit && (trig != 0 || s_alarmLatched)) {
+        trig |= ALARM_SRC_VF;
+    } else if (vfHit) {
+        static uint32_t lastVfTelemetrySec = 0;
+        if (nowSec - lastVfTelemetrySec >= 30) {
+            lastVfTelemetrySec = nowSec;
+            printf("[ALARM] VF suspect (telemetry only, t=%lus)\n",
+                   (unsigned long)nowSec);
+        }
+    }
     if (trig != 0) {
         if (!s_alarmLatched) {
             printf("[ALARM] LATCH src=0x%02x t=%lus dens=%d\n",
@@ -519,6 +535,7 @@ extern "C" void app_main(void) {
     cfg.confirm_mode = ECG_AI_CONFIRM_ONE_OF_N;
     cfg.confirm_n = 5;
     cfg.cooldown_beats = 5;
+    cfg.async_infer = true;   /* Round-F: 推理出环 (核 1), 采样循环不再被 invoke 阻塞 */
     if (!ecg_ai_init(models_ecg_model_v3a_int8_tflite,
                      models_ecg_model_v3a_int8_tflite_len, &cfg)) {
         printf("[main] ecg_ai init failed\n");
@@ -553,6 +570,7 @@ extern "C" void app_main(void) {
 
     uint32_t frame = 0;
     float last_conf = 0.0f;
+    TickType_t nextWake = xTaskGetTickCount();
     printf("[main] ESP-IDF ECG demo start, mode=%s\n", modeName(s_mode));
 
     while (true) {
@@ -628,7 +646,7 @@ extern "C" void app_main(void) {
             if (vf.vfAlarm && s_beatEverSeen
                 && (nowMs - s_lastBeatSeenMs) > ALARM_VF_GATE_MS
                 && vf.lastRms >= ALARM_VF_RMS_MIN) {
-                s_ruleHitSec |= ALARM_SRC_VF;
+                s_vfHitSec = true;
             }
         }
 
@@ -654,8 +672,11 @@ extern "C" void app_main(void) {
             static uint32_t s_lastRecSec = 0;
             if (nowSec != s_lastRecSec) {
                 s_lastRecSec = nowSec;
-                uint8_t ruleHits = s_ruleHitSec;
-                alarmSecondTick(nowSec, ruleHits, s_sqiSecMin);
+                uint8_t ruleHits = s_ruleHitSec & (uint8_t)(ALARM_SRC_RS | ALARM_SRC_FLAT);
+                bool vfHit = s_vfHitSec;
+                s_ruleHitSec = 0;
+                s_vfHitSec = false;
+                alarmSecondTick(nowSec, ruleHits, s_sqiSecMin, vfHit);
                 s_sqiSecMin = 1.0f;   /* 秒内 min 重置 */
                 /* 录制位图 (M1): 擎住位 OR 本秒规则命中 OR 本秒 AI confirmed。
                  * 平线/停搏现在会触发自动录制 (修复前只有 AI confirmed 能触发)。 */
@@ -696,13 +717,15 @@ extern "C" void app_main(void) {
 #if ECG_HOT_LOG
             uint32_t busyPct = s_lastTickUs
                 ? (uint32_t)((s_busyAccumUs * 100) / (nowUs - s_lastTickUs)) : 0;
-            printf("TICK,%lu,src=%s,bpm=%u,sqi=%.3f,disp=%.4f,comb=%.4f,busy=%u%%,ovr=%lu,alarm=%u,asrc=0x%02x,seg=%u,sqimin=%.3f,vrms=%.4f\n",
+            printf("TICK,%lu,src=%s,bpm=%u,sqi=%.3f,disp=%.4f,comb=%.4f,busy=%u%%,ovr=%lu,alarm=%u,asrc=0x%02x,seg=%u,sqimin=%.3f,vrms=%.4f,aidrop=%lu,nw=%lu,nt=%lu\n",
                    (unsigned long)frame, modeName(s_mode),
                    (unsigned)hr.bpm, hr.sqi, displaySample, combOut,
                    (unsigned)busyPct, (unsigned long)s_loopOverruns,
                    s_alarmLatched ? 1u : 0u, s_alarmSrc,
                    (unsigned)ecgReplayGetSegment(), s_sqiSecMin,
-                   (double)s_lastVfRmsMv);
+                   (double)s_lastVfRmsMv,
+                   (unsigned long)ecg_ai_async_dropped(),
+                   (unsigned long)nextWake, (unsigned long)xTaskGetTickCount());
 #endif
             s_busyAccumUs = 0;
             s_loopOverruns = 0;
@@ -714,6 +737,16 @@ extern "C" void app_main(void) {
             s_busyAccumUs += dtWorkUs;
             if (dtWorkUs > 2000) s_loopOverruns++;
         }
-        vTaskDelay(pdMS_TO_TICKS(2));
+        /* Round-F: 绝对期限节拍 (vTaskDelayUntil) 消除逐帧舍入漂移。
+         * 注意: xTaskDelayUntil 在 prev 处于未来时视为 tick 回绕, 永不延迟
+         * 且 prev 照加 (自由跑) —— 所以重锚只能设 prev = nowTick (不得超前)。
+         * 落后 > 8 tick (SPIFFS/BLE 停顿) 时丢债重锚, 最多补 8 帧。 */
+        {
+            TickType_t nowTick = xTaskGetTickCount();
+            if ((int32_t)(nowTick - nextWake) > 8) {
+                nextWake = nowTick;
+            }
+            vTaskDelayUntil(&nextWake, 2);
+        }
     }
 }

@@ -1,0 +1,25 @@
+   0.209 [main] mode -> SIMULATOR
+   0.209 CMD MODE ok SIMULATOR
+   0.209 CMD REC_AUTO 1 ok
+   0.209 TICK,203500,src=SIMULATOR,bpm=0,sqi=0.778,disp=-0.6958,comb=-0.6958,busy=8%,ovr=0,alarm=0,asrc=0x00,seg=2,sqimin=0.442,vrms=0.0000,aidrop=0,nw=436882,nt=436882
+   0.209 AI_RESULT,0.0000,0,0,83531
+   0.209 TICK,204000,src=SIMULATOR,bpm=118,sqi=0.972,disp=-0.7197,comb=-0.7197,busy=16%,ovr=0,alarm=0,asrc=0x00,seg=2,sqimin=0.690,vrms=0.0000,aidrop=0,nw=437882,nt=437882
+   0.209 AI_RESULT,0.9961,1,1,81203
+   1.051 TICK,204500,src=SIMULATOR,bpm=109,sqi=0.952,disp=-0.7124,comb=-0.7124,busy=16%,ovr=0,alarm=0,asrc=0x00,seg=2,sqimin=0.952,vrms=0.0000,aidrop=0,nw=438882,nt=438882
+   1.051 AI_RESULT,0.0078,0,0,81314
+   2.097 TICK,205000,src=SIMULATOR,bpm=87,sqi=0.945,disp=-0.4983,comb=-0.4983,busy=17%,ovr=0,alarm=0,asrc=0x00,seg=2,sqimin=0.943,vrms=0.0000,aidrop=0,nw=439882,nt=439882
+   2.097 AI_RESULT,0.9961,1,0,84167
+   2.916 TICK,205500,src=SIMULATOR,bpm=75,sqi=0.941,disp=-0.6958,comb=-0.6958,busy=18%,ovr=0,alarm=0,asrc=0x00,seg=2,sqimin=0.940,vrms=0.0000,aidrop=0,nw=440882,nt=440882
+   3.118 AI_RESULT,0.9922,1,0,84218
+   3.934 TICK,206000,src=SIMULATOR,bpm=75,sqi=0.940,disp=-0.7197,comb=-0.7197,busy=18%,ovr=1,alarm=0,asrc=0x00,seg=2,sqimin=0.939,vrms=0.1560,aidrop=0,nw=441882,nt=441882
+   4.137 AI_RESULT,0.9961,1,0,81178
+   4.958 TICK,206500,src=SIMULATOR,bpm=75,sqi=0.941,disp=-0.7124,comb=-0.7124,busy=16%,ovr=0,alarm=0,asrc=0x00,seg=2,sqimin=0.939,vrms=0.1560,aidrop=0,nw=442882,nt=442882
+   5.161 AI_RESULT,0.8281,1,0,81376
+   5.161 [ECGR] auto-record: consecutive normal, stopping...
+   7.633 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_359.ecgr
+   8.060 [ECGR] index rebuilt: 10 records
+   8.060 [ECGR] stopped: 18472 samples, 74 sec, 68 abn, size=37050
+   9.089 TICK,207000,src=SIMULATOR,bpm=78,sqi=0.951,disp=-0.4983,comb=-0.4983,busy=78%,ovr=1,alarm=0,asrc=0x00,seg=2,sqimin=0.941,vrms=0.1560,aidrop=0,nw=446888,nt=446888
+   9.089 AI_RESULT,0.9961,1,1,84141
+   9.918 TICK,207500,src=SIMULATOR,bpm=76,sqi=0.951,disp=-0.6958,comb=-0.6958,busy=18%,ovr=0,alarm=0,asrc=0x00,seg=2,sqimin=0.950,vrms=0.1560,aidrop=0,nw=447888,nt=447888
+  10.133 AI_RESULT,0.9961,1,0,84161

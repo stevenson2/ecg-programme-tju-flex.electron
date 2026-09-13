@@ -1,0 +1,804 @@
+   0.214 [main] mode -> SIMULATOR
+   0.214 CMD MODE ok SIMULATOR
+   0.214 TICK,78500,src=SIMULATOR,bpm=0,sqi=0.787,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.441,vrms=0.0000,aidrop=0
+   0.214 AI_RESULT,0.9453,1,1,83030
+   0.214 TICK,79000,src=SIMULATOR,bpm=0,sqi=0.690,disp=-0.5441,comb=-0.5441,busy=91%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.690,vrms=0.0000,aidrop=0
+   0.214 AI_RESULT,0.9531,1,0,82869
+   0.214 TICK,79500,src=SIMULATOR,bpm=0,sqi=0.690,disp=-0.6728,comb=-0.6728,busy=92%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.690,vrms=0.0000,aidrop=0
+   0.214 AI_RESULT,0.9961,1,0,82288
+   0.214 TICK,80000,src=SIMULATOR,bpm=0,sqi=0.965,disp=-0.6701,comb=-0.6701,busy=91%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.687,vrms=0.0000,aidrop=0
+   0.214 AI_RESULT,0.9883,1,0,82060
+   0.214 TICK,80500,src=SIMULATOR,bpm=0,sqi=0.966,disp=-0.6295,comb=-0.6295,busy=91%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.687,vrms=0.0000,aidrop=0
+   0.214 AI_RESULT,0.9961,1,0,83404
+   0.214 TICK,81000,src=SIMULATOR,bpm=124,sqi=0.967,disp=-0.5441,comb=-0.5441,busy=93%,ovr=1,alarm=0,asrc=0x00,seg=0,sqimin=0.687,vrms=0.1499,aidrop=0
+   0.214 AI_RESULT,0.0391,0,0,83720
+   0.214 TICK,81500,src=SIMULATOR,bpm=124,sqi=0.971,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.687,vrms=0.1499,aidrop=0
+   0.214 AI_RESULT,0.9961,1,1,83381
+   0.214 TICK,82000,src=SIMULATOR,bpm=124,sqi=0.970,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.687,vrms=0.1499,aidrop=0
+   0.214 AI_RESULT,0.5781,1,0,83285
+   0.214 TICK,82500,src=SIMULATOR,bpm=115,sqi=0.968,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.968,vrms=0.1499,aidrop=0
+   0.214 AI_RESULT,0.9961,1,0,83950
+   0.214 TICK,83000,src=SIMULATOR,bpm=115,sqi=0.969,disp=-0.5441,comb=-0.5441,busy=92%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.966,vrms=0.1499,aidrop=0
+   0.416 AI_RESULT,0.8281,1,0,83712
+   0.416 TICK,83500,src=SIMULATOR,bpm=115,sqi=0.973,disp=-0.6728,comb=-0.6728,busy=93%,ovr=1,alarm=0,asrc=0x00,seg=0,sqimin=0.966,vrms=0.1356,aidrop=0
+   0.617 AI_RESULT,0.6523,1,0,83413
+   0.617 TICK,84000,src=SIMULATOR,bpm=107,sqi=0.971,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.966,vrms=0.1356,aidrop=0
+   0.617 AI_RESULT,0.0352,0,0,83202
+   0.818 TICK,84500,src=SIMULATOR,bpm=107,sqi=0.972,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.966,vrms=0.1356,aidrop=0
+   0.818 AI_RESULT,0.8125,1,1,83742
+   1.020 [ALARM] LATCH src=0x01 t=30s dens=11
+   1.020 TICK,85000,src=SIMULATOR,bpm=107,sqi=0.974,disp=-0.5441,comb=-0.5441,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.973,vrms=0.1356,aidrop=0
+   1.020 AI_RESULT,0.9922,1,0,84227
+   1.020 E (31146) task_wdt: Task watchdog got triggered. The following tasks/users did not reset the watchdog in time:
+   1.020 E (31146) task_wdt:  - IDLE0 (CPU 0)
+   1.020 E (31146) task_wdt: Tasks currently running:
+   1.020 E (31146) task_wdt: CPU 0: main
+   1.020 E (31146) task_wdt: CPU 1: IDLE1
+   1.020 E (31146) task_wdt: Print CPU 0 (current core) backtrace
+   1.020 Backtrace: 0x42067185:0x3FCC8E30 0x4037BD79:0x3FCC8E70 0x42012D62:0x3FCDB6C0 0x4201193F:0x3FCDBAE0 0x42008047:0x3FCDBCF0
+   1.223 TICK,85500,src=SIMULATOR,bpm=109,sqi=0.974,disp=-0.6728,comb=-0.6728,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.973,vrms=0.1356,aidrop=0
+   1.223 AI_RESULT,0.2031,0,0,83763
+   1.223 TICK,86000,src=SIMULATOR,bpm=109,sqi=0.974,disp=-0.6701,comb=-0.6701,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.973,vrms=0.1301,aidrop=0
+   1.426 AI_RESULT,0.0117,0,0,83402
+   1.426 TICK,86500,src=SIMULATOR,bpm=109,sqi=0.975,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.973,vrms=0.1301,aidrop=0
+   1.627 AI_RESULT,0.7383,1,0,83846
+   1.627 TICK,87000,src=SIMULATOR,bpm=109,sqi=0.975,disp=-0.5441,comb=-0.5441,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.973,vrms=0.1301,aidrop=0
+   1.827 AI_RESULT,0.9961,1,0,84183
+   1.827 TICK,87500,src=SIMULATOR,bpm=109,sqi=0.975,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.973,vrms=0.1301,aidrop=0
+   1.827 AI_RESULT,0.2031,0,1,83439
+   2.029 TICK,88000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.975,vrms=0.1301,aidrop=0
+   2.029 AI_RESULT,0.0117,0,0,83362
+   2.230 TICK,88500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6295,comb=-0.6295,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.975,vrms=0.1294,aidrop=0
+   2.230 AI_RESULT,0.7383,1,0,83756
+   2.433 TICK,89000,src=SIMULATOR,bpm=109,sqi=0.975,disp=-0.5441,comb=-0.5441,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.975,vrms=0.1294,aidrop=0
+   2.433 AI_RESULT,0.9961,1,0,83623
+   2.433 TICK,89500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.975,vrms=0.1294,aidrop=0
+   2.634 AI_RESULT,0.2031,0,0,83356
+   2.634 TICK,90000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.975,vrms=0.1294,aidrop=0
+   2.835 AI_RESULT,0.0117,0,0,83572
+   2.835 TICK,90500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.975,vrms=0.1294,aidrop=0
+   3.036 AI_RESULT,0.7383,1,1,83641
+   3.036 TICK,91000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.5441,comb=-0.5441,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.975,vrms=0.1289,aidrop=0
+   3.036 AI_RESULT,0.9961,1,0,83756
+   3.250 TICK,91500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.975,vrms=0.1289,aidrop=0
+   3.250 AI_RESULT,0.2031,0,0,83966
+   3.453 TICK,92000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.975,vrms=0.1289,aidrop=0
+   3.453 AI_RESULT,0.0117,0,0,83127
+   3.453 TICK,92500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.975,vrms=0.1289,aidrop=0
+   3.655 AI_RESULT,0.7383,1,0,83778
+   3.655 TICK,93000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5441,comb=-0.5441,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.975,vrms=0.1289,aidrop=0
+   3.858 AI_RESULT,0.9961,1,0,84245
+   3.858 TICK,93500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.975,vrms=0.1356,aidrop=0
+   4.060 AI_RESULT,0.2031,0,1,83522
+   4.060 TICK,94000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+   4.060 AI_RESULT,0.0117,0,0,83338
+   4.262 TICK,94500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+   4.262 AI_RESULT,0.7383,1,0,83937
+   4.465 TICK,95000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+   4.465 AI_RESULT,0.9961,1,0,83634
+   4.667 TICK,95500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+   4.667 AI_RESULT,0.2031,0,0,83341
+   4.667 TICK,96000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+   4.869 AI_RESULT,0.0117,0,0,83528
+   4.869 TICK,96500,src=SIMULATOR,bpm=109,sqi=0.978,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+   5.072 AI_RESULT,0.7383,1,1,83860
+   5.072 TICK,97000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+   5.272 AI_RESULT,0.9961,1,0,83804
+   5.272 TICK,97500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+   5.272 AI_RESULT,0.2031,0,0,83852
+   5.474 TICK,98000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+   5.474 AI_RESULT,0.0117,0,0,83405
+   5.677 TICK,98500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6295,comb=-0.6295,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+   5.677 AI_RESULT,0.7383,1,0,83523
+   5.880 TICK,99000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+   5.880 AI_RESULT,0.9961,1,0,84073
+   5.880 TICK,99500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.977,vrms=0.1294,aidrop=0
+   6.082 AI_RESULT,0.2031,0,1,83796
+   6.082 E (36146) task_wdt: Task watchdog got triggered. The following tasks/users did not reset the watchdog in time:
+   6.082 E (36146) task_wdt:  - IDLE0 (CPU 0)
+   6.082 E (36146) task_wdt: Tasks currently running:
+   6.082 E (36146) task_wdt: CPU 0: main
+   6.082 E (36146) task_wdt: CPU 1: IDLE1
+   6.082 E (36146) task_wdt: Print CPU 0 (current core) backtrace
+   6.082 Backtrace: 0x42067185:0x3FCC8E30 0x4037BD79:0x3FCC8E70 0x420E3560:0x3FCDBA20 0x420DE923:0x3FCDBA40 0x42035636:0x3FCDBA70 0x42011949:0x3FCDBAE0 0x42008047:0x3FCDBCF0
+   6.082 TICK,100000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6701,comb=-0.6701,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+   6.286 AI_RESULT,0.0117,0,0,83643
+   6.286 TICK,100500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+   6.488 AI_RESULT,0.7383,1,0,83623
+   6.488 TICK,101000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+   6.488 AI_RESULT,0.9961,1,0,83982
+   6.690 TICK,101500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+   6.690 AI_RESULT,0.2031,0,0,83692
+   6.893 TICK,102000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+   6.893 AI_RESULT,0.0117,0,0,83335
+   7.096 TICK,102500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6295,comb=-0.6295,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.977,vrms=0.1289,aidrop=0
+   7.096 AI_RESULT,0.7383,1,1,84208
+   7.096 TICK,103000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.977,vrms=0.1289,aidrop=0
+   7.296 AI_RESULT,0.9961,1,0,83827
+   7.296 TICK,103500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+   7.503 AI_RESULT,0.2031,0,0,83450
+   7.503 TICK,104000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+   7.706 AI_RESULT,0.0117,0,0,83213
+   7.706 TICK,104500,src=SIMULATOR,bpm=108,sqi=0.978,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+   7.706 AI_RESULT,0.7383,1,0,83802
+   7.907 TICK,105000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+   7.907 AI_RESULT,0.9961,1,0,83862
+   8.110 TICK,105500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+   8.110 AI_RESULT,0.2031,0,1,83439
+   8.312 TICK,106000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+   8.312 AI_RESULT,0.0117,0,0,83363
+   8.312 TICK,106500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+   8.517 AI_RESULT,0.7383,1,0,83594
+   8.517 TICK,107000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+   8.719 AI_RESULT,0.9961,1,0,84355
+   8.719 TICK,107500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+   8.719 AI_RESULT,0.2031,0,0,83389
+   8.923 TICK,108000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+   8.923 AI_RESULT,0.0117,0,0,83103
+   9.126 TICK,108500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6295,comb=-0.6295,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+   9.126 AI_RESULT,0.7383,1,1,84224
+   9.327 TICK,109000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+   9.327 AI_RESULT,0.9961,1,0,83793
+   9.327 TICK,109500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+   9.530 AI_RESULT,0.2031,0,0,83429
+   9.530 TICK,110000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+   9.734 AI_RESULT,0.0117,0,0,83482
+   9.734 TICK,110500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+   9.950 AI_RESULT,0.7383,1,0,83816
+   9.950 TICK,111000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.977,vrms=0.1289,aidrop=0
+   9.950 AI_RESULT,0.9961,1,0,83659
+  10.153 TICK,111500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  10.153 AI_RESULT,0.2031,0,1,83458
+  10.356 TICK,112000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  10.356 AI_RESULT,0.0117,0,0,83234
+  10.356 TICK,112500,src=SIMULATOR,bpm=108,sqi=0.978,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  10.559 AI_RESULT,0.7383,1,0,83981
+  10.559 TICK,113000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  10.761 AI_RESULT,0.9961,1,0,83607
+  10.761 TICK,113500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  10.963 AI_RESULT,0.2031,0,0,83374
+  10.963 TICK,114000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  10.963 AI_RESULT,0.0117,0,0,83427
+  11.166 E (41146) task_wdt: Task watchdog got triggered. The following tasks/users did not reset the watchdog in time:
+  11.166 E (41146) task_wdt:  - IDLE0 (CPU 0)
+  11.166 E (41146) task_wdt: Tasks currently running:
+  11.166 E (41146) task_wdt: CPU 0: main
+  11.166 E (41146) task_wdt: CPU 1: IDLE1
+  11.166 E (41146) task_wdt: Print CPU 0 (current core) backtrace
+  11.166 Backtrace: 0x42067185:0x3FCC8E30 0x4037BD79:0x3FCC8E70 0x420DF564:0x3FCDB890 0x420DF17D:0x3FCDBA20 0x420DE81E:0x3FCDBA60 0x420364E4:0x3FCDBAA0 0x42011811:0x3FCDBAE0 0x42008047:0x3FCDBCF0
+  11.166 TICK,114500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6295,comb=-0.6295,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  11.166 AI_RESULT,0.7383,1,1,83567
+  11.370 TICK,115000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  11.370 AI_RESULT,0.9961,1,0,83796
+  11.573 TICK,115500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  11.573 AI_RESULT,0.2031,0,0,83274
+  11.573 TICK,116000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6701,comb=-0.6701,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  11.774 AI_RESULT,0.0117,0,0,83503
+  11.774 TICK,116500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  11.977 AI_RESULT,0.7383,1,0,83718
+  11.977 TICK,117000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  12.179 AI_RESULT,0.9961,1,0,83655
+  12.179 TICK,117500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  12.179 AI_RESULT,0.2031,0,1,83620
+  12.380 TICK,118000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  12.380 AI_RESULT,0.0117,0,0,83392
+  12.580 TICK,118500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6295,comb=-0.6295,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  12.580 AI_RESULT,0.7383,1,0,83719
+  12.782 TICK,119000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  12.782 AI_RESULT,0.9961,1,0,84120
+  12.782 TICK,119500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  12.983 AI_RESULT,0.2031,0,0,83421
+  12.983 TICK,120000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  13.183 AI_RESULT,0.0117,0,0,83296
+  13.183 TICK,120500,src=SIMULATOR,bpm=109,sqi=0.978,disp=-0.6295,comb=-0.6295,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  13.386 AI_RESULT,0.7383,1,1,83667
+  13.386 TICK,121000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  13.386 AI_RESULT,0.9961,1,0,83732
+  13.587 TICK,121500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  13.587 AI_RESULT,0.2031,0,0,83609
+  13.789 TICK,122000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  13.789 AI_RESULT,0.0117,0,0,83297
+  13.991 TICK,122500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  13.991 AI_RESULT,0.7383,1,0,83999
+  13.991 TICK,123000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  14.193 AI_RESULT,0.9961,1,0,83812
+  14.193 TICK,123500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  14.397 AI_RESULT,0.2031,0,1,83503
+  14.397 TICK,124000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  14.600 AI_RESULT,0.0117,0,0,83247
+  14.600 TICK,124500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  14.600 AI_RESULT,0.7383,1,0,84168
+  14.804 TICK,125000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  14.804 AI_RESULT,0.9961,1,0,83781
+  15.006 TICK,125500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  15.006 AI_RESULT,0.2031,0,0,83344
+  15.208 TICK,126000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  15.208 AI_RESULT,0.0117,0,0,83679
+  15.208 TICK,126500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  15.410 AI_RESULT,0.7383,1,1,83763
+  15.410 TICK,127000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  15.613 AI_RESULT,0.9961,1,0,83761
+  15.613 TICK,127500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  15.815 AI_RESULT,0.2031,0,0,83629
+  15.815 TICK,128000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  15.815 AI_RESULT,0.0117,0,0,83348
+  16.016 TICK,128500,src=SIMULATOR,bpm=109,sqi=0.978,disp=-0.6295,comb=-0.6295,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.977,vrms=0.1294,aidrop=0
+  16.016 AI_RESULT,0.7383,1,0,83769
+  16.016 E (46146) task_wdt: Task watchdog got triggered. The following tasks/users did not reset the watchdog in time:
+  16.016 E (46146) task_wdt:  - IDLE0 (CPU 0)
+  16.016 E (46146) task_wdt: Tasks currently running:
+  16.016 E (46146) task_wdt: CPU 0: main
+  16.016 E (46146) task_wdt: CPU 1: IDLE1
+  16.016 E (46146) task_wdt: Print CPU 0 (current core) backtrace
+  16.016 Backtrace: 0x42067185:0x3FCC8E30 0x4037BD79:0x3FCC8E70 0x42036709:0x3FCDBAA0 0x42011811:0x3FCDBAE0 0x42008047:0x3FCDBCF0
+  16.219 TICK,129000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  16.219 AI_RESULT,0.9961,1,0,84276
+  16.422 TICK,129500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  16.422 AI_RESULT,0.2031,0,1,83474
+  16.422 TICK,130000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  16.627 AI_RESULT,0.0117,0,0,83205
+  16.627 TICK,130500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6295,comb=-0.6295,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  16.827 AI_RESULT,0.7383,1,0,83734
+  16.827 TICK,131000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  17.031 AI_RESULT,0.9961,1,0,83865
+  17.031 TICK,131500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  17.031 AI_RESULT,0.2031,0,0,83387
+  17.233 TICK,132000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  17.233 AI_RESULT,0.0117,0,0,83275
+  17.435 TICK,132500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  17.435 AI_RESULT,0.7383,1,1,83607
+  17.639 TICK,133000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  17.639 AI_RESULT,0.9961,1,0,84200
+  17.639 TICK,133500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  17.841 AI_RESULT,0.2031,0,0,83248
+  17.841 TICK,134000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  18.044 AI_RESULT,0.0117,0,0,83395
+  18.044 TICK,134500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  18.247 AI_RESULT,0.7383,1,0,83999
+  18.247 TICK,135000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  18.247 AI_RESULT,0.9961,1,0,83702
+  18.461 TICK,135500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  18.461 AI_RESULT,0.2031,0,1,83394
+  18.664 TICK,136000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  18.664 AI_RESULT,0.0117,0,0,83684
+  18.664 TICK,136500,src=SIMULATOR,bpm=108,sqi=0.978,disp=-0.6295,comb=-0.6295,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  18.866 AI_RESULT,0.7383,1,0,83614
+  18.866 TICK,137000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  19.070 AI_RESULT,0.9961,1,0,83857
+  19.070 TICK,137500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  19.274 AI_RESULT,0.2031,0,0,83259
+  19.274 TICK,138000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  19.274 AI_RESULT,0.0117,0,0,83343
+  19.475 TICK,138500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6296,comb=-0.6296,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  19.475 AI_RESULT,0.7383,1,1,83669
+  19.677 TICK,139000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  19.677 AI_RESULT,0.9961,1,0,83944
+  19.882 TICK,139500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  19.882 AI_RESULT,0.2031,0,0,83433
+  19.882 TICK,140000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  20.084 AI_RESULT,0.0117,0,0,83160
+  20.084 TICK,140500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  20.286 AI_RESULT,0.7383,1,0,84049
+  20.286 TICK,141000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  20.488 AI_RESULT,0.9961,1,0,83887
+  20.488 TICK,141500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  20.488 AI_RESULT,0.2031,0,1,83154
+  20.692 TICK,142000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  20.692 AI_RESULT,0.0117,0,0,83717
+  20.907 TICK,142500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  20.907 AI_RESULT,0.7383,1,0,83713
+  20.907 TICK,143000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.977,vrms=0.1289,aidrop=0
+  21.109 AI_RESULT,0.9961,1,0,84130
+  21.109 E (51146) task_wdt: Task watchdog got triggered. The following tasks/users did not reset the watchdog in time:
+  21.109 E (51146) task_wdt:  - IDLE0 (CPU 0)
+  21.109 E (51146) task_wdt: Tasks currently running:
+  21.109 E (51146) task_wdt: CPU 0: main
+  21.109 E (51146) task_wdt: CPU 1: IDLE1
+  21.109 E (51146) task_wdt: Print CPU 0 (current core) backtrace
+  21.109 Backtrace: 0x42067185:0x3FCC8E30 0x4037BD79:0x3FCC8E70 0x420DF607:0x3FCDB890 0x420DF17D:0x3FCDBA20 0x420DE81E:0x3FCDBA60 0x420364E4:0x3FCDBAA0 0x42011811:0x3FCDBAE0 0x42008047:0x3FCDBCF0
+  21.109 TICK,143500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=2,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  21.310 AI_RESULT,0.2031,0,0,83618
+  21.310 TICK,144000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  21.511 AI_RESULT,0.0117,0,0,83197
+  21.511 TICK,144500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  21.713 AI_RESULT,0.7383,1,1,84169
+  21.713 TICK,145000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  21.713 AI_RESULT,0.9961,1,0,83735
+  21.929 TICK,145500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  21.929 AI_RESULT,0.2031,0,0,83263
+  22.130 TICK,146000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6701,comb=-0.6701,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  22.130 AI_RESULT,0.0117,0,0,83163
+  22.130 TICK,146500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  22.332 AI_RESULT,0.7383,1,0,83868
+  22.332 TICK,147000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  22.535 AI_RESULT,0.9961,1,0,83867
+  22.535 TICK,147500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  22.739 AI_RESULT,0.2031,0,1,83866
+  22.739 TICK,148000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  22.739 AI_RESULT,0.0117,0,0,83229
+  22.941 TICK,148500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  22.941 AI_RESULT,0.7383,1,0,83665
+  23.145 TICK,149000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  23.145 AI_RESULT,0.9961,1,0,83715
+  23.345 TICK,149500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  23.345 AI_RESULT,0.2031,0,0,83310
+  23.345 TICK,150000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  23.548 AI_RESULT,0.0117,0,0,83460
+  23.548 TICK,150500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  23.751 AI_RESULT,0.7383,1,1,84307
+  23.751 TICK,151000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  23.955 AI_RESULT,0.9961,1,0,83731
+  23.955 TICK,151500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  23.955 AI_RESULT,0.2031,0,0,83427
+  24.159 TICK,152000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  24.159 AI_RESULT,0.0117,0,0,83310
+  24.361 TICK,152500,src=SIMULATOR,bpm=109,sqi=0.978,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  24.361 AI_RESULT,0.7383,1,0,83740
+  24.361 TICK,153000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  24.562 AI_RESULT,0.9961,1,0,83643
+  24.562 TICK,153500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  24.764 AI_RESULT,0.2031,0,1,83409
+  24.764 TICK,154000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  24.966 AI_RESULT,0.0117,0,0,83611
+  24.966 TICK,154500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6296,comb=-0.6296,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  25.169 AI_RESULT,0.7383,1,0,83702
+  25.169 TICK,155000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  25.169 AI_RESULT,0.9961,1,0,84048
+  25.384 TICK,155500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  25.384 AI_RESULT,0.2031,0,0,83452
+  25.586 TICK,156000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6702,comb=-0.6702,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  25.586 AI_RESULT,0.0117,0,0,83246
+  25.586 TICK,156500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  25.789 AI_RESULT,0.7383,1,1,84141
+  25.789 TICK,157000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  25.990 AI_RESULT,0.9961,1,0,83817
+  25.990 TICK,157500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  26.192 E (56146) task_wdt: Task watchdog got triggered. The following tasks/users did not reset the watchdog in time:
+  26.192 E (56146) task_wdt:  - IDLE0 (CPU 0)
+  26.192 E (56146) task_wdt: Tasks currently running:
+  26.192 E (56146) task_wdt: CPU 0: main
+  26.192 E (56146) task_wdt: CPU 1: ecg_ai_infer
+  26.192 E (56146) task_wdt: Print CPU 0 (current core) backtrace
+  26.192 Backtrace: 0x42067185:0x3FCC8E30 0x4037BD79:0x3FCC8E70 0x420DE552:0x3FCDBA70 0x420363AE:0x3FCDBAA0 0x42011811:0x3FCDBAE0 0x42008047:0x3FCDBCF0
+  26.192 TICK,158000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  26.192 AI_RESULT,0.0117,0,0,83768
+  26.394 TICK,158500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  26.394 AI_RESULT,0.7383,1,0,83880
+  26.595 TICK,159000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  26.595 AI_RESULT,0.9961,1,0,84048
+  26.797 TICK,159500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  26.797 AI_RESULT,0.2031,0,1,83659
+  26.797 TICK,160000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  26.998 AI_RESULT,0.0117,0,0,83444
+  26.998 TICK,160500,src=SIMULATOR,bpm=109,sqi=0.978,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  27.199 AI_RESULT,0.7383,1,0,83911
+  27.199 TICK,161000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  27.401 AI_RESULT,0.9961,1,0,83784
+  27.401 TICK,161500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  27.401 AI_RESULT,0.2031,0,0,83317
+  27.604 TICK,162000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  27.604 AI_RESULT,0.0117,0,0,83543
+  27.805 TICK,162500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  27.805 AI_RESULT,0.7383,1,1,83707
+  28.009 TICK,163000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  28.009 AI_RESULT,0.9961,1,0,83826
+  28.009 TICK,163500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  28.212 AI_RESULT,0.2031,0,0,83777
+  28.212 TICK,164000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  28.417 AI_RESULT,0.0117,0,0,83121
+  28.417 TICK,164500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  28.618 AI_RESULT,0.7383,1,0,83924
+  28.618 TICK,165000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  28.618 AI_RESULT,0.9961,1,0,83827
+  28.819 TICK,165500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  28.819 AI_RESULT,0.2031,0,1,83351
+  29.020 TICK,166000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  29.020 AI_RESULT,0.0117,0,0,83694
+  29.020 TICK,166500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  29.221 AI_RESULT,0.7383,1,0,83728
+  29.221 TICK,167000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  29.422 AI_RESULT,0.9961,1,0,83609
+  29.422 TICK,167500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  29.625 AI_RESULT,0.2031,0,0,83617
+  29.625 TICK,168000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  29.840 AI_RESULT,0.0117,0,0,83264
+  29.840 TICK,168500,src=SIMULATOR,bpm=109,sqi=0.978,disp=-0.6296,comb=-0.6296,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  29.840 AI_RESULT,0.7383,1,1,83741
+  30.043 TICK,169000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  30.043 AI_RESULT,0.9961,1,0,84238
+  30.244 TICK,169500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  30.244 AI_RESULT,0.2031,0,0,83632
+  30.244 TICK,170000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  30.447 AI_RESULT,0.0117,0,0,83321
+  30.447 TICK,170500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6296,comb=-0.6296,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  30.647 AI_RESULT,0.7383,1,0,83492
+  30.647 TICK,171000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  30.850 AI_RESULT,0.9961,1,0,84048
+  30.850 TICK,171500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  30.850 AI_RESULT,0.2031,0,1,83575
+  31.051 TICK,172000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  31.051 I (61145) NimBLE: GAP procedure initiated: advertise;
+  31.051 I (61145) NimBLE: disc_mode=2
+  31.051 E (61146) task_wdt: Task watchdog got triggered. The following tasks/users did not reset the watchdog in time:
+  31.051 E (61146) task_wdt:  - IDLE0 (CPU 0)
+  31.051 E (61146) task_wdt: Tasks currently running:
+  31.051 E (61146) task_wdt: CPU 0: main
+  31.051 I (6114E6 )( NimBLE6:  adv_channel1_map=0 own_addr_ty1pe=0 adv_filter_policy=0 adv_itvl_min=1536 adv_itvl_max=1600
+  31.051 46) task_wdt: CPU 1: nimble_host
+  31.051 E (61146) task_wdt: Print CPU 0 (current core) backtrace
+  31.051 Backtrace: 0x42067185:0x3FCC8E30 0x4037BD79:0x3FCC8E70 0x420DF19C:0x3FCDB890 0x420DF17D:0x3FCDBA20 0x420DE81E:0x3FCDBA60 0x42036519:0x3FCDBAA0 0x42011811:0x3FCDBAE0 0x42008047:0x3FCDBCF0
+  31.051 I (61146) NimBLE:
+  31.051 I (61161) ecg_ble: advertising started (slow)
+  31.051 AI_RESULT,0.0117,0,0,103195
+  31.254 TICK,172500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  31.254 AI_RESULT,0.7383,1,0,83345
+  31.455 TICK,173000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  31.455 AI_RESULT,0.9961,1,0,83378
+  31.657 TICK,173500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  31.657 AI_RESULT,0.2031,0,0,82866
+  31.657 TICK,174000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  31.861 AI_RESULT,0.0117,0,0,82788
+  31.861 TICK,174500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  32.063 AI_RESULT,0.7383,1,1,83278
+  32.063 TICK,175000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  32.063 AI_RESULT,0.9961,1,0,83690
+  32.263 TICK,175500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  32.263 AI_RESULT,0.2031,0,0,83014
+  32.465 TICK,176000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  32.465 AI_RESULT,0.0117,0,0,82861
+  32.665 TICK,176500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  32.665 AI_RESULT,0.7383,1,0,83309
+  32.665 TICK,177000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  32.869 AI_RESULT,0.9961,1,0,83314
+  32.869 TICK,177500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.977,vrms=0.1301,aidrop=0
+  33.071 AI_RESULT,0.2031,0,1,82930
+  33.071 TICK,178000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  33.271 AI_RESULT,0.0117,0,0,83185
+  33.271 TICK,178500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6296,comb=-0.6296,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  33.271 AI_RESULT,0.7383,1,0,83113
+  33.471 TICK,179000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  33.471 AI_RESULT,0.9961,1,0,83332
+  33.672 TICK,179500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  33.672 AI_RESULT,0.2031,0,0,82950
+  33.873 TICK,180000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  33.873 AI_RESULT,0.0117,0,0,82719
+  33.873 TICK,180500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  34.076 AI_RESULT,0.7383,1,1,83303
+  34.076 TICK,181000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  34.278 AI_RESULT,0.9961,1,0,83400
+  34.278 TICK,181500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  34.479 AI_RESULT,0.2031,0,0,82913
+  34.479 TICK,182000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  34.479 AI_RESULT,0.0117,0,0,82835
+  34.682 TICK,182500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  34.682 AI_RESULT,0.7383,1,0,83334
+  34.884 TICK,183000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  34.884 AI_RESULT,0.9961,1,0,83202
+  35.087 TICK,183500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6728,comb=-0.6728,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  35.087 AI_RESULT,0.2031,0,1,83100
+  35.087 TICK,184000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  35.289 AI_RESULT,0.0117,0,0,82923
+  35.289 TICK,184500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  35.492 AI_RESULT,0.7383,1,0,83428
+  35.492 TICK,185000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  35.708 AI_RESULT,0.9961,1,0,83314
+  35.708 TICK,185500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  35.708 AI_RESULT,0.2031,0,0,82845
+  35.910 TICK,186000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  35.910 AI_RESULT,0.0117,0,0,82996
+  36.113 TICK,186500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  36.113 E (66146) task_wdt: Task watchdog got triggered. The following tasks/users did not reset the watchdog in time:
+  36.113 E (66146) task_wdt:  - IDLE0 (CPU 0)
+  36.113 E (66146) task_wdt: Tasks currently running:
+  36.113 E (66146) task_wdt: CPU 0: main
+  36.113 E (66146) task_wdt: CPU 1: ecg_ai_infer
+  36.113 E (66146) task_wdt: Print CPU 0 (current core) backtrace
+  36.113 Backtrace: 0x42067185:0x3FCC8E30 0x4037BD79:0x3FCC8E70 0x4203497A:0x3FCDBA70 0x42011949:0x3FCDBAE0 0x42008047:0x3FCDBCF0
+  36.113 AI_RESULT,0.7383,1,1,78810
+  36.113 TICK,187000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  36.316 AI_RESULT,0.9961,1,0,83251
+  36.316 TICK,187500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6729,comb=-0.6729,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  36.519 AI_RESULT,0.2031,0,0,83101
+  36.519 TICK,188000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  36.721 AI_RESULT,0.0117,0,0,82745
+  36.721 TICK,188500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  36.721 AI_RESULT,0.7383,1,0,83171
+  36.922 TICK,189000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  36.922 AI_RESULT,0.9961,1,0,83305
+  37.124 TICK,189500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  37.124 AI_RESULT,0.2031,0,1,83371
+  37.327 TICK,190000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  37.327 AI_RESULT,0.0117,0,0,82722
+  37.327 TICK,190500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  37.530 AI_RESULT,0.7383,1,0,83342
+  37.530 TICK,191000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  37.734 AI_RESULT,0.9961,1,0,83187
+  37.734 TICK,191500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  37.936 AI_RESULT,0.2031,0,0,82945
+  37.936 TICK,192000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.977,vrms=0.1289,aidrop=0
+  37.936 AI_RESULT,0.0117,0,0,82776
+  38.140 TICK,192500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  38.140 AI_RESULT,0.7383,1,1,83695
+  38.342 TICK,193000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  38.342 AI_RESULT,0.9961,1,0,83254
+  38.544 TICK,193500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6729,comb=-0.6729,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  38.544 AI_RESULT,0.2031,0,0,83086
+  38.544 TICK,194000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  38.747 AI_RESULT,0.0117,0,0,82808
+  38.747 TICK,194500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  38.951 AI_RESULT,0.7383,1,0,83064
+  38.951 TICK,195000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  38.951 AI_RESULT,0.9961,1,0,83356
+  39.152 TICK,195500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  39.152 AI_RESULT,0.2031,0,1,83269
+  39.355 TICK,196000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6702,comb=-0.6702,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  39.355 AI_RESULT,0.0117,0,0,82718
+  39.557 TICK,196500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  39.557 AI_RESULT,0.7383,1,0,83328
+  39.557 TICK,197000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  39.760 AI_RESULT,0.9961,1,0,83363
+  39.760 TICK,197500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  39.961 AI_RESULT,0.2031,0,0,82856
+  39.961 TICK,198000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  40.163 AI_RESULT,0.0117,0,0,82872
+  40.163 TICK,198500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  40.163 AI_RESULT,0.7383,1,1,83287
+  40.366 TICK,199000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5442,comb=-0.5442,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  40.366 AI_RESULT,0.9961,1,0,83299
+  40.570 TICK,199500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  40.570 AI_RESULT,0.2031,0,0,83115
+  40.771 TICK,200000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  40.771 AI_RESULT,0.0117,0,0,82933
+  40.771 TICK,200500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  40.976 AI_RESULT,0.7383,1,0,83282
+  40.976 TICK,201000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5443,comb=-0.5443,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  41.179 E (71146) task_wdt: Task watchdog got triggered. The following tasks/users did not reset the watchdog in time:
+  41.179 E (71146) task_wdt:  - IDLE0 (CPU 0)
+  41.179 E (71146) task_wdt: Tasks currently running:
+  41.179 E (71146) task_wdt: CPU 0: main
+  41.179 E (71146) task_wdt: CPU 1: ecg_ai_infer
+  41.179 E (71146) task_wdt: Print CPU 0 (current core) backtrace
+  41.179 Backtrace: 0x42067185:0x3FCC8E30 0x4037BD79:0x3FCC8E70 0x420E9539:0x3FCDBAC0 0x42011B09:0x3FCDBAE0 0x42008047:0x3FCDBCF0
+  41.179 AI_RESULT,0.9961,1,0,78983
+  41.179 TICK,201500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6729,comb=-0.6729,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  41.382 AI_RESULT,0.2031,0,1,83026
+  41.382 TICK,202000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  41.382 AI_RESULT,0.0117,0,0,82791
+  41.586 TICK,202500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6296,comb=-0.6296,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  41.586 AI_RESULT,0.7383,1,0,83119
+  41.789 TICK,203000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  41.789 AI_RESULT,0.9961,1,0,83298
+  41.994 TICK,203500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6729,comb=-0.6729,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  41.994 AI_RESULT,0.2031,0,0,83034
+  41.994 TICK,204000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  42.196 AI_RESULT,0.0117,0,0,82897
+  42.196 TICK,204500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  42.399 AI_RESULT,0.7383,1,1,83358
+  42.399 TICK,205000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  42.399 AI_RESULT,0.9961,1,0,83341
+  42.601 TICK,205500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  42.601 AI_RESULT,0.2031,0,0,82942
+  42.803 TICK,206000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  42.803 AI_RESULT,0.0117,0,0,82792
+  43.007 TICK,206500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  43.007 AI_RESULT,0.7383,1,0,83257
+  43.007 TICK,207000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  43.211 AI_RESULT,0.9961,1,0,83602
+  43.211 TICK,207500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  43.413 AI_RESULT,0.2031,0,1,83017
+  43.413 TICK,208000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  43.617 AI_RESULT,0.0117,0,0,82903
+  43.617 TICK,208500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  43.617 AI_RESULT,0.7383,1,0,83212
+  43.832 TICK,209000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  43.832 AI_RESULT,0.9961,1,0,83376
+  44.036 TICK,209500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.977,vrms=0.1294,aidrop=0
+  44.036 AI_RESULT,0.2031,0,0,83047
+  44.036 TICK,210000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  44.239 AI_RESULT,0.0117,0,0,83325
+  44.239 TICK,210500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  44.442 AI_RESULT,0.7383,1,1,83241
+  44.442 TICK,211000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5443,comb=-0.5443,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  44.645 AI_RESULT,0.9961,1,0,83338
+  44.645 TICK,211500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  44.645 AI_RESULT,0.2031,0,0,83038
+  44.846 TICK,212000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  44.846 AI_RESULT,0.0117,0,0,82771
+  45.048 TICK,212500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  45.048 AI_RESULT,0.7383,1,0,83369
+  45.251 TICK,213000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  45.251 AI_RESULT,0.9961,1,0,83941
+  45.251 TICK,213500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6729,comb=-0.6729,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  45.455 AI_RESULT,0.2031,0,1,82902
+  45.455 TICK,214000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  45.656 AI_RESULT,0.0117,0,0,82881
+  45.656 TICK,214500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  45.859 AI_RESULT,0.7383,1,0,83329
+  45.859 TICK,215000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  45.859 AI_RESULT,0.9961,1,0,83351
+  46.061 TICK,215500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  46.061 E (76146) task_wdt: Task watchdog got triggered. The following tasks/users did not reset the watchdog in time:
+  46.061 E (76146) task_wdt:  - IDLE0 (CPU 0)
+  46.061 E (76146) task_wdt: Tasks currently running:
+  46.061 E (76146) task_wdt: CPU 0: main
+  46.061 E (76146) task_wdt: CPU 1: ecg_ai_infer
+  46.061 E (76146) task_wdt: Print CPU 0 (current core) backtrace
+  46.061 Backtrace: 0x42067185:0x3FCC8E30 0x4037BD79:0x3FCC8E70 0x420DE5B9:0x3FCDBA70 0x4203647E:0x3FCDBAA0 0x42011811:0x3FCDBAE0 0x42008047:0x3FCDBCF0
+  46.061 AI_RESULT,0.2031,0,0,78614
+  46.266 TICK,216000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=2,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  46.266 AI_RESULT,0.0117,0,0,82941
+  46.467 TICK,216500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  46.467 AI_RESULT,0.7383,1,1,83193
+  46.467 TICK,217000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  46.670 AI_RESULT,0.9961,1,0,83334
+  46.670 TICK,217500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  46.873 AI_RESULT,0.2031,0,0,82798
+  46.873 TICK,218000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  47.076 AI_RESULT,0.0117,0,0,82886
+  47.076 TICK,218500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6296,comb=-0.6296,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  47.076 AI_RESULT,0.7383,1,0,83139
+  47.279 TICK,219000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  47.279 AI_RESULT,0.9961,1,0,83268
+  47.481 TICK,219500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  47.481 AI_RESULT,0.2031,0,1,83006
+  47.481 TICK,220000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  47.682 AI_RESULT,0.0117,0,0,82829
+  47.682 TICK,220500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  47.883 AI_RESULT,0.7383,1,0,83295
+  47.883 TICK,221000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5443,comb=-0.5443,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  48.088 AI_RESULT,0.9961,1,0,83301
+  48.088 TICK,221500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  48.088 AI_RESULT,0.2031,0,0,83037
+  48.290 TICK,222000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  48.290 AI_RESULT,0.0117,0,0,82780
+  48.493 TICK,222500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  48.493 AI_RESULT,0.7383,1,1,83400
+  48.697 TICK,223000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  48.697 AI_RESULT,0.9961,1,0,83354
+  48.697 TICK,223500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6729,comb=-0.6729,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  48.897 AI_RESULT,0.2031,0,0,83062
+  48.897 TICK,224000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  49.102 AI_RESULT,0.0117,0,0,82879
+  49.102 TICK,224500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  49.307 AI_RESULT,0.7383,1,0,83678
+  49.307 TICK,225000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  49.307 AI_RESULT,0.9961,1,0,83333
+  49.512 TICK,225500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  49.512 AI_RESULT,0.2031,0,1,83060
+  49.715 TICK,226000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  49.715 AI_RESULT,0.0117,0,0,82834
+  49.715 TICK,226500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  49.918 AI_RESULT,0.7383,1,0,83124
+  49.918 TICK,227000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  50.133 AI_RESULT,0.9961,1,0,83335
+  50.133 TICK,227500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  50.334 AI_RESULT,0.2031,0,0,83217
+  50.334 TICK,228000,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  50.334 AI_RESULT,0.0117,0,0,82713
+  50.538 TICK,228500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  50.538 AI_RESULT,0.7383,1,1,83278
+  50.741 TICK,229000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  50.741 AI_RESULT,0.9961,1,0,83360
+  50.943 TICK,229500,src=SIMULATOR,bpm=108,sqi=0.976,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  50.943 AI_RESULT,0.2031,0,0,82880
+  50.943 TICK,230000,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  51.146 E (81146) task_wdt: Task watchdog got triggered. The following tasks/users did not reset the watchdog in time:
+  51.146 E (81146) task_wdt:  - IDLE0 (CPU 0)
+  51.146 E (81146) task_wdt: Tasks currently running:
+  51.146 E (81146) task_wdt: CPU 0: main
+  51.146 E (81146) task_wdt: CPU 1: ecg_ai_infer
+  51.146 E (81146) task_wdt: Print CPU 0 (current core) backtrace
+  51.146 Backtrace: 0x42067185:0x3FCC8E30 0x4037BD79:0x3FCC8E70 0x420E93EB:0x3FCDBA50 0x4200ADB7:0x3FCDBA90 0x42011685:0x3FCDBAE0 0x42008047:0x3FCDBCF0
+  51.146 AI_RESULT,0.0117,0,0,79220
+  51.146 TICK,230500,src=SIMULATOR,bpm=108,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  51.359 AI_RESULT,0.7383,1,0,83161
+  51.359 TICK,231000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5443,comb=-0.5443,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  51.359 AI_RESULT,0.9961,1,0,83181
+  51.572 TICK,231500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  51.572 AI_RESULT,0.2031,0,1,82966
+  51.782 TICK,232000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  51.782 AI_RESULT,0.0117,0,0,82882
+  51.782 TICK,232500,src=SIMULATOR,bpm=109,sqi=0.978,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  51.996 AI_RESULT,0.7383,1,0,83287
+  51.996 TICK,233000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  52.198 AI_RESULT,0.9961,1,0,83288
+  52.198 TICK,233500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6729,comb=-0.6729,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  52.400 AI_RESULT,0.2031,0,0,82989
+  52.400 TICK,234000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  52.400 AI_RESULT,0.0117,0,0,82849
+  52.601 TICK,234500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  52.601 AI_RESULT,0.7383,1,1,83207
+  52.802 TICK,235000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  52.802 AI_RESULT,0.9961,1,0,83350
+  53.003 TICK,235500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  53.003 AI_RESULT,0.2031,0,0,83047
+  53.003 TICK,236000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6702,comb=-0.6702,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  53.207 AI_RESULT,0.0117,0,0,82692
+  53.207 TICK,236500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  53.410 AI_RESULT,0.7383,1,0,83359
+  53.410 TICK,237000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  53.626 AI_RESULT,0.9961,1,0,83372
+  53.626 TICK,237500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  53.626 AI_RESULT,0.2031,0,1,82891
+  53.826 TICK,238000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  53.826 AI_RESULT,0.0117,0,0,82890
+  54.040 TICK,238500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.977,vrms=0.1294,aidrop=0
+  54.040 AI_RESULT,0.7383,1,0,83238
+  54.040 TICK,239000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5443,comb=-0.5443,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  54.243 AI_RESULT,0.9961,1,0,83251
+  54.243 TICK,239500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  54.443 AI_RESULT,0.2031,0,0,82935
+  54.443 TICK,240000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  54.644 AI_RESULT,0.0117,0,0,82838
+  54.644 TICK,240500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  54.644 AI_RESULT,0.7383,1,1,83243
+  54.845 TICK,241000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5443,comb=-0.5443,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  54.845 AI_RESULT,0.9961,1,0,83302
+  55.045 TICK,241500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  55.045 AI_RESULT,0.2031,0,0,83115
+  55.247 TICK,242000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  55.247 AI_RESULT,0.0117,0,0,83165
+  55.247 TICK,242500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6296,comb=-0.6296,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  55.447 AI_RESULT,0.7383,1,0,83174
+  55.447 TICK,243000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  55.650 AI_RESULT,0.9961,1,0,83256
+  55.650 TICK,243500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6729,comb=-0.6729,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  55.650 AI_RESULT,0.2031,0,1,83073
+  55.853 TICK,244000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  55.853 AI_RESULT,0.0117,0,0,82684
+  56.057 TICK,244500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6297,comb=-0.6297,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  56.057 AI_RESULT,0.7383,1,0,83408
+  56.057 E (86146) task_wdt: Task watchdog got triggered. The following tasks/users did not reset the watchdog in time:
+  56.057 E (86146) task_wdt:  - IDLE0 (CPU 0)
+  56.057 E (86146) task_wdt: Tasks currently running:
+  56.057 E (86146) task_wdt: CPU 0: main
+  56.057 E (86146) task_wdt: CPU 1: IDLE1
+  56.057 E (86146) task_wdt: Print CPU 0 (current core) backtrace
+  56.057 Backtrace: 0x42067185:0x3FCC8E30 0x4037BD79:0x3FCC8E70 0x42036534:0x3FCDBAA0 0x42011811:0x3FCDBAE0 0x42008047:0x3FCDBCF0
+  56.259 TICK,245000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.5443,comb=-0.5443,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  56.259 AI_RESULT,0.9961,1,0,83790
+  56.259 TICK,245500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  56.461 AI_RESULT,0.2031,0,0,82910
+  56.461 TICK,246000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  56.664 AI_RESULT,0.0117,0,0,82816
+  56.664 TICK,246500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6297,comb=-0.6297,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  56.867 AI_RESULT,0.7383,1,1,83300
+  56.867 TICK,247000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  56.867 AI_RESULT,0.9961,1,0,83224
+  57.069 TICK,247500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  57.069 AI_RESULT,0.2031,0,0,83024
+  57.272 TICK,248000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1301,aidrop=0
+  57.272 AI_RESULT,0.0117,0,0,83348
+  57.474 TICK,248500,src=SIMULATOR,bpm=109,sqi=0.978,disp=-0.6297,comb=-0.6297,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  57.474 AI_RESULT,0.7383,1,0,83155
+  57.474 TICK,249000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  57.677 AI_RESULT,0.9961,1,0,83289
+  57.677 TICK,249500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  57.879 AI_RESULT,0.2031,0,1,83178
+  57.879 TICK,250000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  58.081 AI_RESULT,0.0117,0,0,82876
+  58.081 TICK,250500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6297,comb=-0.6297,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1294,aidrop=0
+  58.081 AI_RESULT,0.7383,1,0,83141
+  58.283 TICK,251000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.5443,comb=-0.5443,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  58.283 AI_RESULT,0.9961,1,0,83438
+  58.487 TICK,251500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  58.487 AI_RESULT,0.2031,0,0,83023
+  58.689 TICK,252000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6702,comb=-0.6702,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  58.689 AI_RESULT,0.0117,0,0,82736
+  58.689 TICK,252500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6297,comb=-0.6297,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  58.891 AI_RESULT,0.7383,1,1,83248
+  58.891 TICK,253000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1289,aidrop=0
+  59.094 AI_RESULT,0.9961,1,0,83369
+  59.094 TICK,253500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6729,comb=-0.6729,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  59.094 AI_RESULT,0.2031,0,0,82827
+  59.295 TICK,254000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6703,comb=-0.6703,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  59.295 AI_RESULT,0.0117,0,0,82953
+  59.497 TICK,254500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6297,comb=-0.6297,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  59.497 AI_RESULT,0.7383,1,0,83178
+  59.700 TICK,255000,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.5443,comb=-0.5443,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  59.700 AI_RESULT,0.9961,1,0,83201
+  59.700 TICK,255500,src=SIMULATOR,bpm=109,sqi=0.976,disp=-0.6729,comb=-0.6729,busy=93%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.976,vrms=0.1356,aidrop=0
+  59.904 AI_RESULT,0.2031,0,1,83026
+  59.904 TICK,256000,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6703,comb=-0.6703,busy=93%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.977,vrms=0.1301,aidrop=0
+  60.105 AI_RESULT,0.0117,0,0,82799
+  60.105 TICK,256500,src=SIMULATOR,bpm=109,sqi=0.977,disp=-0.6297,comb=-0.6297,busy=92%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.977,vrms=0.1301,aidrop=0

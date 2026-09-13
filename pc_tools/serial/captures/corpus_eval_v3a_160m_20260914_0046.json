@@ -1,0 +1,103 @@
+{
+  "tool": "board_corpus_eval.py",
+  "model": "v3a_160m",
+  "port": "COM4",
+  "seconds_per_case": 36.0,
+  "settle_s": 5.0,
+  "timestamp": "2026-09-14 00:46:00",
+  "total_wall_s": 148.9,
+  "results": [
+    {
+      "windows": 31,
+      "raw_rate": 0.0968,
+      "conf_median": 0.0,
+      "conf_mean": 0.0974,
+      "confirmed_rate": 0.0645,
+      "alarm_rate": 0.0,
+      "asrc_seen": [
+        "00"
+      ],
+      "sqi_mean": 0.99,
+      "seg_seen": [
+        "3"
+      ],
+      "index": 0,
+      "segment": 3,
+      "name": "clean_normal",
+      "params": {
+        "carrier": "mit100_0_30s",
+        "noise": null
+      }
+    },
+    {
+      "windows": 31,
+      "raw_rate": 0.4839,
+      "conf_median": 0.1328,
+      "conf_mean": 0.4873,
+      "confirmed_rate": 0.1613,
+      "alarm_rate": 0.5484,
+      "asrc_seen": [
+        "00",
+        "01"
+      ],
+      "sqi_mean": 0.975,
+      "seg_seen": [
+        "4"
+      ],
+      "index": 1,
+      "segment": 4,
+      "name": "clean_abnormal",
+      "params": {
+        "carrier": "mit106_90_120s",
+        "noise": null
+      }
+    },
+    {
+      "windows": 31,
+      "raw_rate": 0.871,
+      "conf_median": 0.9961,
+      "conf_mean": 0.8719,
+      "confirmed_rate": 0.1613,
+      "alarm_rate": 0.0,
+      "asrc_seen": [
+        "00"
+      ],
+      "sqi_mean": 0.654,
+      "seg_seen": [
+        "30"
+      ],
+      "index": 27,
+      "segment": 30,
+      "name": "pure_motion",
+      "params": {
+        "carrier": null,
+        "noise": "motion",
+        "note": "无载波纯噪声"
+      }
+    },
+    {
+      "windows": 31,
+      "raw_rate": 1.0,
+      "conf_median": 0.9961,
+      "conf_mean": 0.9961,
+      "confirmed_rate": 0.1935,
+      "alarm_rate": 0.8387,
+      "asrc_seen": [
+        "00",
+        "01"
+      ],
+      "sqi_mean": 0.929,
+      "seg_seen": [
+        "31"
+      ],
+      "index": 28,
+      "segment": 31,
+      "name": "synthetic_vf_probe",
+      "params": {
+        "carrier": null,
+        "noise": "synthetic_vf_proxy",
+        "note": "合成 VF 探针: 门控可达性验证用, 非真值 VF, 不作检出能力证据"
+      }
+    }
+  ]
+}

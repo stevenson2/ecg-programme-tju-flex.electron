@@ -1,0 +1,142 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "debug nw/nt",
+  "port": "COM4",
+  "seconds": 12.0,
+  "cmds": [],
+  "capture_start": "2026-09-14 00:33:07",
+  "ai_result": {
+    "windows": 72,
+    "rate_hz": 6.025,
+    "confirmed_rate": 0.1667,
+    "raw_rate": 0.5,
+    "conf_median": 0.4707,
+    "conf_mean": 0.4873,
+    "confirmed_runs_s": {
+      "count": 12,
+      "max": 1,
+      "min": 1,
+      "median": 1.0,
+      "mean": 1,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 11,
+      "max": 5,
+      "min": 5,
+      "median": 5,
+      "mean": 5,
+      "all": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    "raw_runs_s": {
+      "count": 18,
+      "max": 2,
+      "min": 2,
+      "median": 2.0,
+      "mean": 2,
+      "all": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 17,
+      "max": 2,
+      "min": 2,
+      "median": 2,
+      "mean": 2,
+      "all": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "latency_us_median": 84801.5,
+    "latency_us_max": 85558
+  },
+  "tick": {
+    "count": 71,
+    "sources": [
+      "SIMULATOR"
+    ],
+    "busy_pct_max": 93,
+    "busy_pct_mean": 93.0,
+    "ovr_total": 16,
+    "ovr_max": 1,
+    "segments": [
+      "0"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.9718,
+    "runs_s": {
+      "count": 1,
+      "max": 69,
+      "min": 69,
+      "median": 69,
+      "mean": 69,
+      "all": [
+        69
+      ]
+    },
+    "asrc_seen": [
+      "0x00",
+      "0x01"
+    ]
+  }
+}

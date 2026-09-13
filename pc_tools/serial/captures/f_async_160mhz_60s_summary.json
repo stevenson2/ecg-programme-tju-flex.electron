@@ -1,0 +1,134 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "Round-F: 异步推理+期限节拍 @160MHz 60s",
+  "port": "COM4",
+  "seconds": 60.0,
+  "cmds": [
+    "MODE sim"
+  ],
+  "capture_start": "2026-09-14 00:43:00",
+  "ai_result": {
+    "windows": 60,
+    "rate_hz": 1.004,
+    "confirmed_rate": 0.1667,
+    "raw_rate": 0.5667,
+    "conf_median": 0.7383,
+    "conf_mean": 0.5588,
+    "confirmed_runs_s": {
+      "count": 10,
+      "max": 1,
+      "min": 1,
+      "median": 1.0,
+      "mean": 1,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 9,
+      "max": 5,
+      "min": 5,
+      "median": 5,
+      "mean": 5,
+      "all": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    "raw_runs_s": {
+      "count": 15,
+      "max": 6,
+      "min": 1,
+      "median": 2,
+      "mean": 2.27,
+      "all": [
+        6,
+        1,
+        3,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 14,
+      "max": 2,
+      "min": 1,
+      "median": 2.0,
+      "mean": 1.79,
+      "all": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "latency_us_median": 83011.0,
+    "latency_us_max": 84851
+  },
+  "tick": {
+    "count": 60,
+    "sources": [
+      "SIMULATOR"
+    ],
+    "busy_pct_max": 62,
+    "busy_pct_mean": 18.1,
+    "ovr_total": 13,
+    "ovr_max": 1,
+    "segments": [
+      "0"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.7833,
+    "runs_s": {
+      "count": 1,
+      "max": 47,
+      "min": 47,
+      "median": 47,
+      "mean": 47,
+      "all": [
+        47
+      ]
+    },
+    "asrc_seen": [
+      "0x00",
+      "0x01"
+    ]
+  }
+}

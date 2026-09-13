@@ -46,6 +46,7 @@ typedef struct {
     int arena_size;           /* Tensor Arena 字节数，建议 >=64KB */
     bool use_psram;           /* true 时从 PSRAM 分配 arena */
     int queue_length;         /* 结果队列长度，0 表示只用回调 */
+    bool async_infer;         /* true: 推理在独立任务执行 (Round-F)；默认 false 内联 */
 } ecg_ai_config_t;
 
 typedef struct {
@@ -81,6 +82,9 @@ void ecg_ai_set_result_callback(ecg_ai_result_cb_t cb);
 bool ecg_ai_pop_result(ecg_ai_result_t *out);
 uint32_t ecg_ai_total_inferences(void);
 uint32_t ecg_ai_total_confirmed(void);
+
+/* async_infer 模式下因交接槽满而被丢弃的窗口数（推理滞后指标，正常应为 0） */
+uint32_t ecg_ai_async_dropped(void);
 
 #ifdef __cplusplus
 }

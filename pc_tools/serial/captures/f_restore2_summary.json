@@ -1,0 +1,85 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "",
+  "port": "COM4",
+  "seconds": 10.0,
+  "cmds": [
+    "MODE sim",
+    "REC_AUTO 1"
+  ],
+  "capture_start": "2026-09-14 01:06:47",
+  "ai_result": {
+    "windows": 9,
+    "rate_hz": 0.907,
+    "confirmed_rate": 0.2222,
+    "raw_rate": 0.7778,
+    "conf_median": 0.9961,
+    "conf_mean": 0.7565,
+    "confirmed_runs_s": {
+      "count": 2,
+      "max": 1,
+      "min": 1,
+      "median": 1.0,
+      "mean": 1,
+      "all": [
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 1,
+      "max": 5,
+      "min": 5,
+      "median": 5,
+      "mean": 5,
+      "all": [
+        5
+      ]
+    },
+    "raw_runs_s": {
+      "count": 2,
+      "max": 6,
+      "min": 1,
+      "median": 3.5,
+      "mean": 3.5,
+      "all": [
+        1,
+        6
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 1,
+      "max": 1,
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "all": [
+        1
+      ]
+    },
+    "latency_us_median": 83531,
+    "latency_us_max": 84218
+  },
+  "tick": {
+    "count": 9,
+    "sources": [
+      "SIMULATOR"
+    ],
+    "busy_pct_max": 78,
+    "busy_pct_mean": 22.8,
+    "ovr_total": 2,
+    "ovr_max": 1,
+    "segments": [
+      "2"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.0,
+    "runs_s": {
+      "count": 0
+    },
+    "asrc_seen": [
+      "0x00"
+    ]
+  }
+}

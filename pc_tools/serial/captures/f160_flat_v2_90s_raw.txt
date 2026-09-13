@@ -1,0 +1,195 @@
+   0.211 [main] mode -> REPLAY_NORMAL
+   0.211 CMD MODE ok REPLAY_NORMAL
+   0.211 TICK,159000,src=REPLAY_NORMAL,bpm=0,sqi=0.708,disp=-1.5710,comb=-1.5710,busy=4%,ovr=0,alarm=0,asrc=0x00,seg=2,sqimin=0.708,vrms=0.0000,aidrop=0,nw=345211,nt=345211
+   0.211 AI_RESULT,0.9805,1,1,75591
+   0.211 [ECGR] auto-record: abnormal edge, starting...
+   0.425 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_346.ecgr
+   0.639 TICK,159500,src=REPLAY_NORMAL,bpm=0,sqi=0.984,disp=-1.6421,comb=-1.6421,busy=13%,ovr=1,alarm=0,asrc=0x00,seg=2,sqimin=0.984,vrms=0.0000,aidrop=0,nw=346320,nt=346320
+   0.639 AI_RESULT,0.0117,0,0,75657
+   1.494 TICK,160000,src=REPLAY_NORMAL,bpm=44,sqi=0.985,disp=-1.3396,comb=-1.3396,busy=4%,ovr=0,alarm=0,asrc=0x00,seg=2,sqimin=0.985,vrms=0.0000,aidrop=0,nw=347320,nt=347320
+   1.708 AI_RESULT,0.2812,0,0,76016
+   2.537 TICK,160500,src=REPLAY_NORMAL,bpm=76,sqi=0.985,disp=-1.7079,comb=-1.7079,busy=4%,ovr=0,alarm=0,asrc=0x00,seg=2,sqimin=0.985,vrms=0.0000,aidrop=0,nw=348320,nt=348320
+   2.752 AI_RESULT,0.0000,0,0,75811
+   3.585 TICK,161000,src=REPLAY_NORMAL,bpm=76,sqi=0.984,disp=-1.5992,comb=-1.5992,busy=4%,ovr=0,alarm=0,asrc=0x00,seg=2,sqimin=0.984,vrms=0.0000,aidrop=0,nw=349320,nt=349320
+   3.585 AI_RESULT,0.0430,0,0,75867
+   4.643 TICK,161500,src=REPLAY_NORMAL,bpm=76,sqi=0.984,disp=-1.6591,comb=-1.6591,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=2,sqimin=0.984,vrms=0.2607,aidrop=0,nw=350320,nt=350320
+   4.643 AI_RESULT,0.0000,0,0,75882
+   5.258 [ECGR] auto-record: consecutive normal, stopping...
+   5.875 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_327.ecgr
+   6.289 [ECGR] index rebuilt: 10 records
+   6.289 [ECGR] stopped: 1223 samples, 5 sec, 0 abn, size=2478
+   6.690 TICK,162000,src=REPLAY_NORMAL,bpm=0,sqi=0.987,disp=-1.7086,comb=-1.7086,busy=56%,ovr=1,alarm=0,asrc=0x00,seg=2,sqimin=0.986,vrms=0.2607,aidrop=0,nw=352492,nt=352492
+   6.890 AI_RESULT,0.6289,1,1,75376
+   7.735 TICK,162500,src=REPLAY_NORMAL,bpm=0,sqi=0.987,disp=-1.7041,comb=-1.7041,busy=4%,ovr=0,alarm=0,asrc=0x00,seg=2,sqimin=0.985,vrms=0.2607,aidrop=0,nw=353492,nt=353492
+   7.735 AI_RESULT,0.0000,0,0,75598
+   8.765 TICK,163000,src=REPLAY_NORMAL,bpm=74,sqi=0.989,disp=-1.6530,comb=-1.6530,busy=4%,ovr=0,alarm=0,asrc=0x00,seg=2,sqimin=0.988,vrms=0.2607,aidrop=0,nw=354492,nt=354492
+   8.765 AI_RESULT,0.0000,0,0,75821
+   9.811 TICK,163500,src=REPLAY_NORMAL,bpm=75,sqi=0.990,disp=-1.6190,comb=-1.6190,busy=4%,ovr=0,alarm=0,asrc=0x00,seg=2,sqimin=0.989,vrms=0.2607,aidrop=0,nw=355492,nt=355492
+   9.811 AI_RESULT,0.0000,0,0,75876
+  10.628 TICK,164000,src=REPLAY_NORMAL,bpm=76,sqi=0.991,disp=-1.6255,comb=-1.6255,busy=4%,ovr=1,alarm=0,asrc=0x00,seg=2,sqimin=0.990,vrms=0.1316,aidrop=0,nw=356492,nt=356492
+  10.841 AI_RESULT,0.0156,0,0,75781
+  11.698 TICK,164500,src=REPLAY_NORMAL,bpm=75,sqi=0.991,disp=-1.6860,comb=-1.6860,busy=4%,ovr=0,alarm=0,asrc=0x00,seg=2,sqimin=0.991,vrms=0.1316,aidrop=0,nw=357492,nt=357492
+  11.912 AI_RESULT,0.6289,1,0,75896
+  12.754 TICK,165000,src=REPLAY_NORMAL,bpm=73,sqi=0.992,disp=-1.7155,comb=-1.7155,busy=4%,ovr=0,alarm=0,asrc=0x00,seg=2,sqimin=0.992,vrms=0.1316,aidrop=0,nw=358492,nt=358492
+  12.754 AI_RESULT,0.0000,0,1,75856
+  13.169 [ECGR] auto-record: abnormal edge, starting...
+  13.383 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_359.ecgr
+  13.798 TICK,165500,src=REPLAY_NORMAL,bpm=73,sqi=0.992,disp=-1.6257,comb=-1.6257,busy=13%,ovr=1,alarm=0,asrc=0x00,seg=2,sqimin=0.992,vrms=0.1316,aidrop=0,nw=359601,nt=359601
+  14.012 AI_RESULT,0.1016,0,0,75937
+  14.857 TICK,166000,src=REPLAY_NORMAL,bpm=73,sqi=0.993,disp=-1.6167,comb=-1.6167,busy=4%,ovr=0,alarm=0,asrc=0x00,seg=2,sqimin=0.992,vrms=0.1316,aidrop=0,nw=360601,nt=360601
+  14.857 AI_RESULT,0.0000,0,0,75927
+  15.902 TICK,166500,src=REPLAY_NORMAL,bpm=73,sqi=0.993,disp=-1.4500,comb=-1.4500,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=2,sqimin=0.993,vrms=0.1237,aidrop=0,nw=361601,nt=361601
+  15.902 AI_RESULT,0.0000,0,0,75942
+  16.731 TICK,167000,src=REPLAY_NORMAL,bpm=0,sqi=0.993,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=0,asrc=0x00,seg=2,sqimin=0.993,vrms=0.1237,aidrop=0,nw=362601,nt=362601
+  16.944 AI_RESULT,0.0000,0,0,75651
+  17.790 TICK,167500,src=REPLAY_NORMAL,bpm=0,sqi=0.993,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=0,asrc=0x00,seg=2,sqimin=0.993,vrms=0.1237,aidrop=0,nw=363601,nt=363601
+  18.005 AI_RESULT,0.6523,1,0,75591
+  18.218 [ECGR] auto-record: consecutive normal, stopping...
+  18.848 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_346.ecgr
+  19.491 [ECGR] index rebuilt: 10 records
+  19.491 [ECGR] stopped: 1223 samples, 5 sec, 0 abn, size=2478
+  19.491 [ALARM] LATCH src=0x04 t=365s dens=4
+  19.921 TICK,168000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=55%,ovr=1,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.1237,aidrop=0,nw=365773,nt=365773
+  20.134 AI_RESULT,0.0039,0,1,75290
+  20.978 TICK,168500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=3%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.1237,aidrop=0,nw=366773,nt=366773
+  21.192 AI_RESULT,0.0000,0,0,75442
+  22.034 TICK,169000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=1,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0202,aidrop=0,nw=367773,nt=367773
+  22.034 AI_RESULT,0.0000,0,0,75103
+  23.090 TICK,169500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=3%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0202,aidrop=0,nw=368773,nt=368773
+  23.090 AI_RESULT,0.0000,0,0,75511
+  23.290 [ECGR] auto-record: abnormal edge, starting...
+  23.290 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_369.ecgr
+  24.121 TICK,170000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=13%,ovr=1,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0202,aidrop=0,nw=369882,nt=369882
+  24.121 AI_RESULT,0.0039,0,0,75652
+  25.167 TICK,170500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0202,aidrop=0,nw=370882,nt=370882
+  25.167 AI_RESULT,0.0000,0,0,75605
+  26.024 TICK,171000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0202,aidrop=0,nw=371882,nt=371882
+  26.238 AI_RESULT,0.0117,0,0,75465
+  27.068 TICK,171500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=1,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=372882,nt=372882
+  27.269 AI_RESULT,0.0117,0,0,75564
+  28.126 TICK,172000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=373882,nt=373882
+  28.126 AI_RESULT,0.0000,0,0,75600
+  29.187 TICK,172500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=374882,nt=374882
+  29.187 AI_RESULT,0.0000,0,0,75603
+  30.043 TICK,173000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=375882,nt=375882
+  30.258 AI_RESULT,0.0000,0,0,75560
+  31.114 TICK,173500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=376882,nt=376882
+  31.114 AI_RESULT,0.9961,1,1,75549
+  32.187 TICK,174000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=1,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=377882,nt=377882
+  32.187 AI_RESULT,0.0000,0,0,75562
+  33.044 TICK,174500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=378882,nt=378882
+  33.259 AI_RESULT,0.0078,0,0,75578
+  34.086 TICK,175000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=379882,nt=379882
+  34.301 AI_RESULT,0.0000,0,0,75532
+  35.143 TICK,175500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=380882,nt=380882
+  35.143 AI_RESULT,0.0039,0,0,75564
+  36.160 TICK,176000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=381882,nt=381882
+  36.160 AI_RESULT,0.0039,0,0,75539
+  37.017 TICK,176500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=1,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=382882,nt=382882
+  37.217 AI_RESULT,0.0039,0,0,75403
+  38.074 TICK,177000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=383882,nt=383882
+  38.287 AI_RESULT,0.0000,0,0,75580
+  39.132 TICK,177500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=384882,nt=384882
+  39.132 AI_RESULT,0.0000,0,0,75510
+  40.189 TICK,178000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=385882,nt=385882
+  40.189 AI_RESULT,0.0000,0,0,75584
+  41.046 TICK,178500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=386882,nt=386882
+  41.259 AI_RESULT,0.0000,0,0,75554
+  42.065 TICK,179000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=1,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=387882,nt=387882
+  42.279 AI_RESULT,0.9961,1,1,75802
+  43.096 TICK,179500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=388882,nt=388882
+  43.311 AI_RESULT,0.9961,1,0,75859
+  44.130 TICK,180000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=389882,nt=389882
+  44.130 AI_RESULT,0.9961,1,0,75548
+  45.142 TICK,180500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=390882,nt=390882
+  45.142 AI_RESULT,0.9961,1,0,75609
+  46.161 TICK,181000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=391882,nt=391882
+  46.161 AI_RESULT,0.9961,1,0,75584
+  47.206 TICK,181500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=1,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=392882,nt=392882
+  47.206 AI_RESULT,0.9961,1,0,75530
+  48.048 TICK,182000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=393882,nt=393882
+  48.248 AI_RESULT,0.9961,1,1,75590
+  49.106 TICK,182500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=394882,nt=394882
+  49.106 AI_RESULT,0.9961,1,0,75558
+  50.150 TICK,183000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=395882,nt=395882
+  50.150 AI_RESULT,0.9961,1,0,75867
+  51.209 TICK,183500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=396882,nt=396882
+  51.209 AI_RESULT,0.9961,1,0,75571
+  52.067 TICK,184000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=1,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=397882,nt=397882
+  52.280 AI_RESULT,0.9961,1,0,75549
+  53.124 TICK,184500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=398882,nt=398882
+  53.124 AI_RESULT,0.9961,1,0,76006
+  54.181 TICK,185000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=399882,nt=399882
+  54.181 AI_RESULT,0.9961,1,1,75815
+  55.009 TICK,185500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=400882,nt=400882
+  55.224 AI_RESULT,0.9961,1,0,75828
+  56.081 TICK,186000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=401882,nt=401882
+  56.296 AI_RESULT,0.9961,1,0,75841
+  57.153 TICK,186500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=1,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=402882,nt=402882
+  57.153 AI_RESULT,0.9961,1,0,75972
+  58.197 TICK,187000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=403882,nt=403882
+  58.197 AI_RESULT,0.9961,1,0,75979
+  59.219 TICK,187500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=404882,nt=404882
+  59.219 AI_RESULT,0.9961,1,0,75980
+  60.028 TICK,188000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=405882,nt=405882
+  60.242 AI_RESULT,0.9961,1,1,75556
+  61.061 TICK,188500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=406882,nt=406882
+  61.275 AI_RESULT,0.9961,1,0,75552
+  62.117 TICK,189000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.5709,comb=-1.5709,busy=4%,ovr=1,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=407882,nt=407882
+  62.117 AI_RESULT,0.0000,0,0,75557
+  63.161 TICK,189500,src=REPLAY_NORMAL,bpm=0,sqi=0.971,disp=-1.6421,comb=-1.6421,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=408882,nt=408882
+  63.161 AI_RESULT,0.0078,0,0,75601
+  64.218 TICK,190000,src=REPLAY_NORMAL,bpm=74,sqi=0.978,disp=-1.3396,comb=-1.3396,busy=4%,ovr=0,alarm=1,asrc=0x04,seg=2,sqimin=0.968,vrms=0.0000,aidrop=0,nw=409882,nt=409882
+  64.218 AI_RESULT,0.0000,0,0,76039
+  64.218 [ALARM] EXTEND +0x01 t=410s
+  65.074 TICK,190500,src=REPLAY_NORMAL,bpm=76,sqi=0.979,disp=-1.7079,comb=-1.7079,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.978,vrms=0.0000,aidrop=0,nw=410882,nt=410882
+  65.288 AI_RESULT,0.0000,0,0,75938
+  66.132 TICK,191000,src=REPLAY_NORMAL,bpm=76,sqi=0.977,disp=-1.5992,comb=-1.5992,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.976,vrms=0.0000,aidrop=0,nw=411882,nt=411882
+  66.132 AI_RESULT,0.0117,0,0,75934
+  67.204 TICK,191500,src=REPLAY_NORMAL,bpm=76,sqi=0.976,disp=-1.6591,comb=-1.6591,busy=5%,ovr=1,alarm=1,asrc=0x05,seg=2,sqimin=0.975,vrms=0.1245,aidrop=0,nw=412882,nt=412882
+  67.204 AI_RESULT,0.0000,0,0,75957
+  68.049 TICK,192000,src=REPLAY_NORMAL,bpm=76,sqi=0.983,disp=-1.7086,comb=-1.7086,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.974,vrms=0.1245,aidrop=0,nw=413882,nt=413882
+  68.264 AI_RESULT,0.8438,1,1,75958
+  69.119 TICK,192500,src=REPLAY_NORMAL,bpm=75,sqi=0.983,disp=-1.7041,comb=-1.7041,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.982,vrms=0.1245,aidrop=0,nw=414882,nt=414882
+  69.119 AI_RESULT,0.0000,0,0,75979
+  70.178 TICK,193000,src=REPLAY_NORMAL,bpm=75,sqi=0.985,disp=-1.6530,comb=-1.6530,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.983,vrms=0.1245,aidrop=0,nw=415882,nt=415882
+  70.178 AI_RESULT,0.0000,0,0,75830
+  71.021 TICK,193500,src=REPLAY_NORMAL,bpm=75,sqi=0.987,disp=-1.6190,comb=-1.6190,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.985,vrms=0.1245,aidrop=0,nw=416882,nt=416882
+  71.234 AI_RESULT,0.0000,0,0,75880
+  72.063 TICK,194000,src=REPLAY_NORMAL,bpm=75,sqi=0.988,disp=-1.6255,comb=-1.6255,busy=5%,ovr=1,alarm=1,asrc=0x05,seg=2,sqimin=0.986,vrms=0.1316,aidrop=0,nw=417882,nt=417882
+  72.264 AI_RESULT,0.0000,0,0,75863
+  73.123 TICK,194500,src=REPLAY_NORMAL,bpm=72,sqi=0.989,disp=-1.6860,comb=-1.6860,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.987,vrms=0.1316,aidrop=0,nw=418882,nt=418882
+  73.123 AI_RESULT,0.3711,0,0,75945
+  74.141 TICK,195000,src=REPLAY_NORMAL,bpm=71,sqi=0.990,disp=-1.7155,comb=-1.7155,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.989,vrms=0.1316,aidrop=0,nw=419882,nt=419882
+  74.141 AI_RESULT,0.0000,0,0,75866
+  75.185 TICK,195500,src=REPLAY_NORMAL,bpm=72,sqi=0.991,disp=-1.6257,comb=-1.6257,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.990,vrms=0.1316,aidrop=0,nw=420882,nt=420882
+  75.185 AI_RESULT,0.0234,0,0,75915
+  76.044 TICK,196000,src=REPLAY_NORMAL,bpm=73,sqi=0.991,disp=-1.6167,comb=-1.6167,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.990,vrms=0.1316,aidrop=0,nw=421882,nt=421882
+  76.259 AI_RESULT,0.0000,0,0,75929
+  77.089 TICK,196500,src=REPLAY_NORMAL,bpm=73,sqi=0.992,disp=-1.4500,comb=-1.4500,busy=5%,ovr=1,alarm=1,asrc=0x05,seg=2,sqimin=0.991,vrms=0.1237,aidrop=0,nw=422882,nt=422882
+  77.304 AI_RESULT,0.0000,0,0,75953
+  78.161 TICK,197000,src=REPLAY_NORMAL,bpm=0,sqi=0.992,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.992,vrms=0.1237,aidrop=0,nw=423882,nt=423882
+  78.161 AI_RESULT,0.0000,0,0,75629
+  79.018 TICK,197500,src=REPLAY_NORMAL,bpm=0,sqi=0.992,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.992,vrms=0.1237,aidrop=0,nw=424882,nt=424882
+  79.219 AI_RESULT,0.0156,0,0,75642
+  80.075 TICK,198000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.435,vrms=0.1237,aidrop=0,nw=425882,nt=425882
+  80.289 AI_RESULT,0.0000,0,0,75616
+  81.132 TICK,198500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.435,vrms=0.1237,aidrop=0,nw=426882,nt=426882
+  81.132 AI_RESULT,0.0039,0,0,75608
+  82.190 TICK,199000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=1,alarm=1,asrc=0x05,seg=2,sqimin=0.435,vrms=0.0202,aidrop=0,nw=427882,nt=427882
+  82.190 AI_RESULT,0.0039,0,0,75572
+  83.047 TICK,199500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.435,vrms=0.0202,aidrop=0,nw=428882,nt=428882
+  83.262 AI_RESULT,0.0039,0,0,75317
+  84.104 TICK,200000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.435,vrms=0.0202,aidrop=0,nw=429882,nt=429882
+  84.104 AI_RESULT,0.0000,0,0,75355
+  85.149 TICK,200500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.435,vrms=0.0202,aidrop=0,nw=430882,nt=430882
+  85.149 AI_RESULT,0.0000,0,0,75498
+  86.207 TICK,201000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.435,vrms=0.0202,aidrop=0,nw=431882,nt=431882
+  86.207 AI_RESULT,0.0234,0,0,75374
+  87.052 TICK,201500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=1,alarm=1,asrc=0x05,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=432882,nt=432882
+  87.267 AI_RESULT,0.0000,0,0,75489
+  88.112 TICK,202000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=433882,nt=433882
+  88.112 AI_RESULT,0.0000,0,0,75304
+  89.168 TICK,202500,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=434882,nt=434882
+  89.168 AI_RESULT,0.0000,0,0,75593
+  90.024 TICK,203000,src=REPLAY_NORMAL,bpm=0,sqi=0.435,disp=-1.4500,comb=-1.4500,busy=4%,ovr=0,alarm=1,asrc=0x05,seg=2,sqimin=0.435,vrms=0.0000,aidrop=0,nw=435882,nt=435882

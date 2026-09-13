@@ -1,0 +1,135 @@
+   0.202 I (272) esp_image: segment 1: paddr=0014a2bc vaddr=3fc9d800 size[main] mode -> SIMULATOR
+   0.202 CMD MODE ok SIMULATOR
+   0.202 TICK,1500,src=SIMULATOR,bpm=0,sqi=0.780,disp=-0.6727,comb=-0.6727,busy=16%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.440,vrms=0.0000,aidrop=0,nw=3975,nt=3975
+   0.202 AI_RESULT,0.0000,0,0,62313
+   0.202 TICK,2000,src=SIMULATOR,bpm=119,sqi=0.972,disp=-0.6700,comb=-0.6700,busy=14%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.693,vrms=0.0000,aidrop=0,nw=4975,nt=4975
+   0.202 AI_RESULT,0.0078,0,0,61700
+   1.028 TICK,2500,src=SIMULATOR,bpm=115,sqi=0.950,disp=-0.6294,comb=-0.6294,busy=15%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.950,vrms=0.0000,aidrop=0,nw=5975,nt=5975
+   1.231 AI_RESULT,0.9727,1,0,61652
+   2.038 TICK,3000,src=SIMULATOR,bpm=89,sqi=0.943,disp=-0.5441,comb=-0.5441,busy=15%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.941,vrms=0.0000,aidrop=0,nw=6975,nt=6975
+   2.038 [ECGR] auto-record: consecutive normal, stopping...
+   2.441 [ECGR] delete oldest: /spiffs/ecgdata/ecg_rec_16.ecgr
+   3.046 [ECGR] index rebuilt: 10 records
+   3.046 [ECGR] stopped: 1230 samples, 5 sec, 0 abn, size=2492
+   3.046 AI_RESULT,0.9961,1,0,62995
+   4.054 TICK,3500,src=SIMULATOR,bpm=75,sqi=0.940,disp=-0.6727,comb=-0.6727,busy=54%,ovr=1,alarm=0,asrc=0x00,seg=0,sqimin=0.938,vrms=0.0000,aidrop=0,nw=8819,nt=8819
+   4.054 AI_RESULT,0.9961,1,1,62531
+   4.862 TICK,4000,src=SIMULATOR,bpm=75,sqi=0.938,disp=-0.6700,comb=-0.6700,busy=17%,ovr=1,alarm=0,asrc=0x00,seg=0,sqimin=0.937,vrms=0.1490,aidrop=0,nw=9819,nt=9819
+   5.064 AI_RESULT,0.9648,1,0,61741
+   5.874 TICK,4500,src=SIMULATOR,bpm=75,sqi=0.939,disp=-0.6294,comb=-0.6294,busy=15%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.937,vrms=0.1490,aidrop=0,nw=10819,nt=10819
+   6.074 AI_RESULT,0.9961,1,0,61614
+   6.885 TICK,5000,src=SIMULATOR,bpm=75,sqi=0.941,disp=-0.5441,comb=-0.5441,busy=15%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.939,vrms=0.1490,aidrop=0,nw=11819,nt=11819
+   7.087 AI_RESULT,0.0391,0,0,62751
+   7.895 TICK,5500,src=SIMULATOR,bpm=75,sqi=0.942,disp=-0.6727,comb=-0.6727,busy=16%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.940,vrms=0.1490,aidrop=0,nw=12819,nt=12819
+   8.095 AI_RESULT,0.9922,1,0,62896
+   8.908 TICK,6000,src=SIMULATOR,bpm=75,sqi=0.943,disp=-0.6700,comb=-0.6700,busy=16%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.942,vrms=0.1490,aidrop=0,nw=13819,nt=13819
+   9.108 AI_RESULT,0.2031,0,0,61721
+   9.919 TICK,6500,src=SIMULATOR,bpm=75,sqi=0.945,disp=-0.6294,comb=-0.6294,busy=15%,ovr=1,alarm=0,asrc=0x00,seg=0,sqimin=0.943,vrms=0.1295,aidrop=0,nw=14819,nt=14819
+  10.121 AI_RESULT,0.8125,1,1,61595
+  10.121 [ECGR] auto-record: abnormal edge, starting...
+  10.121 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_15.ecgr
+  10.939 TICK,7000,src=SIMULATOR,bpm=75,sqi=0.946,disp=-0.5441,comb=-0.5441,busy=22%,ovr=1,alarm=0,asrc=0x00,seg=0,sqimin=0.944,vrms=0.1295,aidrop=0,nw=15899,nt=15899
+  11.154 AI_RESULT,0.9961,1,0,62797
+  11.976 TICK,7500,src=SIMULATOR,bpm=75,sqi=0.947,disp=-0.6727,comb=-0.6727,busy=16%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.945,vrms=0.1295,aidrop=0,nw=16899,nt=16899
+  12.178 AI_RESULT,0.9727,1,0,64191
+  12.987 TICK,8000,src=SIMULATOR,bpm=75,sqi=0.948,disp=-0.6700,comb=-0.6700,busy=17%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.946,vrms=0.1295,aidrop=0,nw=17899,nt=17899
+  13.188 AI_RESULT,0.2227,0,0,61751
+  14.011 TICK,8500,src=SIMULATOR,bpm=75,sqi=0.950,disp=-0.6294,comb=-0.6294,busy=15%,ovr=0,alarm=0,asrc=0x00,seg=0,sqimin=0.948,vrms=0.1295,aidrop=0,nw=18899,nt=18899
+  14.213 AI_RESULT,0.7383,1,0,62281
+  14.213 [ALARM] LATCH src=0x01 t=19s dens=10
+  15.023 TICK,9000,src=SIMULATOR,bpm=75,sqi=0.951,disp=-0.5441,comb=-0.5441,busy=16%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.949,vrms=0.1289,aidrop=0,nw=19899,nt=19899
+  15.023 AI_RESULT,0.9961,1,0,64236
+  16.037 TICK,9500,src=SIMULATOR,bpm=75,sqi=0.951,disp=-0.6727,comb=-0.6727,busy=17%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.950,vrms=0.1289,aidrop=0,nw=20899,nt=20899
+  16.037 AI_RESULT,0.2031,0,1,62608
+  17.044 TICK,10000,src=SIMULATOR,bpm=75,sqi=0.952,disp=-0.6700,comb=-0.6700,busy=16%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.950,vrms=0.1289,aidrop=0,nw=21899,nt=21899
+  17.044 AI_RESULT,0.0117,0,0,61957
+  18.054 TICK,10500,src=SIMULATOR,bpm=75,sqi=0.953,disp=-0.6294,comb=-0.6294,busy=16%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.952,vrms=0.1289,aidrop=0,nw=22899,nt=22899
+  18.054 AI_RESULT,0.7383,1,0,61737
+  19.064 TICK,11000,src=SIMULATOR,bpm=75,sqi=0.954,disp=-0.5441,comb=-0.5441,busy=15%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.952,vrms=0.1289,aidrop=0,nw=23899,nt=23899
+  19.064 AI_RESULT,0.9961,1,0,62764
+  20.074 TICK,11500,src=SIMULATOR,bpm=75,sqi=0.954,disp=-0.6727,comb=-0.6727,busy=17%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.953,vrms=0.1333,aidrop=0,nw=24899,nt=24899
+  20.074 AI_RESULT,0.2031,0,0,62612
+  21.086 TICK,12000,src=SIMULATOR,bpm=75,sqi=0.954,disp=-0.6700,comb=-0.6700,busy=16%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.953,vrms=0.1333,aidrop=0,nw=25899,nt=25899
+  21.086 AI_RESULT,0.0117,0,0,62181
+  22.100 TICK,12500,src=SIMULATOR,bpm=75,sqi=0.956,disp=-0.6294,comb=-0.6294,busy=15%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.954,vrms=0.1333,aidrop=0,nw=26899,nt=26899
+  22.100 AI_RESULT,0.7383,1,1,61685
+  23.124 TICK,13000,src=SIMULATOR,bpm=75,sqi=0.955,disp=-0.5441,comb=-0.5441,busy=15%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.954,vrms=0.1333,aidrop=0,nw=27899,nt=27899
+  23.124 AI_RESULT,0.9961,1,0,62652
+  24.132 TICK,13500,src=SIMULATOR,bpm=75,sqi=0.956,disp=-0.6727,comb=-0.6727,busy=16%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.955,vrms=0.1333,aidrop=0,nw=28899,nt=28899
+  24.132 AI_RESULT,0.2031,0,0,64343
+  24.943 TICK,14000,src=SIMULATOR,bpm=75,sqi=0.956,disp=-0.6700,comb=-0.6700,busy=17%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.955,vrms=0.1325,aidrop=0,nw=29899,nt=29899
+  25.144 AI_RESULT,0.0117,0,0,61755
+  25.953 TICK,14500,src=SIMULATOR,bpm=75,sqi=0.957,disp=-0.6294,comb=-0.6294,busy=15%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.955,vrms=0.1325,aidrop=0,nw=30899,nt=30899
+  26.154 AI_RESULT,0.7383,1,0,61582
+  26.965 TICK,15000,src=SIMULATOR,bpm=75,sqi=0.957,disp=-0.5441,comb=-0.5441,busy=16%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.956,vrms=0.1325,aidrop=0,nw=31899,nt=31899
+  27.169 AI_RESULT,0.9961,1,0,64357
+  27.974 TICK,15500,src=SIMULATOR,bpm=75,sqi=0.957,disp=-0.6727,comb=-0.6727,busy=17%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.956,vrms=0.1325,aidrop=0,nw=32899,nt=32899
+  28.176 AI_RESULT,0.2031,0,1,63033
+  28.985 TICK,16000,src=SIMULATOR,bpm=75,sqi=0.957,disp=-0.6700,comb=-0.6700,busy=17%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.956,vrms=0.1325,aidrop=0,nw=33899,nt=33899
+  29.200 AI_RESULT,0.0117,0,0,61748
+  30.008 TICK,16500,src=SIMULATOR,bpm=75,sqi=0.958,disp=-0.6294,comb=-0.6294,busy=16%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.957,vrms=0.1295,aidrop=0,nw=34899,nt=34899
+  30.210 AI_RESULT,0.7383,1,0,61774
+  31.018 TICK,17000,src=SIMULATOR,bpm=75,sqi=0.958,disp=-0.5441,comb=-0.5441,busy=16%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.957,vrms=0.1295,aidrop=0,nw=35899,nt=35899
+  31.219 AI_RESULT,0.9961,1,0,63856
+  32.029 TICK,17500,src=SIMULATOR,bpm=75,sqi=0.958,disp=-0.6727,comb=-0.6727,busy=17%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.957,vrms=0.1295,aidrop=0,nw=36899,nt=36899
+  32.029 AI_RESULT,0.2031,0,0,64301
+  33.069 TICK,18000,src=SIMULATOR,bpm=75,sqi=0.958,disp=-0.6700,comb=-0.6700,busy=17%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.957,vrms=0.1295,aidrop=0,nw=37899,nt=37899
+  33.069 AI_RESULT,0.0117,0,0,61737
+  34.082 TICK,18500,src=SIMULATOR,bpm=75,sqi=0.959,disp=-0.6294,comb=-0.6294,busy=15%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.957,vrms=0.1295,aidrop=0,nw=38899,nt=38899
+  34.082 AI_RESULT,0.7383,1,1,61690
+  35.106 TICK,19000,src=SIMULATOR,bpm=75,sqi=0.958,disp=-0.5441,comb=-0.5441,busy=16%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.957,vrms=0.1289,aidrop=0,nw=39899,nt=39899
+  35.106 AI_RESULT,0.9961,1,0,62734
+  36.113 TICK,19500,src=SIMULATOR,bpm=75,sqi=0.958,disp=-0.6727,comb=-0.6727,busy=16%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.957,vrms=0.1289,aidrop=0,nw=40899,nt=40899
+  36.113 AI_RESULT,0.2031,0,0,64201
+  37.137 TICK,20000,src=SIMULATOR,bpm=75,sqi=0.958,disp=-0.6700,comb=-0.6700,busy=17%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.958,vrms=0.1289,aidrop=0,nw=41899,nt=41899
+  37.137 AI_RESULT,0.0117,0,0,61764
+  37.944 TICK,20500,src=SIMULATOR,bpm=75,sqi=0.959,disp=-0.6294,comb=-0.6294,busy=15%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.958,vrms=0.1289,aidrop=0,nw=42899,nt=42899
+  38.149 AI_RESULT,0.7383,1,0,62303
+  38.953 TICK,21000,src=SIMULATOR,bpm=75,sqi=0.959,disp=-0.5441,comb=-0.5441,busy=16%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.958,vrms=0.1289,aidrop=0,nw=43899,nt=43899
+  39.155 AI_RESULT,0.9961,1,0,62726
+  39.962 TICK,21500,src=SIMULATOR,bpm=75,sqi=0.959,disp=-0.6727,comb=-0.6727,busy=17%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.958,vrms=0.1333,aidrop=0,nw=44899,nt=44899
+  40.166 AI_RESULT,0.2031,0,1,64268
+  40.972 TICK,22000,src=SIMULATOR,bpm=75,sqi=0.959,disp=-0.6700,comb=-0.6700,busy=17%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.958,vrms=0.1333,aidrop=0,nw=45899,nt=45899
+  41.173 AI_RESULT,0.0117,0,0,61695
+  41.981 TICK,22500,src=SIMULATOR,bpm=75,sqi=0.960,disp=-0.6294,comb=-0.6294,busy=15%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.958,vrms=0.1333,aidrop=0,nw=46899,nt=46899
+  42.184 AI_RESULT,0.7383,1,0,61733
+  42.992 TICK,23000,src=SIMULATOR,bpm=75,sqi=0.959,disp=-0.5441,comb=-0.5441,busy=15%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.958,vrms=0.1333,aidrop=0,nw=47899,nt=47899
+  43.195 AI_RESULT,0.9961,1,0,62488
+  44.002 TICK,23500,src=SIMULATOR,bpm=75,sqi=0.959,disp=-0.6727,comb=-0.6727,busy=16%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.958,vrms=0.1333,aidrop=0,nw=48899,nt=48899
+  44.205 AI_RESULT,0.2031,0,0,63387
+  45.009 TICK,24000,src=SIMULATOR,bpm=75,sqi=0.959,disp=-0.6700,comb=-0.6700,busy=17%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.958,vrms=0.1325,aidrop=0,nw=49899,nt=49899
+  45.225 AI_RESULT,0.0117,0,0,62284
+  46.034 TICK,24500,src=SIMULATOR,bpm=75,sqi=0.960,disp=-0.6294,comb=-0.6294,busy=15%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.958,vrms=0.1325,aidrop=0,nw=50899,nt=50899
+  46.034 AI_RESULT,0.7383,1,1,61708
+  47.041 TICK,25000,src=SIMULATOR,bpm=75,sqi=0.959,disp=-0.5441,comb=-0.5441,busy=15%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.958,vrms=0.1325,aidrop=0,nw=51899,nt=51899
+  47.041 AI_RESULT,0.9961,1,0,63485
+  48.053 TICK,25500,src=SIMULATOR,bpm=75,sqi=0.959,disp=-0.6727,comb=-0.6727,busy=16%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.958,vrms=0.1325,aidrop=0,nw=52899,nt=52899
+  48.053 AI_RESULT,0.2031,0,0,62607
+  49.065 TICK,26000,src=SIMULATOR,bpm=75,sqi=0.959,disp=-0.6700,comb=-0.6700,busy=17%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.959,vrms=0.1325,aidrop=0,nw=53899,nt=53899
+  49.065 AI_RESULT,0.0117,0,0,62238
+  50.091 TICK,26500,src=SIMULATOR,bpm=75,sqi=0.960,disp=-0.6294,comb=-0.6294,busy=16%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.959,vrms=0.1295,aidrop=0,nw=54899,nt=54899
+  50.091 AI_RESULT,0.7383,1,0,61679
+  51.101 TICK,27000,src=SIMULATOR,bpm=75,sqi=0.959,disp=-0.5441,comb=-0.5441,busy=15%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.959,vrms=0.1295,aidrop=0,nw=55899,nt=55899
+  51.101 AI_RESULT,0.9961,1,0,63444
+  52.114 TICK,27500,src=SIMULATOR,bpm=75,sqi=0.960,disp=-0.6727,comb=-0.6727,busy=16%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.959,vrms=0.1295,aidrop=0,nw=56899,nt=56899
+  52.114 AI_RESULT,0.2031,0,1,62576
+  53.128 TICK,28000,src=SIMULATOR,bpm=75,sqi=0.959,disp=-0.6700,comb=-0.6700,busy=16%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.959,vrms=0.1295,aidrop=0,nw=57899,nt=57899
+  53.128 AI_RESULT,0.0117,0,0,61738
+  53.939 TICK,28500,src=SIMULATOR,bpm=75,sqi=0.960,disp=-0.6294,comb=-0.6294,busy=15%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.959,vrms=0.1295,aidrop=0,nw=58899,nt=58899
+  54.142 AI_RESULT,0.7383,1,0,61731
+  54.949 TICK,29000,src=SIMULATOR,bpm=75,sqi=0.960,disp=-0.5441,comb=-0.5441,busy=16%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.959,vrms=0.1289,aidrop=0,nw=59899,nt=59899
+  55.150 AI_RESULT,0.9961,1,0,62539
+  55.351 I (61146) NimBLE: GAP procedure initiated: advertise;
+  55.351 I (61147) NimBLE: disc_mode=2
+  55.351 I (61147) NimBLE:  adv_channel_map=0 own_addr_type=0 adv_filter_policy=0 adv_itvl_min=1536 adv_itvl_max=1600
+  55.351 I (61148) NimBLE:
+  55.351 I (61150) ecg_ble: advertising started (slow)
+  55.967 TICK,29500,src=SIMULATOR,bpm=75,sqi=0.960,disp=-0.6727,comb=-0.6727,busy=16%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.959,vrms=0.1289,aidrop=0,nw=60899,nt=60899
+  56.170 AI_RESULT,0.2031,0,0,62601
+  56.975 TICK,30000,src=SIMULATOR,bpm=75,sqi=0.959,disp=-0.6700,comb=-0.6700,busy=17%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.959,vrms=0.1289,aidrop=0,nw=61899,nt=61899
+  57.177 AI_RESULT,0.0117,0,0,61539
+  57.985 TICK,30500,src=SIMULATOR,bpm=75,sqi=0.960,disp=-0.6294,comb=-0.6294,busy=15%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.959,vrms=0.1289,aidrop=0,nw=62899,nt=62899
+  58.188 AI_RESULT,0.7383,1,1,61395
+  58.995 TICK,31000,src=SIMULATOR,bpm=75,sqi=0.960,disp=-0.5441,comb=-0.5441,busy=15%,ovr=0,alarm=1,asrc=0x01,seg=0,sqimin=0.959,vrms=0.1289,aidrop=0,nw=63899,nt=63899
+  59.196 AI_RESULT,0.9961,1,0,62500
+  60.008 TICK,31500,src=SIMULATOR,bpm=75,sqi=0.960,disp=-0.6727,comb=-0.6727,busy=17%,ovr=1,alarm=1,asrc=0x01,seg=0,sqimin=0.959,vrms=0.1333,aidrop=0,nw=64899,nt=64899
