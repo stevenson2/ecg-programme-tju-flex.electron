@@ -1,0 +1,33 @@
+{
+  "tool": "postflash_serial_wave_smoke",
+  "date": "2026-09-14",
+  "port": "COM4",
+  "mac": "a4:cb:8f:d5:3e:8c",
+  "flash": "16MB",
+  "firmware_bin": "esp_idf_ecg_migration.bin",
+  "firmware_sha256": "ba1fd837b977dc3c107c38999b0a1ec8acf4c016a871ae319419cd4528e43d0b",
+  "firmware_size": 2969104,
+  "commands": [
+    "STATUS",
+    "WAVE 1",
+    "MODE replay_normal",
+    "MODE sim",
+    "WAVE 0"
+  ],
+  "results": {
+    "status": "CMD STATUS mode=SIMULATOR seg=0 alarm=0 asrc=0x00 rec=0 ai_conf=0 fw=2.0.0 model=v3-A",
+    "wave1": "CMD WAVE 1 ok",
+    "wave0": "WAVE 0 ok",
+    "mode_reply": "CMD MODE ok REPLAY_NORMAL",
+    "csv_count_10s": 1066,
+    "csv_rate_hz": 106.6,
+    "csv_count_6s": 607,
+    "csv_rate_hz_6s": 101.2,
+    "wave0_busy_pct": "16-17",
+    "wave1_busy_pct": "23-28",
+    "wave0_ovr_per_500": "1-2",
+    "wave1_ovr_per_500": "1",
+    "csv_sample": "0.137,-0.217,-0.479,73,75,0.79,0,0,0.992,0"
+  },
+  "note": "ESP32-S3 native USB-Serial/JTAG; F0 plotter serial stream verified at ~100Hz; board restored SIMULATOR + WAVE 0."
+}
