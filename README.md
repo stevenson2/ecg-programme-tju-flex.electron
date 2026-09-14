@@ -9,7 +9,9 @@
 > 旧 **Arduino + PlatformIO** 线已归档至 `legacy_arduino/`，**仅历史参考，不再构建/烧录**。
 > 板上模型 **v3-A** INT8（167,376 B，`models_ecg_model_v3a_int8_tflite`），固件运行 θ=0.50 + 1-of-5 + 冷却 5（以 `main.cc` 为准）。
 
-## 当前状态（2026-09-14）
+## 当前状态（2026-09-14，P0 协议层）
+
+- **P0 protocol layer (2026-09-14)**: protocol/ecg_proto.json single source of truth + generated firmware/App/Web constants + four-end golden tests. BLE v2 HELLO + 10th asrc column, backward compatible. ECGR v2 dual-version + unified tolerant truncation. Metadata de-hardcoded via STATUS. Evidence: TUNING_HISTORY sec.115, protocol/README.md.
 
 - **LEADOFF 报警源上线（2026-09-14，Round-H 上板验证）**：真实电极脱落（拔线实测零报警）根因为"有能量的坏信号"绕过全部四路既有源——新增第五路 `ALARM_SRC_LEADOFF`(0x10) 双判据：**A 静默型**（分析链 3s 滚动 RMS<0.05mV 持续≥2s，工频拾取被梳状滤波 annihilate 后亦归此类）+ **B 噪声型**（10s 窗≥8 合格秒：RMS 脱落带[0.05,0.25] 且 秒min-SQI<0.70 或 [无拍 且 crest<3.2]，**伪迹假拍不阻断**）。VF 被 RMS 天花板+SQI+vf抑制三重隔离；走动等效（载波+motion SNR0dB）零报警。全部阈值语料+板上标定（新语料 seg34..40，7 case×60s，既有 31 case 逐字节不变）。报警解除追加"有拍恢复"条件。已知盲区（连续中带噪声 SQI 饱和）如实披露（TUNING_HISTORY §114）。
 - **推理出环 + 160MHz 重新采纳（2026-09-13，Round-F 上板验证）**：AI 推理移至核 1 独立任务（窗口交接队列 + 丢窗遥测），采样节拍改绝对期限——**稳态采样率从 467Hz 恢复到精确 500Hz**（TICK 中位 1.000s），ovr 从每窗 1 次降为偶发停顿（与时钟无关）→ **CPU 160MHz 依据新证据重新采纳**（时钟 33% 下降，invoke 变慢被异步预算吸收）。途中修复两个 bug：xTaskDelayUntil 重锚陷阱（prev 超前被内核视为 tick 回绕、永不延迟）与 VF 检测器真节奏误擎住（VF 单独降级为遥测位，需 AI/规则佐证；此前 M1 的 VF 上板验证实际从未在真节奏下做过）。录制停顿治理（Round-G）：STOP 终结异步化（worker 核 1 + SPIFFS 互斥）+ 保留策略挪至开机维护，停止窗口采样停顿 **0.8-2.2s → 0.5s**；残余为 finalize 写自身的 flash 全局禁 cache 物理约束，根治需采样解耦（timer ISR，Round-H 候选）（TUNING_HISTORY §113）。
