@@ -1,0 +1,121 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "Round-H verify v2 seg39 (lo_neg_vf) frozen-threshold firmware",
+  "port": "COM4",
+  "seconds": 75.0,
+  "cmds": [
+    "MODE replay_normal",
+    "REPLAY 39"
+  ],
+  "capture_start": "2026-09-14 12:15:01",
+  "ai_result": {
+    "windows": 76,
+    "rate_hz": 1.026,
+    "confirmed_rate": 0.1579,
+    "raw_rate": 0.7632,
+    "conf_median": 0.9961,
+    "conf_mean": 0.7586,
+    "confirmed_runs_s": {
+      "count": 12,
+      "max": 1,
+      "min": 1,
+      "median": 1.0,
+      "mean": 1,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 11,
+      "max": 5,
+      "min": 5,
+      "median": 5,
+      "mean": 5,
+      "all": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    "raw_runs_s": {
+      "count": 4,
+      "max": 50,
+      "min": 1,
+      "median": 3.5,
+      "mean": 14.5,
+      "all": [
+        1,
+        50,
+        2,
+        5
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 3,
+      "max": 6,
+      "min": 2,
+      "median": 3,
+      "mean": 3.67,
+      "all": [
+        3,
+        6,
+        2
+      ]
+    },
+    "latency_us_median": 75912.0,
+    "latency_us_max": 76486
+  },
+  "tick": {
+    "count": 76,
+    "sources": [
+      "REPLAY_NORMAL"
+    ],
+    "busy_pct_max": 22,
+    "busy_pct_mean": 5.3,
+    "ovr_total": 94,
+    "ovr_max": 3,
+    "segments": [
+      "0",
+      "39"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.7237,
+    "runs_s": {
+      "count": 1,
+      "max": 55,
+      "min": 55,
+      "median": 55,
+      "mean": 55,
+      "all": [
+        55
+      ]
+    },
+    "asrc_seen": [
+      "0x00",
+      "0x01",
+      "0x09"
+    ]
+  }
+}
+!! TICK ovr>0: 2ms 节拍超时, 160MHz 不可带病继续 (回退 240MHz)
+raw log -> captures/h_v2_lo_neg_vf_raw.txt, summary -> captures/h_v2_lo_neg_vf_summary.json

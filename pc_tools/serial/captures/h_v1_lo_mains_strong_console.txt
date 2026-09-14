@@ -1,0 +1,144 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "Round-H verify v1 seg34 (lo_mains_strong) frozen-threshold firmware",
+  "port": "COM4",
+  "seconds": 90.0,
+  "cmds": [
+    "MODE replay_normal",
+    "REPLAY 34"
+  ],
+  "capture_start": "2026-09-14 12:07:50",
+  "ai_result": {
+    "windows": 91,
+    "rate_hz": 1.022,
+    "confirmed_rate": 0.1319,
+    "raw_rate": 0.1868,
+    "conf_median": 0.0,
+    "conf_mean": 0.1876,
+    "confirmed_runs_s": {
+      "count": 12,
+      "max": 1,
+      "min": 1,
+      "median": 1.0,
+      "mean": 1,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 11,
+      "max": 11,
+      "min": 5,
+      "median": 5,
+      "mean": 6.64,
+      "all": [
+        8,
+        5,
+        8,
+        5,
+        5,
+        7,
+        5,
+        9,
+        5,
+        5,
+        11
+      ]
+    },
+    "raw_runs_s": {
+      "count": 16,
+      "max": 2,
+      "min": 1,
+      "median": 1.0,
+      "mean": 1.06,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        1,
+        1
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 15,
+      "max": 14,
+      "min": 1,
+      "median": 2,
+      "mean": 4.87,
+      "all": [
+        8,
+        4,
+        9,
+        2,
+        1,
+        2,
+        11,
+        1,
+        1,
+        11,
+        1,
+        6,
+        14,
+        1,
+        1
+      ]
+    },
+    "latency_us_median": 75772,
+    "latency_us_max": 77129
+  },
+  "tick": {
+    "count": 92,
+    "sources": [
+      "REPLAY_NORMAL"
+    ],
+    "busy_pct_max": 22,
+    "busy_pct_mean": 4.8,
+    "ovr_total": 73,
+    "ovr_max": 2,
+    "segments": [
+      "0",
+      "34"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.837,
+    "runs_s": {
+      "count": 1,
+      "max": 77,
+      "min": 77,
+      "median": 77,
+      "mean": 77,
+      "all": [
+        77
+      ]
+    },
+    "asrc_seen": [
+      "0x00",
+      "0x14"
+    ]
+  }
+}
+!! TICK ovr>0: 2ms 节拍超时, 160MHz 不可带病继续 (回退 240MHz)
+raw log -> captures/h_v1_lo_mains_strong_raw.txt, summary -> captures/h_v1_lo_mains_strong_summary.json
