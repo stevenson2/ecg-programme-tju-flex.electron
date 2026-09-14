@@ -139,3 +139,12 @@ User-facing details are in the per-module `README.md` files (`pc_tools/ecg_dl/`,
 ## License
 
 [MIT](LICENSE)
+
+## P1-1 A1 Gate Status (2026-09-14)
+
+The R18 binary gate (normal vs abnormal, deploy chain, patient-level split, 3 seeds)
+failed the relaxed target: only 1/3 seeds reached test E_A<=0.10, and that seed had
+Sn_A=0.058; the other two had E_A 0.18-0.20 with Sn 0.50-0.57. Decision: FAIL_TO_3CLASS.
+The R19 3-class retry was aborted by host memory pressure and is incomplete. P1-3/P1-4
+remain blocked until A4 passes. Evidence: pc_tools/ecg_dl/models/gate/r18_gate_*.json;
+TUNING_HISTORY ch.116.

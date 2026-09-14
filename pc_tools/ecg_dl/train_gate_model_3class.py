@@ -12,7 +12,7 @@ train_gate_model_3class.py — 三分类关卡训练（A1 备选）
 训练：三类按 max-per-class 下采样，保持类别均衡。
 产物：models/gate/gate_model_3class_<arch>.h5 + history + meta
 """
-import argparse, json, sys, time
+import argparse, json, random, sys, time
 from pathlib import Path
 import numpy as np, tensorflow as tf
 
@@ -65,7 +65,12 @@ def main():
     ap.add_argument('--max-per-class',type=int,default=80000)
     ap.add_argument('--quick',action='store_true')
     ap.add_argument('--out-dir',default=str(MODELS_DIR/'gate'))
+    ap.add_argument('--seed',type=int,default=42)
+    ap.add_argument('--run-tag',type=str,default='')
     args=ap.parse_args()
+    random.seed(args.seed)
+    np.random.seed(args.seed)
+    tf.random.set_seed(args.seed)
     out=Path(args.out_dir); out.mkdir(parents=True,exist_ok=True)
     dataset.set_npz_suffix('_deploy')
 
@@ -128,8 +133,9 @@ def main():
         opt=tf.keras.optimizers.SGD(learning_rate=args.lr,momentum=0.9,nesterov=True,weight_decay=1e-4)
     model.compile(optimizer=opt,loss='categorical_crossentropy',
                   metrics=['accuracy',tf.keras.metrics.AUC(name='auc',multi_label=False)])
-    model_path=out/f'gate_model_3class_{args.arch}.h5'
-    history_csv=out/f'gate_model_3class_{args.arch}_history.csv'
+    tag = args.run_tag or f'gate_model_3class_{args.arch}'
+    model_path=out/f'{tag}.h5'
+    history_csv=out/f'{tag}_history.csv'
     callbacks=[
         tf.keras.callbacks.EarlyStopping(monitor='val_loss',patience=args.patience,restore_best_weights=True,verbose=1),
         tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss',factor=0.5,patience=max(6,args.patience//3),min_lr=1e-6,verbose=1),
@@ -143,13 +149,13 @@ def main():
                    validation_steps=2 if args.quick else None,
                    callbacks=callbacks,verbose=2)
     model.save(model_path)
-    meta={'task':'three_class_gate_A1','arch':args.arch,'epochs_run':len(hist.history.get('loss',[])),
+    meta={'task':'three_class_gate_A1','arch':args.arch,'seed':args.seed,'run_tag':tag,'epochs_run':len(hist.history.get('loss',[])),
           'best_val_loss':float(min(hist.history.get('val_loss',[0]))),
           'best_val_accuracy':float(max(hist.history.get('val_accuracy',[0]))),
           'optimizer':args.optimizer,'lr':args.lr,'batch_size':args.batch_size,
           'max_per_class':args.max_per_class,'model_path':str(model_path),
           'history_csv':str(history_csv),'elapsed_s':round(time.time()-t0,1)}
-    (out/f'gate_model_3class_{args.arch}_meta.json').write_text(json.dumps(meta,indent=2,ensure_ascii=False),encoding='utf-8')
+    (out/f'{tag}_meta.json').write_text(json.dumps(meta,indent=2,ensure_ascii=False),encoding='utf-8')
     print('[3class gate] done',meta,flush=True)
 
 if __name__=='__main__':

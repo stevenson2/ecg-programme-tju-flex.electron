@@ -16,6 +16,7 @@ train_gate_model.py — 双专家前置关卡训练（A1）
 """
 import argparse
 import json
+import random
 import sys
 import time
 from pathlib import Path
@@ -62,7 +63,17 @@ def main():
     ap.add_argument("--quick", action="store_true",
                     help="2 epochs / 2 batches smoke")
     ap.add_argument("--out-dir", type=str, default=str(MODELS_DIR / "gate"))
+    ap.add_argument("--seed", type=int, default=42,
+                    help="R18: model init / sampling seed (patient split stays seed=42)")
+    ap.add_argument("--run-tag", type=str, default="",
+                    help="optional filename tag, e.g. r18_gate")
     args = ap.parse_args()
+
+    # R18 reproducibility: patient-level split is fixed in data.patient_split;
+    # this seed controls model init and batch sampling only.
+    random.seed(args.seed)
+    np.random.seed(args.seed)
+    tf.random.set_seed(args.seed)
 
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -88,8 +99,9 @@ def main():
     model_summary_table(model)
     compile_model(model, learning_rate=args.lr, optimizer=args.optimizer)
 
-    model_path = out_dir / f"gate_model_{args.arch}.h5"
-    history_csv = out_dir / f"gate_model_{args.arch}_history.csv"
+    tag = args.run_tag or f"gate_model_{args.arch}"
+    model_path = out_dir / f"{tag}.h5"
+    history_csv = out_dir / f"{tag}_history.csv"
     callbacks = [
         tf.keras.callbacks.EarlyStopping(
             monitor="val_auc", mode="max", patience=args.patience,
@@ -134,9 +146,11 @@ def main():
         "steps_per_epoch": steps_per_epoch,
         "model_path": str(model_path),
         "history_csv": str(history_csv),
+        "seed": args.seed,
+        "run_tag": tag,
         "elapsed_s": round(time.time() - t0, 1),
     }
-    (out_dir / f"gate_model_{args.arch}_meta.json").write_text(
+    (out_dir / f"{tag}_meta.json").write_text(
         json.dumps(meta, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"[GateTrain] done best_val_auc={meta['best_val_auc']:.4f} "
           f"elapsed={meta['elapsed_s']}s", flush=True)
