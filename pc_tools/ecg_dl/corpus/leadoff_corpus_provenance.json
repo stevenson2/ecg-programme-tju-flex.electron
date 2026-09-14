@@ -1,0 +1,213 @@
+{
+  "generator": "make_leadoff_corpus.py",
+  "seed": 20260914,
+  "fs": 500,
+  "dur_s": 60,
+  "n_cases": 7,
+  "segment_base": 34,
+  "units": "header int16 microvolt (x0.001 -> mV numeric at runtime)",
+  "purpose": "LEADOFF (ALARM_SRC_LEADOFF 0x10) regression corpus, TH §114",
+  "mains_offset_note": "工频含 +0.3Hz 频偏: 固件梳状滤波器在 50.000Hz 有数学零点, 纯 50Hz 会被完全抑制, 真实电网频偏 使抑制有限 (保守等效)",
+  "corpus1_md5_before": "54c2ba70fb0821094d2e41d96eca8275",
+  "corpus1_md5_after": "54c2ba70fb0821094d2e41d96eca8275",
+  "chain_precalibration": {
+    "lo_mains_strong": {
+      "full": {
+        "rms_mV": 0.0622,
+        "crest": 13.37,
+        "p2p_mV": 1.076
+      },
+      "leadin_0_10s": {
+        "rms_mV": 0.1303,
+        "crest": 6.61,
+        "p2p_mV": 1.086
+      },
+      "tail_10_60s": {
+        "rms_mV": 0.0008,
+        "crest": 57.44,
+        "p2p_mV": 0.052
+      }
+    },
+    "lo_mains_weak": {
+      "full": {
+        "rms_mV": 0.0622,
+        "crest": 13.36,
+        "p2p_mV": 1.076
+      },
+      "leadin_0_10s": {
+        "rms_mV": 0.1303,
+        "crest": 6.61,
+        "p2p_mV": 1.086
+      },
+      "tail_10_60s": {
+        "rms_mV": 0.0001,
+        "crest": 58.36,
+        "p2p_mV": 0.01
+      }
+    },
+    "lo_drift_float": {
+      "full": {
+        "rms_mV": 0.1792,
+        "crest": 4.65,
+        "p2p_mV": 1.374
+      },
+      "leadin_0_10s": {
+        "rms_mV": 0.1303,
+        "crest": 6.61,
+        "p2p_mV": 1.086
+      },
+      "tail_10_60s": {
+        "rms_mV": 0.1879,
+        "crest": 2.88,
+        "p2p_mV": 0.998
+      }
+    },
+    "lo_pop_noise": {
+      "full": {
+        "rms_mV": 0.1418,
+        "crest": 13.56,
+        "p2p_mV": 2.365
+      },
+      "leadin_0_10s": {
+        "rms_mV": 0.1303,
+        "crest": 6.61,
+        "p2p_mV": 1.086
+      },
+      "tail_10_60s": {
+        "rms_mV": 0.1277,
+        "crest": 13.41,
+        "p2p_mV": 2.194
+      }
+    },
+    "lo_neg_walk": {
+      "full": {
+        "rms_mV": 0.1799,
+        "crest": 5.98,
+        "p2p_mV": 1.497
+      },
+      "leadin_0_10s": {
+        "rms_mV": 0.1711,
+        "crest": 6.29,
+        "p2p_mV": 1.418
+      },
+      "tail_10_60s": {
+        "rms_mV": 0.1814,
+        "crest": 5.92,
+        "p2p_mV": 1.496
+      }
+    },
+    "lo_neg_vf": {
+      "full": {
+        "rms_mV": 0.3256,
+        "crest": 2.69,
+        "p2p_mV": 1.569
+      },
+      "leadin_0_10s": {
+        "rms_mV": 0.1303,
+        "crest": 6.61,
+        "p2p_mV": 1.086
+      },
+      "tail_10_60s": {
+        "rms_mV": 0.3518,
+        "crest": 1.97,
+        "p2p_mV": 1.384
+      }
+    },
+    "lo_mixed_cycle": {
+      "full": {
+        "rms_mV": 0.1384,
+        "crest": 12.24,
+        "p2p_mV": 2.128
+      },
+      "leadin_0_10s": {
+        "rms_mV": 0.1303,
+        "crest": 6.61,
+        "p2p_mV": 1.086
+      },
+      "tail_10_60s": {
+        "rms_mV": 0.1399,
+        "crest": 12.11,
+        "p2p_mV": 2.128
+      }
+    }
+  },
+  "cases": [
+    {
+      "index": 0,
+      "segment": 34,
+      "name": "lo_mains_strong",
+      "params": {
+        "kind": "positive",
+        "phases": "10s normal + 50s flat+mains50.3Hz raw-rms 0.35mV"
+      },
+      "md5_int16uv": "025c5911a3c7925b1c908017d6180c46",
+      "p2p_mV": 1.8573
+    },
+    {
+      "index": 1,
+      "segment": 35,
+      "name": "lo_mains_weak",
+      "params": {
+        "kind": "positive",
+        "phases": "10s normal + 50s flat+mains50.3Hz raw-rms 0.10mV"
+      },
+      "md5_int16uv": "08b23cc90888124c2bb8acebc648603d",
+      "p2p_mV": 1.6037
+    },
+    {
+      "index": 2,
+      "segment": 36,
+      "name": "lo_drift_float",
+      "params": {
+        "kind": "positive",
+        "phases": "10s normal + 50s flat+wander0.20mV + motion bursts 0.35mV/6s"
+      },
+      "md5_int16uv": "e5d64b670f96735049001b9690a303a4",
+      "p2p_mV": 1.6558
+    },
+    {
+      "index": 3,
+      "segment": 37,
+      "name": "lo_pop_noise",
+      "params": {
+        "kind": "positive",
+        "phases": "10s normal + 1.5s pop(1.8mV,tau0.5) + 48.5s spiky flatline(emg0.25+mains0.05+spikes3/s)"
+      },
+      "md5_int16uv": "f8fae9b28f2526d89e735094cd658cdc",
+      "p2p_mV": 2.9841
+    },
+    {
+      "index": 4,
+      "segment": 38,
+      "name": "lo_neg_walk",
+      "params": {
+        "kind": "negative",
+        "phases": "60s mit100 + motion SNR 0dB (walk equivalent)"
+      },
+      "md5_int16uv": "1a71f7d63039daa6a03008ecf4fc657e",
+      "p2p_mV": 2.3446
+    },
+    {
+      "index": 5,
+      "segment": 39,
+      "name": "lo_neg_vf",
+      "params": {
+        "kind": "negative",
+        "phases": "10s normal + 50s synthetic VF (seg31 recipe)"
+      },
+      "md5_int16uv": "44d32f24f42845e353804a98f40bf479",
+      "p2p_mV": 2.0033
+    },
+    {
+      "index": 6,
+      "segment": 40,
+      "name": "lo_mixed_cycle",
+      "params": {
+        "kind": "mixed",
+        "phases": "10 normal/15 mains/10 normal/20 pop+noise/5 normal"
+      },
+      "md5_int16uv": "5e63cd62372064c5f70905850f0b47a8",
+      "p2p_mV": 2.8732
+    }
+  ]
+}
