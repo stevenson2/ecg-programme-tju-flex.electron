@@ -6,9 +6,11 @@
  *   - 段 0: record 100 (窦性心律正常段)
  *   - 段 1: record 106 (VEB 室早密集异常段)
  *   - 段 2: MIT-100 前 15s 正常 -> 45s 平线 (电极脱落等效), 60s 循环 (M1)
- *   - 段 3..: 噪声语料 (M2, make_replay_corpus.py 生成; 仅 16MB flash 板编入,
+ *   - 段 3..33: 噪声语料 (M2, make_replay_corpus.py 生成; 仅 16MB flash 板编入,
  *     ECG_REPLAY_CORPUS 宏, 见 ecg_core/CMakeLists.txt)。逐 case 来源/参数见
  *     pc_tools/ecg_dl/corpus/replay_corpus_provenance.json, seg = 3+index。
+ *   - 段 34..40: 真实电极脱落等效语料 (Round-H, make_leadoff_corpus.py,
+ *     60s/case)。见 pc_tools/ecg_dl/corpus/leadoff_corpus_provenance.json。
  * 用于验证 AI 异常检测的端到端报警效果 (模拟器高斯信号无法触发报警)。
  * 播放速率与固件采样率一致 (500Hz), 循环播放。
  */

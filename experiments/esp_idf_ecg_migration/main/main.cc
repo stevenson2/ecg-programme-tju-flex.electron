@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <math.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_timer.h"
@@ -59,6 +60,38 @@
 #define ALARM_SRC_RS         0x02u   /* 规则: RR 停搏 / 30s 窗过缓 / 过速 */
 #define ALARM_SRC_FLAT       0x04u   /* 时间停搏 (无拍 >= 4s) */
 #define ALARM_SRC_VF         0x08u   /* VF/VT 两窗确认 */
+#define ALARM_SRC_LEADOFF    0x10u   /* 电极脱落 (Round-H, TH §114) */
+
+/* ================ Round-H: LEADOFF 双判据 (TH §114) ================
+ * 背景: 真实拔线输出"有能量的坏信号"(弹出瞬态/漂移/工频拾取), QRS 检测器
+ * 出伪迹假拍 -> 4s 无拍窗 (0x04) 凑不齐; SQI 崩塌 -> AI 源被 Round-D2 门控
+ * 关闭; 四路全漏。LEADOFF 不依赖"无拍":
+ *   A 静默型: 分析链 (comb+HP+LP, mV 域) 3s 滚动窗去均值 RMS 低于地板
+ *     持续 >= 2s。工频拾取被梳状 (50Hz 零点) + LP40 annihilate 后也落
+ *     此类 (语料实测链后 rms 0.0008 mV)。
+ *   B 噪声型: 最近 10s 滚动窗内 >= 8 个"合格秒"。合格秒 = 武装(本模式
+ *     见过拍) + RMS 在脱落带 (地板..天花板) + 非 VF 抑制期, 且满足:
+ *     (a) 秒内 min-SQI < 0.70 (噪声支路, 抓宽带/尖峰噪声 —— 伪迹假拍
+ *         不阻断此支路); 或 (b) 本秒无拍 且 crest < 3.2 (无拍低crest
+ *         支路, 抓漂浮/漂移 —— 有 QRS 尖峰的信号 crest >= 5)。
+ * 红线 (§2.2): VF (板上 tail rms 0.34-0.37, sqimin 0.756) 被 RMS 天花板
+ * 0.25 阻断 (且其 SQI 高于 B 阈值) + vf suspect 激活期 6s 内压制;
+ * 运动伪迹 (走动等效) 被拍存活 + SQI 恒 0.988-0.994 + crest 5.0-7.0
+ * 三重阻断。全部阈值语料+板上标定, 出处 leadoff_corpus_provenance.json
+ * (chain_precalibration) + h_calib_* 遥测记录, 见 TH §114。 */
+#define ALARM_LO_RING_N       750     /* 3s @250Hz 滚动环 (分析链 mV 域) */
+#define ALARM_LO_RMS_FLOOR_MV 0.05f   /* A 地板: 静默/工频链后 0.0008, 正常 ECG 0.13 */
+#define ALARM_LO_QUIET_S      2       /* A 持续窗 (连续秒) */
+#define ALARM_LO_RMS_CEIL_MV  0.25f   /* B 天花板: 语料 drift 0.19 之下, VF 0.35 之上
+                                       * (板上实测 VF tail rms 0.34-0.37, 天花板余量 29%) */
+#define ALARM_LO_SQI_MAX      0.70f   /* B 噪声支路 (板上标定 h_calib_*): 走动恒
+                                       * 0.988-0.994, VF 0.756, TP 最低 0.861 (D2);
+                                       * drift 突发段 0.43-0.49 持续 9s+ 可达 8/10 */
+#define ALARM_LO_CREST_MAX    3.2f    /* B crest 支路: drift 板上 2.1-3.1 (突发间),
+                                       * 走动 5.0-7.0, 正常 ~6.6; 无拍条件联合 */
+#define ALARM_LO_WIN_S        10      /* B 滚动持续窗 (秒) */
+#define ALARM_LO_WIN_TH       8       /* B 窗内合格秒门槛 */
+#define ALARM_LO_VF_BLOCK_S   6       /* vf suspect 后压制 LEADOFF 的秒数 */
 
 typedef enum {
     SOURCE_SIMULATOR = 0,
@@ -108,6 +141,16 @@ static bool     s_beatEverSeen = false;    /* 本模式会话内是否见过心�
 static float    s_sqiSecMin = 1.0f;        /* 秒内 min-SQI (AI 源门控用, Round-D2) */
 static float    s_lastVfRmsMv = -1.0f;     /* 最近一次 vfProcess 的窗 RMS (TICK 遥测, E1) */
 static bool     s_vfHitSec = false;        /* 本秒 VF 命中 (Round-F: 佐证语义, 单独不擎住) */
+/* ---- Round-H: LEADOFF 状态 ---- */
+static float    s_loRing[ALARM_LO_RING_N]; /* 分析链 mV 域 3s 环 (250Hz 路径喂入) */
+static int      s_loRingIdx = 0;
+static int      s_loRingFill = 0;
+static uint16_t s_loQuietSec = 0;          /* A: 连续 RMS<地板 秒数 */
+static uint16_t s_loQualHist = 0;          /* B: 最近 10s 合格秒位图 (bit0=最新) */
+static uint32_t s_loVfBlockUntilSec = 0;   /* vf suspect 抑制期截止 (秒) */
+static float    s_loRmsMv = -1.0f;         /* 遥测: 3s 环去均值 RMS */
+static float    s_loCrest = -1.0f;         /* 遥测: 3s 环 crest (max|RMS|) */
+static int      s_loQualCnt = 0;           /* 遥测: B 判据 10s 窗内合格秒数 */
 
 
 static float s_combBuf1[COMB_TAPS] = {0};
@@ -154,6 +197,14 @@ static void alarmReset(void) {
     s_lastBeatSeenMs = 0;
     s_beatEverSeen = false;
     s_sqiSecMin = 1.0f;
+    s_loRingIdx = 0;
+    s_loRingFill = 0;
+    s_loQuietSec = 0;
+    s_loQualHist = 0;
+    s_loVfBlockUntilSec = 0;
+    s_loRmsMv = -1.0f;
+    s_loCrest = -1.0f;
+    s_loQualCnt = 0;
 }
 
 static void alarmPushAiRaw(uint8_t raw) {
@@ -178,9 +229,11 @@ static int alarmAiDensity(int win) {
  * vfHit = 本秒 VF 命中 (Round-F): 设备上无真值 VF 数据, vfDetect 在真
  * 250Hz 节奏下对正常流的特异性未经验证 (曾在正常回放单独误擎住) ——
  * 所以 VF 单独只做遥测 (asrc 位 + 一次性日志), 需 AI/规则源佐证或已擎住
- * 时才参与 (延长语义)。 */
+ * 时才参与 (延长语义)。
+ * beatRecent = 最近 2s 内有心拍 (Round-H): 解除判据的"信号恢复"要求
+ * SQI 回线 + 有拍 —— 脱落恢复必须看到 QRS 回来, 只 SQI 回升不够。 */
 static void alarmSecondTick(uint32_t nowSec, uint8_t ruleHits, float sqiMin,
-                            bool vfHit) {
+                            bool vfHit, bool beatRecent) {
     uint8_t trig = ruleHits;
     int dens = alarmAiDensity(ALARM_AI_WIN);
     if (dens >= ALARM_AI_TH && sqiMin >= ALARM_AI_SQI_MIN) trig |= ALARM_SRC_AI;
@@ -208,6 +261,7 @@ static void alarmSecondTick(uint32_t nowSec, uint8_t ruleHits, float sqiMin,
     } else if (s_alarmLatched
                && (nowSec - s_alarmLastTrigSec) >= ALARM_MIN_HOLD_S
                && sqiMin >= ALARM_REL_SQI_MIN
+               && beatRecent
                && alarmAiDensity(ALARM_REL_WIN) <= ALARM_REL_TH) {
         printf("[ALARM] CLEAR held=%lus src=0x%02x t=%lus\n",
                (unsigned long)(nowSec - s_alarmLastTrigSec),
@@ -648,6 +702,15 @@ extern "C" void app_main(void) {
                 && vf.lastRms >= ALARM_VF_RMS_MIN) {
                 s_vfHitSec = true;
             }
+            /* Round-H: LEADOFF 3s 环喂入 (与 VF 同域: 分析链 mV)。
+             * vf suspect 激活期压制 B 支路 (红线: VF 不得误判脱落,
+             * RMS 天花板之外的第二重保险)。 */
+            s_loRing[s_loRingIdx] = vfIn;
+            s_loRingIdx = (s_loRingIdx + 1) % ALARM_LO_RING_N;
+            if (s_loRingFill < ALARM_LO_RING_N) s_loRingFill++;
+            if (vf.windowSuspect || vf.vfAlarm) {
+                s_loVfBlockUntilSec = nowMs / 1000u + ALARM_LO_VF_BLOCK_S;
+            }
         }
 
         ecg_ai_result_t r;
@@ -672,11 +735,58 @@ extern "C" void app_main(void) {
             static uint32_t s_lastRecSec = 0;
             if (nowSec != s_lastRecSec) {
                 s_lastRecSec = nowSec;
+                /* ---- Round-H: LEADOFF 秒级评估 ----
+                 * 3s 环统计 (去均值 RMS + crest): 去均值抗 AFE 悬空 DC 轨
+                 * (恒定轨位应归入"静默"而非能量)。 */
+                if (s_loRingFill >= ALARM_LO_RING_N) {
+                    float mean = 0.0f;
+                    for (int i = 0; i < ALARM_LO_RING_N; i++) mean += s_loRing[i];
+                    mean /= (float)ALARM_LO_RING_N;
+                    float sum = 0.0f, mx = 0.0f;
+                    for (int i = 0; i < ALARM_LO_RING_N; i++) {
+                        float v = s_loRing[i] - mean;
+                        sum += v * v;
+                        float a = fabsf(v);
+                        if (a > mx) mx = a;
+                    }
+                    s_loRmsMv = sqrtf(sum / (float)ALARM_LO_RING_N);
+                    s_loCrest = mx / (s_loRmsMv + 1e-9f);
+                }
+                bool loBeatSec = (nowMs - s_lastBeatSeenMs) < 1000u;
+                /* A 静默型: 需武装 (本会话见过拍, 与 0x04 同语义防开机误报) */
+                if (s_beatEverSeen && s_loRmsMv >= 0.0f
+                    && s_loRmsMv < ALARM_LO_RMS_FLOOR_MV) {
+                    if (s_loQuietSec < 0xFFFFu) s_loQuietSec++;
+                } else {
+                    s_loQuietSec = 0;
+                }
+                /* B 噪声型: 合格秒进 10s 滚动位图 (bit0 = 最新秒) */
+                bool loQual = false;
+                if (s_beatEverSeen
+                    && s_loRmsMv >= ALARM_LO_RMS_FLOOR_MV
+                    && s_loRmsMv <= ALARM_LO_RMS_CEIL_MV
+                    && nowSec >= s_loVfBlockUntilSec) {
+                    if (s_sqiSecMin < ALARM_LO_SQI_MAX) {
+                        loQual = true;                  /* 噪声支路: 伪迹假拍不阻断 */
+                    } else if (!loBeatSec && s_loCrest >= 0.0f
+                               && s_loCrest < ALARM_LO_CREST_MAX) {
+                        loQual = true;                  /* 无拍低 crest 支路: 漂浮/漂移 */
+                    }
+                }
+                s_loQualHist = (uint16_t)(((s_loQualHist << 1)
+                                          | (loQual ? 1u : 0u)) & 0x03FFu);
+                s_loQualCnt = __builtin_popcount((unsigned)s_loQualHist);
+
                 uint8_t ruleHits = s_ruleHitSec & (uint8_t)(ALARM_SRC_RS | ALARM_SRC_FLAT);
+                if (s_loQuietSec >= ALARM_LO_QUIET_S
+                    || s_loQualCnt >= ALARM_LO_WIN_TH) {
+                    ruleHits |= ALARM_SRC_LEADOFF;
+                }
                 bool vfHit = s_vfHitSec;
                 s_ruleHitSec = 0;
                 s_vfHitSec = false;
-                alarmSecondTick(nowSec, ruleHits, s_sqiSecMin, vfHit);
+                bool beatRecent = (nowMs - s_lastBeatSeenMs) <= 2000u;
+                alarmSecondTick(nowSec, ruleHits, s_sqiSecMin, vfHit, beatRecent);
                 s_sqiSecMin = 1.0f;   /* 秒内 min 重置 */
                 /* 录制位图 (M1): 擎住位 OR 本秒规则命中 OR 本秒 AI confirmed。
                  * 平线/停搏现在会触发自动录制 (修复前只有 AI confirmed 能触发)。 */
@@ -717,7 +827,7 @@ extern "C" void app_main(void) {
 #if ECG_HOT_LOG
             uint32_t busyPct = s_lastTickUs
                 ? (uint32_t)((s_busyAccumUs * 100) / (nowUs - s_lastTickUs)) : 0;
-            printf("TICK,%lu,src=%s,bpm=%u,sqi=%.3f,disp=%.4f,comb=%.4f,busy=%u%%,ovr=%lu,alarm=%u,asrc=0x%02x,seg=%u,sqimin=%.3f,vrms=%.4f,aidrop=%lu,nw=%lu,nt=%lu\n",
+            printf("TICK,%lu,src=%s,bpm=%u,sqi=%.3f,disp=%.4f,comb=%.4f,busy=%u%%,ovr=%lu,alarm=%u,asrc=0x%02x,seg=%u,sqimin=%.3f,vrms=%.4f,aidrop=%lu,nw=%lu,nt=%lu,lo=%u,%u,%.4f,%.2f\n",
                    (unsigned long)frame, modeName(s_mode),
                    (unsigned)hr.bpm, hr.sqi, displaySample, combOut,
                    (unsigned)busyPct, (unsigned long)s_loopOverruns,
@@ -725,7 +835,9 @@ extern "C" void app_main(void) {
                    (unsigned)ecgReplayGetSegment(), s_sqiSecMin,
                    (double)s_lastVfRmsMv,
                    (unsigned long)ecg_ai_async_dropped(),
-                   (unsigned long)nextWake, (unsigned long)xTaskGetTickCount());
+                   (unsigned long)nextWake, (unsigned long)xTaskGetTickCount(),
+                   (unsigned)s_loQuietSec, (unsigned)s_loQualCnt,
+                   (double)s_loRmsMv, (double)s_loCrest);
 #endif
             s_busyAccumUs = 0;
             s_loopOverruns = 0;
