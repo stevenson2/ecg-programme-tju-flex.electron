@@ -1,0 +1,33 @@
+{
+  "tool": "postflash_serial_wave_smoke_board2",
+  "date": "2026-09-14",
+  "port": "COM20",
+  "mac": "90:70:69:f3:0f:f4",
+  "flash": "16MB",
+  "psram": "8MB",
+  "chip": "ESP32-S3 (QFN56) rev v0.2",
+  "firmware_bin": "esp_idf_ecg_migration.bin",
+  "firmware_sha256": "ba1fd837b977dc3c107c38999b0a1ec8acf4c016a871ae319419cd4528e43d0b",
+  "firmware_size": 2969104,
+  "commands": [
+    "STATUS",
+    "WAVE 1",
+    "MODE replay_normal",
+    "MODE sim",
+    "WAVE 0",
+    "REC_STOP",
+    "STATUS"
+  ],
+  "results": {
+    "status_after": "CMD STATUS mode=SIMULATOR seg=0 alarm=0 asrc=0x00 rec=0 ai_conf=4 fw=2.0.0 model=v3-A",
+    "wave1": "CMD WAVE 1 ok",
+    "mode_reply": "CMD MODE ok REPLAY_NORMAL",
+    "csv_count_6s": 687,
+    "csv_rate_hz_6s": 114.5,
+    "csv_count_3s_replay": 361,
+    "csv_rate_hz_3s_replay": 120.3,
+    "csv_sample": "0.103,-0.582,-0.674,75,75,0.95,0,0,0.348,0",
+    "rec_stop": "REC_STOP fail 0s (already idle); final STATUS rec=0"
+  },
+  "note": "Second N16R8 board; native USB-Serial/JTAG; WAVE serial stream and MODE reply verified; restored SIMULATOR + WAVE 0 + rec=0."
+}
