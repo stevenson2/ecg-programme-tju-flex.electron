@@ -1,0 +1,118 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "Round-H verify-final seg39 (lo_neg_vf)",
+  "port": "COM4",
+  "seconds": 75.0,
+  "cmds": [
+    "MODE replay_normal",
+    "REPLAY 39"
+  ],
+  "capture_start": "2026-09-14 13:06:59",
+  "ai_result": {
+    "windows": 76,
+    "rate_hz": 1.023,
+    "confirmed_rate": 0.1579,
+    "raw_rate": 0.75,
+    "conf_median": 0.9961,
+    "conf_mean": 0.7487,
+    "confirmed_runs_s": {
+      "count": 12,
+      "max": 1,
+      "min": 1,
+      "median": 1.0,
+      "mean": 1,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 11,
+      "max": 6,
+      "min": 5,
+      "median": 5,
+      "mean": 5.09,
+      "all": [
+        6,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    "raw_runs_s": {
+      "count": 4,
+      "max": 50,
+      "min": 1,
+      "median": 3.0,
+      "mean": 14.25,
+      "all": [
+        1,
+        50,
+        1,
+        5
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 3,
+      "max": 8,
+      "min": 4,
+      "median": 5,
+      "mean": 5.67,
+      "all": [
+        8,
+        4,
+        5
+      ]
+    },
+    "latency_us_median": 76154.5,
+    "latency_us_max": 76585
+  },
+  "tick": {
+    "count": 76,
+    "sources": [
+      "REPLAY_NORMAL"
+    ],
+    "busy_pct_max": 21,
+    "busy_pct_mean": 5.4,
+    "ovr_total": 93,
+    "ovr_max": 2,
+    "segments": [
+      "0",
+      "39"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.7368,
+    "runs_s": {
+      "count": 1,
+      "max": 56,
+      "min": 56,
+      "median": 56,
+      "mean": 56,
+      "all": [
+        56
+      ]
+    },
+    "asrc_seen": [
+      "0x00",
+      "0x01"
+    ]
+  }
+}

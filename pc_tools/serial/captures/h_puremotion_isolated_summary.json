@@ -1,0 +1,152 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "Round-H: pure_motion seg27 isolated (no prior alarm/recording)",
+  "port": "COM4",
+  "seconds": 75.0,
+  "cmds": [
+    "REPLAY 27"
+  ],
+  "capture_start": "2026-09-14 11:57:04",
+  "ai_result": {
+    "windows": 76,
+    "rate_hz": 1.023,
+    "confirmed_rate": 0.1711,
+    "raw_rate": 0.4211,
+    "conf_median": 0.0136,
+    "conf_mean": 0.4274,
+    "confirmed_runs_s": {
+      "count": 13,
+      "max": 1,
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 12,
+      "max": 5,
+      "min": 5,
+      "median": 5.0,
+      "mean": 5,
+      "all": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    "raw_runs_s": {
+      "count": 21,
+      "max": 4,
+      "min": 1,
+      "median": 1,
+      "mean": 1.52,
+      "all": [
+        1,
+        1,
+        4,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        4,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        4
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 20,
+      "max": 6,
+      "min": 1,
+      "median": 1.0,
+      "mean": 2.05,
+      "all": [
+        1,
+        6,
+        1,
+        1,
+        2,
+        2,
+        1,
+        1,
+        2,
+        1,
+        6,
+        1,
+        1,
+        2,
+        2,
+        1,
+        1,
+        2,
+        1,
+        6
+      ]
+    },
+    "latency_us_median": 76413.5,
+    "latency_us_max": 76504
+  },
+  "tick": {
+    "count": 76,
+    "sources": [
+      "REPLAY_NORMAL"
+    ],
+    "busy_pct_max": 27,
+    "busy_pct_mean": 5.7,
+    "ovr_total": 92,
+    "ovr_max": 2,
+    "segments": [
+      "27"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.8158,
+    "runs_s": {
+      "count": 1,
+      "max": 62,
+      "min": 62,
+      "median": 62,
+      "mean": 62,
+      "all": [
+        62
+      ]
+    },
+    "asrc_seen": [
+      "0x00",
+      "0x01"
+    ]
+  }
+}

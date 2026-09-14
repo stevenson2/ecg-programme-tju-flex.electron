@@ -1,0 +1,127 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "Round-H calib seg36 (lo_drift_float)",
+  "port": "COM4",
+  "seconds": 75.0,
+  "cmds": [
+    "MODE replay_normal",
+    "REPLAY 36"
+  ],
+  "capture_start": "2026-09-14 11:44:26",
+  "ai_result": {
+    "windows": 76,
+    "rate_hz": 1.015,
+    "confirmed_rate": 0.1316,
+    "raw_rate": 0.1447,
+    "conf_median": 0.0039,
+    "conf_mean": 0.1615,
+    "confirmed_runs_s": {
+      "count": 10,
+      "max": 1,
+      "min": 1,
+      "median": 1.0,
+      "mean": 1,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 9,
+      "max": 15,
+      "min": 5,
+      "median": 5,
+      "mean": 6.67,
+      "all": [
+        6,
+        15,
+        5,
+        5,
+        7,
+        5,
+        5,
+        7,
+        5
+      ]
+    },
+    "raw_runs_s": {
+      "count": 10,
+      "max": 2,
+      "min": 1,
+      "median": 1.0,
+      "mean": 1.1,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        1,
+        1,
+        1
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 9,
+      "max": 15,
+      "min": 1,
+      "median": 4,
+      "mean": 5.56,
+      "all": [
+        15,
+        4,
+        3,
+        10,
+        4,
+        3,
+        1,
+        7,
+        3
+      ]
+    },
+    "latency_us_median": 75757.5,
+    "latency_us_max": 110602
+  },
+  "tick": {
+    "count": 76,
+    "sources": [
+      "REPLAY_NORMAL"
+    ],
+    "busy_pct_max": 22,
+    "busy_pct_mean": 5.2,
+    "ovr_total": 92,
+    "ovr_max": 3,
+    "segments": [
+      "36"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.75,
+    "runs_s": {
+      "count": 1,
+      "max": 57,
+      "min": 57,
+      "median": 57,
+      "mean": 57,
+      "all": [
+        57
+      ]
+    },
+    "asrc_seen": [
+      "0x00",
+      "0x04",
+      "0x0c",
+      "0x1c"
+    ]
+  }
+}

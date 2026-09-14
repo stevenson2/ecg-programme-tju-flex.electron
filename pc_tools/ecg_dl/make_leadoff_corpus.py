@@ -131,12 +131,17 @@ def synth_pop_transient(n, fs, sat=1.8, tau=0.5, dur=1.5):
 
 
 def synth_spiky_flatline(n, fs, rng, emg_rms, mains_rms, spike_rate,
-                         spike_amp=(0.3, 0.8)):
-    """噪声平线: 宽带 EMG + 弱工频 + 泊松尖峰 (诱发 QRS 假拍)。"""
-    emg = synth_noise("emg", n, fs, rng)
-    emg = emg / np.sqrt(np.mean(emg * emg)) * emg_rms
+                         spike_amp=(0.3, 0.8), wander_rms=0.20):
+    """噪声平线: 低频漂浮 + 弱工频 + 泊松尖峰 (诱发 QRS 假拍, 阻断 0x04)。
+    板上标定结论 (h_calib/h_v1f): 连续中带噪声 (链后 rms 0.085) 的 SQI
+    悬在 0.69-0.84, SQI 原语对该形态鉴别力饱和 (已知盲区, TH §114);
+    真实拔线形态 = 瞬态 + 漂浮 + 尖峰, 漂浮谷值使 3s rms 越过地板走 A 路。"""
+    y = synth_wander(n, fs, rng, wander_rms)
     mains = synth_mains_pickup(n, fs, rng, mains_rms)
-    y = emg + mains
+    y = y + mains
+    if emg_rms > 0:
+        emg = synth_noise("emg", n, fs, rng)
+        y = y + emg / np.sqrt(np.mean(emg * emg)) * emg_rms
     n_spikes = int(spike_rate * n / fs)
     for _ in range(n_spikes):
         i0 = int(rng.integers(0, n - 30))
@@ -189,8 +194,8 @@ def main():
     pop_tail = np.concatenate([
         synth_pop_transient(int(1.5 * FS), FS),
         synth_spiky_flatline((DUR_S - LEADIN_S) * FS - int(1.5 * FS), FS,
-                             rng, emg_rms=0.25, mains_rms=0.05,
-                             spike_rate=3.0),
+                             rng, emg_rms=0.0, mains_rms=0.05,
+                             spike_rate=3.0, wander_rms=0.20),
     ])
 
     walk = tile_carrier(normal, N)
@@ -217,7 +222,7 @@ def main():
          leadin_plus(flat_base + mains_w)),
         ("lo_drift_float", {"kind": "positive", "phases": "10s normal + 50s flat+wander0.20mV + motion bursts 0.35mV/6s"},
          leadin_plus(flat_base + drift_tail)),
-        ("lo_pop_noise", {"kind": "positive", "phases": "10s normal + 1.5s pop(1.8mV,tau0.5) + 48.5s spiky flatline(emg0.25+mains0.05+spikes3/s)"},
+        ("lo_pop_noise", {"kind": "positive", "phases": "10s normal + 1.5s pop(1.8mV,tau0.5) + 48.5s wander0.20+mains0.05+spikes3/s (fake-beat blocker)"},
          leadin_plus(flat_base + pop_tail)),
         ("lo_neg_walk", {"kind": "negative", "phases": "60s mit100 + motion SNR 0dB (walk equivalent)"},
          walk),

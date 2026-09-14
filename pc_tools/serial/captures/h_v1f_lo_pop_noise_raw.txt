@@ -1,0 +1,180 @@
+   0.208 I (348) esp_image: segment 1: paddr=001b0bdc vaddr=3fc9d800 size[main] mode -> REPLAY_NORMAL
+   0.208 CMD MODE ok REPLAY_NORMAL
+   0.208 TICK,6500,src=REPLAY_NORMAL,bpm=0,sqi=0.788,disp=-1.6369,comb=-1.6369,busy=11%,ovr=1,alarm=0,asrc=0x00,seg=0,sqimin=0.441,vrms=0.0000,aidrop=0,nw=15259,nt=15259,lo=0,0,-1.0000,-1.00
+   0.208 CMD REPLAY ok 37
+   0.208 AI_RESULT,0.9961,1,1,76003
+   0.208 [ECGR] auto-record: abnormal edge, starting...
+   0.208 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_16.ecgr
+   0.208 TICK,7000,src=REPLAY_NORMAL,bpm=0,sqi=0.825,disp=-1.6490,comb=-1.6490,busy=21%,ovr=2,alarm=0,asrc=0x00,seg=37,sqimin=0.804,vrms=0.0000,aidrop=0,nw=16478,nt=16478,lo=0,0,-1.0000,-1.00
+   0.208 AI_RESULT,0.0000,0,0,76196
+   1.015 TICK,7500,src=REPLAY_NORMAL,bpm=65,sqi=0.870,disp=-1.7090,comb=-1.7090,busy=5%,ovr=0,alarm=0,asrc=0x00,seg=37,sqimin=0.843,vrms=0.0000,aidrop=0,nw=17478,nt=17478,lo=0,0,-1.0000,-1.00
+   1.015 AI_RESULT,0.0117,0,0,76446
+   2.037 TICK,8000,src=REPLAY_NORMAL,bpm=70,sqi=0.901,disp=-1.5961,comb=-1.5961,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.886,vrms=0.0000,aidrop=0,nw=18478,nt=18478,lo=0,0,-1.0000,-1.00
+   2.037 AI_RESULT,0.0000,0,0,76453
+   3.045 TICK,8500,src=REPLAY_NORMAL,bpm=73,sqi=0.930,disp=-1.6390,comb=-1.6390,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.919,vrms=0.0000,aidrop=0,nw=19478,nt=19478,lo=0,0,0.1584,5.57
+   3.045 AI_RESULT,0.0000,0,0,76528
+   4.051 TICK,9000,src=REPLAY_NORMAL,bpm=76,sqi=0.947,disp=-1.6573,comb=-1.6573,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.938,vrms=0.2539,aidrop=0,nw=20478,nt=20478,lo=0,0,0.1249,5.82
+   4.051 AI_RESULT,0.6523,1,0,76678
+   4.454 [ECGR] auto-record: consecutive normal, stopping...
+   5.063 TICK,9500,src=REPLAY_NORMAL,bpm=76,sqi=0.960,disp=-1.6963,comb=-1.6963,busy=10%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.955,vrms=0.2539,aidrop=0,nw=21478,nt=21479,lo=0,0,0.1269,5.94
+   5.063 AI_RESULT,0.0000,0,1,76599
+   5.477 [ECGR] finalized /spiffs/ecgdata/ecg_rec_16.ecgr (1195 samples, 5 sec, 0 abn, 2422 B) in 855ms
+   6.081 TICK,10000,src=REPLAY_NORMAL,bpm=75,sqi=0.973,disp=-1.7965,comb=-1.7965,busy=8%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.970,vrms=0.2539,aidrop=0,nw=22515,nt=22515,lo=0,0,0.1178,6.44
+   6.081 AI_RESULT,0.0117,0,0,76464
+   7.092 TICK,10500,src=REPLAY_NORMAL,bpm=75,sqi=0.978,disp=-1.6301,comb=-1.6301,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.976,vrms=0.2539,aidrop=0,nw=23515,nt=23515,lo=0,0,0.1220,6.45
+   7.092 AI_RESULT,0.2031,0,0,76499
+   8.110 TICK,11000,src=REPLAY_NORMAL,bpm=75,sqi=0.983,disp=-1.5124,comb=-1.5124,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.981,vrms=0.2539,aidrop=0,nw=24515,nt=24515,lo=0,0,0.1328,5.93
+   8.110 AI_RESULT,0.0000,0,0,76456
+   9.120 TICK,11500,src=REPLAY_NORMAL,bpm=75,sqi=0.986,disp=-1.6843,comb=-1.6843,busy=6%,ovr=2,alarm=0,asrc=0x00,seg=37,sqimin=0.984,vrms=0.1252,aidrop=0,nw=25515,nt=25515,lo=0,0,0.1311,6.02
+   9.120 AI_RESULT,0.0000,0,0,76593
+  10.130 TICK,12000,src=REPLAY_NORMAL,bpm=0,sqi=0.986,disp=-1.1920,comb=-1.1920,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.986,vrms=0.1252,aidrop=0,nw=26515,nt=26515,lo=0,0,0.3039,5.53
+  10.130 AI_RESULT,0.9961,1,0,75799
+  11.141 TICK,12500,src=REPLAY_NORMAL,bpm=0,sqi=0.985,disp=-1.5334,comb=-1.5334,busy=4%,ovr=0,alarm=0,asrc=0x00,seg=37,sqimin=0.985,vrms=0.1252,aidrop=0,nw=27515,nt=27515,lo=0,0,0.3396,5.16
+  11.141 AI_RESULT,0.9961,1,1,75881
+  11.544 [ECGR] auto-record: abnormal edge, starting...
+  11.745 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_28.ecgr
+  12.350 TICK,13000,src=REPLAY_NORMAL,bpm=0,sqi=0.772,disp=-1.5584,comb=-1.5584,busy=21%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.772,vrms=0.1252,aidrop=0,nw=28735,nt=28735,lo=0,0,0.3409,5.07
+  12.350 AI_RESULT,0.0000,0,0,75878
+  13.171 TICK,13500,src=REPLAY_NORMAL,bpm=124,sqi=0.834,disp=-1.3904,comb=-1.3904,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.695,vrms=0.1252,aidrop=0,nw=29735,nt=29735,lo=0,0,0.1928,2.24
+  13.372 AI_RESULT,0.0039,0,0,76717
+  14.193 TICK,14000,src=REPLAY_NORMAL,bpm=122,sqi=0.839,disp=-1.5314,comb=-1.5314,busy=6%,ovr=2,alarm=0,asrc=0x00,seg=37,sqimin=0.839,vrms=0.2702,aidrop=0,nw=30735,nt=30735,lo=0,0,0.0892,3.17
+  14.395 AI_RESULT,0.0000,0,0,76479
+  15.201 TICK,14500,src=REPLAY_NORMAL,bpm=122,sqi=0.837,disp=-1.5047,comb=-1.5047,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.803,vrms=0.2702,aidrop=0,nw=31735,nt=31735,lo=0,0,0.0814,3.22
+  15.401 AI_RESULT,0.0000,0,0,76868
+  16.217 TICK,15000,src=REPLAY_NORMAL,bpm=122,sqi=0.772,disp=-1.4179,comb=-1.4179,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.772,vrms=0.2702,aidrop=0,nw=32735,nt=32735,lo=0,0,0.0814,3.17
+  16.418 AI_RESULT,0.0000,0,0,76460
+  16.618 [ECGR] auto-record: consecutive normal, stopping...
+  17.226 [ECGR] finalized /spiffs/ecgdata/ecg_rec_28.ecgr (1195 samples, 5 sec, 0 abn, 2422 B) in 778ms
+  17.226 TICK,15500,src=REPLAY_NORMAL,bpm=110,sqi=0.740,disp=-1.1669,comb=-1.1669,busy=12%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.740,vrms=0.2702,aidrop=0,nw=33771,nt=33771,lo=0,0,0.0777,2.98
+  17.428 AI_RESULT,0.2617,0,0,76532
+  18.262 TICK,16000,src=REPLAY_NORMAL,bpm=110,sqi=0.751,disp=-1.2877,comb=-1.2877,busy=6%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.705,vrms=0.2702,aidrop=0,nw=34771,nt=34771,lo=0,0,0.0863,3.09
+  18.464 AI_RESULT,0.0000,0,0,76455
+  19.281 TICK,16500,src=REPLAY_NORMAL,bpm=120,sqi=0.819,disp=-1.5566,comb=-1.5566,busy=6%,ovr=2,alarm=0,asrc=0x00,seg=37,sqimin=0.811,vrms=0.0860,aidrop=0,nw=35771,nt=35771,lo=0,0,0.0863,3.09
+  19.496 AI_RESULT,0.0391,0,0,76550
+  20.327 TICK,17000,src=REPLAY_NORMAL,bpm=107,sqi=0.775,disp=-1.3578,comb=-1.3578,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.775,vrms=0.0860,aidrop=0,nw=36771,nt=36771,lo=0,0,0.0935,3.48
+  20.327 AI_RESULT,0.0000,0,0,76404
+  21.351 TICK,17500,src=REPLAY_NORMAL,bpm=106,sqi=0.756,disp=-1.4621,comb=-1.4621,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.743,vrms=0.0860,aidrop=0,nw=37771,nt=37771,lo=0,0,0.0863,3.88
+  21.351 AI_RESULT,0.7188,1,1,76431
+  21.553 [ECGR] auto-record: abnormal edge, starting...
+  21.756 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_38.ecgr
+  22.579 TICK,18000,src=REPLAY_NORMAL,bpm=108,sqi=0.813,disp=-1.4361,comb=-1.4361,busy=22%,ovr=2,alarm=0,asrc=0x00,seg=37,sqimin=0.765,vrms=0.0860,aidrop=0,nw=38991,nt=38991,lo=0,0,0.0840,4.00
+  22.579 AI_RESULT,0.0000,0,0,76491
+  23.587 TICK,18500,src=REPLAY_NORMAL,bpm=100,sqi=0.819,disp=-1.4506,comb=-1.4506,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.811,vrms=0.0860,aidrop=0,nw=39991,nt=39991,lo=0,0,0.0807,3.28
+  23.587 AI_RESULT,0.9883,1,0,76771
+  24.595 TICK,19000,src=REPLAY_NORMAL,bpm=97,sqi=0.805,disp=-1.5355,comb=-1.5355,busy=6%,ovr=2,alarm=0,asrc=0x00,seg=37,sqimin=0.803,vrms=0.0814,aidrop=0,nw=40991,nt=40991,lo=0,0,0.0808,3.16
+  24.595 AI_RESULT,0.0000,0,0,76472
+  25.599 TICK,19500,src=REPLAY_NORMAL,bpm=97,sqi=0.786,disp=-1.6129,comb=-1.6129,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.768,vrms=0.0814,aidrop=0,nw=41991,nt=41991,lo=0,0,0.0836,3.01
+  25.599 AI_RESULT,0.0000,0,0,76484
+  26.624 TICK,20000,src=REPLAY_NORMAL,bpm=98,sqi=0.750,disp=-1.6906,comb=-1.6906,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.750,vrms=0.0814,aidrop=0,nw=42991,nt=42991,lo=0,0,0.0828,2.57
+  26.624 [ECGR] auto-record: consecutive normal, stopping...
+  26.624 AI_RESULT,0.0000,0,0,76684
+  27.434 [ECGR] finalized /spiffs/ecgdata/ecg_rec_38.ecgr (1195 samples, 5 sec, 0 abn, 2422 B) in 854ms
+  27.635 TICK,20500,src=REPLAY_NORMAL,bpm=94,sqi=0.729,disp=-1.4966,comb=-1.4966,busy=12%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.729,vrms=0.0814,aidrop=0,nw=44028,nt=44028,lo=0,0,0.0854,2.74
+  27.635 AI_RESULT,0.0000,0,1,76477
+  28.642 TICK,21000,src=REPLAY_NORMAL,bpm=90,sqi=0.689,disp=-1.5401,comb=-1.5401,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.689,vrms=0.0814,aidrop=0,nw=45028,nt=45028,lo=0,0,0.0863,2.58
+  28.642 AI_RESULT,0.0039,0,0,76481
+  29.662 TICK,21500,src=REPLAY_NORMAL,bpm=104,sqi=0.698,disp=-1.8342,comb=-1.8342,busy=6%,ovr=2,alarm=0,asrc=0x00,seg=37,sqimin=0.698,vrms=0.0843,aidrop=0,nw=46028,nt=46028,lo=0,0,0.0871,2.56
+  29.662 AI_RESULT,0.0000,0,0,76483
+  30.469 TICK,22000,src=REPLAY_NORMAL,bpm=104,sqi=0.723,disp=-1.6475,comb=-1.6475,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.722,vrms=0.0843,aidrop=0,nw=47028,nt=47028,lo=0,0,0.0814,2.72
+  30.670 AI_RESULT,0.0000,0,0,76400
+  31.493 TICK,22500,src=REPLAY_NORMAL,bpm=101,sqi=0.706,disp=-1.4814,comb=-1.4814,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.706,vrms=0.0843,aidrop=0,nw=48028,nt=48028,lo=0,0,0.0775,2.98
+  31.695 AI_RESULT,0.0000,0,0,76445
+  32.501 TICK,23000,src=REPLAY_NORMAL,bpm=108,sqi=0.733,disp=-1.5008,comb=-1.5008,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.733,vrms=0.0843,aidrop=0,nw=49028,nt=49028,lo=0,0,0.0808,2.87
+  32.702 AI_RESULT,0.0039,0,0,76409
+  33.509 TICK,23500,src=REPLAY_NORMAL,bpm=0,sqi=0.757,disp=-1.7809,comb=-1.7809,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.755,vrms=0.0843,aidrop=0,nw=50028,nt=50028,lo=0,0,0.0899,4.05
+  33.710 AI_RESULT,0.0000,0,0,76821
+  34.519 TICK,24000,src=REPLAY_NORMAL,bpm=99,sqi=0.853,disp=-1.6644,comb=-1.6644,busy=6%,ovr=2,alarm=0,asrc=0x00,seg=37,sqimin=0.852,vrms=0.0972,aidrop=0,nw=51028,nt=51028,lo=0,0,0.1093,3.27
+  34.721 AI_RESULT,0.0000,0,0,76421
+  35.542 TICK,24500,src=REPLAY_NORMAL,bpm=99,sqi=0.818,disp=-1.2450,comb=-1.2450,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.818,vrms=0.0972,aidrop=0,nw=52028,nt=52028,lo=0,0,0.1146,3.33
+  35.742 AI_RESULT,0.0000,0,0,76428
+  36.559 TICK,25000,src=REPLAY_NORMAL,bpm=0,sqi=0.847,disp=-1.3273,comb=-1.3273,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.846,vrms=0.0972,aidrop=0,nw=53028,nt=53028,lo=0,0,0.1200,2.84
+  36.559 AI_RESULT,0.9961,1,1,76139
+  37.570 [ECGR] auto-record: abnormal edge, starting...
+  37.773 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_54.ecgr
+  37.773 TICK,25500,src=REPLAY_NORMAL,bpm=104,sqi=0.837,disp=-1.4723,comb=-1.4723,busy=22%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.837,vrms=0.0972,aidrop=0,nw=54248,nt=54248,lo=0,0,0.1046,3.03
+  37.973 AI_RESULT,0.7773,1,0,76769
+  38.780 TICK,26000,src=REPLAY_NORMAL,bpm=104,sqi=0.803,disp=-1.3195,comb=-1.3195,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.802,vrms=0.0972,aidrop=0,nw=55248,nt=55248,lo=0,0,0.1010,3.21
+  38.780 AI_RESULT,0.0000,0,0,76561
+  39.788 TICK,26500,src=REPLAY_NORMAL,bpm=104,sqi=0.785,disp=-1.3971,comb=-1.3971,busy=6%,ovr=2,alarm=0,asrc=0x00,seg=37,sqimin=0.774,vrms=0.0976,aidrop=0,nw=56248,nt=56248,lo=0,0,0.0862,2.58
+  39.788 AI_RESULT,0.9961,1,0,76770
+  40.810 TICK,27000,src=REPLAY_NORMAL,bpm=102,sqi=0.771,disp=-1.5438,comb=-1.5438,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.762,vrms=0.0976,aidrop=0,nw=57248,nt=57248,lo=0,0,0.0809,2.46
+  40.810 AI_RESULT,0.7383,1,0,76488
+  41.816 TICK,27500,src=REPLAY_NORMAL,bpm=94,sqi=0.748,disp=-1.6633,comb=-1.6633,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.734,vrms=0.0976,aidrop=0,nw=58248,nt=58248,lo=0,0,0.0879,2.82
+  41.816 AI_RESULT,0.0000,0,0,76715
+  42.620 [ECGR] auto-record: consecutive normal, stopping...
+  42.821 TICK,28000,src=REPLAY_NORMAL,bpm=83,sqi=0.773,disp=-1.7105,comb=-1.7105,busy=7%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.772,vrms=0.0976,aidrop=0,nw=59248,nt=59248,lo=0,0,0.1001,2.54
+  42.821 AI_RESULT,0.0000,0,1,76907
+  43.439 [ECGR] finalized /spiffs/ecgdata/ecg_rec_54.ecgr (1195 samples, 5 sec, 0 abn, 2422 B) in 859ms
+  43.639 I (61245) NimBLE: GAP procedure initiated: advertise;
+  43.639 I (61245) NimBLE: disc_mode=2
+  43.639 I (61245) NimBLE:  adv_channel_map=0 own_addr_type=0 adv_filter_policy=0 adv_itvl_min=1536 adv_itvl_max=1600
+  43.639 I (61247) NimBLE:
+  43.639 I (61248) ecg_ble: advertising started (slow)
+  43.844 TICK,28500,src=REPLAY_NORMAL,bpm=83,sqi=0.766,disp=-1.5619,comb=-1.5619,busy=10%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.766,vrms=0.0976,aidrop=0,nw=60287,nt=60287,lo=0,0,0.1019,2.55
+  43.844 AI_RESULT,0.0000,0,0,76422
+  44.866 TICK,29000,src=REPLAY_NORMAL,bpm=94,sqi=0.740,disp=-1.5614,comb=-1.5614,busy=6%,ovr=2,alarm=0,asrc=0x00,seg=37,sqimin=0.739,vrms=0.0976,aidrop=0,nw=61287,nt=61287,lo=0,0,0.1054,3.26
+  44.866 AI_RESULT,0.0039,0,0,76399
+  45.879 TICK,29500,src=REPLAY_NORMAL,bpm=83,sqi=0.753,disp=-1.0951,comb=-1.0951,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.749,vrms=0.0976,aidrop=0,nw=62287,nt=62287,lo=0,0,0.0894,3.91
+  45.879 AI_RESULT,0.0000,0,0,76414
+  46.901 TICK,30000,src=REPLAY_NORMAL,bpm=91,sqi=0.732,disp=-1.3454,comb=-1.3454,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.732,vrms=0.0976,aidrop=0,nw=63287,nt=63287,lo=0,0,0.0917,3.77
+  46.901 AI_RESULT,0.0000,0,0,76134
+  47.906 TICK,30500,src=REPLAY_NORMAL,bpm=111,sqi=0.826,disp=-1.4689,comb=-1.4689,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.825,vrms=0.0976,aidrop=0,nw=64287,nt=64287,lo=0,0,0.0921,4.51
+  47.906 AI_RESULT,0.0078,0,0,76427
+  48.742 TICK,31000,src=REPLAY_NORMAL,bpm=111,sqi=0.815,disp=-1.4297,comb=-1.4297,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.798,vrms=0.0976,aidrop=0,nw=65287,nt=65287,lo=0,0,0.0921,4.43
+  48.945 AI_RESULT,0.0000,0,0,76412
+  49.751 TICK,31500,src=REPLAY_NORMAL,bpm=96,sqi=0.766,disp=-1.3969,comb=-1.3969,busy=6%,ovr=2,alarm=0,asrc=0x00,seg=37,sqimin=0.766,vrms=0.0881,aidrop=0,nw=66287,nt=66287,lo=0,0,0.0899,4.52
+  49.953 AI_RESULT,0.0000,0,0,76413
+  50.786 TICK,32000,src=REPLAY_NORMAL,bpm=106,sqi=0.728,disp=-1.4416,comb=-1.4416,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.728,vrms=0.0881,aidrop=0,nw=67287,nt=67287,lo=0,0,0.0793,2.48
+  50.989 AI_RESULT,0.0039,0,0,76406
+  51.807 TICK,32500,src=REPLAY_NORMAL,bpm=97,sqi=0.715,disp=-1.3802,comb=-1.3802,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.715,vrms=0.0881,aidrop=0,nw=68287,nt=68287,lo=0,0,0.0783,2.57
+  52.010 AI_RESULT,0.0000,0,0,76083
+  52.826 TICK,33000,src=REPLAY_NORMAL,bpm=97,sqi=0.698,disp=-1.2961,comb=-1.2961,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.697,vrms=0.0881,aidrop=0,nw=69287,nt=69287,lo=0,0,0.0824,4.22
+  52.826 AI_RESULT,0.9727,1,1,76127
+  53.448 [ECGR] auto-record: abnormal edge, starting...
+  53.649 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_70.ecgr
+  54.065 TICK,33500,src=REPLAY_NORMAL,bpm=97,sqi=0.747,disp=-1.2385,comb=-1.2385,busy=22%,ovr=2,alarm=0,asrc=0x00,seg=37,sqimin=0.747,vrms=0.0881,aidrop=0,nw=70506,nt=70506,lo=0,0,0.0902,3.83
+  54.065 AI_RESULT,0.9961,1,0,76415
+  55.075 TICK,34000,src=REPLAY_NORMAL,bpm=97,sqi=0.750,disp=-1.3587,comb=-1.3587,busy=6%,ovr=2,alarm=0,asrc=0x00,seg=37,sqimin=0.750,vrms=0.0862,aidrop=0,nw=71506,nt=71506,lo=0,0,0.0923,3.76
+  55.075 AI_RESULT,0.0039,0,0,76397
+  56.088 TICK,34500,src=REPLAY_NORMAL,bpm=100,sqi=0.752,disp=-1.2885,comb=-1.2885,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.745,vrms=0.0862,aidrop=0,nw=72506,nt=72506,lo=0,0,0.0860,3.62
+  56.088 AI_RESULT,0.0625,0,0,76452
+  57.108 TICK,35000,src=REPLAY_NORMAL,bpm=110,sqi=0.726,disp=-1.2588,comb=-1.2588,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.721,vrms=0.0862,aidrop=0,nw=73506,nt=73506,lo=0,0,0.0787,2.63
+  57.108 AI_RESULT,0.0000,0,0,76398
+  57.941 TICK,35500,src=REPLAY_NORMAL,bpm=111,sqi=0.695,disp=-1.4026,comb=-1.4026,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.695,vrms=0.0862,aidrop=0,nw=74506,nt=74506,lo=0,0,0.0722,2.58
+  58.142 AI_RESULT,0.0000,0,0,76420
+  58.546 [ECGR] auto-record: consecutive normal, stopping...
+  58.950 TICK,36000,src=REPLAY_NORMAL,bpm=111,sqi=0.687,disp=-1.4839,comb=-1.4839,busy=11%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.678,vrms=0.0862,aidrop=0,nw=75506,nt=75506,lo=0,0,0.0792,3.08
+  59.151 AI_RESULT,0.0000,0,0,76195
+  59.352 [ECGR] finalized /spiffs/ecgdata/ecg_rec_70.ecgr (1195 samples, 5 sec, 0 abn, 2422 B) in 853ms
+  60.173 TICK,36500,src=REPLAY_NORMAL,bpm=111,sqi=0.689,disp=-1.3860,comb=-1.3860,busy=8%,ovr=2,alarm=0,asrc=0x00,seg=37,sqimin=0.689,vrms=0.0780,aidrop=0,nw=76545,nt=76545,lo=0,0,0.0797,3.09
+  60.173 AI_RESULT,0.0000,0,0,76209
+  60.983 TICK,37000,src=REPLAY_NORMAL,bpm=107,sqi=0.952,disp=-1.6490,comb=-1.6490,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.940,vrms=0.0780,aidrop=0,nw=77545,nt=77545,lo=0,0,0.0966,6.08
+  61.185 AI_RESULT,0.0000,0,0,75963
+  62.004 TICK,37500,src=REPLAY_NORMAL,bpm=88,sqi=0.966,disp=-1.7090,comb=-1.7090,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.956,vrms=0.0780,aidrop=0,nw=78545,nt=78545,lo=0,0,0.1153,7.40
+  62.205 AI_RESULT,0.0000,0,0,76109
+  63.025 TICK,38000,src=REPLAY_NORMAL,bpm=77,sqi=0.975,disp=-1.5961,comb=-1.5961,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.969,vrms=0.0780,aidrop=0,nw=79545,nt=79545,lo=0,0,0.1247,6.81
+  63.225 AI_RESULT,0.0000,0,0,76113
+  64.043 TICK,38500,src=REPLAY_NORMAL,bpm=76,sqi=0.980,disp=-1.6390,comb=-1.6390,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.978,vrms=0.0780,aidrop=0,nw=80545,nt=80545,lo=0,0,0.1253,6.73
+  64.245 AI_RESULT,0.0000,0,0,76116
+  65.077 TICK,39000,src=REPLAY_NORMAL,bpm=76,sqi=0.983,disp=-1.6573,comb=-1.6573,busy=6%,ovr=2,alarm=0,asrc=0x00,seg=37,sqimin=0.982,vrms=0.1261,aidrop=0,nw=81545,nt=81545,lo=0,0,0.1249,5.88
+  65.077 AI_RESULT,0.4492,0,0,76249
+  66.084 TICK,39500,src=REPLAY_NORMAL,bpm=76,sqi=0.985,disp=-1.6963,comb=-1.6963,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.984,vrms=0.1261,aidrop=0,nw=82545,nt=82545,lo=0,0,0.1272,5.92
+  66.084 AI_RESULT,0.0000,0,0,76331
+  67.110 TICK,40000,src=REPLAY_NORMAL,bpm=75,sqi=0.988,disp=-1.7965,comb=-1.7965,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.988,vrms=0.1261,aidrop=0,nw=83545,nt=83545,lo=0,0,0.1241,6.10
+  67.110 AI_RESULT,0.0195,0,0,76148
+  68.118 TICK,40500,src=REPLAY_NORMAL,bpm=75,sqi=0.989,disp=-1.6301,comb=-1.6301,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.988,vrms=0.1261,aidrop=0,nw=84545,nt=84545,lo=0,0,0.1222,6.44
+  68.118 AI_RESULT,0.3008,0,0,76311
+  69.124 TICK,41000,src=REPLAY_NORMAL,bpm=75,sqi=0.990,disp=-1.5124,comb=-1.5124,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.989,vrms=0.1261,aidrop=0,nw=85545,nt=85545,lo=0,0,0.1323,5.94
+  69.124 AI_RESULT,0.0000,0,0,76110
+  70.157 TICK,41500,src=REPLAY_NORMAL,bpm=75,sqi=0.990,disp=-1.6843,comb=-1.6843,busy=6%,ovr=2,alarm=0,asrc=0x00,seg=37,sqimin=0.990,vrms=0.1252,aidrop=0,nw=86545,nt=86545,lo=0,0,0.1311,6.02
+  70.157 AI_RESULT,0.0000,0,0,76103
+  70.979 TICK,42000,src=REPLAY_NORMAL,bpm=0,sqi=0.990,disp=-1.1920,comb=-1.1920,busy=5%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.990,vrms=0.1252,aidrop=0,nw=87545,nt=87545,lo=0,0,0.3002,5.58
+  71.181 AI_RESULT,0.9961,1,1,75667
+  71.584 [ECGR] auto-record: abnormal edge, starting...
+  71.799 [ECGR] recording started: /spiffs/ecgdata/ecg_rec_88.ecgr
+  72.216 TICK,42500,src=REPLAY_NORMAL,bpm=0,sqi=0.986,disp=-1.5334,comb=-1.5334,busy=21%,ovr=1,alarm=0,asrc=0x00,seg=37,sqimin=0.986,vrms=0.1252,aidrop=0,nw=88764,nt=88764,lo=0,0,0.3396,5.17
+  72.419 AI_RESULT,0.9961,1,0,75625
+  73.228 TICK,43000,src=REPLAY_NORMAL,bpm=0,sqi=0.771,disp=-1.5584,comb=-1.5584,busy=4%,ovr=0,alarm=0,asrc=0x00,seg=37,sqimin=0.771,vrms=0.1252,aidrop=0,nw=89764,nt=89764,lo=0,0,0.3410,5.09
+  73.442 AI_RESULT,0.0000,0,0,75843
+  74.253 TICK,43500,src=REPLAY_NORMAL,bpm=124,sqi=0.834,disp=-1.3904,comb=-1.3904,busy=5%,ovr=0,alarm=0,asrc=0x00,seg=37,sqimin=0.675,vrms=0.1252,aidrop=0,nw=90764,nt=90764,lo=0,0,0.1937,2.24
+  74.454 AI_RESULT,0.0039,0,0,76447

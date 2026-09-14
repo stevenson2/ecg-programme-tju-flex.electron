@@ -1,0 +1,136 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "Round-H calib seg35 (lo_mains_weak)",
+  "port": "COM4",
+  "seconds": 75.0,
+  "cmds": [
+    "MODE replay_normal",
+    "REPLAY 35"
+  ],
+  "capture_start": "2026-09-14 11:43:09",
+  "ai_result": {
+    "windows": 76,
+    "rate_hz": 1.024,
+    "confirmed_rate": 0.1184,
+    "raw_rate": 0.2237,
+    "conf_median": 0.0,
+    "conf_mean": 0.2199,
+    "confirmed_runs_s": {
+      "count": 9,
+      "max": 1,
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 8,
+      "max": 16,
+      "min": 5,
+      "median": 5.0,
+      "mean": 7.62,
+      "all": [
+        12,
+        16,
+        5,
+        5,
+        5,
+        5,
+        5,
+        8
+      ]
+    },
+    "raw_runs_s": {
+      "count": 16,
+      "max": 2,
+      "min": 1,
+      "median": 1.0,
+      "mean": 1.06,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 15,
+      "max": 16,
+      "min": 1,
+      "median": 2,
+      "mean": 3.93,
+      "all": [
+        2,
+        11,
+        16,
+        2,
+        1,
+        4,
+        1,
+        1,
+        4,
+        2,
+        1,
+        2,
+        2,
+        7,
+        3
+      ]
+    },
+    "latency_us_median": 75770.5,
+    "latency_us_max": 76458
+  },
+  "tick": {
+    "count": 76,
+    "sources": [
+      "REPLAY_NORMAL"
+    ],
+    "busy_pct_max": 22,
+    "busy_pct_mean": 4.9,
+    "ovr_total": 93,
+    "ovr_max": 4,
+    "segments": [
+      "35"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.8026,
+    "runs_s": {
+      "count": 1,
+      "max": 61,
+      "min": 61,
+      "median": 61,
+      "mean": 61,
+      "all": [
+        61
+      ]
+    },
+    "asrc_seen": [
+      "0x00",
+      "0x14",
+      "0x15"
+    ]
+  }
+}

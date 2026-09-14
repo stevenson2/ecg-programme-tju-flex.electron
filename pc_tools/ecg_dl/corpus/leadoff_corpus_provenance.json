@@ -64,9 +64,9 @@
     },
     "lo_pop_noise": {
       "full": {
-        "rms_mV": 0.1418,
-        "crest": 13.56,
-        "p2p_mV": 2.365
+        "rms_mV": 0.203,
+        "crest": 9.45,
+        "p2p_mV": 2.48
       },
       "leadin_0_10s": {
         "rms_mV": 0.1303,
@@ -74,26 +74,26 @@
         "p2p_mV": 1.086
       },
       "tail_10_60s": {
-        "rms_mV": 0.1277,
-        "crest": 13.41,
-        "p2p_mV": 2.194
+        "rms_mV": 0.2029,
+        "crest": 8.42,
+        "p2p_mV": 2.27
       }
     },
     "lo_neg_walk": {
       "full": {
-        "rms_mV": 0.1799,
-        "crest": 5.98,
-        "p2p_mV": 1.497
+        "rms_mV": 0.1797,
+        "crest": 6.15,
+        "p2p_mV": 1.578
       },
       "leadin_0_10s": {
-        "rms_mV": 0.1711,
-        "crest": 6.29,
-        "p2p_mV": 1.418
+        "rms_mV": 0.1707,
+        "crest": 6.49,
+        "p2p_mV": 1.437
       },
       "tail_10_60s": {
-        "rms_mV": 0.1814,
-        "crest": 5.92,
-        "p2p_mV": 1.496
+        "rms_mV": 0.1813,
+        "crest": 6.01,
+        "p2p_mV": 1.563
       }
     },
     "lo_neg_vf": {
@@ -115,9 +115,9 @@
     },
     "lo_mixed_cycle": {
       "full": {
-        "rms_mV": 0.1384,
-        "crest": 12.24,
-        "p2p_mV": 2.128
+        "rms_mV": 0.1726,
+        "crest": 9.81,
+        "p2p_mV": 2.408
       },
       "leadin_0_10s": {
         "rms_mV": 0.1303,
@@ -125,9 +125,9 @@
         "p2p_mV": 1.086
       },
       "tail_10_60s": {
-        "rms_mV": 0.1399,
-        "crest": 12.11,
-        "p2p_mV": 2.128
+        "rms_mV": 0.1798,
+        "crest": 9.42,
+        "p2p_mV": 2.408
       }
     }
   },
@@ -171,10 +171,10 @@
       "name": "lo_pop_noise",
       "params": {
         "kind": "positive",
-        "phases": "10s normal + 1.5s pop(1.8mV,tau0.5) + 48.5s spiky flatline(emg0.25+mains0.05+spikes3/s)"
+        "phases": "10s normal + 1.5s pop(1.8mV,tau0.5) + 48.5s wander0.20+mains0.05+spikes3/s (fake-beat blocker)"
       },
-      "md5_int16uv": "f8fae9b28f2526d89e735094cd658cdc",
-      "p2p_mV": 2.9841
+      "md5_int16uv": "ceaaf3bc682326e9c732bfdc80e05936",
+      "p2p_mV": 2.9541
     },
     {
       "index": 4,
@@ -184,8 +184,8 @@
         "kind": "negative",
         "phases": "60s mit100 + motion SNR 0dB (walk equivalent)"
       },
-      "md5_int16uv": "1a71f7d63039daa6a03008ecf4fc657e",
-      "p2p_mV": 2.3446
+      "md5_int16uv": "2ed1c757ac03b0e0e6ab885ab2b91806",
+      "p2p_mV": 2.3454
     },
     {
       "index": 5,
@@ -206,8 +206,8 @@
         "kind": "mixed",
         "phases": "10 normal/15 mains/10 normal/20 pop+noise/5 normal"
       },
-      "md5_int16uv": "5e63cd62372064c5f70905850f0b47a8",
-      "p2p_mV": 2.8732
+      "md5_int16uv": "d8b5d6a71c014c424cb3ca8b4c56f4b9",
+      "p2p_mV": 2.7037
     }
   ]
 }

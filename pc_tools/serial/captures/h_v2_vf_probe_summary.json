@@ -1,0 +1,107 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "Round-H verify v2 seg31 (vf_probe) frozen-threshold firmware",
+  "port": "COM4",
+  "seconds": 75.0,
+  "cmds": [
+    "MODE replay_normal",
+    "REPLAY 31"
+  ],
+  "capture_start": "2026-09-14 12:16:18",
+  "ai_result": {
+    "windows": 76,
+    "rate_hz": 1.017,
+    "confirmed_rate": 0.1711,
+    "raw_rate": 1.0,
+    "conf_median": 0.9961,
+    "conf_mean": 0.9961,
+    "confirmed_runs_s": {
+      "count": 13,
+      "max": 1,
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 12,
+      "max": 5,
+      "min": 5,
+      "median": 5.0,
+      "mean": 5,
+      "all": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    "raw_runs_s": {
+      "count": 1,
+      "max": 76,
+      "min": 76,
+      "median": 76,
+      "mean": 76,
+      "all": [
+        76
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 0
+    },
+    "latency_us_median": 75715.5,
+    "latency_us_max": 76474
+  },
+  "tick": {
+    "count": 76,
+    "sources": [
+      "REPLAY_NORMAL"
+    ],
+    "busy_pct_max": 24,
+    "busy_pct_mean": 5.5,
+    "ovr_total": 93,
+    "ovr_max": 3,
+    "segments": [
+      "31"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.8684,
+    "runs_s": {
+      "count": 1,
+      "max": 66,
+      "min": 66,
+      "median": 66,
+      "mean": 66,
+      "all": [
+        66
+      ]
+    },
+    "asrc_seen": [
+      "0x00",
+      "0x01"
+    ]
+  }
+}

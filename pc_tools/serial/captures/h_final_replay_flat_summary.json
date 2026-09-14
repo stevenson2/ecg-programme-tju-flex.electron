@@ -1,0 +1,129 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "Round-H final regression: replay_flat",
+  "port": "COM4",
+  "seconds": 90.0,
+  "cmds": [
+    "MODE replay_flat"
+  ],
+  "capture_start": "2026-09-14 13:21:34",
+  "ai_result": {
+    "windows": 90,
+    "rate_hz": 1.009,
+    "confirmed_rate": 0.1222,
+    "raw_rate": 0.3556,
+    "conf_median": 0.0078,
+    "conf_mean": 0.3528,
+    "confirmed_runs_s": {
+      "count": 11,
+      "max": 1,
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 10,
+      "max": 13,
+      "min": 5,
+      "median": 5.0,
+      "mean": 7.4,
+      "all": [
+        5,
+        5,
+        11,
+        10,
+        5,
+        5,
+        5,
+        10,
+        5,
+        13
+      ]
+    },
+    "raw_runs_s": {
+      "count": 11,
+      "max": 20,
+      "min": 1,
+      "median": 1,
+      "mean": 2.91,
+      "all": [
+        1,
+        1,
+        2,
+        1,
+        1,
+        1,
+        20,
+        2,
+        1,
+        1,
+        1
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 10,
+      "max": 14,
+      "min": 1,
+      "median": 2.5,
+      "mean": 5.6,
+      "all": [
+        2,
+        3,
+        1,
+        1,
+        14,
+        10,
+        9,
+        1,
+        1,
+        14
+      ]
+    },
+    "latency_us_median": 75998.0,
+    "latency_us_max": 76695
+  },
+  "tick": {
+    "count": 90,
+    "sources": [
+      "REPLAY_NORMAL"
+    ],
+    "busy_pct_max": 22,
+    "busy_pct_mean": 5.2,
+    "ovr_total": 54,
+    "ovr_max": 2,
+    "segments": [
+      "2"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.7889,
+    "runs_s": {
+      "count": 1,
+      "max": 71,
+      "min": 71,
+      "median": 71,
+      "mean": 71,
+      "all": [
+        71
+      ]
+    },
+    "asrc_seen": [
+      "0x00",
+      "0x14",
+      "0x15"
+    ]
+  }
+}

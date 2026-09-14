@@ -1,0 +1,24 @@
+{
+ "raw": "captures/h_calib_lo_neg_walk_raw.txt",
+ "ticks": 75,
+ "segments": [
+  38
+ ],
+ "alarm_secs_total": 0,
+ "alarm_run_max_s": 0,
+ "leadoff_0x10_secs": 0,
+ "events": [],
+ "tail_after_s": 10.0,
+ "tail_rms_min_max": [
+  0.1205,
+  0.1768
+ ],
+ "tail_crest_min_max": [
+  4.51,
+  7.04
+ ],
+ "tail_sqimin_min": 0.988,
+ "tail_qual_max": 0,
+ "tail_beat_secs": 63,
+ "tail_secs": 64
+}

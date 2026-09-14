@@ -1,0 +1,186 @@
+{
+  "tool": "alarm_repro.py",
+  "label": "Round-H final regression: simulator 120s no-0x10",
+  "port": "COM4",
+  "seconds": 120.0,
+  "cmds": [
+    "MODE sim"
+  ],
+  "capture_start": "2026-09-14 13:41:22",
+  "ai_result": {
+    "windows": 121,
+    "rate_hz": 1.01,
+    "confirmed_rate": 0.1653,
+    "raw_rate": 0.5124,
+    "conf_median": 0.5508,
+    "conf_mean": 0.4992,
+    "confirmed_runs_s": {
+      "count": 20,
+      "max": 1,
+      "min": 1,
+      "median": 1.0,
+      "mean": 1,
+      "all": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "confirmed_gaps_s": {
+      "count": 19,
+      "max": 5,
+      "min": 5,
+      "median": 5,
+      "mean": 5,
+      "all": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    "raw_runs_s": {
+      "count": 31,
+      "max": 3,
+      "min": 1,
+      "median": 2,
+      "mean": 2,
+      "all": [
+        1,
+        2,
+        3,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "raw_gaps_s": {
+      "count": 30,
+      "max": 2,
+      "min": 1,
+      "median": 2.0,
+      "mean": 1.93,
+      "all": [
+        1,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "latency_us_median": 83978,
+    "latency_us_max": 99892
+  },
+  "tick": {
+    "count": 121,
+    "sources": [
+      "SIMULATOR"
+    ],
+    "busy_pct_max": 34,
+    "busy_pct_mean": 14.4,
+    "ovr_total": 148,
+    "ovr_max": 3,
+    "segments": [
+      "0"
+    ]
+  },
+  "alarm_latch": {
+    "rate": 0.8595,
+    "runs_s": {
+      "count": 1,
+      "max": 104,
+      "min": 104,
+      "median": 104,
+      "mean": 104,
+      "all": [
+        104
+      ]
+    },
+    "asrc_seen": [
+      "0x00",
+      "0x01"
+    ]
+  }
+}

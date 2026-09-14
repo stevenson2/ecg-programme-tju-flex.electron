@@ -1,0 +1,31 @@
+{
+ "raw": "captures/h_calib_lo_mains_strong_raw.txt",
+ "ticks": 77,
+ "segments": [
+  0,
+  34
+ ],
+ "alarm_secs_total": 62,
+ "alarm_run_max_s": 62,
+ "leadoff_0x10_secs": 62,
+ "events": [
+  {
+   "t": 12.785,
+   "kind": "LATCH",
+   "src": 20
+  }
+ ],
+ "tail_after_s": 10.0,
+ "tail_rms_min_max": [
+  0.0001,
+  0.1363
+ ],
+ "tail_crest_min_max": [
+  2.24,
+  10.84
+ ],
+ "tail_sqimin_min": 0.43,
+ "tail_qual_max": 0,
+ "tail_beat_secs": 9,
+ "tail_secs": 65
+}

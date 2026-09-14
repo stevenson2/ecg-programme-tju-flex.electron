@@ -1,0 +1,45 @@
+{
+  "tool": "h_mixed_release.py",
+  "port": "COM4",
+  "capture_start": "2026-09-14 13:24:35",
+  "events": [
+    {
+      "t": 13.89,
+      "phase": "p1_mixed",
+      "kind": "LATCH",
+      "src": 20
+    },
+    {
+      "t": 73.02,
+      "phase": "p1_mixed",
+      "kind": "EXTEND",
+      "src": null
+    },
+    {
+      "t": 12.8,
+      "phase": "p3_repull",
+      "kind": "LATCH",
+      "src": 4
+    },
+    {
+      "t": 14.82,
+      "phase": "p3_repull",
+      "kind": "EXTEND",
+      "src": null
+    }
+  ],
+  "p1_alarm_ticks": 61,
+  "p1_asrc_seen": [
+    "0x0",
+    "0x14",
+    "0x1c"
+  ],
+  "p2_clear_events": 0,
+  "p3_alarm_ticks": 25,
+  "p3_asrc_seen": [
+    "0x0",
+    "0x4",
+    "0x14"
+  ],
+  "verdict": "FAIL"
+}
