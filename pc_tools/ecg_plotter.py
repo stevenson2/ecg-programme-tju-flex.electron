@@ -7,6 +7,7 @@ import serial.tools.list_ports
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+from matplotlib.widgets import Button
 from collections import deque
 import threading
 import argparse
@@ -34,14 +35,50 @@ bpm_confidence = 0.0
 current_abnormal = 0
 current_abnormal_conf = 0.0
 
+MODE_CYCLE = [("sim", "SIMULATOR"), ("afe", "AFE_REAL"),
+              ("replay_normal", "REPLAY_NORMAL"),
+              ("replay_abnormal", "REPLAY_ABNORMAL")]
+mode_index = 0
+current_mode_label = "SIMULATOR"
+pending_mode_label = None
+mode_text = None
+btn_mode = None
+serial_lock = threading.Lock()
+
+def send_command(cmd):
+    global serial_port
+    if serial_port is None or not getattr(serial_port, "is_open", False):
+        print("FW cmd skipped (serial not open): %s" % cmd)
+        return False
+    try:
+        with serial_lock:
+            serial_port.write((cmd + "\n").encode("ascii"))
+        print("FW cmd -> %s" % cmd)
+        return True
+    except Exception as e:
+        print("FW cmd failed: %s" % e)
+        return False
+
+def set_mode_label(label):
+    global current_mode_label, pending_mode_label
+    current_mode_label = label
+    pending_mode_label = label
+
 
 def serial_reader(port, baud):
     global serial_port, running, sample_count, current_bpm, current_true_bpm, bpm_confidence, current_abnormal, current_abnormal_conf
     try:
         serial_port = serial.Serial(port, baud, timeout=1)
-        print("Connected: " + port + " @ " + str(baud) + " bps")
-        time.sleep(1)
+        # USB-Serial-JTAG / CH343 初始化：DTR/RTS 不置位，避免把板子按在 reset/boot。
+        serial_port.rts = False
+        serial_port.dtr = True
+        time.sleep(0.2)
+        serial_port.dtr = False
+        serial_port.rts = False
+        time.sleep(0.5)
         serial_port.reset_input_buffer()
+        print("Connected: " + port + " @ " + str(baud) + " bps")
+        send_command("WAVE 1")
     except Exception as e:
         print("Error: cannot open " + port + ": " + str(e))
         running = False
@@ -51,6 +88,12 @@ def serial_reader(port, baud):
         try:
             line = serial_port.readline().decode("utf-8", errors="ignore").strip()
             if not line:
+                continue
+            if line.startswith("CMD MODE ok") or line.startswith("MODE ok"):
+                try:
+                    set_mode_label(line.split()[-1])
+                except Exception:
+                    pass
                 continue
             if not line[0].isdigit() and line[0] != "-":
                 continue
@@ -106,6 +149,13 @@ def serial_reader(port, baud):
 
 
 def update_plot(frame):
+    global pending_mode_label
+    if pending_mode_label is not None:
+        if mode_text is not None:
+            mode_text.set_text("Mode: %s" % pending_mode_label)
+        if btn_mode is not None:
+            btn_mode.label.set_text("切换模式\n%s" % pending_mode_label)
+        pending_mode_label = None
     if len(data_clean) < 2:
         return
     start = max(0, len(data_clean) - WINDOW_SIZE)
@@ -156,18 +206,33 @@ def update_plot(frame):
     return line_clean, line_noisy, line_filtered, status_text, bpm_text
 
 
+def on_mode_button(event):
+    global mode_index
+    cmd, _ = MODE_CYCLE[mode_index]
+    mode_index = (mode_index + 1) % len(MODE_CYCLE)
+    send_command("MODE " + cmd)
+
 def on_key(event):
     global WINDOW_SIZE, running, ani, serial_port
 
     # 固件命令透传 (2026-08-08): m=切换输入源(模拟/回放/真实AFE) n=回放正常段 e=回放异常段
-    if event.key in ("m", "M", "n", "N", "e", "E"):
-        if serial_port is not None:
-            cmd = event.key.lower()
-            try:
-                serial_port.write(cmd.encode())
-                print("FW cmd -> %s" % cmd)
-            except Exception:
-                print("FW cmd failed (serial closed?)")
+    if event.key in ("m", "M"):
+        on_mode_button(None)
+        return
+    if event.key in ("s", "S"):
+        send_command("MODE sim")
+        return
+    if event.key in ("n", "N"):
+        send_command("MODE replay_normal")
+        return
+    if event.key in ("e", "E"):
+        send_command("MODE replay_abnormal")
+        return
+    if event.key in ("f", "F"):
+        send_command("MODE replay_flat")
+        return
+    if event.key in ("a", "A"):
+        send_command("MODE afe")
         return
 
     if event.key == "right":
@@ -278,6 +343,15 @@ if __name__ == "__main__":
     status_text = ax.text(0.02, 0.02, "", transform=ax.transAxes,
                           fontsize=9, color="gray", va="bottom")
 
+    mode_text = ax.text(0.02, 0.86, "Mode: %s" % current_mode_label,
+                         transform=ax.transAxes, fontsize=12, color="navy",
+                         ha="left", va="top", fontweight="bold",
+                         bbox=dict(boxstyle="round,pad=0.25", facecolor="white",
+                                   edgecolor="lightgray", alpha=0.85))
+    ax_btn = fig.add_axes([0.80, 0.015, 0.16, 0.06])
+    btn_mode = Button(ax_btn, "切换模式\n%s" % current_mode_label)
+    btn_mode.on_clicked(on_mode_button)
+
     fig.canvas.mpl_connect("key_press_event", on_key)
     ani = FuncAnimation(fig, update_plot, interval=UPDATE_INTERVAL_MS, blit=False, cache_frame_data=False)
 
@@ -288,12 +362,13 @@ if __name__ == "__main__":
     print("  ->/<- : Time axis   up/down : Y axis")
     print("  1/2/3 : Toggle curves      R : Reset")
     print("  Space : Pause/Resume       Q : Quit")
-    print("  m : 切换输入源   n : 回放正常段   e : 回放异常段")
+    print("  m : 切换模式   s : 模拟   n : 回放正常   e : 回放异常   f : 平线   a : AFE")
     print("="*50)
 
     plt.tight_layout()
     plt.show()
 
+    send_command("WAVE 0")
     running = False
     if serial_port and serial_port.is_open:
         serial_port.close()

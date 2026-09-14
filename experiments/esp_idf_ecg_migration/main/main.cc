@@ -119,6 +119,7 @@ static volatile bool s_storageReady = false;
  * 第 10 列 asrc: 0x01 AI / 0x02 RS / 0x04 FLAT / 0x08 VF / 0x10 LEADOFF。 */
 #define ECG_BLE_CAPABILITIES_STR "asrc:0x01,0x02,0x04,0x08,0x10"
 static bool s_helloPending = false;
+static bool s_waveEnabled = false;   /* 串口 CSV 波形流开关: WAVE 1/0; 默认关, 由 Plotter 打开 */
 
 /* 热路径日志开关: 1=打印 AI_RESULT/TICK (调试), 0=关闭 (release/功耗实测)。
  * 两行/秒 @460800 对功耗影响极小, 默认保持开启。 */
@@ -372,6 +373,17 @@ static void processCommand(const char *cmd, bool fromUart) {
                  (unsigned long)ecg_ai_total_confirmed(),
                  ECG_PROTO_FW_VER, ECG_MODEL_NAME);
         cmdReply(fromUart, reply);
+        return;
+    }
+    /* 串口波形流开关: 默认关闭, 避免无主机读取时 console 背压影响采样。 */
+    if (strEqualsIgnoreCase(cmd, "WAVE 1")) {
+        s_waveEnabled = true;
+        cmdReply(fromUart, "WAVE 1 ok");
+        return;
+    }
+    if (strEqualsIgnoreCase(cmd, "WAVE 0")) {
+        s_waveEnabled = false;
+        cmdReply(fromUart, "WAVE 0 ok");
         return;
     }
     if (strStartsWithIgnoreCase(cmd, "MODE ")) {
@@ -850,6 +862,19 @@ extern "C" void app_main(void) {
                 s_bleBatchLen = 0;
                 s_bleBatchCount = 0;
             }
+        }
+
+        /* 串口波形输出 (Plotter 用): 100Hz, 格式与 BLE v2 一致但用换行结尾。 */
+        if (s_waveEnabled && (frame % 5) == 0) {
+            char ser_line[192];
+            uint8_t trueBPM2 = (s_mode == SOURCE_SIMULATOR) ? ecgSimulatorGetTrueBPM() : 0;
+            uint8_t asrc2 = s_alarmLatched ? s_alarmSrc : 0;
+            snprintf(ser_line, sizeof(ser_line),
+                     "%.3f,%.3f,%.3f,%u,%u,%.2f,0,%d,%.3f,%u\n",
+                     cleanSample, noisyNoDC, displaySample,
+                     (unsigned)hr.bpm, (unsigned)trueBPM2, hr.sqi,
+                     s_alarmLatched ? 1 : 0, last_conf, (unsigned)asrc2);
+            printf("%s", ser_line);
         }
 
         if (frame % 500 == 0) {

@@ -166,3 +166,7 @@ only 1/3 seeds reached test E_A<=0.10, and that seed had Sn_A=0.058; the other t
 had E_A 0.18-0.20 with Sn 0.50-0.57. Decision: FAIL_TO_3CLASS. R19 3-class retry
 was aborted by host memory pressure and is incomplete. P1-3/P1-4 remain blocked until
 A4 passes. Evidence: pc_tools/ecg_dl/models/gate/r18_gate_*.json; TUNING_HISTORY ch.116.
+
+## ECG Plotter Serial Fix (2026-09-14)
+
+Root cause: the ESP-IDF firmware only streamed waveform CSV over BLE, not over the serial console, so ECG Plotter showed no data after connecting. Firmware now accepts WAVE 1 / WAVE 0 and streams the same 10-column v2 CSV at 100 Hz when enabled (default off, so serial-log-only operation is unchanged). Plotter now initializes USB-Serial-JTAG/CH343 DTR-RTS correctly, sends WAVE 1 on connect / WAVE 0 on exit, and adds a "切换模式" button plus MODE full-line commands (sim / afe / replay_normal / replay_abnormal / replay_flat). Reflash the firmware to use this. The prebuilt ECG-Plotter.exe was not rebuilt (PyInstaller absent); run python pc_tools/ecg_plotter.py.

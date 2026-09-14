@@ -12,3 +12,7 @@
 ## 生成物（禁止手改）
 
 `scripts/gen_protocol_constants.py` 从契约生成三份常量（全部入库；改契约后必须重跑）：
+
+## Serial CSV waveform (ECG Plotter)
+
+The ESP-IDF firmware can stream the same 10-column BLE v2 CSV format over the serial console at 100 Hz. It is off by default; the plotter sends `WAVE 1` on connect and `WAVE 0` on exit. BLE and serial share the column/asrc definitions in this contract (`ble.serial_csv`).

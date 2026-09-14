@@ -369,10 +369,27 @@
           "args": [],
           "response": "WIFI_OFF ok",
           "range": "storage_ready"
+        },
+        {
+          "name": "WAVE",
+          "args": [
+            "0|1"
+          ],
+          "response": "WAVE 0/1 ok",
+          "range": "any",
+          "notes": "串口 CSV 波形流开关; 默认关, Plotter 打开"
         }
       ]
     },
-    "model": "v3-A"
+    "model": "v3-A",
+    "serial_csv": {
+      "baud": 460800,
+      "enabled_by": "WAVE 1",
+      "disabled_by": "WAVE 0",
+      "rate_hz": 100,
+      "terminator": "\n",
+      "columns": "same as ble.frame.columns_v2 (10 columns; ASCII CSV, newline-terminated)"
+    }
   },
   "ecgr": {
     "magic": "ECGR",
