@@ -37,8 +37,69 @@ DEFAULT_PORT = 8000
 DEFAULT_PAGE = 1
 DEFAULT_PAGE_SIZE = 20
 
-# 需验证的 metadata 必填字段
-REQUIRED_META_FIELDS = {"device_id", "firmware_version"}
+# 需验证的 metadata 必填字段（来源 protocol/ecg_proto.json cloud_v1.metadata_schema）
+REQUIRED_META_FIELDS = {"device_id", "firmware_version", "sample_rate"}
+
+# P0-1/P0-4: 契约文件是唯一真值源；启动时读取，缺失契约时退回内置默认值。
+_PROTO_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    "protocol", "ecg_proto.json")
+
+
+def _load_protocol_contract():
+    try:
+        with open(_PROTO_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+PROTOCOL = _load_protocol_contract()
+
+# 已知元数据类型（schema 宽松校验；未知字段允许但告警不拒绝）
+_META_TYPES = {
+    "device_id": str,
+    "firmware_version": str,
+    "sample_rate": int,
+    "duration_sec": int,
+    "total_samples": int,
+    "abnormal_seconds": int,
+    "abnormal_ratio": (int, float),
+    "start_unix": int,
+    "onboard_ai_summary": dict,
+}
+
+
+def validate_meta(meta):
+    """按契约校验 metadata，返回错误信息列表（空 = 通过）。
+
+    规则（与 docs/03_Software_Docs/cloud_api_spec.md §3 一致）：
+      - 必填 device_id / firmware_version / sample_rate；
+      - 已知字段类型检查；sample_rate 必须等于 ECGR 头采样率（由调用方交叉校验）；
+      - 未知字段放行（云端演进靠后兼容）。
+    """
+    errors = []
+    if not isinstance(meta, dict):
+        return ["meta 必须是 JSON object"]
+    for key in sorted(REQUIRED_META_FIELDS):
+        if key not in meta:
+            errors.append(f"缺少必填字段: {key}")
+    for key, typ in _META_TYPES.items():
+        if key in meta and not isinstance(meta[key], typ):
+            errors.append(
+                f"字段 {key} 类型应为 {getattr(typ, '__name__', typ)}，实际 {type(meta[key]).__name__}")
+    if "abnormal_ratio" in meta and isinstance(meta["abnormal_ratio"], (int, float)):
+        # bool 是 int 子类，显式排除
+        if not isinstance(meta["abnormal_ratio"], bool) and not (0.0 <= float(meta["abnormal_ratio"]) <= 1.0):
+            errors.append("abnormal_ratio 必须在 [0, 1]")
+    summary = meta.get("onboard_ai_summary")
+    if isinstance(summary, dict):
+        if "model" not in summary:
+            errors.append("onboard_ai_summary 缺少必填字段: model")
+        for k in ("mean_confidence", "max_confidence"):
+            if k in summary and not isinstance(summary[k], (int, float)):
+                errors.append(f"onboard_ai_summary.{k} 必须是数值")
+    return errors
 
 
 # ======================== 辅助函数 ========================
@@ -312,12 +373,21 @@ class ECGCloudHandler(BaseHTTPRequestHandler):
             self._send_error("bad_request", "meta 部分不是有效的 JSON", 400)
             return
 
-        # 验证必填字段
-        missing = REQUIRED_META_FIELDS - set(meta.keys())
-        if missing:
+        # 验证必填字段与类型（P0-4 schema 校验）
+        errors = validate_meta(meta)
+        if errors:
+            self._send_error("bad_request", "; ".join(errors), 400)
+            return
+
+        # ECGR 头交叉校验（沿用既有逻辑）
+        if len(data_raw) < 32 or data_raw[:4] != b"ECGR":
+            self._send_error("bad_request", "data 不是有效的 ECGR 记录", 400)
+            return
+        header_rate = int.from_bytes(data_raw[6:10], "little")
+        if meta.get("sample_rate") != header_rate:
             self._send_error(
                 "bad_request",
-                f"缺少必填字段: {', '.join(sorted(missing))}",
+                f"meta.sample_rate={meta.get('sample_rate')} 与 ECGR 头 {header_rate} 不一致",
                 400,
             )
             return

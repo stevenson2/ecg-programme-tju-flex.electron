@@ -21,7 +21,7 @@ import '../config/app_config.dart';
  * 元数据结构（multipart "meta" part）：
  *   {
  *     "device_id": "esp32-ecg-app",
- *     "firmware_version": "app-v1.0.0",
+ *     "firmware_version": "<STATUS/HELLO 固件版本>",
  *     "sample_rate": <int>,
  *     "duration_sec": <int>,
  *     "total_samples": <int>,
@@ -29,7 +29,7 @@ import '../config/app_config.dart';
  *     "abnormal_ratio": <double>,
  *     "start_unix": <int>,
  *     "onboard_ai_summary": {
- *       "model": "v3a",
+ *       "model": "<STATUS model 标识>",
  *       "abnormal_seconds": <int>,
  *       "abnormal_ratio": <double>,
  *       "total_duration": <int>
@@ -81,6 +81,46 @@ class AnalysisReport {
   }
 }
 
+
+/// P0-4：设备元数据（firmware_version / model / device_id）。
+///
+/// 优先由连接后的 STATUS / HELLO 从设备读取（单一真值在固件）；
+/// 未连接时可经 --dart-define 注入构建期值兜底。
+class DeviceMetadata {
+  final String deviceId;
+  final String firmwareVersion;
+  final String model;
+
+  const DeviceMetadata({
+    this.deviceId = 'unknown',
+    this.firmwareVersion = AppConfig.firmwareVersion,
+    this.model = AppConfig.modelName,
+  });
+
+  /// 从 STATUS 应答行解析（格式见 protocol/ecg_proto.json command_rx）。
+  factory DeviceMetadata.fromStatus(String statusLine) {
+    final map = <String, String>{};
+    for (final tok in statusLine.trim().split(RegExp(r'\s+'))) {
+      final idx = tok.indexOf('=');
+      if (idx > 0) map[tok.substring(0, idx)] = tok.substring(idx + 1);
+    }
+    return DeviceMetadata(
+      deviceId: map['device'] ?? map['dev'] ?? map['device_id'] ?? 'unknown',
+      firmwareVersion: map['fw'] ?? AppConfig.firmwareVersion,
+      model: map['model'] ?? AppConfig.modelName,
+    );
+  }
+
+  DeviceMetadata copyWith(
+      {String? deviceId, String? firmwareVersion, String? model}) {
+    return DeviceMetadata(
+      deviceId: deviceId ?? this.deviceId,
+      firmwareVersion: firmwareVersion ?? this.firmwareVersion,
+      model: model ?? this.model,
+    );
+  }
+}
+
 /** 云端上传 API 调用异常 */
 class CloudUploadException implements Exception {
   final String message;
@@ -103,6 +143,10 @@ class CloudUploadService {
   final String baseUrl;
   final String token;
 
+  /// P0-4：设备元数据（由连接后的 STATUS/HELLO 注入；未注入时用构建期兜底，
+  /// 不再在服务内写死 "app-v1.0.0" / "v3a"）。可在 STATUS 解析后重新赋值。
+  DeviceMetadata metadata;
+
   static const String defaultBaseUrl = AppConfig.cloudBaseUrl;
   static const String defaultToken = AppConfig.cloudToken;
   static const Duration _defaultTimeout = Duration(seconds: 30);
@@ -111,6 +155,7 @@ class CloudUploadService {
     http.Client? client,
     this.baseUrl = defaultBaseUrl,
     this.token = defaultToken,
+    this.metadata = const DeviceMetadata(),
   }) : _client = client ?? http.Client();
 
   /**
@@ -204,8 +249,8 @@ class CloudUploadService {
         : 0.0;
 
     return {
-      'device_id': 'esp32-ecg-app',
-      'firmware_version': 'app-v1.0.0',
+      'device_id': metadata.deviceId,
+      'firmware_version': metadata.firmwareVersion,
       'sample_rate': record.sampleRate,
       'duration_sec': record.durationSec,
       'total_samples': record.totalSamples,
@@ -213,7 +258,7 @@ class CloudUploadService {
       'abnormal_ratio': double.parse(abnormalRatio.toStringAsFixed(4)),
       'start_unix': record.startUnixTime,
       'onboard_ai_summary': {
-        'model': 'v3a',
+        'model': metadata.model,
         'abnormal_seconds': record.abnormalSeconds,
         'abnormal_ratio':
             double.parse(abnormalRatio.toStringAsFixed(4)),

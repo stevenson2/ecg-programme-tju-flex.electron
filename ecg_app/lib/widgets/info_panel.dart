@@ -1,6 +1,7 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../providers/ecg_provider.dart';
+import '../services/protocol_generated.dart';
 
 class InfoPanel extends StatelessWidget {
   final ECGProvider provider;
@@ -128,7 +129,10 @@ class InfoPanel extends StatelessWidget {
     final hasData = provider.lastSample != null;
 
     if (alert) {
+      final meta = ProtocolGenerated.primaryAsrc(provider.alarmAsrc);
       return _BreathingWarningChip(
+        label: meta?.label ?? '异常报警',
+        level: meta?.level ?? 'critical',
         confidence: provider.abnormalConfidence,
         alarmCount: alarmCount,
       );
@@ -165,10 +169,14 @@ class InfoPanel extends StatelessWidget {
 
 /// 异常告警呼吸动画芯片（红色脉冲 + 置信度 + 报警次数）
 class _BreathingWarningChip extends StatefulWidget {
+  final String label;
+  final String level;
   final double confidence;
   final int alarmCount;
 
   const _BreathingWarningChip({
+    required this.label,
+    this.level = 'critical',
     required this.confidence,
     required this.alarmCount,
   });
@@ -201,6 +209,8 @@ class _BreathingWarningChipState extends State<_BreathingWarningChip>
     final confPct = (widget.confidence * 100).toStringAsFixed(0);
     final countSuffix =
         widget.alarmCount > 0 ? ' · 第 ${widget.alarmCount} 次' : '';
+    final warning = widget.level != 'info';
+    final color = warning ? Colors.red : Colors.orange;
 
     return AnimatedBuilder(
       animation: _breathController,
@@ -218,18 +228,18 @@ class _BreathingWarningChipState extends State<_BreathingWarningChip>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: Colors.red.withValues(alpha: 0.15),
+          color: color.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(4),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.warning_amber, size: 14, color: Colors.red),
+            Icon(Icons.warning_amber, size: 14, color: color),
             const SizedBox(width: 4),
             Text(
-              'AI 异常 $confPct%$countSuffix',
-              style: const TextStyle(
-                color: Colors.red,
+              '${widget.label} $confPct%$countSuffix',
+              style: TextStyle(
+                color: color,
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),

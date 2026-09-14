@@ -32,6 +32,16 @@ class ECGProvider extends ChangeNotifier implements WaveformDataSource {
   // ── AI 异常检测 (来自 ESP32 板上 TFLite Micro 推理) ──
   static const int kAbnormalWindow = 10; // 防闪烁窗口：最近 10 样本内任一异常即告警
   double _abnormalConfidence = 0.0;      // 最近一次异常样本的置信度
+  int _alarmAsrc = 0;                    // 当前报警源位图（P0-2，取自第 10 列）
+
+  /// 当前报警源位图（0x01 AI / 0x02 RS / 0x04 FLAT / 0x08 VF / 0x10 LEADOFF）
+  int get alarmAsrc => _alarmAsrc;
+
+  /// 设备协议版本（0=未收到 HELLO，按 v1 行为降级）
+  int get protoVersion => _bleService.protoVersion;
+
+  /// 设备固件版本（STATUS/HELLO 单一真值，P0-4）
+  String get firmwareVersion => _bleService.firmwareVersion;
 
   // ── 状态 ──
   bool _isConnected = false;
@@ -174,6 +184,10 @@ class ECGProvider extends ChangeNotifier implements WaveformDataSource {
     // 记录 AI 异常置信度 (来自 CSV 第9列)，供 UI 显示
     if (sample.abnormal == 1) {
       _abnormalConfidence = sample.confidence;
+      // P0-2: 优先使用 v2 第 10 列 asrc；缺省降级 abnormal -> 0x01
+      _alarmAsrc = sample.asrc != 0 ? sample.asrc : 0x01;
+    } else if (sample.abnormal == 0 && !hasAbnormalAlert) {
+      _alarmAsrc = 0;
     }
 
     // 评估告警状态机（基于原始 sample.abnormal，非 hasAbnormalAlert 窗口）

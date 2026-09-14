@@ -184,7 +184,11 @@ class _ECGMonitorScreenState extends State<ECGMonitorScreen> {
           onPressed: () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => RecordListPage(api: RecordApi()),
+              builder: (_) => RecordListPage(
+                api: RecordApi(),
+                // P0-4：连接后向设备发 STATUS，元数据从固件读取（单一真值）。
+                deviceMetadataProbe: () => _probeDeviceStatus(),
+              ),
             ),
           ),
         ),
@@ -219,6 +223,29 @@ class _ECGMonitorScreenState extends State<ECGMonitorScreen> {
         ),
       ],
     );
+  }
+
+  /// P0-4：向设备请求 STATUS 行，供上传元数据读取 firmware_version/model。
+  /// 未连接/超时返回 null（页面会用构建期兜底值）。
+  Future<String?> _probeDeviceStatus() async {
+    final ble = _ecgProvider.bleService;
+    if (!ble.isConnected) return null;
+    final completer = Completer<String?>();
+    void onStatus(String line) {
+      if (!completer.isCompleted) completer.complete(line);
+    }
+
+    final prev = ble.onStatus;
+    ble.onStatus = onStatus;
+    try {
+      await ble.sendCommand('STATUS');
+      return await completer.future
+          .timeout(const Duration(seconds: 2), onTimeout: () => null);
+    } catch (_) {
+      return null;
+    } finally {
+      ble.onStatus = prev;
+    }
   }
 
   void _showAbout(BuildContext context) {

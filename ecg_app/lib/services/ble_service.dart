@@ -49,6 +49,18 @@ class BLEService {
   /// 是否已连接
   bool get isConnected => _device?.isConnected ?? false;
 
+  /// 设备协议版本：0 = 未收到 HELLO（按 v1 行为降级）
+  int _protoVersion = 0;
+  String _fwVersion = '';
+  int get protoVersion => _protoVersion;
+  String get firmwareVersion => _fwVersion;
+
+  /// HELLO 解析回调（固件首帧协商，P0-2）
+  void Function(int protoVer, String fwVer, String capabilities)? onHello;
+
+  /// STATUS 应答回调（P0-4：元数据从设备读取）
+  void Function(String statusLine)? onStatus;
+
   /// 断开回调
   VoidCallback? onDisconnected;
   StreamSubscription<BluetoothConnectionState>? _connectionSub;
@@ -242,13 +254,36 @@ class BLEService {
   /// CSV 格式: clean,noisy,filtered,bpm,true_bpm,sqi,motion,abnormal_flag,confidence
   /// 固件 2 帧以 ';' 批量拼接（Arduino 线曾为 4 帧），按帧分割解析（2026-08-10 修复多帧错位）
   void _onDataReceived(List<int> value) {
-    final str = utf8.decode(value).trim();
+    final str = utf8.decode(value, allowMalformed: true).trim();
     if (str.isEmpty) return;
 
-    // 按 ';' 分割批量帧，逐帧解析（parseBleFrames 内跳过无效帧）
-    final samples = parseBleFrames(str);
-    for (final sample in samples) {
-      _dataController.add(sample);
+    // P0-2: 连接后首帧 HELLO,<proto_ver>,<fw_ver>,<capabilities>;
+    // 未收到 HELLO 的设备按 v1 行为降级（protoVersion=0）。
+    for (final rawFrame in str.split(';')) {
+      final frame = rawFrame.trim();
+      if (frame.isEmpty) continue;
+      if (frame.startsWith('HELLO')) {
+        final p = frame.split(',');
+        if (p.length >= 3) {
+          _protoVersion = int.tryParse(p[1].trim()) ?? 0;
+          _fwVersion = p[2].trim();
+          onHello?.call(_protoVersion, _fwVersion,
+              p.length >= 4 ? p[3].trim() : '');
+        }
+        continue;
+      }
+      if (frame.startsWith('STATUS')) {
+        // P0-4：STATUS mode=... fw=<ver> model=<name>，作为设备元数据真值。
+        final fwIdx = frame.indexOf('fw=');
+        if (fwIdx >= 0) {
+          final rest = frame.substring(fwIdx + 3);
+          _fwVersion = rest.split(RegExp(r'[\s;]')).first;
+        }
+        onStatus?.call(frame);
+        continue;
+      }
+      final sample = parseEcgCsvLine(frame);
+      if (sample != null) _dataController.add(sample);
     }
   }
 

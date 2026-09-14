@@ -41,6 +41,8 @@
     bleTx: null,
     bleRx: null,
     bleFrameBuf: '',
+  protoVersion: 0,   /* P0-2：0 = 未收到 HELLO，按 v1 降级 */
+  fwVersion: '',
     csvRecording: false,
     csvRows: [],
     initialized: false
@@ -72,6 +74,7 @@
     ui.vitalSqiBar = document.getElementById('vitalSqiBar');
     ui.vitalMotion = document.getElementById('vitalMotion');
     ui.vitalMotionBadge = document.getElementById('vitalMotionBadge');
+  ui.alarmOverlayText = document.querySelector('#alarmOverlay span');
     ui.eventLog = document.getElementById('eventLog');
     ui.csvStats = document.getElementById('csvStats');
     ui.navLiveDot = document.getElementById('navLiveDot');
@@ -238,10 +241,17 @@
     ui.vitalAiBar.style.width = Core.clamp(row.confidence * 100, 0, 100).toFixed(1) + '%';
 
     if (row.abnormal) {
+      /* P0-2: asrc bitmap tiered label; legacy v1 defaults asrc to 0x01. */
+      var abnMeta = Core.primaryAsrc(row.asrc);
+      var abnLabel = abnMeta ? abnMeta.label : '异常';
       ui.vitalAi.classList.add('is-alarm');
       ui.vitalAiBadge.className = 'badge badge--alarm';
-      ui.vitalAiBadge.textContent = '⚠ 异常';
+      ui.vitalAiBadge.textContent = '⚠ ' + abnLabel;
       ui.alarmOverlay.hidden = false;
+      if (ui.alarmOverlayText) {
+        ui.alarmOverlayText.textContent = '⚠ ' + abnLabel + ' · 来源 0x' +
+            (row.asrc >>> 0).toString(16).padStart(2, '0');
+      }
     } else {
       ui.vitalAi.classList.remove('is-alarm');
       ui.vitalAiBadge.className = 'badge badge--ok';
@@ -481,7 +491,23 @@
     /* 固件每帧以 ';' 结尾，一个 notify 可能含多帧或半帧 */
     var parts = state.bleFrameBuf.split(/[;\r\n]+/);
     state.bleFrameBuf = parts.pop() || '';
-    feedLines(parts);
+
+    /* P0-2：HELLO,<proto_ver>,<fw_ver>,<capabilities> 协商；
+     * 未收到 HELLO 时按 v1 行为降级（第 8 列非零即报警）。 */
+    var feed = [];
+    for (var k = 0; k < parts.length; k++) {
+      var line = parts[k].trim();
+      if (!line) continue;
+      if (line.indexOf('HELLO,') === 0) {
+        var p = line.split(',');
+        state.protoVersion = parseInt(p[1], 10) || 0;
+        state.fwVersion = p[2] || '';
+        log('设备 HELLO: proto v' + state.protoVersion + ' fw ' + state.fwVersion, 'ok');
+        continue;
+      }
+      feed.push(line);
+    }
+    feedLines(feed);
   }
 
   async function sendBleCommand(cmd) {

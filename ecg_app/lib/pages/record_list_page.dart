@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -58,6 +59,9 @@ class RecordListPage extends StatefulWidget {
   /** 本地回放加载器（null 时用 loadEcgrFile 真实文件 IO；测试注入假实现） */
   final Future<EcgRecord?> Function(int id)? ecgrLoader;
 
+  /** P0-4：设备元数据探针（返回 STATUS 行；null 时不探测，用构建期兜底） */
+  final Future<String?> Function()? deviceMetadataProbe;
+
   const RecordListPage({
     super.key,
     required this.api,
@@ -65,6 +69,7 @@ class RecordListPage extends StatefulWidget {
     this.uploadService,
     this.uploadQueue,
     this.ecgrLoader,
+    this.deviceMetadataProbe,
   });
 
   @override
@@ -90,9 +95,25 @@ class _RecordListPageState extends State<RecordListPage> {
     _refresh();
   }
 
+  /// P0-4：从设备读取元数据（firmware_version / model）用于云端上传，
+  /// 避免 App 端硬编码。读取失败时保留构建期兜底，不阻塞页面。
+  Future<void> _loadDeviceMetadata(CloudUploadService service) async {
+    final meta = widget.deviceMetadataProbe;
+    if (meta == null) return;
+    try {
+      final status = await meta();
+      if (status != null && status.isNotEmpty) {
+        service.metadata = DeviceMetadata.fromStatus(status);
+      }
+    } catch (_) {
+      // 探测失败不影响记录管理主流程
+    }
+  }
+
   /** 初始化上传队列（注入或创建默认） */
   Future<void> _initQueue() async {
     _uploadService = widget.uploadService ?? CloudUploadService();
+    unawaited(_loadDeviceMetadata(_uploadService));
 
     final dir = await _getDownloadDir();
     _downloadDirPath = dir.path;

@@ -12,6 +12,7 @@
 #include "driver/usb_serial_jtag.h"
 #endif
 #include "model.h"
+#include "storage/ecg_protocol_generated.h"
 #include "ecg_ai.h"
 #include "storage/ecg_recorder.h"
 #include "bluetooth/ble.h"
@@ -56,11 +57,12 @@
  * 0.425mV (VF_STD_0 0.419), 0.05 = 训练均值 1/8, 真实 VF (VFDB rms 定义)
  * 与载波 case (0.2-0.4mV) 远在其上; 合成 VF 探针 (seg33, rms≈0.4) 用于
  * 上板验证门控不误杀 VF 域幅度信号。 */
-#define ALARM_SRC_AI         0x01u   /* AI 持续密度判据 */
-#define ALARM_SRC_RS         0x02u   /* 规则: RR 停搏 / 30s 窗过缓 / 过速 */
-#define ALARM_SRC_FLAT       0x04u   /* 时间停搏 (无拍 >= 4s) */
-#define ALARM_SRC_VF         0x08u   /* VF/VT 两窗确认 */
-#define ALARM_SRC_LEADOFF    0x10u   /* 电极脱落 (Round-H, TH §114) */
+/* 报警源位定义引用 P0-1 契约生成产物 (ecg_protocol_generated.h), 禁止本地复制。 */
+#define ALARM_SRC_AI         ECG_ASRC_AI       /* AI 持续密度判据 */
+#define ALARM_SRC_RS         ECG_ASRC_RS       /* 规则: RR 停搏 / 30s 窗过缓 / 过速 */
+#define ALARM_SRC_FLAT       ECG_ASRC_FLAT     /* 时间停搏 (无拍 >= 4s) */
+#define ALARM_SRC_VF         ECG_ASRC_VF       /* VF/VT 两窗确认 */
+#define ALARM_SRC_LEADOFF    ECG_ASRC_LEADOFF  /* 电极脱落 (Round-H, TH §114) */
 
 /* ================ Round-H: LEADOFF 双判据 (TH §114) ================
  * 背景: 真实拔线输出"有能量的坏信号"(弹出瞬态/漂移/工频拾取), QRS 检测器
@@ -110,6 +112,13 @@ static char s_bleBatchBuf[BLE_BATCH_BUF_SIZE];
 static int  s_bleBatchLen   = 0;
 static int  s_bleBatchCount = 0;
 static volatile bool s_storageReady = false;
+
+/* ---- P0-2: BLE v2 HELLO 协商 ----
+ * 连接建立后固件主动发首帧 HELLO,<proto_ver>,<fw_ver>,<capabilities>;
+ * 未收到 HELLO 的旧端继续按 v1 帧解析(第 8 列非零即报警)。
+ * 第 10 列 asrc: 0x01 AI / 0x02 RS / 0x04 FLAT / 0x08 VF / 0x10 LEADOFF。 */
+#define ECG_BLE_CAPABILITIES_STR "asrc:0x01,0x02,0x04,0x08,0x10"
+static bool s_helloPending = false;
 
 /* 热路径日志开关: 1=打印 AI_RESULT/TICK (调试), 0=关闭 (release/功耗实测)。
  * 两行/秒 @460800 对功耗影响极小, 默认保持开启。 */
@@ -354,12 +363,14 @@ static void processCommand(const char *cmd, bool fromUart) {
         return;
     }
     if (strEqualsIgnoreCase(cmd, "STATUS")) {
+        /* P0-4: firmware_version / model 由设备单一真值提供, App 不再硬编码。 */
         snprintf(reply, sizeof(reply),
-                 "STATUS mode=%s seg=%u alarm=%u asrc=0x%02x rec=%d ai_conf=%lu",
+                 "STATUS mode=%s seg=%u alarm=%u asrc=0x%02x rec=%d ai_conf=%lu fw=%s model=%s",
                  modeName(s_mode), (unsigned)ecgReplayGetSegment(),
                  s_alarmLatched ? 1u : 0u, s_alarmSrc,
                  ecgRecorderIsRecording() ? 1 : 0,
-                 (unsigned long)ecg_ai_total_confirmed());
+                 (unsigned long)ecg_ai_total_confirmed(),
+                 ECG_PROTO_FW_VER, ECG_MODEL_NAME);
         cmdReply(fromUart, reply);
         return;
     }
@@ -653,7 +664,10 @@ extern "C" void app_main(void) {
         bool bleNowConnected = isBLEConnected();
         float displaySample;
         if (bleNowConnected) {
-            if (!s_bleWasConnected) displayFilterReset();
+            if (!s_bleWasConnected) {
+                displayFilterReset();
+                s_helloPending = true;   /* P0-2: 新连接, 下一批 BLE 前发 HELLO */
+            }
             displaySample = applyDisplayFilter(combOut);
         } else {
             displaySample = combOut;
@@ -790,22 +804,38 @@ extern "C" void app_main(void) {
                 s_sqiSecMin = 1.0f;   /* 秒内 min 重置 */
                 /* 录制位图 (M1): 擎住位 OR 本秒规则命中 OR 本秒 AI confirmed。
                  * 平线/停搏现在会触发自动录制 (修复前只有 AI confirmed 能触发)。 */
-                bool abnormalSec = s_alarmLatched || (ruleHits != 0) || s_aiConfirmedSec;
-                ecgRecorderSetSecondAbnormal(abnormalSec);
+                /* P0-3 v2: 录制位图 = 本秒 asrc 位掩码 (规则/AI/电极脱落分源);
+                 * 0 仍表示正常秒。旧端读 v1 文件时按 0/1 非零解释, 兼容。 */
+                uint8_t secondAsrc = ruleHits;
+                if (s_alarmLatched) secondAsrc |= s_alarmSrc;
+                if (s_aiConfirmedSec) secondAsrc |= ECG_ASRC_AI;
+                ecgRecorderSetSecondAsrc(secondAsrc);
                 s_aiConfirmedSec = false;
             }
         }
 
         if ((frame % 4) == 0 && isBLEConnected()) {
-            char ble_line[160];
+            char ble_line[192];
             uint8_t trueBPM = (s_mode == SOURCE_SIMULATOR) ? ecgSimulatorGetTrueBPM() : 0;
+            uint8_t asrc = s_alarmLatched ? s_alarmSrc : 0;
+            /* P0-2: 连接后首帧 HELLO 协商 (旧端收到含逗号的非数据帧会自然跳过)。 */
+            if (s_helloPending) {
+                char hello[96];
+                snprintf(hello, sizeof(hello), "HELLO,%d,%s,%s;",
+                         ECG_PROTO_VERSION, ECG_PROTO_FW_VER,
+                         ECG_BLE_CAPABILITIES_STR);
+                sendBLEMessage(hello);
+                s_helloPending = false;
+            }
             /* 第 8 列 (M1 起) = 固件侧擎住的报警位 (持续异常持续为 1);
-             * 第 9 列 = 最近一次推理置信度 (不变)。帧格式逐字节兼容。 */
+             * 第 9 列 = 最近一次推理置信度;
+             * 第 10 列 (v2) = asrc 位图 (旧端只读前 9 列, 天然忽略; 第 8 列
+             * 仍为非零即报警, 旧端兼容)。帧整体仍以 ';' 结束。 */
             snprintf(ble_line, sizeof(ble_line),
-                     "%.3f,%.3f,%.3f,%u,%u,%.2f,0,%d,%.3f;",
+                     "%.3f,%.3f,%.3f,%u,%u,%.2f,0,%d,%.3f,%u;",
                      cleanSample, noisyNoDC, displaySample,
                      (unsigned)hr.bpm, (unsigned)trueBPM, hr.sqi,
-                     s_alarmLatched ? 1 : 0, last_conf);
+                     s_alarmLatched ? 1 : 0, last_conf, (unsigned)asrc);
             /* 可穿戴低功耗：攒 2 帧再发一次 Notify，减少 BLE 射频活动。
              * 对 App 仍等效 125 样本/s（每次 Notify 2 个分号帧）。 */
             int lineLen = (int)strlen(ble_line);

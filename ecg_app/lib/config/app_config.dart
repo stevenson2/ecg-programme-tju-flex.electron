@@ -30,4 +30,23 @@ class AppConfig {
     'ECG_AP_PASSWORD',
     defaultValue: '12345678',
   );
+
+  /// ESP32 记录下载服务地址（热点 AP 默认网关）。
+  /// P0-4：不再在 RecordApi 内硬编码，统一经 --dart-define=DEVICE_BASE_URL 注入。
+  static const String deviceBaseUrl = String.fromEnvironment(
+    'DEVICE_BASE_URL',
+    defaultValue: 'http://192.168.4.1',
+  );
+
+  /// 构建期固件版本兜底（优先使用 STATUS/HELLO 从设备读取的真实值）。
+  static const String firmwareVersion = String.fromEnvironment(
+    'FIRMWARE_VERSION',
+    defaultValue: 'unknown',
+  );
+
+  /// 构建期模型标识兜底（优先使用 STATUS 从设备读取的真实值）。
+  static const String modelName = String.fromEnvironment(
+    'MODEL_NAME',
+    defaultValue: 'unknown',
+  );
 }

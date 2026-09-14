@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
+import '../config/app_config.dart';
+
 /**
  * @file record_api.dart
  * @brief ESP32-ECG 记录 HTTP API 客户端（Contract C7）
@@ -14,7 +16,8 @@ import 'package:http/http.dart' as http;
  *   GET    /api/records/{id}/data  → 原始 .ecgr 字节
  *   DELETE /api/records/{id}       → 删除记录
  *
- * 固件服务地址：http://192.168.4.1（ESP32 热点）
+ * 固件服务地址：AppConfig.deviceBaseUrl（默认 http://192.168.4.1，
+ * 可用 --dart-define=DEVICE_BASE_URL 注入；P0-4 起无本地硬编码）
  */
 
 /** 记录列表项（来自 /api/records） */
@@ -89,7 +92,7 @@ class RecordApiException implements Exception {
  * @brief ESP32 记录 HTTP API 客户端
  *
  * 可注入 http.Client（用于测试 MockClient）和 baseUrl。
- * 连接 ESP32 热点后使用默认地址 http://192.168.4.1。
+ * 连接 ESP32 热点后使用 AppConfig.deviceBaseUrl。
  */
 class RecordApi {
   final http.Client _client;
@@ -100,7 +103,7 @@ class RecordApi {
 
   RecordApi({
     http.Client? client,
-    this.baseUrl = 'http://192.168.4.1',
+    this.baseUrl = AppConfig.deviceBaseUrl,
   }) : _client = client ?? http.Client();
 
   /**
