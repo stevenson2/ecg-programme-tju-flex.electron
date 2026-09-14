@@ -38,6 +38,7 @@ static bool g_autoRecord = false;
 static uint8_t g_consecutiveNormal = 0;
 static uint8_t g_rearmCooldown = 0;   /* M1: 停止后自动录制的再武装冷却 (秒) */
 static bool g_currentSecondAbnormal = false;
+static uint8_t g_currentSecondAsrc = 0;   /* P0-3: 本秒 asrc 位掩码 (v2 位图) */
 static char g_currentPath[128];
 static uint32_t g_recordCount = 0;
 
@@ -320,6 +321,7 @@ bool ecgRecorderStart(void) {
     g_abnormalSec = 0;
     g_consecutiveNormal = 0;
     g_currentSecondAbnormal = false;
+    g_currentSecondAsrc = 0;
     printf("[ECGR] recording started: %s\n", g_currentPath);
     return true;
 }
@@ -328,8 +330,18 @@ void ecgRecorderPushSample(int16_t sample) {
     if (g_isRecording) pushSampleToBuffer(sample);
 }
 
+/**
+ * P0-3: 设置当前秒 asrc 位掩码 (v2 位图字节)。
+ * 语义: asrc=0 正常; 非 0 异常。bool 旧接口等价 asrc = abnormal ? 0x01 : 0。
+ */
+void ecgRecorderSetSecondAsrc(uint8_t asrc) {
+    ecgRecorderSetSecondAbnormal(asrc != 0);
+    g_currentSecondAsrc = asrc;   /* 覆盖 bool 兜底的 AI 位 */
+}
+
 void ecgRecorderSetSecondAbnormal(bool abnormal) {
     g_currentSecondAbnormal = abnormal;
+    g_currentSecondAsrc = abnormal ? 0x01 : 0;
     if (!g_isRecording) {
         /* M1 修复: 再武装改为时间冷却 (停止后 5 秒), 逐秒递减不受 abnormal 冻结。
          * 原条件 "连续正常>=5s 或计数==0" 在持续 abnormal (如 M1 报警擎住 >=30s)
@@ -353,7 +365,8 @@ void ecgRecorderSetSecondAbnormal(bool abnormal) {
             if (p) { g_bmpBuf = p; g_bmpCap = newCap; }
         }
         if (g_bmpBuf && need <= g_bmpCap) {
-            g_bmpBuf[need - 1] = g_currentSecondAbnormal ? 1 : 0;
+            /* P0-3 v2: 位图存 asrc 位掩码 (v1 会话为 0/1); 非零 = 异常秒。 */
+            g_bmpBuf[need - 1] = g_currentSecondAsrc;
         }
     }
     if (g_currentSecondAbnormal) g_abnormalSec++;

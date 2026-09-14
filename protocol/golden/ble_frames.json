@@ -1,0 +1,41 @@
+{
+  "frames": {
+    "v1_frame": "0.125,-0.010,0.120,75,0,0.923,0,0,0.014",
+    "v1_frame_abnormal": "0.125,-0.010,0.120,75,0,0.923,0,1,0.014",
+    "v2_frame": "0.125,-0.010,0.120,75,0,0.923,0,0,0.014,0",
+    "v2_frame_ai": "0.125,-0.010,0.120,75,0,0.923,0,1,0.014,1",
+    "v2_frame_multibit": "0.125,-0.010,0.120,75,0,0.923,0,1,0.014,20",
+    "v2_batch": "0.125,-0.010,0.120,75,0,0.923,0,0,0.014,0;0.125,-0.010,0.120,75,0,0.923,0,1,0.014,1;",
+    "hello": "HELLO,2,2.0.0,asrc:0x01,0x02,0x04,0x08,0x10;",
+    "diagnostic_line": "[heart] 75 BPM"
+  },
+  "expected": {
+    "v1_frame": {
+      "clean": 0.125,
+      "bpm": 75,
+      "abnormal": 0,
+      "asrc": 0,
+      "protoVer": 1
+    },
+    "v1_frame_abnormal": {
+      "abnormal": 1,
+      "asrc": 1,
+      "protoVer": 1
+    },
+    "v2_frame": {
+      "abnormal": 0,
+      "asrc": 0,
+      "protoVer": 2
+    },
+    "v2_frame_ai": {
+      "abnormal": 1,
+      "asrc": 1,
+      "protoVer": 2
+    },
+    "v2_frame_multibit": {
+      "abnormal": 1,
+      "asrc": 20,
+      "protoVer": 2
+    }
+  }
+}

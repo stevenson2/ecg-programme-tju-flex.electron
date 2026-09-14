@@ -89,11 +89,13 @@ def incart_chain_stream(rid):
 
 def real_chain_stream(ecgr_path):
     """与 preprocess_real_exp7c.py 逐行同链 (225.68Hz 有理重采样起)。"""
-    raw = ecgr_path.read_bytes()
-    n = struct.unpack_from("<I", raw, 18)[0]
-    dur = struct.unpack_from("<I", raw, 14)[0]
-    x = np.frombuffer(raw, dtype="<i2", count=n, offset=32).astype(np.float64) / 8000.0
-    fs_eff = n / dur
+    # P0-3: 统一走 ecgr.py（支持 v1/v2）
+    from ecgr import read_ecgr
+    _rec = read_ecgr(ecgr_path)
+    n = _rec.total_samples
+    dur = _rec.duration_sec
+    x = np.asarray(_rec.samples_v, dtype=np.float64)
+    fs_eff = n / dur if dur else 0
     ratio = Fraction(int(round(500.0 / fs_eff * 10000)), 10000).limit_denominator(100000)
     s500 = resample_poly(x, ratio.numerator, ratio.denominator)
     dc = s500 - np.mean(s500)

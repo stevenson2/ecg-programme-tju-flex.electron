@@ -1,0 +1,648 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "contract": "esp32-ecg-protocol",
+  "contract_version": 2,
+  "status": "active",
+  "generated_from": "protocol/ecg_proto.json",
+  "generated_by": "scripts/gen_protocol_constants.py",
+  "scope": {
+    "description": "唯一机器可读协议契约：BLE/串口 CSV 帧、NUS 命令集、ECGR 二进制记录、WiFi REST、云端 /v1 端点与元数据 schema。",
+    "source_of_truth": true,
+    "consumers": [
+      "experiments/esp_idf_ecg_migration/main/main.cc",
+      "ecg_app/lib/services/csv_parser.dart",
+      "ecg_app/lib/services/ecg_record_codec.dart",
+      "web/js/ecg-core.js",
+      "tools/cloud_mock/server.py",
+      "pc_tools/ecg_dl"
+    ],
+    "note": "任何一端变更必须同步本文件并重新运行 scripts/gen_protocol_constants.py；金样测试见 web/tests/protocol-golden.js、ecg_app/test/protocol_golden_test.dart、test/ecg_protocol_golden_test.cpp。"
+  },
+  "ble": {
+    "nus": {
+      "service_uuid": "6e400001-b5a3-f393-e0a9-e50e24dcca9e",
+      "tx_char_uuid": "6e400002-b5a3-f393-e0a9-e50e24dcca9e",
+      "rx_char_uuid": "6e400003-b5a3-f393-e0a9-e50e24dcca9e",
+      "device_name_prefix": "ESP32-ECG"
+    },
+    "proto_ver": 2,
+    "fw_ver": "2.0.0",
+    "hello": {
+      "prefix": "HELLO",
+      "format": "HELLO,<proto_ver>,<fw_ver>,<capabilities>",
+      "separator": ",",
+      "first_frame": true,
+      "capabilities": {
+        "asrc_bitmap": "0x01 AI / 0x02 RS / 0x04 FLAT / 0x08 VF / 0x10 LEADOFF",
+        "count": 5
+      },
+      "legacy_fallback": "未收到 HELLO 的端点必须按 v1 帧行为降级：第 8 列非零 = 报警；第 10 列不存在。"
+    },
+    "frame": {
+      "current": "v2",
+      "separator": ",",
+      "terminator": ";",
+      "batching": {
+        "frames_per_notify": 2
+      },
+      "columns_v1": [
+        {
+          "index": 1,
+          "name": "clean",
+          "type": "float",
+          "unit": "V",
+          "nullable": false,
+          "description": "滤波前原始（去直流）波形显示采样，BLE 125Hz 抽取"
+        },
+        {
+          "index": 2,
+          "name": "noisy",
+          "type": "float",
+          "unit": "V",
+          "nullable": false,
+          "description": "去直流后噪声通道，显示/调试用"
+        },
+        {
+          "index": 3,
+          "name": "filtered",
+          "type": "float",
+          "unit": "V",
+          "nullable": false,
+          "description": "AFE/显示滤波链输出"
+        },
+        {
+          "index": 4,
+          "name": "bpm",
+          "type": "int",
+          "unit": "bpm",
+          "nullable": false,
+          "description": "板上心率估计，0=未锁定"
+        },
+        {
+          "index": 5,
+          "name": "true_bpm",
+          "type": "int",
+          "unit": "bpm",
+          "nullable": false,
+          "description": "SIMULATOR 模式真值；其他模式固定 0"
+        },
+        {
+          "index": 6,
+          "name": "sqi",
+          "type": "float",
+          "unit": "ratio",
+          "range": [
+            0.0,
+            1.0
+          ],
+          "nullable": false,
+          "description": "信号质量指数 EMA"
+        },
+        {
+          "index": 7,
+          "name": "motion",
+          "type": "int",
+          "unit": "bool",
+          "nullable": false,
+          "description": "v1 预留列；当前固件常量 0。v2 决策：删除该列语义（保留占位以逐字节兼容），正式运动状态由 sqi 推导"
+        },
+        {
+          "index": 8,
+          "name": "abnormal",
+          "type": "int",
+          "unit": "bool",
+          "nullable": false,
+          "description": "v1=AI confirmed 报警闪断；v2=固件擎住报警位（latch），非零即报警"
+        },
+        {
+          "index": 9,
+          "name": "confidence",
+          "type": "float",
+          "unit": "ratio",
+          "range": [
+            0.0,
+            1.0
+          ],
+          "nullable": false,
+          "description": "最近一次 AI 推理置信度（conf=1-p_abnormal）"
+        }
+      ],
+      "columns_v2": [
+        {
+          "index": 1,
+          "name": "clean",
+          "type": "float",
+          "unit": "V",
+          "nullable": false,
+          "description": "同 v1"
+        },
+        {
+          "index": 2,
+          "name": "noisy",
+          "type": "float",
+          "unit": "V",
+          "nullable": false,
+          "description": "同 v1"
+        },
+        {
+          "index": 3,
+          "name": "filtered",
+          "type": "float",
+          "unit": "V",
+          "nullable": false,
+          "description": "同 v1"
+        },
+        {
+          "index": 4,
+          "name": "bpm",
+          "type": "int",
+          "unit": "bpm",
+          "nullable": false,
+          "description": "同 v1"
+        },
+        {
+          "index": 5,
+          "name": "true_bpm",
+          "type": "int",
+          "unit": "bpm",
+          "nullable": false,
+          "description": "同 v1"
+        },
+        {
+          "index": 6,
+          "name": "sqi",
+          "type": "float",
+          "unit": "ratio",
+          "range": [
+            0.0,
+            1.0
+          ],
+          "nullable": false,
+          "description": "同 v1"
+        },
+        {
+          "index": 7,
+          "name": "motion",
+          "type": "int",
+          "unit": "bool",
+          "nullable": false,
+          "description": "v2 保留列位兼容 v1 字节偏移；语义未启用，固定 0"
+        },
+        {
+          "index": 8,
+          "name": "abnormal",
+          "type": "int",
+          "unit": "bool",
+          "nullable": false,
+          "description": "v2 起为 asrc 位图非零汇总（兼容旧端：非零即报警）；新端可解析第 10 列 asrc 细分来源"
+        },
+        {
+          "index": 9,
+          "name": "confidence",
+          "type": "float",
+          "unit": "ratio",
+          "range": [
+            0.0,
+            1.0
+          ],
+          "nullable": false,
+          "description": "同 v1"
+        },
+        {
+          "index": 10,
+          "name": "asrc",
+          "type": "int",
+          "unit": "bitmap",
+          "nullable": true,
+          "bit_definition": {
+            "0x01": "AI",
+            "0x02": "RS",
+            "0x04": "FLAT",
+            "0x08": "VF",
+            "0x10": "LEADOFF"
+          },
+          "description": "v2 帧尾追加；旧端解析前 9 列时自然忽略。0x00=正常，大于 0x1F 为未知位，接收端应保留但不解释"
+        }
+      ],
+      "golden": {
+        "v1_frame": "0.125,-0.010,0.120,75,0,0.923,0,0,0.014",
+        "v2_frame": "0.125,-0.010,0.120,75,0,0.923,0,1,0.014,0x01",
+        "v2_frame_multibit": "0.125,-0.010,0.120,75,0,0.923,0,1,0.014,0x14",
+        "v2_batch": "0.125,-0.010,0.120,75,0,0.923,0,0,0.014,0x00;0.125,-0.010,0.120,75,0,0.923,0,1,0.014,0x01;"
+      },
+      "truncation_policy": "统一容忍：接收端按实际可用字节解码到 min(durationSec, available)，truncated=true；缺失位以 0 补齐，不因截断拒收。"
+    },
+    "asrc": {
+      "type": "bitmap_uint8",
+      "bits": [
+        {
+          "bit": "0x01",
+          "name": "AI",
+          "ui_label": "AI 异常",
+          "ui_level": "info",
+          "description": "AI 密度判据（30 窗 >=10 且 min-SQI>=0.80）"
+        },
+        {
+          "bit": "0x02",
+          "name": "RS",
+          "ui_label": "停搏 / 过缓过速",
+          "ui_level": "critical",
+          "description": "RR 规则通道：停搏 >=4s、30s 窗过缓/过速"
+        },
+        {
+          "bit": "0x04",
+          "name": "FLAT",
+          "ui_label": "时间停搏（疑似电极脱落）",
+          "ui_level": "critical",
+          "description": "距最近拍 >= 4s"
+        },
+        {
+          "bit": "0x08",
+          "name": "VF",
+          "ui_label": "VF / VT 疑似",
+          "ui_level": "critical",
+          "description": "VF 检测器两窗确认 + rms>=0.05mV + 无拍互锁"
+        },
+        {
+          "bit": "0x10",
+          "name": "LEADOFF",
+          "ui_label": "电极脱落",
+          "ui_level": "warning",
+          "description": "A 静默型 / B 噪声型双判据（TH §114）"
+        }
+      ],
+      "priority": [
+        "0x10",
+        "0x08",
+        "0x04",
+        "0x02",
+        "0x01"
+      ],
+      "display": "按 priority 取最高级文案；多源并报时以最高级为准，详情列全部命中源。"
+    },
+    "command_rx": {
+      "transport": [
+        "ble_nus_rx",
+        "uart0_rx",
+        "usb_serial_jtag_rx"
+      ],
+      "terminator": "\\n",
+      "case_sensitive": false,
+      "commands": [
+        {
+          "name": "PING",
+          "args": [],
+          "response": "PONG <ms>",
+          "range": "any"
+        },
+        {
+          "name": "STATUS",
+          "args": [],
+          "response": "STATUS mode=<mode> seg=<n> alarm=<0|1> asrc=0x<hex> rec=<0|1> ai_conf=<n> fw=<fw_ver> model=<name>",
+          "range": "any",
+          "notes": "v2 追加 fw/model；旧端按前缀解析不受影响"
+        },
+        {
+          "name": "MODE",
+          "args": [
+            "<sim|replay_normal|replay_abnormal|replay_flat|afe>"
+          ],
+          "response": "MODE ok <mode> | MODE fail '<arg>'",
+          "range": "any"
+        },
+        {
+          "name": "REPLAY",
+          "args": [
+            "<0..N>"
+          ],
+          "response": "REPLAY ok <n> | REPLAY fail (0..N)",
+          "range": "any"
+        },
+        {
+          "name": "REC_START",
+          "args": [],
+          "response": "REC_START ok|fail",
+          "range": "storage_ready"
+        },
+        {
+          "name": "REC_STOP",
+          "args": [],
+          "response": "REC_STOP ok|fail <sec>s",
+          "range": "storage_ready"
+        },
+        {
+          "name": "REC_STATUS",
+          "args": [],
+          "response": "REC_STATUS rec=<0|1> auto=<0|1> count=<n>",
+          "range": "storage_ready"
+        },
+        {
+          "name": "REC_LIST",
+          "args": [],
+          "response": "REC_LIST ok + index lines | REC_LIST empty",
+          "range": "storage_ready"
+        },
+        {
+          "name": "REC_AUTO",
+          "args": [
+            "<0|1>"
+          ],
+          "response": "REC_AUTO 0|1 ok",
+          "range": "storage_ready"
+        },
+        {
+          "name": "REC_SCHEDULE",
+          "args": [
+            "<interval_s> <duration_s>|OFF"
+          ],
+          "response": "REC_SCHEDULE ok <iv>s <dur>s | REC_SCHEDULE fail | REC_SCHEDULE OFF ok",
+          "range": "storage_ready"
+        },
+        {
+          "name": "WIFI_ON",
+          "args": [],
+          "response": "WIFI_ON ok|fail",
+          "range": "storage_ready"
+        },
+        {
+          "name": "WIFI_OFF",
+          "args": [],
+          "response": "WIFI_OFF ok",
+          "range": "storage_ready"
+        }
+      ]
+    },
+    "model": "v3-A"
+  },
+  "ecgr": {
+    "magic": "ECGR",
+    "magic_bytes": [
+      69,
+      67,
+      71,
+      82
+    ],
+    "versions": {
+      "supported": [
+        1,
+        2
+      ],
+      "current": 2
+    },
+    "header_size": 32,
+    "header": [
+      {
+        "offset": 0,
+        "size": 4,
+        "name": "magic",
+        "type": "ascii",
+        "description": "\"ECGR\""
+      },
+      {
+        "offset": 4,
+        "size": 1,
+        "name": "version",
+        "type": "uint8",
+        "enum": [
+          1,
+          2
+        ]
+      },
+      {
+        "offset": 5,
+        "size": 1,
+        "name": "flags",
+        "type": "uint8",
+        "description": "bit0 = 含异常字节图",
+        "known_bits": {
+          "0x01": "HAS_ABNORMAL_BITMAP"
+        }
+      },
+      {
+        "offset": 6,
+        "size": 4,
+        "name": "sampleRate",
+        "type": "uint32le",
+        "unit": "Hz"
+      },
+      {
+        "offset": 10,
+        "size": 4,
+        "name": "startUnixTime",
+        "type": "uint32le",
+        "unit": "s"
+      },
+      {
+        "offset": 14,
+        "size": 4,
+        "name": "durationSec",
+        "type": "uint32le",
+        "unit": "s"
+      },
+      {
+        "offset": 18,
+        "size": 4,
+        "name": "totalSamples",
+        "type": "uint32le"
+      },
+      {
+        "offset": 22,
+        "size": 4,
+        "name": "abnormalSeconds",
+        "type": "uint32le",
+        "description": "异常秒数（v2 位图非零秒计数）"
+      },
+      {
+        "offset": 26,
+        "size": 1,
+        "name": "reserved0",
+        "type": "uint8",
+        "description": "v1 保留；v2 bit0 = 位图为 asrc 位掩码还是 0/1 旧值（ECGR_FLAG_ABNORMAL_IS_ASRC 0x01）；写 v2 时为 1"
+      },
+      {
+        "offset": 27,
+        "size": 5,
+        "name": "reserved",
+        "type": "uint8[5]",
+        "description": "保留，写 0"
+      }
+    ],
+    "sample_scale": {
+      "unit": "V",
+      "lsb": 8000.0,
+      "description": "volts = int16 / 8000.0（固件 REC_SCALE_V_TO_INT16）"
+    },
+    "bitmap": {
+      "position": "sample_stream_after",
+      "length": "durationSec bytes (flags bit0=1)",
+      "v1_semantics": "每字节 0/1：该秒是否异常",
+      "v2_semantics": "每字节 asrc 位掩码（0x01 AI / 0x02 RS / 0x04 FLAT / 0x08 VF / 0x10 LEADOFF），0x00=正常；非零即异常",
+      "truncation_policy": "统一为容忍：读取端按实际可用字节解码到 min(durationSec, available)，记录 truncated=true；头部声明不足部分以 0 填充，绝不因截断拒收（避免每次异常写盘中断导致整个文件不可读）。"
+    },
+    "v1_compat": "解码器按 version 字段双版本支持：version==1 时位图按 0/1 解读；version==2 时按 asrc 掩码解读；flags 在 version==1 下仍指向 0/1。v2 写 v1 客户端会因版本检查拒收，属预期向后不兼容（新端兼容旧端即可）。"
+  },
+  "wifi_rest": {
+    "base": "http://192.168.4.1",
+    "endpoints": [
+      {
+        "method": "GET",
+        "path": "/api/records",
+        "response": {
+          "records": [
+            {
+              "id": "int",
+              "duration": "s",
+              "size": "bytes",
+              "abnormal_seconds": "int",
+              "start": "ISO8601"
+            }
+          ]
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/records/{id}/meta",
+        "response": {
+          "id": "int",
+          "sample_rate": "int",
+          "start_unix": "int",
+          "duration": "s",
+          "total_samples": "int",
+          "abnormal_seconds": "int"
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/records/{id}/data",
+        "response": "application/octet-stream (.ecgr bytes)"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/records/{id}",
+        "response": {
+          "deleted": "bool"
+        }
+      }
+    ]
+  },
+  "cloud_v1": {
+    "base_url_default": "http://127.0.0.1:8000/v1",
+    "auth": "Authorization: Bearer <token>",
+    "endpoints": [
+      {
+        "method": "POST",
+        "path": "/records",
+        "request": "multipart/form-data meta+data (.ecgr)",
+        "success": 201,
+        "response": {
+          "record_id": "uuid",
+          "status": "uploaded"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/records/{id}/analyze",
+        "request": "empty",
+        "success": 200,
+        "response": {
+          "status": "analyzing"
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/records/{id}/report",
+        "success": 200,
+        "response": "three-part report (summary/events/recommendation)"
+      },
+      {
+        "method": "GET",
+        "path": "/users/{uid}/records",
+        "success": 200
+      },
+      {
+        "method": "DELETE",
+        "path": "/records/{id}",
+        "status": "reserved-501"
+      }
+    ],
+    "metadata_schema": {
+      "required": [
+        "device_id",
+        "firmware_version",
+        "sample_rate"
+      ],
+      "properties": {
+        "device_id": {
+          "type": "string",
+          "source": "BLE device name / STATUS"
+        },
+        "firmware_version": {
+          "type": "string",
+          "source": "STATUS fw=<fw_ver>（P0-4：禁止 App 硬编码）"
+        },
+        "sample_rate": {
+          "type": "int",
+          "default": 250,
+          "cross_check": "ECGR header sampleRate"
+        },
+        "duration_sec": {
+          "type": "int"
+        },
+        "total_samples": {
+          "type": "int"
+        },
+        "abnormal_seconds": {
+          "type": "int"
+        },
+        "abnormal_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "start_unix": {
+          "type": "int"
+        },
+        "onboard_ai_summary": {
+          "type": "object",
+          "required": [
+            "model"
+          ],
+          "properties": {
+            "model": {
+              "type": "string",
+              "source": "STATUS model=<name>（P0-4：禁止 App 硬编码 'v3a'）"
+            },
+            "abnormal_seconds": {
+              "type": "int"
+            },
+            "abnormal_ratio": {
+              "type": "number"
+            },
+            "total_duration": {
+              "type": "int"
+            },
+            "mean_confidence": {
+              "type": "number",
+              "maximum": 1
+            },
+            "max_confidence": {
+              "type": "number",
+              "maximum": 1
+            },
+            "abnormal_flag_count": {
+              "type": "int"
+            }
+          }
+        }
+      }
+    }
+  },
+  "errors": {
+    "format": {
+      "error": {
+        "code": "int",
+        "message": "string"
+      }
+    }
+  }
+}

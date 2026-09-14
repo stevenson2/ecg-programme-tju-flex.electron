@@ -213,13 +213,12 @@ def process_ptbxl(model, max_records=None):
 
 # ---------------- Real AFE ----------------
 def read_ecgr(path):
-    import struct
-    raw = Path(path).read_bytes()
-    if len(raw) < 32:
-        raise ValueError(f"ECGR too short: {path}")
-    dur = struct.unpack_from("<I", raw, 14)[0]
-    n = struct.unpack_from("<I", raw, 18)[0]
-    x = np.frombuffer(raw, dtype="<i2", count=n, offset=32).astype(np.float64) / 8000.0
+    # P0-3: 统一走 ecgr.py（支持 v1/v2，截断容忍）
+    from ecgr import read_ecgr as _read_ecgr
+    rec = _read_ecgr(path)
+    n = rec.total_samples
+    dur = rec.duration_sec
+    x = np.asarray(rec.samples_v, dtype=np.float64)
     fs_eff = n / dur if dur else 0
     return x, fs_eff, dur
 

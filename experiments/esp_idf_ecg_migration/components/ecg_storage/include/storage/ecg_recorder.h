@@ -96,6 +96,17 @@ void ecgRecorderPushSample(int16_t sample);
 void ecgRecorderSetSecondAbnormal(bool abnormal);
 
 /**
+ * @brief 标记当前秒 asrc 位掩码 (v2 ECGR 位图字节)
+ *
+ * 与 ecgRecorderSetSecondAbnormal(bool) 并存：bool 旧接口等价 asrc =
+ * abnormal ? 0x01 : 0x00；本接口直接写入完整位掩码（0x01 AI / 0x02 RS /
+ * 0x04 FLAT / 0x08 VF / 0x10 LEADOFF）。每秒调用一次。
+ *
+ * @param asrc 本秒命中报警源位掩码，0=正常
+ */
+void ecgRecorderSetSecondAsrc(uint8_t asrc);
+
+/**
  * @brief 停止录制
  *
  * 刷写缓冲区, 回到文件头重写最终头部字段 (seek(0) + 重写),

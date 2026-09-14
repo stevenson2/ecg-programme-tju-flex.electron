@@ -134,8 +134,9 @@ void main() {
       expect(EcgRecordCodec.decode(badMagic), isNull);
       expect(EcgRecordCodec.validateHeader(badMagic), isFalse);
 
+      // P0-3：v2 是合法版本（双版本兼容），改用非法版本号。
       final badVersion = Uint8List.fromList(valid);
-      badVersion[4] = 2;
+      badVersion[4] = 99;
       expect(EcgRecordCodec.decode(badVersion), isNull);
       expect(EcgRecordCodec.validateHeader(badVersion), isFalse);
 
@@ -144,16 +145,23 @@ void main() {
       expect(EcgRecordCodec.validateHeader(Uint8List(10)), isFalse);
     });
 
-    test('样本流截断（size < 32 + 2×totalSamples）→ null（文档化约定）', () {
+    test('样本流截断 → 容忍解码（P0-3 统一定为容忍，不拒收）', () {
       final valid = _buildFixture(); // 750 样本 = 1532 字节
-      // 仅保留 500 个样本
+      // 仅保留 500 个样本：解码到可用长度并置 truncated
       final truncated = Uint8List.sublistView(valid, 0, 32 + 2 * 500);
-      expect(EcgRecordCodec.decode(truncated), isNull);
-      // 位图模式截断同样拒绝
+      final r = EcgRecordCodec.decode(truncated);
+      expect(r, isNotNull);
+      expect(r!.totalSamples, 500);
+      expect(r.truncated, isTrue);
+      // 位图模式截断同样容忍：尾部缺失字节按 0 补齐
       final withBitmap = _buildFixture(abnormalBitmap: [1, 0, 1]);
       final truncatedBitmap =
           Uint8List.sublistView(withBitmap, 0, 32 + 2 * 750); // 缺 3 字节位图
-      expect(EcgRecordCodec.decode(truncatedBitmap), isNull);
+      final rb = EcgRecordCodec.decode(truncatedBitmap);
+      expect(rb, isNotNull);
+      expect(rb!.totalSamples, 750);
+      expect(rb.abnormalBySecond, [0, 0, 0]);
+      expect(rb.truncated, isTrue);
     });
 
     test('validateHeader：合法头部返回 true', () {

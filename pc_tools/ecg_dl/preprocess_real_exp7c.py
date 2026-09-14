@@ -27,11 +27,12 @@ ECGR = DATA_REAL / "ecg_real_052.ecgr"
 OUT_BEATS = DATA_REAL / "real_normal_beats_exp7c.npy"
 OUT_JSON = DATA_REAL / "real_preprocess_exp7c.json"
 
-raw = ECGR.read_bytes()
-n = struct.unpack_from("<I", raw, 18)[0]
-dur = struct.unpack_from("<I", raw, 14)[0]
-x = np.frombuffer(raw, dtype="<i2", count=n, offset=32).astype(np.float64) / 8000.0
-fs_eff = n / dur
+from ecgr import read_ecgr
+_rec = read_ecgr(ECGR)
+n = _rec.total_samples
+dur = _rec.duration_sec
+x = np.asarray(_rec.samples_v, dtype=np.float64)
+fs_eff = n / dur if dur else 0
 print(f"[REAL] n={n} dur={dur}s fs_eff={fs_eff:.4f} Hz")
 
 # 1. 有理数重采样 225.68->500Hz

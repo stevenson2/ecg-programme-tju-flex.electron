@@ -1,0 +1,62 @@
+{
+  "ecgr_v1.bin": {
+    "version": 1,
+    "sampleRate": 250,
+    "durationSec": 3,
+    "totalSamples": 7,
+    "abnormalSeconds": 2,
+    "hasBitmap": true,
+    "bitmapIsAsrc": false,
+    "bitmap": [
+      1,
+      0,
+      1
+    ],
+    "asrcBySecond": [
+      1,
+      0,
+      1
+    ],
+    "truncated": false
+  },
+  "ecgr_v2.bin": {
+    "version": 2,
+    "sampleRate": 250,
+    "durationSec": 3,
+    "totalSamples": 7,
+    "abnormalSeconds": 3,
+    "hasBitmap": true,
+    "bitmapIsAsrc": true,
+    "bitmap": [
+      1,
+      20,
+      16
+    ],
+    "asrcBySecond": [
+      1,
+      20,
+      16
+    ],
+    "truncated": false
+  },
+  "ecgr_v2_truncated.bin": {
+    "version": 2,
+    "sampleRate": 250,
+    "durationSec": 3,
+    "totalSamples": 7,
+    "abnormalSeconds": 3,
+    "hasBitmap": true,
+    "bitmapIsAsrc": true,
+    "bitmap": [
+      1,
+      20,
+      0
+    ],
+    "asrcBySecond": [
+      1,
+      20,
+      0
+    ],
+    "truncated": true
+  }
+}

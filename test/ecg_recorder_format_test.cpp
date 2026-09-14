@@ -56,6 +56,28 @@ static void test_header_version_wrong(void) {
     PASS();
 }
 
+static void test_header_version_v1_compat(void) {
+    TEST("header validate: v1 compatible (dual version read)");
+    uint8_t hdr[ECGR_HEADER_SIZE];
+    ecgrHeaderInit(hdr, 250, 0, 0, 0, 0, 0);
+    hdr[ECGR_OFF_VERSION] = ECGR_VERSION_1;
+    hdr[ECGR_OFF_RESERVED] = 0; // v1 位图语义 0/1
+    CHECK(ecgrHeaderValidate(hdr, 250), "v1 header rejected (must be readable)");
+    CHECK(ecgrHeaderVersion(hdr) == 1, "v1 version getter");
+    CHECK(!ecgrHeaderBitmapIsAsrc(hdr), "v1 bitmap must not be asrc");
+    PASS();
+}
+
+static void test_header_v2_bitmap_asrc_flag(void) {
+    TEST("header v2: reserved0 marks asrc bitmap");
+    uint8_t hdr[ECGR_HEADER_SIZE];
+    ecgrHeaderInit(hdr, 250, 100, 500, 2, 1, 0);
+    CHECK(hdr[ECGR_OFF_VERSION] == ECGR_VERSION_2, "current write version must be 2");
+    CHECK(ecgrHeaderVersion(hdr) == 2, "v2 version getter");
+    CHECK(ecgrHeaderBitmapIsAsrc(hdr), "v2 bitmap must be asrc");
+    PASS();
+}
+
 static void test_header_sample_rate_mismatch(void) {
     TEST("header validate: sample rate mismatch");
     uint8_t hdr[ECGR_HEADER_SIZE];
@@ -311,10 +333,13 @@ static void test_header_huge_duration(void) {
 }
 
 static void test_header_reserved_zeros(void) {
-    TEST("header: reserved bytes are zero");
+    TEST("header: reserved bytes (v2 reserved0 = asrc flag, rest zero)");
     uint8_t hdr[ECGR_HEADER_SIZE];
     ecgrHeaderInit(hdr, 250, 100, 0, 0, 0, 0);
-    for (int i = ECGR_OFF_RESERVED; i < ECGR_HEADER_SIZE; i++) {
+    /* v2 起 reserved0 的 bit0 显式标记位图为 asrc 掩码 (P0-3)。 */
+    CHECK(hdr[ECGR_OFF_RESERVED] == ECGR_RESERVED0_ABNORMAL_IS_ASRC,
+          "reserved0 must be asrc flag for v2");
+    for (int i = ECGR_OFF_RESERVED + 1; i < ECGR_HEADER_SIZE; i++) {
         if (hdr[i] != 0) {
             FAIL("reserved byte not zero");
             return;
@@ -353,6 +378,8 @@ int main(void) {
     test_header_init_and_validate();
     test_header_magic_wrong();
     test_header_version_wrong();
+    test_header_version_v1_compat();
+    test_header_v2_bitmap_asrc_flag();
     test_header_sample_rate_mismatch();
 
     printf("\n[2] Header Getters\n");

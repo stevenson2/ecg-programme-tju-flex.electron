@@ -1,20 +1,18 @@
 import '../models/ecg_data.dart';
 
-/**
- * @file csv_parser.dart
- * @brief BLE/串口 CSV 数据行解析（纯函数，便于单元测试）
- *
- * 与 ESP32 固件输出格式保持一致：
- * <clean>,<noisy>,<filtered>,<bpm>,<true_bpm>,<sqi>,<motion>,<abnormal_flag>,<confidence>
- *
- * 兼容性说明（与原 BLEService._onDataReceived 行为完全一致）：
- * - 至少 3 列（clean/noisy/filtered）才有效，不足 3 列返回 null；
- * - 第 4 列 bpm、第 8 列 abnormal、第 9 列 confidence 为可选，
- *   缺失或无法解析时取默认值（0 / 0 / 0.0）；
- * - 前三列解析失败（非数字）时返回 null，由调用方跳过该行。
- */
-
-/// 解析一行 CSV 文本为 [ECGSample]；行无效或前三列非数字时返回 null
+/// BLE/串口 CSV 数据行解析（纯函数，便于单元测试）。
+///
+/// 与 ESP32 固件输出格式（protocol/ecg_proto.json 唯一真值源）：
+/// - v1（9 列，旧固件/旧端）:
+///   clean,noisy,filtered,bpm,true_bpm,sqi,motion,abnormal,confidence
+/// - v2（10 列，第 10 列为 asrc 位图，向后兼容）:
+///   ...,abnormal,confidence,asrc
+///
+/// 兼容策略（P0-2）：
+/// - 至少 3 列（clean/noisy/filtered）才有效，不足 3 列返回 null；
+/// - 第 8 列 abnormal 为非零即报警；第 10 列 asrc 缺省时按
+///   abnormal != 0 ? 0x01 : 0x00 降级（等价 v1 行为）；
+/// - 前三列解析失败（非数字）时返回 null，由调用方跳过该行。
 ECGSample? parseEcgCsvLine(String line) {
   final str = line.trim();
   if (str.isEmpty) return null;
@@ -27,47 +25,50 @@ ECGSample? parseEcgCsvLine(String line) {
     final noisy = double.parse(parts[1].trim());
     final filtered = double.parse(parts[2].trim());
 
-    // 第 4 列：ESP32 板上心率 (可选)
     int bpm = 0;
     if (parts.length >= 4) {
       bpm = int.tryParse(parts[3].trim()) ?? 0;
     }
 
-    // 第 8 列：AI 异常标志 (可选, 0=正常 1=异常)
+    double sqi = 0.0;
+    if (parts.length >= 6) {
+      sqi = double.tryParse(parts[5].trim()) ?? 0.0;
+    }
+
     int abnormal = 0;
     if (parts.length >= 8) {
       abnormal = int.tryParse(parts[7].trim()) ?? 0;
+      if (abnormal != 0) abnormal = 1;
     }
 
-    // 第 9 列：AI 异常置信度 (可选, 0~1)
     double confidence = 0.0;
     if (parts.length >= 9) {
       confidence = double.tryParse(parts[8].trim()) ?? 0.0;
     }
 
+    int asrc = abnormal != 0 ? 0x01 : 0x00;
+    if (parts.length >= 10) {
+      asrc = int.tryParse(parts[9].trim()) ?? 0;
+    }
+
     return ECGSample(clean, noisy, filtered,
-        bpm: bpm, abnormal: abnormal, confidence: confidence);
+        bpm: bpm,
+        sqi: sqi,
+        abnormal: abnormal,
+        confidence: confidence,
+        asrc: asrc);
   } catch (_) {
-    // 解析失败，返回 null 由调用方跳过
     return null;
   }
 }
 
-/**
- * 解析一次 BLE Notify 收到的批量帧数据（固件 2 帧以 ';' 拼接，每帧 9 列；Arduino 线曾为 4 帧）。
- * 2026-08-10 修复：原实现把整串当一行解析，多帧拼接导致 abnormal 列错位，
- * App 报警状态机在真实 BLE 链路下无法触发。
- *
- * 返回非 null 的样本列表（无效帧自动跳过）。
- */
+/// 解析一次 BLE Notify 收到的批量帧数据（固件 2 帧以 ';' 拼接）。
+/// 返回非 null 的样本列表（无效帧自动跳过）。
 List<ECGSample> parseBleFrames(String raw) {
   final result = <ECGSample>[];
-  final frames = raw.split(';');
-  for (final frame in frames) {
+  for (final frame in raw.split(';')) {
     final sample = parseEcgCsvLine(frame);
-    if (sample != null) {
-      result.add(sample);
-    }
+    if (sample != null) result.add(sample);
   }
   return result;
 }

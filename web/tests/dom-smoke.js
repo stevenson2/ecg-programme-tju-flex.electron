@@ -14,6 +14,7 @@ const html = fs.readFileSync(path.join(webDir, 'index.html'), 'utf8');
 /* 把相对脚本/样式路径替换为绝对 file:// URL，便于 jsdom 加载 */
 const htmlAbs = html
   .replace(/css\/styles\.css/g, fileUrl(path.join(webDir, 'css', 'styles.css')))
+  .replace(/js\/protocol_generated\.js/g, fileUrl(path.join(webDir, 'js', 'protocol_generated.js')))
   .replace(/js\/ecg-core\.js/g, fileUrl(path.join(webDir, 'js', 'ecg-core.js')))
   .replace(/js\/live\.js/g, fileUrl(path.join(webDir, 'js', 'live.js')))
   .replace(/js\/records\.js/g, fileUrl(path.join(webDir, 'js', 'records.js')))

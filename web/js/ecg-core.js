@@ -1,3 +1,4 @@
+/* eslint-disable no-var */
 /* ============================================================
  * ESP32-ECG Web Console · ecg-core.js
  * 纯逻辑模块（不依赖 DOM），可在 Node 中单独测试。
@@ -14,7 +15,13 @@
 
   /* ---------------- 常量 ---------------- */
 
-  var CSV_COLUMNS = ['clean', 'noisy', 'filtered', 'bpm', 'trueBpm', 'sqi', 'motion', 'abnormal', 'confidence'];
+  /* 协议契约（P0-1）：由 scripts/gen_protocol_constants.py 从 protocol/ecg_proto.json 生成。 */
+  /* 契约常量来源：浏览器由 index.html 先加载 protocol_generated.js；
+   * Node 测试由 CommonJS require 加载。 */
+  var PROTO = (typeof ECGProtocol !== 'undefined') ? ECGProtocol : require('./protocol_generated.js');
+  var CSV_COLUMNS = ['clean', 'noisy', 'filtered', 'bpm', 'trueBpm', 'sqi', 'motion', 'abnormal', 'confidence', 'asrc'];
+  /* v2 追加第 10 列 asrc；旧 9 列帧仍可解析（asrc 缺省 0）。 */
+  var CSV_LINE_RE_V2 = /^\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*,\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*,\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*,\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*,\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*,\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*,\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*,\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*,\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*,\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*;?\s*$/;
   var CSV_LINE_RE = /^\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*,\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*,\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*,\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*,\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*,\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*,\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*,\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*,\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*;?\s*$/;
 
   var NUS_SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
@@ -22,10 +29,13 @@
   var NUS_RX_UUID = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
 
   var ECGR_MAGIC = 'ECGR';
-  var ECGR_VERSION = 1;
+  var ECGR_VERSION = PROTO.ECGR_VERSION_CURRENT;
+  var ECGR_VERSION_1 = 1;
+  var ECGR_VERSION_2 = 2;
   var ECGR_HEADER_SIZE = 32;
   var ECGR_FLAG_HAS_ABNORMAL_BITMAP = 0x01;
-  var ECGR_SCALE_TO_VOLTS = 8000.0; /* 固件 main.cpp REC_SCALE_V_TO_INT16 */
+  var ECGR_SCALE_TO_VOLTS = PROTO.ECGR_SCALE_TO_VOLTS;
+  var ECGR_RESERVED0_ABNORMAL_IS_ASRC = PROTO.ECGR_RESERVED0_ABNORMAL_IS_ASRC;
 
   /* ---------------- 工具 ---------------- */
 
@@ -64,6 +74,23 @@
    */
   function parseCsvLine(line) {
     if (typeof line !== 'string') return null;
+    /* v2 优先（10 列，含 asrc）；不匹配退回 v1 的 9 列行为。 */
+    var m2 = CSV_LINE_RE_V2.exec(line);
+    if (m2) {
+      return {
+        clean: parseFloat(m2[1]),
+        noisy: parseFloat(m2[2]),
+        filtered: parseFloat(m2[3]),
+        bpm: parseFloat(m2[4]),
+        trueBpm: parseFloat(m2[5]),
+        sqi: parseFloat(m2[6]),
+        motion: parseInt(m2[7], 10) === 1,
+        abnormal: parseInt(m2[8], 10) !== 0,
+        confidence: parseFloat(m2[9]),
+        asrc: parseInt(m2[10], 10) || 0,
+        protoVer: PROTO.PROTO_VERSION
+      };
+    }
     var m = CSV_LINE_RE.exec(line);
     if (!m) return null;
     return {
@@ -74,12 +101,15 @@
       trueBpm: parseFloat(m[5]),
       sqi: parseFloat(m[6]),
       motion: parseInt(m[7], 10) === 1,
-      abnormal: parseInt(m[8], 10) === 1,
-      confidence: parseFloat(m[9])
+      abnormal: parseInt(m[8], 10) !== 0,
+      confidence: parseFloat(m[9]),
+      asrc: parseInt(m[8], 10) !== 0 ? 1 : 0,
+      protoVer: 1
     };
   }
 
   function rowToCsv(row) {
+    var asrc = (row.asrc === undefined || row.asrc === null) ? (row.abnormal ? 1 : 0) : row.asrc;
     return [
       row.clean.toFixed(4),
       row.noisy.toFixed(4),
@@ -89,7 +119,8 @@
       row.sqi.toFixed(3),
       row.motion ? 1 : 0,
       row.abnormal ? 1 : 0,
-      row.confidence.toFixed(3)
+      row.confidence.toFixed(3),
+      (asrc >>> 0)
     ].join(',');
   }
 
@@ -111,11 +142,15 @@
     if (String.fromCharCode(bytes[0], bytes[1], bytes[2], bytes[3]) !== ECGR_MAGIC) {
       throw new Error('魔数不匹配：不是 ESP32-ECG 的 .ecgr 录制文件');
     }
-    if (bytes[4] !== ECGR_VERSION) {
-      throw new Error('不支持的 ECGR 版本：' + bytes[4]);
+    var version = bytes[4];
+    if (version !== ECGR_VERSION_1 && version !== ECGR_VERSION_2) {
+      throw new Error('不支持的 ECGR 版本：' + version);
     }
 
     var flags = bytes[5];
+    var reserved0 = bytes[26];
+    var bitmapIsAsrc = version === ECGR_VERSION_2 &&
+        (reserved0 & ECGR_RESERVED0_ABNORMAL_IS_ASRC) !== 0;
     var sampleRate = readU32LE(bytes, 6);
     var startUnix = readU32LE(bytes, 10);
     var durationSec = readU32LE(bytes, 14);
@@ -128,32 +163,41 @@
 
     var hasBitmap = (flags & ECGR_FLAG_HAS_ABNORMAL_BITMAP) !== 0;
     var payload = bytes.length - ECGR_HEADER_SIZE;
-    if (hasBitmap) {
-      if (payload < durationSec) {
-        throw new Error('文件被截断：异常位图不完整');
-      }
-      payload -= durationSec;
+    /* P0-3 统一截断容忍（正向解码）：
+     * - 样本流按头部 totalSamples 读取，文件不足则读到字节上限；
+     * - 位图从样本流之后读取，文件不足则尾部按 0 补齐；
+     * - 任一处不足即 truncated=true，绝不抛错拒收。 */
+    var availableSampleBytes = payload;
+    var totalSamples;
+    if (headerSamples > 0) {
+      totalSamples = Math.floor(Math.min(headerSamples * 2, availableSampleBytes) / 2);
+    } else if (hasBitmap) {
+      totalSamples = Math.floor(Math.max(0, payload - durationSec) / 2);
+    } else {
+      totalSamples = Math.floor(payload / 2);
     }
-    var availableSamples = Math.floor(payload / 2);
-    var totalSamples = headerSamples || availableSamples;
-    if (totalSamples > availableSamples) {
-      /* 固件可能异常断电导致头部计数 > 实际数据；按可用数据截断并告警 */
-      totalSamples = availableSamples;
+    var truncated = headerSamples > 0 && totalSamples < headerSamples;
+    if (headerSamples === 0 && hasBitmap && payload < durationSec + totalSamples * 2) {
+      truncated = true; /* 头部未声明样本数时只能估算，标记不完整 */
     }
 
-    var sampleBytesEnd = ECGR_HEADER_SIZE + totalSamples * 2;
     var samples = new Int16Array(bytes.buffer, bytes.byteOffset + ECGR_HEADER_SIZE, totalSamples);
 
     var bitmap = null;
     if (hasBitmap) {
-      var bmpStart = ECGR_HEADER_SIZE + availableSamples * 2;
-      bitmap = new Uint8Array(bytes.buffer, bytes.byteOffset + bmpStart, Math.min(durationSec, bytes.length - bmpStart));
+      var bmpStart = ECGR_HEADER_SIZE + totalSamples * 2;
+      var got = Math.min(durationSec, Math.max(0, bytes.length - bmpStart));
+      bitmap = new Uint8Array(durationSec);
+      for (var bi = 0; bi < got; bi++) bitmap[bi] = bytes[bmpStart + bi];
+      if (got < durationSec) truncated = true;
     }
 
     return {
       bytes: bytes,
       fileName: null,
+      version: version,
       flags: flags,
+      bitmapIsAsrc: bitmapIsAsrc,
       sampleRate: sampleRate,
       startUnix: startUnix,
       durationSec: durationSec,
@@ -162,7 +206,7 @@
       hasBitmap: hasBitmap,
       bitmap: bitmap,
       samples: samples,
-      truncated: headerSamples > availableSamples,
+      truncated: truncated,
       /* 样本 i → 电压 (V)：固件写入时 cleanSample(V) * 8000 */
       voltAt: function (i) { return samples[i] / ECGR_SCALE_TO_VOLTS; }
     };
@@ -389,6 +433,8 @@
     parseCsvLine: parseCsvLine,
     rowToCsv: rowToCsv,
     parseEcgr: parseEcgr,
+    primaryAsrc: function (asrc) { return PROTO.primaryAsrc(asrc || 0); },
+    ASRC: PROTO.ASRC,
     QrsDetector: QrsDetector,
     EcgSimulator: EcgSimulator,
     decimateMinMax: decimateMinMax

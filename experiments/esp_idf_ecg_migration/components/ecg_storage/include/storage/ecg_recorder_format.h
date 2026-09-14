@@ -23,11 +23,17 @@ extern "C" {
 /* ======================== 魔数与版本 ======================== */
 #define ECGR_MAGIC      "ECGR"          /* 文件标识 */
 #define ECGR_MAGIC_LEN  4
-#define ECGR_VERSION    1               /* 格式版本号 */
+#define ECGR_VERSION_1  1               /* v1: 位图 0/1 */
+#define ECGR_VERSION_2  2               /* v2: 位图 asrc 位掩码 */
+#define ECGR_VERSION    ECGR_VERSION_2  /* 当前写入版本 (读取端双版本兼容) */
 #define ECGR_HEADER_SIZE 32            /* 头部字节数 */
 
 /* 标志位 */
 #define ECGR_FLAG_HAS_ABNORMAL_BITMAP  0x01  /* bit0: 包含异常位图 */
+
+/* v2 头部 reserved[0] 位: 位图字节语义。
+ * 写 v2 时必须置位; v1 该字节为 0, 读取端按 version==1 走 0/1 解释。 */
+#define ECGR_RESERVED0_ABNORMAL_IS_ASRC 0x01
 
 /* 默认采样率 */
 #define ECGR_DEFAULT_SAMPLE_RATE  250
@@ -98,8 +104,10 @@ static inline void ecgrHeaderInit(uint8_t* hdr,
     _ecgr_write32le(&hdr[ECGR_OFF_DURATION_SEC], durationSec);
     _ecgr_write32le(&hdr[ECGR_OFF_TOTAL_SAMPLES], totalSamples);
     _ecgr_write32le(&hdr[ECGR_OFF_ABNORMAL_SEC], abnormalSec);
-    /* 保留字段清零 */
-    for (int i = ECGR_OFF_RESERVED; i < ECGR_HEADER_SIZE; i++) {
+    /* v2: reserved[0] 标记位图为 asrc 掩码; 其余保留字段清零。 */
+    hdr[ECGR_OFF_RESERVED] = (ECGR_VERSION == ECGR_VERSION_2)
+                                 ? ECGR_RESERVED0_ABNORMAL_IS_ASRC : 0;
+    for (int i = ECGR_OFF_RESERVED + 1; i < ECGR_HEADER_SIZE; i++) {
         hdr[i] = 0;
     }
 }
@@ -110,11 +118,29 @@ static inline void ecgrHeaderInit(uint8_t* hdr,
 static inline bool ecgrHeaderValidate(const uint8_t* hdr, uint32_t sampleRate) {
     if (hdr[0] != 'E' || hdr[1] != 'C' || hdr[2] != 'G' || hdr[3] != 'R')
         return false;
-    if (hdr[ECGR_OFF_VERSION] != ECGR_VERSION)
+    /* 双版本兼容: v1 (0/1 位图) 与 v2 (asrc 位图) 均合法。 */
+    if (hdr[ECGR_OFF_VERSION] != ECGR_VERSION_1
+        && hdr[ECGR_OFF_VERSION] != ECGR_VERSION_2)
         return false;
     if (_ecgr_read32le(&hdr[ECGR_OFF_SAMPLE_RATE]) != sampleRate)
         return false;
     return true;
+}
+
+/** @brief 从头部读取格式版本 (1 或 2; 非法返回 0) */
+static inline uint8_t ecgrHeaderVersion(const uint8_t* hdr) {
+    uint8_t v = hdr[ECGR_OFF_VERSION];
+    return (v == ECGR_VERSION_1 || v == ECGR_VERSION_2) ? v : 0;
+}
+
+/**
+ * @brief 位图字节语义: true = asrc 位掩码 (v2), false = 0/1 旧值 (v1)。
+ *
+ * v1 文件保留位必为 0; v2 写端置 ECGR_RESERVED0_ABNORMAL_IS_ASRC。
+ */
+static inline bool ecgrHeaderBitmapIsAsrc(const uint8_t* hdr) {
+    return ecgrHeaderVersion(hdr) == ECGR_VERSION_2
+        && (hdr[ECGR_OFF_RESERVED] & ECGR_RESERVED0_ABNORMAL_IS_ASRC) != 0;
 }
 
 /** @brief 从头部读取总样本数 */
