@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import '../config/app_theme.dart';
 import '../providers/ecg_provider.dart';
 import '../services/protocol_generated.dart';
 
@@ -11,12 +11,11 @@ class InfoPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final last = provider.lastSample;
 
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A2E),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -29,26 +28,31 @@ class InfoPanel extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 6),
+          // P2-3：本行元素在窄屏需可收缩，避免 Row 溢出。
           Row(
             children: [
-              if (last != null)
-                _valueChip('Filter', provider.displayChannel == 'clean'
-                    ? last.clean : provider.displayChannel == 'noisy'
-                    ? last.noisy : last.filtered, Colors.cyan),
-              const SizedBox(width: 8),
               _aiStatusWidget(),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.md),
               Flexible(
                 child: Text(
-                  '${provider.timeWindow}s  |  ${(provider.amplitudeScale * 100).toStringAsFixed(0)}%',
-                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  '${provider.timeWindow}s | ${(provider.amplitudeScale * 100).toStringAsFixed(0)}%',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: AppFontSize.sm,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const Spacer(),
-              Text(
-                '${provider.bufferSize} pts',
-                style: const TextStyle(color: Colors.grey, fontSize: 11),
+              const SizedBox(width: AppSpacing.sm),
+              Flexible(
+                child: Text(
+                  '${provider.bufferSize} 点',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: AppFontSize.xs,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),
@@ -71,7 +75,7 @@ class InfoPanel extends StatelessWidget {
           hr > 0 ? '${hr.toStringAsFixed(0)} BPM' : '-- BPM',
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 28,
+            fontSize: AppFontSize.display,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -96,29 +100,10 @@ class InfoPanel extends StatelessWidget {
           connected ? '已连接' : '未连接',
           style: TextStyle(
             color: connected ? Colors.green : Colors.red,
-            fontSize: 14,
+            fontSize: AppFontSize.lg,
           ),
         ),
       ],
-    );
-  }
-
-  Widget _valueChip(String label, double value, Color color) {
-    final fmt = NumberFormat('0.000');
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        '$label: ${fmt.format(value)}V',
-        style: TextStyle(
-          color: color,
-          fontSize: 12,
-          fontFamily: 'monospace',
-        ),
-      ),
     );
   }
 
@@ -158,7 +143,7 @@ class InfoPanel extends StatelessWidget {
             'AI 正常',
             style: TextStyle(
               color: color,
-              fontSize: 12,
+              fontSize: AppFontSize.sm,
             ),
           ),
         ],
@@ -240,7 +225,7 @@ class _BreathingWarningChipState extends State<_BreathingWarningChip>
               '${widget.label} $confPct%$countSuffix',
               style: TextStyle(
                 color: color,
-                fontSize: 12,
+                fontSize: AppFontSize.sm,
                 fontWeight: FontWeight.bold,
               ),
             ),

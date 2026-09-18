@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../config/app_theme.dart';
 import '../providers/ecg_provider.dart';
 import '../providers/settings_provider.dart';
 
 /// 与 App 一致的暗色主题（info_panel / settings_sheet 同款约定）
-const Color _kCardBg = Color(0xFF1A1A2E);     // 卡片底色（弹窗背景）
-const Color _kAlertRed = Color(0xFFE53935);   // 告警红色（标题/进度条/按钮）
+const Color _kCardBg = AppColors.surface;     // 卡片底色（弹窗背景）
+const Color _kAlertRed = AppColors.error;   // 告警红色（标题/进度条/按钮）
 const double _kDialogRadius = 16.0;           // 浮层圆角（对齐底部弹窗约定）
 
 /**
@@ -49,7 +50,7 @@ class AlarmDialog extends StatelessWidget {
             '⚠ 异常心律',
             style: TextStyle(
               color: _kAlertRed,
-              fontSize: 20,
+              fontSize: AppFontSize.huge,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -64,7 +65,7 @@ class AlarmDialog extends StatelessWidget {
             '置信度 $confidencePercent%',
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 15,
+              fontSize: AppFontSize.xl,
               fontFamily: 'monospace',
             ),
           ),
@@ -82,7 +83,7 @@ class AlarmDialog extends StatelessWidget {
             '心率 ${provider.lastBpm} BPM',
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 15,
+              fontSize: AppFontSize.xl,
               fontFamily: 'monospace',
             ),
           ),
@@ -92,7 +93,7 @@ class AlarmDialog extends StatelessWidget {
             '触发时间 ${DateFormat('HH:mm:ss').format(provider.alarmTriggerTime!)}',
             style: const TextStyle(
               color: Colors.grey,
-              fontSize: 13,
+              fontSize: AppFontSize.md,
               fontFamily: 'monospace',
             ),
           ),
@@ -108,7 +109,7 @@ class AlarmDialog extends StatelessWidget {
             '确认',
             style: TextStyle(
               color: _kAlertRed,
-              fontSize: 16,
+              fontSize: AppFontSize.xxl,
               fontWeight: FontWeight.bold,
             ),
           ),

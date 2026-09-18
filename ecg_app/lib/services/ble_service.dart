@@ -15,6 +15,30 @@ import 'csv_parser.dart';
  * - RX Char: 6E400003-B5A3-F393-E0A9-E50E24DCCA9E (Write)
  */
 
+/// P2-3：BLE 候选设备（扫描结果条目，供用户显式选择）。
+class BleCandidate {
+  final BluetoothDevice device;
+
+  /// 广播名（形如 ESP32-ECG-xxxx）。
+  final String name;
+
+  /// 信号强度（dBm，越接近 0 越强）。
+  final int rssi;
+
+  /// 平台设备标识（用于去重）。
+  final String id;
+
+  const BleCandidate({
+    required this.device,
+    required this.name,
+    required this.rssi,
+    required this.id,
+  });
+
+  /// 供 UI 显示的信号强度文案。
+  String get rssiLabel => '$rssi dBm';
+}
+
 class BLEService {
   // NUS UUID
   static const String _nusServiceUuid = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
@@ -89,6 +113,88 @@ class BLEService {
   }
 
   /// 扫描并连接 ESP32-ECG 设备（含重试机制）
+  /// P2-3：列出可连接的 ESP32-ECG 设备（含信号强度），供用户显式选择。
+  ///
+  /// **重要**：已配对/已被系统连接的 BLE 设备**不会再次广播**，纯扫描扫不到。
+  /// 因此本方法同时做两件事：
+  ///   1) 通过 [FlutterBluePlus.systemDevices] 读取系统侧已配对/已连接的设备；
+  ///   2) 主动扫描广播，捕获尚未配对的设备。
+  /// 两者合并去重后按 RSSI 降序返回。
+  ///
+  /// 扫描有硬超时（[timeout]），绝不无限等待。
+  Future<List<BleCandidate>> scanCandidates({
+    Duration timeout = const Duration(seconds: 8),
+  }) async {
+    try {
+      await FlutterBluePlus.turnOn();
+    } catch (_) {
+      return const [];
+    }
+
+    final seen = <String, BleCandidate>{};
+
+    // ---- 阶段 1：系统已配对/已连接设备（扫描看不到这些）----
+    try {
+      final bonded = await FlutterBluePlus.bondedDevices;
+      for (final d in bonded) {
+        final name = d.platformName;
+        if (!name.startsWith(_deviceName)) continue;
+        seen[d.remoteId.str] = BleCandidate(
+          device: d,
+          name: name,
+          rssi: 0, // 未广播，无 RSSI
+          id: d.remoteId.str,
+        );
+      }
+    } catch (_) {
+      // 平台不支持 bondedDevices 时静默跳过
+    }
+
+    // ---- 阶段 2：主动扫描（捕获未配对设备）----
+    // 用 scanResults 的首个非空结果 + 硬超时兜底：
+    // 旧实现用 `await for` 直读广播流，收不到事件时会永久挂起。
+    try {
+      await FlutterBluePlus.startScan(timeout: timeout);
+      final deadline = DateTime.now().add(timeout + const Duration(seconds: 2));
+      while (DateTime.now().isBefore(deadline)) {
+        if (!FlutterBluePlus.isScanningNow) break;
+        try {
+          final snapshot = FlutterBluePlus.lastScanResults;
+          for (final r in snapshot) {
+            final name = r.device.platformName;
+            if (!name.startsWith(_deviceName)) continue;
+            final id = r.device.remoteId.str;
+            final prev = seen[id];
+            if (prev == null || r.rssi > prev.rssi) {
+              seen[id] = BleCandidate(
+                device: r.device,
+                name: name,
+                rssi: r.rssi,
+                id: id,
+              );
+            }
+          }
+        } catch (_) {
+          break;
+        }
+        await Future.delayed(const Duration(milliseconds: 400));
+      }
+    } catch (_) {
+      // 扫描启动失败（权限/适配器），保留阶段 1 的结果
+    } finally {
+      try {
+        await FlutterBluePlus.stopScan();
+      } catch (_) {}
+    }
+
+    final list = seen.values.toList()
+      ..sort((a, b) => b.rssi.compareTo(a.rssi));
+    return list;
+  }
+  /// P2-3：显式连接到用户选定的候选设备。
+  Future<bool> connectTo(BleCandidate candidate) =>
+      _connectToDevice(candidate.device);
+
   Future<bool> connect() async {
     // 确保蓝牙已开启（内含权限请求处理）
     try {

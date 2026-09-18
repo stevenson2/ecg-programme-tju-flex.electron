@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../config/app_theme.dart';
 import '../models/waveform_data_source.dart';
 import '../services/ecg_record_codec.dart';
 import '../widgets/ecg_waveform.dart';
@@ -249,9 +250,9 @@ class _PlaybackPageState extends State<PlaybackPage> {
   Widget build(BuildContext context) {
     final record = widget.record;
     return Scaffold(
-      backgroundColor: const Color(0xFF0D0D1A),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1A1A2E),
+        backgroundColor: AppColors.surface,
         elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,11 +260,11 @@ class _PlaybackPageState extends State<PlaybackPage> {
           children: [
             const Text(
               '记录回放',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: AppFontSize.xxxl, fontWeight: FontWeight.w500),
             ),
             Text(
               '${_fmtId(record.startUnixTime)} · 时长 ${_fmt(record.durationSec)}',
-              style: const TextStyle(fontSize: 12, color: Colors.white70),
+              style: const TextStyle(fontSize: AppFontSize.sm, color: Colors.white70),
             ),
           ],
         ),
@@ -282,7 +283,7 @@ class _PlaybackPageState extends State<PlaybackPage> {
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            border: Border.all(color: const Color(0xFF2A2A3E)),
+                            border: Border.all(color: AppColors.surfaceVariant),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: ClipRRect(
@@ -319,7 +320,7 @@ class _PlaybackPageState extends State<PlaybackPage> {
                           _provider.isPlaying ? Icons.pause : Icons.play_arrow,
                         ),
                         tooltip: _provider.isPlaying ? '暂停' : '播放',
-                        color: const Color(0xFF00BFFF),
+                        color: AppColors.primary,
                       ),
                       Expanded(
                         child: Slider(
@@ -334,7 +335,7 @@ class _PlaybackPageState extends State<PlaybackPage> {
                       ),
                       Text(
                         '${_fmt(_provider.currentSecond)} / ${_fmt(record.durationSec)}',
-                        style: const TextStyle(fontSize: 12, color: Colors.white70),
+                        style: const TextStyle(fontSize: AppFontSize.sm, color: Colors.white70),
                       ),
                     ],
                   );
@@ -361,14 +362,14 @@ class _AbnormalChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFFE53935),
+        color: AppColors.error,
         borderRadius: BorderRadius.circular(12),
       ),
       child: const Text(
         '异常',
         style: TextStyle(
           color: Colors.white,
-          fontSize: 12,
+          fontSize: AppFontSize.sm,
           fontWeight: FontWeight.w600,
         ),
       ),

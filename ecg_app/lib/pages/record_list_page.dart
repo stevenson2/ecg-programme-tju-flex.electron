@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../config/app_theme.dart';
 import '../config/app_config.dart';
 import '../services/record_api.dart';
 import '../services/ecg_record_codec.dart';
@@ -330,10 +331,10 @@ class _RecordListPageState extends State<RecordListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D0D1A),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('记录管理'),
-        backgroundColor: const Color(0xFF1A1A2E),
+        backgroundColor: AppColors.surface,
         elevation: 0,
       ),
       body: Column(
@@ -353,24 +354,24 @@ class _RecordListPageState extends State<RecordListPage> {
       margin: const EdgeInsets.fromLTRB(8, 8, 8, 4),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A2E),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-            color: const Color(0xFF00BFFF).withValues(alpha: 0.3)),
+            color: AppColors.primary.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Row(
             children: [
-              Icon(Icons.wifi, color: Color(0xFF00BFFF), size: 18),
+              Icon(Icons.wifi, color: AppColors.primary, size: 18),
               SizedBox(width: 6),
               Text(
                 '连接指南',
                 style: TextStyle(
-                  color: Color(0xFF00BFFF),
+                  color: AppColors.primary,
                   fontWeight: FontWeight.w600,
-                  fontSize: 14,
+                  fontSize: AppFontSize.lg,
                 ),
               ),
             ],
@@ -378,7 +379,7 @@ class _RecordListPageState extends State<RecordListPage> {
           const SizedBox(height: 6),
           Text(
             '请连接手机 WiFi 到热点 ESP32-ECG-XXXX（密码 ${AppConfig.apPassword}），然后返回本页刷新',
-            style: TextStyle(color: Colors.white70, fontSize: 13),
+            style: TextStyle(color: Colors.white70, fontSize: AppFontSize.md),
           ),
           const SizedBox(height: 8),
           SizedBox(
@@ -388,7 +389,7 @@ class _RecordListPageState extends State<RecordListPage> {
               icon: const Icon(Icons.refresh, size: 16),
               label: const Text('刷新'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF00BFFF),
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 8),
               ),
@@ -408,19 +409,19 @@ class _RecordListPageState extends State<RecordListPage> {
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A2E),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: pendingCount > 0
               ? Colors.orange.withValues(alpha: 0.4)
-              : const Color(0xFF00BFFF).withValues(alpha: 0.2),
+              : AppColors.primary.withValues(alpha: 0.2),
         ),
       ),
       child: Row(
         children: [
           Icon(
             Icons.cloud_upload,
-            color: pendingCount > 0 ? Colors.orange : const Color(0xFF00BFFF),
+            color: pendingCount > 0 ? Colors.orange : AppColors.primary,
             size: 18,
           ),
           const SizedBox(width: 6),
@@ -428,7 +429,7 @@ class _RecordListPageState extends State<RecordListPage> {
             pendingCount > 0 ? '上传队列: $pendingCount 条待处理' : '上传队列: 已全部完成',
             style: TextStyle(
               color: pendingCount > 0 ? Colors.orange : Colors.white54,
-              fontSize: 13,
+              fontSize: AppFontSize.md,
             ),
           ),
           const Spacer(),
@@ -445,13 +446,13 @@ class _RecordListPageState extends State<RecordListPage> {
                   Text(
                     '立即上传',
                     style: TextStyle(
-                      color: Color(0xFF00BFFF),
-                      fontSize: 12,
+                      color: AppColors.primary,
+                      fontSize: AppFontSize.sm,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   SizedBox(width: 2),
-                  Icon(Icons.arrow_forward, color: Color(0xFF00BFFF), size: 14),
+                  Icon(Icons.arrow_forward, color: AppColors.primary, size: 14),
                 ],
               ),
             ),
@@ -464,7 +465,7 @@ class _RecordListPageState extends State<RecordListPage> {
   Widget _buildBody() {
     if (_loading && _records == null) {
       return const Center(
-        child: CircularProgressIndicator(color: Color(0xFF00BFFF)),
+        child: CircularProgressIndicator(color: AppColors.primary),
       );
     }
 
@@ -492,7 +493,7 @@ class _RecordListPageState extends State<RecordListPage> {
       return const Center(
         child: Text(
           '暂无记录',
-          style: TextStyle(color: Colors.white38, fontSize: 16),
+          style: TextStyle(color: Colors.white38, fontSize: AppFontSize.xxl),
         ),
       );
     }
@@ -517,7 +518,7 @@ class _RecordListPageState extends State<RecordListPage> {
     final sizeKB = (info.size / 1024).toStringAsFixed(1);
 
     return Card(
-      color: const Color(0xFF1A1A2E),
+      color: AppColors.surface,
       margin: const EdgeInsets.only(bottom: 6),
       child: Padding(
         padding: const EdgeInsets.all(10),
@@ -533,9 +534,9 @@ class _RecordListPageState extends State<RecordListPage> {
                       Text(
                         '#${info.id}',
                         style: const TextStyle(
-                          color: Color(0xFF00BFFF),
+                          color: AppColors.primary,
                           fontWeight: FontWeight.w600,
-                          fontSize: 15,
+                          fontSize: AppFontSize.xl,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -550,7 +551,7 @@ class _RecordListPageState extends State<RecordListPage> {
                           child: Text(
                             '${info.abnormalSeconds}',
                             style: const TextStyle(
-                                color: Colors.redAccent, fontSize: 11),
+                                color: Colors.redAccent, fontSize: AppFontSize.xs),
                           ),
                         ),
                       const SizedBox(width: 6),
@@ -562,7 +563,7 @@ class _RecordListPageState extends State<RecordListPage> {
                   Text(
                     '${info.duration}s  |  ${sizeKB}KB',
                     style:
-                        const TextStyle(color: Colors.white54, fontSize: 12),
+                        const TextStyle(color: Colors.white54, fontSize: AppFontSize.sm),
                   ),
                 ],
               ),
@@ -573,7 +574,7 @@ class _RecordListPageState extends State<RecordListPage> {
                 width: 24,
                 height: 24,
                 child: CircularProgressIndicator(
-                    strokeWidth: 2, color: Color(0xFF00BFFF)),
+                    strokeWidth: 2, color: AppColors.primary),
               )
             else
               _buildUploadButton(info),
@@ -582,11 +583,11 @@ class _RecordListPageState extends State<RecordListPage> {
                     width: 24,
                     height: 24,
                     child: CircularProgressIndicator(
-                        strokeWidth: 2, color: Color(0xFF00BFFF)),
+                        strokeWidth: 2, color: AppColors.primary),
                   )
                 : IconButton(
                     icon: const Icon(Icons.cloud_download, size: 20),
-                    color: const Color(0xFF00BFFF),
+                    color: AppColors.primary,
                     tooltip: '下载',
                     onPressed: () => _downloadRecord(info),
                     constraints: const BoxConstraints(
@@ -595,7 +596,7 @@ class _RecordListPageState extends State<RecordListPage> {
                   ),
             IconButton(
               icon: const Icon(Icons.play_circle_outline, size: 20),
-              color: const Color(0xFF00BFFF),
+              color: AppColors.primary,
               tooltip: '本地回放',
               onPressed: () => _openPlayback(info),
               constraints:
@@ -648,7 +649,7 @@ class _RecordListPageState extends State<RecordListPage> {
 
     return IconButton(
       icon: const Icon(Icons.cloud_upload, size: 20),
-      color: const Color(0xFF00BFFF),
+      color: AppColors.primary,
       tooltip: '上传到云端',
       onPressed: () => _uploadRecord(info),
       constraints: const BoxConstraints(minWidth: 36, minHeight: 36),

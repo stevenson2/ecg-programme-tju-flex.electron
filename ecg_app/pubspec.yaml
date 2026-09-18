@@ -25,6 +25,16 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # 提示音等静态资源
   assets:
     - assets/audio/
+
+  # P2-1：打包 Roboto（tabular figures 用于数字），不依赖运行时下载。
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Roboto-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Roboto-Bold.ttf
+          weight: 700

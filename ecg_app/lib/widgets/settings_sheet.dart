@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../config/app_theme.dart';
 import '../providers/settings_provider.dart';
 
 /// 与 App 一致的主题色（info_panel 等控件同款暗色约定）
-const Color _kScaffoldBg = Color(0xFF0D0D1A); // 弹窗底色
-const Color _kCardBg = Color(0xFF1A1A2E);     // 卡片底色
-const Color _kPrimary = Color(0xFF00BFFF);    // 高亮色（开关/滑块）
+const Color _kScaffoldBg = AppColors.background; // 弹窗底色
+const Color _kCardBg = AppColors.surface;     // 卡片底色
+const Color _kPrimary = AppColors.primary;    // 高亮色（开关/滑块）
 
 /**
  * @file settings_sheet.dart
@@ -59,7 +60,7 @@ class AlarmSettingsSheet extends StatelessWidget {
                         '告警设置',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: AppFontSize.xxxl,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -115,7 +116,7 @@ class AlarmSettingsSheet extends StatelessWidget {
                       onChanged: (v) => settings.setAutoClose(v.round()),
                     ),
                   ),
-                  const Divider(height: 24, color: Color(0xFF2A2A3E)),
+                  const Divider(height: 24, color: AppColors.surfaceVariant),
                   // ── 定时录制调度 ──
                   const Row(
                     children: [
@@ -126,7 +127,7 @@ class AlarmSettingsSheet extends StatelessWidget {
                         '定时录制',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: AppFontSize.xxxl,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -218,11 +219,11 @@ class AlarmSettingsSheet extends StatelessWidget {
         secondary: Icon(icon, color: _kPrimary),
         title: Text(
           title,
-          style: const TextStyle(color: Colors.white, fontSize: 15),
+          style: const TextStyle(color: Colors.white, fontSize: AppFontSize.xl),
         ),
         subtitle: Text(
           subtitle,
-          style: const TextStyle(color: Colors.grey, fontSize: 12),
+          style: const TextStyle(color: Colors.grey, fontSize: AppFontSize.sm),
         ),
         activeThumbColor: _kPrimary,
         value: value,
@@ -266,14 +267,14 @@ class AlarmSettingsSheet extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 label,
-                style: const TextStyle(color: Colors.white, fontSize: 15),
+                style: const TextStyle(color: Colors.white, fontSize: AppFontSize.xl),
               ),
               const Spacer(),
               Text(
                 valueLabel,
                 style: const TextStyle(
                   color: _kPrimary,
-                  fontSize: 14,
+                  fontSize: AppFontSize.lg,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'monospace',
                 ),

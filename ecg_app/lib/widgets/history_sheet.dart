@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../config/app_theme.dart';
 import '../models/alarm_event.dart';
 
 /**
@@ -32,7 +33,7 @@ class HistorySheet extends StatelessWidget {
       child: Container(
         // 底部弹窗背景色，与 App 暗色主题一致
         decoration: const BoxDecoration(
-          color: Color(0xFF0D0D1A),
+          color: AppColors.background,
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
         child: Column(
@@ -56,18 +57,18 @@ class HistorySheet extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: const BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: Color(0xFF2A2A3E), width: 0.5),
+          bottom: BorderSide(color: AppColors.surfaceVariant, width: 0.5),
         ),
       ),
       child: Row(
         children: [
-          const Icon(Icons.history, color: Color(0xFF00BFFF), size: 20),
+          const Icon(Icons.history, color: AppColors.primary, size: 20),
           const SizedBox(width: 8),
           const Text(
             '告警历史',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 16,
+              fontSize: AppFontSize.xxl,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -78,10 +79,10 @@ class HistorySheet extends StatelessWidget {
               icon: const Icon(Icons.delete_outline, size: 16),
               label: const Text('清除记录'),
               style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFFE53935),
+                foregroundColor: AppColors.error,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                textStyle: const TextStyle(fontSize: 13),
+                textStyle: const TextStyle(fontSize: AppFontSize.md),
               ),
             ),
         ],
@@ -101,7 +102,7 @@ class HistorySheet extends StatelessWidget {
             SizedBox(height: 12),
             Text(
               '暂无报警记录',
-              style: TextStyle(color: Colors.grey, fontSize: 14),
+              style: TextStyle(color: Colors.grey, fontSize: AppFontSize.lg),
             ),
           ],
         ),
@@ -135,7 +136,7 @@ class HistorySheet extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A2E),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -146,12 +147,12 @@ class HistorySheet extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: const Color(0xFFE53935).withValues(alpha: 0.15),
+              color: AppColors.error.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Icon(
               Icons.warning_amber,
-              color: Color(0xFFE53935),
+              color: AppColors.error,
               size: 20,
             ),
           ),
@@ -168,7 +169,7 @@ class HistorySheet extends StatelessWidget {
                       timeStr,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 13,
+                        fontSize: AppFontSize.md,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -199,7 +200,7 @@ class HistorySheet extends StatelessWidget {
   Widget _recoveryChip(bool isManual) {
     final label = isManual ? '手动确认' : '自动恢复';
     final chipColor = isManual
-        ? const Color(0xFF4CAF50) // 绿色：手动确认
+        ? AppColors.success // 绿色：手动确认
         : Colors.grey; // 灰色：自动恢复
 
     return Container(
@@ -212,7 +213,7 @@ class HistorySheet extends StatelessWidget {
         label,
         style: TextStyle(
           color: chipColor,
-          fontSize: 11,
+          fontSize: AppFontSize.xs,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -226,13 +227,13 @@ class HistorySheet extends StatelessWidget {
       children: [
         Text(
           '$label ',
-          style: const TextStyle(color: Colors.grey, fontSize: 11),
+          style: const TextStyle(color: Colors.grey, fontSize: AppFontSize.xs),
         ),
         Text(
           value,
           style: const TextStyle(
-            color: Color(0xFF00BFFF),
-            fontSize: 11,
+            color: AppColors.primary,
+            fontSize: AppFontSize.xs,
             fontWeight: FontWeight.w600,
           ),
         ),

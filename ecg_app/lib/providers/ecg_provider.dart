@@ -116,6 +116,60 @@ class ECGProvider extends ChangeNotifier implements WaveformDataSource {
   // ── 连接管理 ──
 
   /// 扫描并连接 ESP32
+  /// P2-3：扫描候选设备列表（不自动连接），供 UI 弹出设备选择。
+  ///
+  /// 加 15s 总超时兜底：即使底层 BLE 栈无响应，也必须回到 UI（否则
+  /// 界面会永久停留在"正在扫描"）。
+  Future<List<BleCandidate>> scanForCandidates() async {
+    _isScanning = true;
+    _statusMessage = '正在扫描 ESP32-ECG...';
+    notifyListeners();
+    try {
+      final list = await _bleService
+          .scanCandidates()
+          .timeout(const Duration(seconds: 15), onTimeout: () => const []);
+      _statusMessage = list.isEmpty ? '未发现设备' : '发现 ${list.length} 台设备';
+      return list;
+    } catch (_) {
+      _statusMessage = '扫描失败';
+      return const [];
+    } finally {
+      _isScanning = false;
+      notifyListeners();
+    }
+  }
+
+  /// P2-3：连接到用户显式选择的候选设备（替代自动抢第一台）。
+  Future<bool> connectToCandidate(BleCandidate candidate) async {
+    _isScanning = true;
+    _statusMessage = '正在连接 ${candidate.name}...';
+    notifyListeners();
+
+    await _subscription?.cancel();
+    _subscription = null;
+
+    final success = await _bleService.connectTo(candidate);
+
+    _isScanning = false;
+    if (success) {
+      _isConnected = true;
+      _statusMessage = '已连接';
+      _subscription = _bleService.dataStream.listen(_addSample);
+      _bleService.onDisconnected = () {
+        _isConnected = false;
+        _subscription?.cancel();
+        _subscription = null;
+        _statusMessage = '未连接';
+        notifyListeners();
+      };
+      notifyListeners();
+      return true;
+    }
+    _statusMessage = '连接失败';
+    notifyListeners();
+    return false;
+  }
+
   Future<void> connect() async {
     _isScanning = true;
     _statusMessage = '正在扫描 ESP32-ECG...';

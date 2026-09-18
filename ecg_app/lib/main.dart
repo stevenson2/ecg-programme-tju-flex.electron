@@ -1,9 +1,10 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import 'config/app_theme.dart';
 import 'providers/ecg_provider.dart';
 import 'providers/settings_provider.dart';
 import 'services/alarm_sound_service.dart';
@@ -16,12 +17,16 @@ import 'widgets/alarm_dialog.dart';
 import 'widgets/history_sheet.dart';
 import 'widgets/settings_sheet.dart';
 import 'services/record_api.dart';
+import 'services/ble_service.dart';
 import 'pages/record_list_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // P2-3: 解锁横屏（横屏全幅波形 + 侧栏信息）
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
   ]);
   runApp(
     MultiProvider(
@@ -42,12 +47,7 @@ class ECGApp extends StatelessWidget {
     return MaterialApp(
       title: '心电监测',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF0D0D1A),
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF00BFFF),
-        ),
-      ),
+      theme: AppTheme.dark(),
       home: const ECGMonitorScreen(),
     );
   }
@@ -143,25 +143,65 @@ class _ECGMonitorScreenState extends State<ECGMonitorScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: _buildAppBar(context),
-        body: Column(
-          children: [
-            /// 波形显示区
-            const Expanded(
-              flex: 4,
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: _WaveformArea(),
-              ),
-            ),
-            /// 信息面板
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: _InfoArea(alarmCount: _totalAlarmCount),
-            ),
-            /// 底部控制区
-            const _ControlPanel(),
-            const SizedBox(height: 8),
-          ],
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            // P2-3：横屏（宽度 > 高度）采用全幅波形 + 侧栏信息的双栏布局；
+            // 竖屏保持既有单列信息架构。
+            final isLandscape = constraints.maxWidth > constraints.maxHeight;
+            if (isLandscape) {
+              return Row(
+                children: [
+                  const Expanded(
+                    flex: 3,
+                    child: Padding(
+                      padding: EdgeInsets.all(AppSpacing.md),
+                      child: _WaveformArea(),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.md,
+                              vertical: AppSpacing.md,
+                            ),
+                            child: _InfoArea(alarmCount: _totalAlarmCount),
+                          ),
+                          const _ControlPanel(),
+                          const SizedBox(height: AppSpacing.md),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+            return Column(
+              children: [
+                /// 波形显示区
+                const Expanded(
+                  flex: 4,
+                  child: Padding(
+                    padding: EdgeInsets.all(AppSpacing.md),
+                    child: _WaveformArea(),
+                  ),
+                ),
+                /// 信息面板
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                  ),
+                  child: _InfoArea(alarmCount: _totalAlarmCount),
+                ),
+                /// 底部控制区
+                const _ControlPanel(),
+                const SizedBox(height: AppSpacing.md),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -171,10 +211,10 @@ class _ECGMonitorScreenState extends State<ECGMonitorScreen> {
     return AppBar(
       title: const Text(
         'ESP32-ECG 心电监测',
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+        style: TextStyle(fontSize: AppFontSize.xxxl, fontWeight: FontWeight.w500),
       ),
       centerTitle: true,
-      backgroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: AppColors.surface,
       elevation: 0,
       actions: [
         /// 记录管理
@@ -276,15 +316,78 @@ class _WaveformArea extends StatelessWidget {
       builder: (context, provider, _) {
         return Container(
           decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFF2A2A3E)),
-            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: AppColors.surfaceVariant),
+            borderRadius: AppRadius.mdAll,
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(7),
-            child: ECGWaveform(provider: provider),
+            borderRadius: AppRadius.smAll,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                ECGWaveform(provider: provider),
+                // P2-3 三态之「未连接引导态」：无数据时覆盖连接指引，
+                // 而非让用户面对一片空白网格。
+                if (provider.samples.isEmpty &&
+                    !provider.isConnected &&
+                    !provider.isScanning)
+                  const _ConnectGuide(),
+                // P2-3 三态之「加载态」：扫描/连接进行中显示 spinner。
+                if (provider.isScanning) const _LoadingOverlay(),
+              ],
+            ),
           ),
         );
       },
+    );
+  }
+}
+
+/// 未连接引导态：波形区覆盖的连接指引（P2-3）。
+class _ConnectGuide extends StatelessWidget {
+  const _ConnectGuide();
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.bluetooth_searching,
+              size: 40,
+              color: AppColors.disabled,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              '尚未连接设备',
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: AppFontSize.lg,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              '请确认设备已开机',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AppColors.traceLabel,
+                fontSize: AppFontSize.sm,
+                height: 1.6,
+              ),
+            ),
+            Text(
+              '然后点击下方「连接」',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AppColors.traceLabel,
+                fontSize: AppFontSize.sm,
+                height: 1.6,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -311,11 +414,15 @@ class _ControlPanel extends StatelessWidget {
     return Consumer<ECGProvider>(
       builder: (context, provider, _) {
         final btnStyle = (bool isActive) => ElevatedButton.styleFrom(
-          backgroundColor: isActive ? const Color(0xFF00BFFF) : const Color(0xFF2A2A3E),
+          backgroundColor: isActive ? AppColors.primary : AppColors.surfaceVariant,
           foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          minimumSize: Size.zero,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.ms,
+          ),
+          // P2-3: 触达目标 >= 48 dp（修复此前 Size.zero）
+          minimumSize: const Size(0, AppSizes.minTouchTarget),
+          shape: const RoundedRectangleBorder(borderRadius: AppRadius.smAll),
         );
 
         return Padding(
@@ -342,12 +449,12 @@ class _ControlPanel extends StatelessWidget {
                             : provider.isConnected
                                 ? '断开'
                                 : '连接',
-                        style: const TextStyle(fontSize: 13),
+                        style: const TextStyle(fontSize: AppFontSize.md),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: provider.isConnected
                             ? Colors.red.withValues(alpha: 0.8)
-                            : const Color(0xFF00BFFF),
+                            : AppColors.primary,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 10),
                       ),
@@ -360,7 +467,7 @@ class _ControlPanel extends StatelessWidget {
                     Flexible(
                       child: Text(
                         provider.statusMessage,
-                        style: const TextStyle(color: Colors.orange, fontSize: 11),
+                        style: const TextStyle(color: Colors.orange, fontSize: AppFontSize.xs),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -381,7 +488,7 @@ class _ControlPanel extends StatelessWidget {
                 children: [
                   const SizedBox(
                     width: 42,
-                    child: Text('速度', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                    child: Text('速度', style: TextStyle(color: Colors.grey, fontSize: AppFontSize.sm)),
                   ),
                   Expanded(
                     child: Row(
@@ -393,7 +500,7 @@ class _ControlPanel extends StatelessWidget {
                             child: ElevatedButton(
                               onPressed: () => provider.timeWindow = sec,
                               style: btnStyle(isActive),
-                              child: Text('${sec}s', style: const TextStyle(fontSize: 12)),
+                              child: Text('${sec}s', style: const TextStyle(fontSize: AppFontSize.sm)),
                             ),
                           ),
                         );
@@ -408,7 +515,7 @@ class _ControlPanel extends StatelessWidget {
                 children: [
                   const SizedBox(
                     width: 42,
-                    child: Text('幅度', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                    child: Text('幅度', style: TextStyle(color: Colors.grey, fontSize: AppFontSize.sm)),
                   ),
                   Expanded(
                     child: Row(
@@ -420,7 +527,7 @@ class _ControlPanel extends StatelessWidget {
                             child: ElevatedButton(
                               onPressed: () => provider.amplitudeScale = scale,
                               style: btnStyle(isActive),
-                              child: Text('${scale}x', style: const TextStyle(fontSize: 12)),
+                              child: Text('${scale}x', style: const TextStyle(fontSize: AppFontSize.sm)),
                             ),
                           ),
                         );
@@ -436,11 +543,194 @@ class _ControlPanel extends StatelessWidget {
     );
   }
 
+  /// P2-3：连接流程改为「先扫描列设备，再由用户选择」，不再自动抢第一台。
   void _toggleConnection(BuildContext context, ECGProvider provider) async {
     if (provider.isConnected) {
       await provider.disconnect();
-    } else {
-      await provider.connect();
+      return;
     }
+
+    final candidates = await provider.scanForCandidates();
+    if (!context.mounted) return;
+
+    if (candidates.isEmpty) {
+      // 错误态：扫描无结果给出明确文案与重试入口（P2-3）。
+      showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: AppColors.surface,
+          title: const Text('未发现设备'),
+          content: const Text(
+            '请确认：\n'
+            '1. 设备已开机（指示灯亮）\n'
+            '2. 手机蓝牙已开启\n'
+            '3. 距离设备 5 米以内',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('取消'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                _toggleConnection(context, provider);
+              },
+              child: const Text('重试'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    // 设备列表选择（含 RSSI），用户显式点选。
+    final picked = await showModalBottomSheet<BleCandidate>(
+      context: context,
+      backgroundColor: AppColors.surface,
+      builder: (ctx) => _DevicePickerSheet(candidates: candidates),
+    );
+    if (picked == null) return; // 用户取消
+
+    await provider.connectToCandidate(picked);
+  }
+}
+
+/// P2-3：设备选择底部弹窗。
+///
+/// 分两组显示：
+///   - 「已配对」：系统里已配对/已连接的设备（BLE 已配对设备不再广播，
+///     只能从这里连；这是连板子的主通道）；
+///   - 「扫描到」：本次广播扫描发现的设备（尚未配对的）。
+class _DevicePickerSheet extends StatelessWidget {
+  final List<BleCandidate> candidates;
+
+  const _DevicePickerSheet({required this.candidates});
+
+  /// 已配对候选（未广播，rssi == 0）。
+  List<BleCandidate> get _paired =>
+      candidates.where((c) => c.rssi == 0).toList();
+
+  /// 扫描到的候选（有 RSSI）。
+  List<BleCandidate> get _scanned =>
+      candidates.where((c) => c.rssi != 0).toList();
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Text(
+              '选择设备（共 ${candidates.length} 台）',
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: AppFontSize.xxl,
+              ),
+            ),
+          ),
+          Flexible(
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                if (_paired.isNotEmpty) ...[
+                  _sectionHeader('已配对（推荐）'),
+                  ..._paired.map((c) => _tile(context, c, paired: true)),
+                ],
+                if (_scanned.isNotEmpty) ...[
+                  _sectionHeader('扫描到'),
+                  ..._scanned.map((c) => _tile(context, c, paired: false)),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+        ],
+      ),
+    );
+  }
+
+  Widget _sectionHeader(String text) => Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.md,
+          AppSpacing.lg,
+          AppSpacing.sm,
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: AppColors.primary,
+            fontSize: AppFontSize.sm,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      );
+
+  Widget _tile(BuildContext context, BleCandidate c, {required bool paired}) {
+    return ListTile(
+      leading: Icon(
+        paired ? Icons.bluetooth_connected : Icons.bluetooth,
+        color: AppColors.primary,
+      ),
+      title: Text(
+        c.name,
+        style: const TextStyle(color: Colors.white),
+      ),
+      subtitle: Text(
+        c.id,
+        style: TextStyle(
+          color: AppColors.textSecondary,
+          fontSize: AppFontSize.xs,
+        ),
+      ),
+      trailing: Text(
+        paired ? '已配对' : c.rssiLabel,
+        style: AppText.numeric(
+          AppFontSize.sm,
+          color: AppColors.traceLabel,
+        ),
+      ),
+      onTap: () => Navigator.pop(context, c),
+    );
+  }
+}
+
+/// P2-3 三态之「加载态」：扫描/连接进行中的覆盖指示。
+class _LoadingOverlay extends StatelessWidget {
+  const _LoadingOverlay();
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        color: AppColors.traceBackground.withValues(alpha: 0.6),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(
+                width: 28,
+                height: 28,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  color: AppColors.primary,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Text(
+                '正在扫描设备...',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: AppFontSize.lg,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
