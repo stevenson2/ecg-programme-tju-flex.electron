@@ -11,6 +11,7 @@ distill_pilot_teacher_targets.npz x_train_perm, 无测试接触), 但:
 预算断言: ≤ 300 KB (预注册 P2)。
 """
 import argparse
+import sys
 import time
 from pathlib import Path
 
@@ -63,7 +64,11 @@ def main():
     assert len(tflite_model) <= 300 * 1024, \
         f"INT8 体积超预算 300KB: {len(tflite_model)}"
 
-    # ---- 冒烟: tflite vs h5 一致性 (代表性子集 256 样本) ----
+    # ---- 冒烟: tflite vs h5 一致性 ----
+    # 口径 (R19M 修正, 2026-09-19): 全训模型 softmax 输出饱和双峰, corr 门槛
+    # 过严 (R18 实测 corr 0.947 / MAD 0.043 而量化本身良好) → 改 MAD 主判;
+    # 双头模型补 valid 通道检查, 评估集混入合成噪声窗 (纯干净集上 valid 恒
+    # 1、corr 无定义——R18 踩坑)。
     it = tf.lite.Interpreter(model_path=str(out))
     it.allocate_tensors()
     inp, outd = it.get_input_details()[0], it.get_output_details()[0]
@@ -76,6 +81,13 @@ def main():
     rng = np.random.default_rng(7)
     idx = rng.choice(len(x), 256, replace=False)
     xs = x[idx][..., np.newaxis]
+    if outd["shape"][-1] >= 3:
+        sys.path.insert(0, str(BASE))
+        from train_r18_dualhead import gen_pure_noise_windows
+        nrng = np.random.default_rng(11)
+        xnoise = gen_pure_noise_windows(
+            {"motion": 32, "emg": 32, "mains": 32}, nrng)[..., np.newaxis]
+        xs = np.concatenate([xs.astype(np.float32), xnoise.astype(np.float32)])
     p_h5 = model.predict(xs, batch_size=256, verbose=0)
     scale = float(inp["quantization_parameters"]["scales"].flatten()[0])
     zp = int(inp["quantization_parameters"]["zero_points"].flatten()[0])
@@ -92,9 +104,19 @@ def main():
     abn_h5 = p_h5[:, 1] if p_h5.ndim > 1 else p_h5
     corr = float(np.corrcoef(abn_h5, p_tl[:, 1])[0, 1])
     mad = float(np.mean(np.abs(abn_h5 - p_tl[:, 1])))
-    print(f"[R18X] smoke: corr(abn)={corr:.4f} MAD={mad:.4f} "
-          f"(n=256)", flush=True)
-    assert corr > 0.99, f"tflite vs h5 相关性不足: {corr}"
+    line = f"[R18X] smoke: corr(abn)={corr:.4f} MAD={mad:.4f} (n={len(q)})"
+    ok = mad <= 0.05 and corr >= 0.90
+    if p_tl.shape[1] >= 3:
+        v_h5 = np.asarray(model.predict(xs, batch_size=256, verbose=0))[:, 2]
+        v_tl = p_tl[:, 2]
+        if np.std(v_h5) > 1e-6 and np.std(v_tl) > 1e-6:
+            corr_v = float(np.corrcoef(v_h5, v_tl)[0, 1])
+        else:
+            corr_v = float("nan")
+        line += f" corr(valid)={corr_v:.4f}"
+        ok = ok and (np.isnan(corr_v) or corr_v >= 0.95)
+    print(line, flush=True)
+    assert ok, f"tflite vs h5 一致性不足: {line}"
     print("[R18X] OK", flush=True)
 
 

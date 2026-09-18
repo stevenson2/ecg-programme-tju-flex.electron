@@ -1,0 +1,28 @@
+{
+  "date": "2026-09-19 01:58:57",
+  "policy": {
+    "win": 250,
+    "settle_s": 5.0,
+    "per_rec_max": 4,
+    "rng_seed": 42,
+    "chain": "corrected_deployment_chain (D3 + HP0.5@250)"
+  },
+  "sources": {
+    "incart": {
+      "records_read": 42,
+      "windows": 168,
+      "lead": "p_signal[:,0] (Lead I, 同训练 npz)"
+    },
+    "ptb": {
+      "records_read": 326,
+      "windows": 1000,
+      "lead": "p_signal[:,1] (同 build_ptb)"
+    },
+    "cinc2017": {
+      "records_read": 500,
+      "windows": 2000
+    }
+  },
+  "npz": "/home/devcontainers/ecg_data/r20m_blind_windows.npz",
+  "wall_s": 31.1
+}

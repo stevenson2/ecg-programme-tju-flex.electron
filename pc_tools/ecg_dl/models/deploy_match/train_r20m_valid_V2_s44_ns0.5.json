@@ -1,0 +1,39 @@
+{
+  "date": "2026-09-19 02:12:59",
+  "prereg": "runs/R20M_PREREG.md",
+  "arm": "A",
+  "seed": 44,
+  "chosen_variant": "V2",
+  "noise_rng_seed": 20260964,
+  "data": {
+    "pool_windows": 5942,
+    "blind_windows": 3168,
+    "blind_source_counts": {
+      "incart": 168,
+      "ptb": 1000,
+      "cinc2017": 2000
+    },
+    "noise_train": 600,
+    "noise_counts": {
+      "motion": 300,
+      "emg": 120,
+      "mains": 120,
+      "baseline_wander": 30,
+      "respiratory": 30
+    },
+    "noise_scale": 0.5,
+    "armB_mains_corrupted": 0,
+    "armB_prov": null
+  },
+  "variants": {
+    "V2": {
+      "val_valid_auc": 0.9988,
+      "best_epoch": 76,
+      "params": 2113
+    }
+  },
+  "c0_abn_max_absdiff": 0.0,
+  "c0_pass": true,
+  "output_model": "models/r20m_valid_V2_s44_ns0.5.h5",
+  "train_time_s": 27.4
+}

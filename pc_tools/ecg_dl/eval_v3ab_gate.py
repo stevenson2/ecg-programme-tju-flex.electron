@@ -43,6 +43,10 @@ def main():
     ap.add_argument("--model", action="append", default=[],
                     help="name=<h5 文件名于 models/>, 可重复; 恰两个参与对比")
     ap.add_argument("--baseline", default="v3a", help="基准模型名")
+    ap.add_argument("--cand", default="",
+                    help="候选模型名 (R19M 修复: 显式指定配对; 缺省取默认表"
+                         " 中第一个非 baseline 模型, 避免默认 v3a/v3b 合并导致"
+                         " verdict 比较错对——2026-09-18 R18 踩坑)")
     ap.add_argument("--out", default="v3ab_gate1_clean_test.json")
     args = ap.parse_args()
     models = _parse_cli_models(args.model)
@@ -50,6 +54,9 @@ def main():
     others = [k for k in models if k != baseline]
     assert len(models) >= 2, "至少两个模型"
     names = [baseline] + others
+    cand = args.cand or others[0]
+    assert cand in models and cand != baseline, \
+        f"--cand {cand!r} 必须是除 baseline 外的已传入模型"
     t0 = time.time()
     dmi = np.load(MIT_NPZ)
     dpt = np.load(PTB_NPZ)
@@ -78,10 +85,10 @@ def main():
                   f"{e['event'].get('fp_per_record')}", flush=True)
         results[name] = {"file": str(path.name), "kind": kind, "domains": entry}
 
-    # ---- 判定: 每个候选 vs 基准 ----
-    verdict = {"tolerance": TOLERANCE, "baseline": baseline, "per_domain": {}}
+    # ---- 判定: baseline vs 显式 cand (R19M 修复: 不再取 others[0]=v3a 错对) ----
+    verdict = {"tolerance": TOLERANCE, "baseline": baseline, "cand": cand,
+               "per_domain": {}}
     overall = True
-    cand = others[0] if others else baseline
     for dom in sets:
         a = results[baseline]["domains"][dom]
         b = results[cand]["domains"][dom]
