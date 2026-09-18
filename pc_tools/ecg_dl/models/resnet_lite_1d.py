@@ -167,6 +167,52 @@ def build_ecg_resnet_lite_large(input_shape=None):
         strides=(1, 2, 2, 1), dropout_rate=0.4)
 
 
+def build_ecg_resnet_lite_large_dualhead(input_shape=None, dropout_rate=0.4,
+                                         lambda_note=""):
+    """R18 H2 双头 (TH §118 / runs/R18_PREREG.md H2a 冻结设计)。
+
+    主干与 large 预设逐层一致 (stem + 4 stage DW-sep 残差块 + SE); 头改为
+    GAP → FC64 → Dropout → 两支:
+      out_abn  Dense(2, softmax)  —— 索引 1 = p_abnormal (与单头 v3-A 的
+                                    评测器取 [:,1] 约定兼容)
+      out_valid Dense(1, sigmoid) —— p_valid 载波有效性
+    单一输出张量 (3,) = [p_norm, p_abn, p_valid] (Concatenate), 固件只需
+    读 out[1]/out[2], BLE 帧不变。参数 62,834 → 62,899 (+65)。
+    算子类别无新增族 (Dense/sigmoid/concat 均为已部署算子)。
+    lambda_note: 仅写进模型名的运行标记 (如 h2a/h2b), 不参与图结构。
+    """
+    if input_shape is None:
+        input_shape = (INFERENCE_CONFIG['window_size'], 1)
+    inputs = layers.Input(shape=input_shape, name="ecg_input")
+
+    x = layers.Conv1D(16, 7, strides=2, padding='same', use_bias=False,
+                      name="stem")(inputs)
+    x = layers.BatchNormalization(name="stem_bn")(x)
+    x = layers.ReLU(name="stem_rl")(x)
+
+    filters = (16, 32, 64, 128)
+    blocks_per_stage = (2, 3, 3, 1)
+    kernel_sizes = (7, 5, 3, 3)
+    strides = (1, 2, 2, 1)
+    bid = 0
+    for si in range(len(filters)):
+        f, k = filters[si], kernel_sizes[si]
+        for blk in range(blocks_per_stage[si]):
+            s = strides[si] if blk == 0 else 1
+            x = res_block(x, filters=f, kernel_size=k, stride=s, block_id=bid)
+            bid += 1
+
+    x = layers.GlobalAveragePooling1D(name="gap")(x)
+    x = layers.Dense(64, activation='relu', name="fc1")(x)
+    x = layers.Dropout(dropout_rate, name="do")(x)
+    abn = layers.Dense(2, activation='softmax', name="out_abn")(x)
+    valid = layers.Dense(1, activation='sigmoid', name="out_valid")(x)
+    outputs = layers.Concatenate(name="out")([abn, valid])
+
+    name = "ecg_resnet_lite_large_dual" + (("_" + lambda_note) if lambda_note else "")
+    return Model(inputs, outputs, name=name)
+
+
 # ===========================================================================
 # Compile & Callbacks (aligned with cnn_1d.py API)
 # ===========================================================================

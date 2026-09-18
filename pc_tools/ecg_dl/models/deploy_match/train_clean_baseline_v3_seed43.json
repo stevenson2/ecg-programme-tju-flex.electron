@@ -1,0 +1,69 @@
+{
+  "date": "2026-09-18 20:22:03",
+  "purpose": "R18 B0 基线种子扩展: v3-A 配方 seed=43 (预注册 §1-B0)",
+  "provenance": "from scratch; recipe == train_clean_baseline_v3 config a",
+  "gpu": [
+    "PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')"
+  ],
+  "seed": 43,
+  "output_model": "models/best_resnet_large_clean_baseline_v3_seed43.h5",
+  "data": {
+    "main": {
+      "mit_bih": {
+        "abn": 1500,
+        "norm": 1500
+      },
+      "incart": {
+        "abn": 400,
+        "norm": 400
+      },
+      "ptb": {
+        "abn": 600,
+        "norm": 400
+      }
+    },
+    "sampling_audit": {
+      "mit_bih": {
+        "assert_train_only": "passed",
+        "sampled_records_vs_test_intersection": 0,
+        "sampled_unique_records": 31
+      },
+      "incart": {
+        "assert_train_only": "passed",
+        "sampled_records_vs_test_intersection": 0,
+        "sampled_unique_records": 42
+      },
+      "ptb": {
+        "assert_train_only": "passed",
+        "sampled_records_vs_test_intersection": 0,
+        "sampled_unique_records": 283
+      }
+    },
+    "real_afe_holdout": 40,
+    "synthetic_hard_negative": 600,
+    "train_total": 5942,
+    "train_abn": 2500
+  },
+  "config": {
+    "architecture": "build_ecg_resnet_lite_large",
+    "params": 62834,
+    "lr": 0.0003,
+    "epochs_requested": 80,
+    "epochs_run": 24,
+    "batch": 32,
+    "patience": 20
+  },
+  "results": {
+    "best_val_auc": 0.7912167892156863,
+    "real_holdout_frac_gt_0.5": 0.0,
+    "train_time_s": 153.4
+  },
+  "anchors": {
+    "v3a_seed42_gate1": {
+      "mit_incart_auc": 0.8651,
+      "mit_incart_evf1": 0.7094,
+      "ptb_auc": 0.7662,
+      "ptb_evf1": 0.8527
+    }
+  }
+}

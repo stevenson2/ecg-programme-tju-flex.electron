@@ -1,0 +1,66 @@
+{
+  "date": "2026-09-18 21:18:52",
+  "purpose": "R18 h3 (seed 43)",
+  "prereg": "runs/R18_PREREG.md §1",
+  "gpu": [
+    "PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')"
+  ],
+  "arm": "h3",
+  "seed": 43,
+  "smoke": false,
+  "output_model": "models/r18_h3_seed43.h5",
+  "data": {
+    "main": {
+      "mit_bih": {
+        "abn": 1500,
+        "norm": 1500
+      },
+      "incart": {
+        "abn": 400,
+        "norm": 400
+      },
+      "ptb": {
+        "abn": 600,
+        "norm": 400
+      }
+    },
+    "sampling_audit": {
+      "mit_bih": {
+        "assert_train_only": "passed",
+        "sampled_records_vs_test_intersection": 0,
+        "sampled_unique_records": 31
+      },
+      "incart": {
+        "assert_train_only": "passed",
+        "sampled_records_vs_test_intersection": 0,
+        "sampled_unique_records": 42
+      },
+      "ptb": {
+        "assert_train_only": "passed",
+        "sampled_records_vs_test_intersection": 0,
+        "sampled_unique_records": 283
+      }
+    },
+    "real_afe_holdout": 40,
+    "cinc2017": null,
+    "noise_train": null,
+    "noise_val": 0,
+    "train_total": 5942
+  },
+  "config": {
+    "architecture": "build_ecg_resnet_lite_large",
+    "params": 62834,
+    "lambda_v": null,
+    "lr": 0.0003,
+    "epochs_requested": 80,
+    "epochs_run": 53,
+    "batch": 32,
+    "patience": 20,
+    "noise_rng_seed": null
+  },
+  "results": {
+    "best_val_auc": 0.7857351715686274,
+    "real_holdout_frac_gt_0.5": 0.0,
+    "train_time_s": 200.2
+  }
+}

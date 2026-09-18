@@ -1,0 +1,218 @@
+{
+  "tool": "eval_v3ab_gate.py",
+  "timestamp": "2026-09-18 21:08:06",
+  "protocol": "eval_clean_test.py口径 (θ=0.5, 1-of-5, cooldown=5, patient-level test, from-scratch models → full=clean)",
+  "results": {
+    "v3a": {
+      "file": "best_resnet_large_clean_baseline_v3.h5",
+      "kind": "h5",
+      "domains": {
+        "mit_incart": {
+          "beat": {
+            "n_beats": 51883,
+            "n_abnormal": 5636,
+            "theta": 0.5,
+            "tp": 5101,
+            "fp": 17729,
+            "tn": 28518,
+            "fn": 535,
+            "sensitivity": 0.9050745209368346,
+            "precision": 0.22343407796758652,
+            "f1": 0.35839246820768633,
+            "auc": 0.8651044451152169
+          },
+          "event": {
+            "event_recall": 0.974464,
+            "event_precision": 0.557692,
+            "event_f1": 0.709394,
+            "fp_per_record": 8.0,
+            "fp_per_1000_beats": 3.546441,
+            "alert_rate": 0.734422,
+            "gt_events": 979,
+            "alert_blocks": 416,
+            "false_alarm_blocks": 184,
+            "matched_gt_events": 954,
+            "matched_pred_blocks": 232
+          }
+        },
+        "ptb": {
+          "beat": {
+            "n_beats": 13058,
+            "n_abnormal": 10204,
+            "theta": 0.5,
+            "tp": 6638,
+            "fp": 717,
+            "tn": 2137,
+            "fn": 3566,
+            "sensitivity": 0.6505292042336339,
+            "precision": 0.9025152957171992,
+            "f1": 0.7560795033885758,
+            "auc": 0.7662042270409642
+          },
+          "event": {
+            "event_recall": 0.946667,
+            "event_precision": 0.775641,
+            "event_f1": 0.852662,
+            "fp_per_record": 0.368421,
+            "fp_per_1000_beats": 2.680349,
+            "alert_rate": 0.708455,
+            "gt_events": 75,
+            "alert_blocks": 156,
+            "false_alarm_blocks": 35,
+            "matched_gt_events": 71,
+            "matched_pred_blocks": 121
+          }
+        }
+      }
+    },
+    "v3b": {
+      "file": "best_resnet_large_v3b_noise.h5",
+      "kind": "h5",
+      "domains": {
+        "mit_incart": {
+          "beat": {
+            "n_beats": 51883,
+            "n_abnormal": 5636,
+            "theta": 0.5,
+            "tp": 5163,
+            "fp": 22181,
+            "tn": 24066,
+            "fn": 473,
+            "sensitivity": 0.9160752306600426,
+            "precision": 0.188816559391457,
+            "f1": 0.31309884778653735,
+            "auc": 0.8452732851771652
+          },
+          "event": {
+            "event_recall": 0.99285,
+            "event_precision": 0.391892,
+            "event_f1": 0.561967,
+            "fp_per_record": 9.782609,
+            "fp_per_1000_beats": 4.336681,
+            "alert_rate": 0.810285,
+            "gt_events": 979,
+            "alert_blocks": 370,
+            "false_alarm_blocks": 225,
+            "matched_gt_events": 972,
+            "matched_pred_blocks": 145
+          }
+        },
+        "ptb": {
+          "beat": {
+            "n_beats": 13058,
+            "n_abnormal": 10204,
+            "theta": 0.5,
+            "tp": 7086,
+            "fp": 931,
+            "tn": 1923,
+            "fn": 3118,
+            "sensitivity": 0.6944335554684438,
+            "precision": 0.8838717724834726,
+            "f1": 0.7777838757477636,
+            "auc": 0.7326878558966804
+          },
+          "event": {
+            "event_recall": 1.0,
+            "event_precision": 0.71345,
+            "event_f1": 0.832765,
+            "fp_per_record": 0.515789,
+            "fp_per_1000_beats": 3.752489,
+            "alert_rate": 0.796447,
+            "gt_events": 75,
+            "alert_blocks": 171,
+            "false_alarm_blocks": 49,
+            "matched_gt_events": 75,
+            "matched_pred_blocks": 122
+          }
+        }
+      }
+    },
+    "h4i2_s42": {
+      "file": "r18_h4_seed42.h5",
+      "kind": "h5",
+      "domains": {
+        "mit_incart": {
+          "beat": {
+            "n_beats": 51883,
+            "n_abnormal": 5636,
+            "theta": 0.5,
+            "tp": 4677,
+            "fp": 16847,
+            "tn": 29400,
+            "fn": 959,
+            "sensitivity": 0.8298438608942512,
+            "precision": 0.21729232484668276,
+            "f1": 0.3444035346097201,
+            "auc": 0.7738269401949047
+          },
+          "event": {
+            "event_recall": 0.971399,
+            "event_precision": 0.476619,
+            "event_f1": 0.639477,
+            "fp_per_record": 12.652174,
+            "fp_per_1000_beats": 5.608774,
+            "alert_rate": 0.753098,
+            "gt_events": 979,
+            "alert_blocks": 556,
+            "false_alarm_blocks": 291,
+            "matched_gt_events": 951,
+            "matched_pred_blocks": 265
+          }
+        },
+        "ptb": {
+          "beat": {
+            "n_beats": 13058,
+            "n_abnormal": 10204,
+            "theta": 0.5,
+            "tp": 6463,
+            "fp": 1031,
+            "tn": 1823,
+            "fn": 3741,
+            "sensitivity": 0.6333790670325362,
+            "precision": 0.8624232719508941,
+            "f1": 0.7303650129958188,
+            "auc": 0.6799745767973151
+          },
+          "event": {
+            "event_recall": 0.946667,
+            "event_precision": 0.8,
+            "event_f1": 0.867176,
+            "fp_per_record": 0.294737,
+            "fp_per_1000_beats": 2.144279,
+            "alert_rate": 0.776689,
+            "gt_events": 75,
+            "alert_blocks": 140,
+            "false_alarm_blocks": 28,
+            "matched_gt_events": 71,
+            "matched_pred_blocks": 112
+          }
+        }
+      }
+    }
+  },
+  "verdict": {
+    "tolerance": 0.02,
+    "baseline": "v3a",
+    "per_domain": {
+      "mit_incart": {
+        "baseline_auc": 0.8651044451152169,
+        "cand_auc": 0.8452732851771652,
+        "delta_auc": -0.0198,
+        "baseline_evf1": 0.709394,
+        "cand_evf1": 0.561967,
+        "delta_evf1": -0.1474,
+        "pass": false
+      },
+      "ptb": {
+        "baseline_auc": 0.7662042270409642,
+        "cand_auc": 0.7326878558966804,
+        "delta_auc": -0.0335,
+        "baseline_evf1": 0.852662,
+        "cand_evf1": 0.832765,
+        "delta_evf1": -0.0199,
+        "pass": false
+      }
+    },
+    "gate1_pass": false
+  }
+}

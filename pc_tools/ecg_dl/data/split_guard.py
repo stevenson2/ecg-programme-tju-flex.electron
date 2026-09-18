@@ -43,7 +43,12 @@ ECG_DATA = Path(os.environ.get("ECG_PROCESSED_DIR", "/home/devcontainers/ecg_dat
 INCART_RID_OFFSET = 100000
 SAVED_SPLIT_FILE = PROCESSED_DIR / "patient_split.json"
 
-TAGS = ("mit_bih", "incart", "ptb", "svdb")
+TAGS = ("mit_bih", "incart", "ptb", "svdb", "cinc2017")
+
+# cinc2017 (R18 H4): 每条记录一个受试者; rid 独占区间 [200001, 208528]
+# (recnum 1..8528 偏移 200000), 与 MIT(100-234)/INCART(+100000)/PTB/SVDB
+# (800-900) 结构性不相交。仅 N 类记录入库 (labels 全 0, 预处理脚本冻结)。
+CINC2017_RID_OFFSET = 200000
 
 
 class LeakError(RuntimeError):
@@ -158,6 +163,27 @@ def compute_svdb_split(seed=SPLIT_SEED):
     return {"train": tr, "val": va, "test": te, "stats": stats}
 
 
+def compute_cinc2017_split(seed=SPLIT_SEED):
+    """cinc2017 独立患者级划分 (R18 H4)。
+
+    刻意不并入 MIT+INCART 合并划分 (同 compute_svdb_split 理由):
+    并入会重洗既有掩码, 破坏 v3 谱系可比性。患者 = 记录。
+    rid 独占区间 [200001, 208528]; 与其他域结构性不相交仍显式断言。
+    """
+    b, l, r = load_arrays("cinc2017")
+    r = np.asarray(r)
+    if int(r.min()) < CINC2017_RID_OFFSET + 1 or int(r.max()) >= CINC2017_RID_OFFSET + 8529:
+        raise LeakError(f"cinc2017 record_id 超出独占区间 "
+                        f"[{CINC2017_RID_OFFSET+1},{CINC2017_RID_OFFSET+8529}): "
+                        f"{int(r.min())}-{int(r.max())}")
+    cmap = {int(rid): "cinc_%d" % int(rid) for rid in np.unique(r)}
+    tr, va, te, stats = patient_level_split(r, cmap, seed=seed)
+    tr, va, te = np.asarray(tr), np.asarray(va), np.asarray(te)
+    assert int((tr & va).sum()) == int((tr & te).sum()) == int((va & te).sum()) == 0
+    assert int((tr | va | te).sum()) == len(r)
+    return {"train": tr, "val": va, "test": te, "stats": stats}
+
+
 # ---------------- 守卫对象 ----------------
 
 class SplitGuard:
@@ -182,6 +208,10 @@ class SplitGuard:
             self.stats = m["stats"]
         elif tag == "svdb":
             p = compute_svdb_split(seed)
+            self.train_mask, self.val_mask, self.test_mask = p["train"], p["val"], p["test"]
+            self.stats = p["stats"]
+        elif tag == "cinc2017":
+            p = compute_cinc2017_split(seed)
             self.train_mask, self.val_mask, self.test_mask = p["train"], p["val"], p["test"]
             self.stats = p["stats"]
         else:
@@ -316,7 +346,13 @@ def main():
           f" / test {ss['beats_test']}")
 
     for tag in TAGS:
-        g = get_guard(tag)
+        try:
+            g = get_guard(tag)
+        except FileNotFoundError:
+            if tag == "cinc2017":
+                print(f"[GUARD] {tag}: 数组未生成 (先跑 preprocess_cinc2017_deploy.py), 跳过")
+                continue
+            raise
         n_tr, n_va, n_te = len(g.train_record_ids()), len(g.val_record_ids()), len(g.test_record_ids())
         print(f"[GUARD] {tag}: 记录 train={n_tr} val={n_va} test={n_te}")
         # 自检: 守卫自身测试组心拍送审, 必须全部命中测试组

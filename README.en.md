@@ -109,7 +109,7 @@ papers/                            # literature
 
 ## AI Model & Metrics
 
-**On-board model**: v3-A clean baseline (ResNet-L, ~80K params), INT8 **167,376 B**, on-device since 2026-09 (replaces exp7c). Paper operating point: beat θ≈0.35 / patient θ≈0.5; **firmware runs θ=0.50 + 1-of-5 + cooldown 5** (`main.cc` is authoritative — not 0.60 / 5-beat confirmation).
+**On-board model**: v3-A clean baseline (ResNet-L, ~80K params), INT8 **167,376 B**, on-device since 2026-09 (replaces exp7c). Retained after the preregistered R18 architecture-exploration round (2026-09-18: dual-head valid-gate / CinC2017 domain expansion / mixup all failed gate 1; the valid-head inference gate suppressed motion-artifact FP to 0.000 in 6/6 runs — see TUNING_HISTORY sec.118). Paper operating point: beat θ≈0.35 / patient θ≈0.5; **firmware runs θ=0.50 + 1-of-5 + cooldown 5** (`main.cc` is authoritative — not 0.60 / 5-beat confirmation).
 
 | Cadence | Model | MIT-AUC | MIT-R@0.5 | PTB-AUC | PTB-R@0.5 |
 |------|------|:---:|:---:|:---:|:---:|
