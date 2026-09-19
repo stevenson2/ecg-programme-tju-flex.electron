@@ -12,6 +12,7 @@
 #ifdef ECG_REPLAY_CORPUS
 #include "signal_generator/ecg_replay_corpus.h"
 #include "signal_generator/ecg_replay_corpus2.h"
+#include "signal_generator/ecg_replay_corpus3.h"
 #endif
 
 /* ======================== 状态 ======================== */
@@ -30,7 +31,8 @@ void ecgReplayInit(void)
 uint8_t ecgReplayMaxSegment(void)
 {
 #ifdef ECG_REPLAY_CORPUS
-    return (uint8_t)(ECG_REPLAY_SEG_FLAT + ECG_REPLAY_CORPUS_N + ECG_REPLAY_CORPUS2_N);
+    return (uint8_t)(ECG_REPLAY_SEG_FLAT + ECG_REPLAY_CORPUS_N
+                     + ECG_REPLAY_CORPUS2_N + ECG_REPLAY_CORPUS3_N);
 #else
     return ECG_REPLAY_SEG_FLAT;
 #endif
@@ -45,6 +47,19 @@ uint8_t ecgReplayMaxSegment(void)
 float ecgReplayNextSample(void)
 {
 #ifdef ECG_REPLAY_CORPUS
+    /* R21 W0 PTB test 域语料 (30s/case, seg = 3+31+7+index): 独立数组与长度 */
+    if (s_segment > ECG_REPLAY_SEG_FLAT + ECG_REPLAY_CORPUS_N
+                    + ECG_REPLAY_CORPUS2_N) {
+        float v = (float)ecg_corpus3[s_segment - ECG_REPLAY_SEG_FLAT
+                                     - ECG_REPLAY_CORPUS_N
+                                     - ECG_REPLAY_CORPUS2_N - 1][s_index]
+                  * 0.001f;
+        s_index++;
+        if (s_index >= ECG_REPLAY_CORPUS3_LEN) {
+            s_index = 0;   /* 循环播放 */
+        }
+        return v;
+    }
     /* Round-H 脱落等效语料 (60s/case, seg = 3+31+index): 独立数组与长度 */
     if (s_segment > ECG_REPLAY_SEG_FLAT + ECG_REPLAY_CORPUS_N) {
         float v = (float)ecg_corpus2[s_segment - ECG_REPLAY_SEG_FLAT

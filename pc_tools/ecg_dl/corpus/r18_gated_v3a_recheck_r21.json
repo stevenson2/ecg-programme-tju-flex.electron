@@ -1,0 +1,406 @@
+{
+  "tool": "eval_r18_gated.py",
+  "label": "v3a_recheck_r21",
+  "h5": "best_resnet_large_clean_baseline_v3.h5",
+  "criteria": {
+    "pure_motion_gated_max": 0.3,
+    "abnormal_noise10_gated_min": 0.56,
+    "normal_noise_gated_max": 0.1827,
+    "clean_normal_gated_max": 0.21
+  },
+  "groups": {
+    "pure_motion": 0.96,
+    "abnormal_noise10_mean": 0.66,
+    "normal_noise_mean": 0.1627,
+    "clean_normal": 0.16,
+    "mains_snr20": 0.16
+  },
+  "verdict": {
+    "pure_motion": false,
+    "abnormal_noise10": true,
+    "normal_noise": true,
+    "clean_normal": true
+  },
+  "gate2_pass": false,
+  "mechanism_disclosure": {
+    "clean_normal_valid": 1.0,
+    "clean_abnormal_valid": 1.0,
+    "pure_noise_valid_mean": 1.0,
+    "ludb_ptb_valid": 1.0
+  },
+  "timestamp": "2026-09-19 10:45:57",
+  "wall_s": 1.9,
+  "results": [
+    {
+      "name": "clean_normal",
+      "params": {
+        "carrier": "mit100_0_30s",
+        "noise": null
+      },
+      "windows": 25,
+      "raw_rate": 0.16,
+      "gated_raw": 0.16,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "clean_abnormal",
+      "params": {
+        "carrier": "mit106_90_120s",
+        "noise": null
+      },
+      "windows": 25,
+      "raw_rate": 0.68,
+      "gated_raw": 0.68,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_baseline_wander_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "baseline_wander",
+        "snr_db": 0
+      },
+      "windows": 25,
+      "raw_rate": 0.16,
+      "gated_raw": 0.16,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_baseline_wander_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "baseline_wander",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.16,
+      "gated_raw": 0.16,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_baseline_wander_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "baseline_wander",
+        "snr_db": 20
+      },
+      "windows": 25,
+      "raw_rate": 0.16,
+      "gated_raw": 0.16,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_respiratory_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "respiratory",
+        "snr_db": 0
+      },
+      "windows": 25,
+      "raw_rate": 0.12,
+      "gated_raw": 0.12,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_respiratory_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "respiratory",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.24,
+      "gated_raw": 0.24,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_respiratory_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "respiratory",
+        "snr_db": 20
+      },
+      "windows": 25,
+      "raw_rate": 0.12,
+      "gated_raw": 0.12,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_mains_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "mains",
+        "snr_db": 0
+      },
+      "windows": 25,
+      "raw_rate": 0.16,
+      "gated_raw": 0.16,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_mains_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "mains",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.16,
+      "gated_raw": 0.16,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_mains_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "mains",
+        "snr_db": 20
+      },
+      "windows": 25,
+      "raw_rate": 0.16,
+      "gated_raw": 0.16,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_emg_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "emg",
+        "snr_db": 0
+      },
+      "windows": 25,
+      "raw_rate": 0.16,
+      "gated_raw": 0.16,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_emg_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "emg",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.04,
+      "gated_raw": 0.04,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_emg_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "emg",
+        "snr_db": 20
+      },
+      "windows": 25,
+      "raw_rate": 0.16,
+      "gated_raw": 0.16,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_motion_snr0",
+      "params": {
+        "carrier": "mit100",
+        "noise": "motion",
+        "snr_db": 0
+      },
+      "windows": 25,
+      "raw_rate": 0.32,
+      "gated_raw": 0.32,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_motion_snr10",
+      "params": {
+        "carrier": "mit100",
+        "noise": "motion",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.12,
+      "gated_raw": 0.12,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_motion_snr20",
+      "params": {
+        "carrier": "mit100",
+        "noise": "motion",
+        "snr_db": 20
+      },
+      "windows": 25,
+      "raw_rate": 0.2,
+      "gated_raw": 0.2,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_elec_off_mild",
+      "params": {
+        "carrier": "mit100",
+        "noise": "electrode_off",
+        "events": 2
+      },
+      "windows": 25,
+      "raw_rate": 0.2,
+      "gated_raw": 0.2,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_elec_off_severe",
+      "params": {
+        "carrier": "mit100",
+        "noise": "electrode_off",
+        "events": 5
+      },
+      "windows": 25,
+      "raw_rate": 0.24,
+      "gated_raw": 0.24,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_adc_quant_12bit",
+      "params": {
+        "carrier": "mit100",
+        "noise": "adc_quant",
+        "bits": 12
+      },
+      "windows": 25,
+      "raw_rate": 0.16,
+      "gated_raw": 0.16,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_adc_quant_10bit",
+      "params": {
+        "carrier": "mit100",
+        "noise": "adc_quant",
+        "bits": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.16,
+      "gated_raw": 0.16,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_adc_quant_8bit",
+      "params": {
+        "carrier": "mit100",
+        "noise": "adc_quant",
+        "bits": 8
+      },
+      "windows": 25,
+      "raw_rate": 0.16,
+      "gated_raw": 0.16,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "abnormal_baseline_wander_snr10",
+      "params": {
+        "carrier": "mit106",
+        "noise": "baseline_wander",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.64,
+      "gated_raw": 0.64,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "abnormal_emg_snr10",
+      "params": {
+        "carrier": "mit106",
+        "noise": "emg",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.6,
+      "gated_raw": 0.6,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "abnormal_motion_snr10",
+      "params": {
+        "carrier": "mit106",
+        "noise": "motion",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.72,
+      "gated_raw": 0.72,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "abnormal_mains_snr10",
+      "params": {
+        "carrier": "mit106",
+        "noise": "mains",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.68,
+      "gated_raw": 0.68,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "pure_emg",
+      "params": {
+        "carrier": null,
+        "noise": "emg",
+        "note": "无载波纯噪声"
+      },
+      "windows": 25,
+      "raw_rate": 0.04,
+      "gated_raw": 0.04,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "pure_motion",
+      "params": {
+        "carrier": null,
+        "noise": "motion",
+        "note": "无载波纯噪声"
+      },
+      "windows": 25,
+      "raw_rate": 0.96,
+      "gated_raw": 0.96,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "synthetic_vf_probe",
+      "params": {
+        "carrier": null,
+        "noise": "synthetic_vf_proxy",
+        "note": "合成 VF 探针: 门控可达性验证用, 非真值 VF, 不作检出能力证据"
+      },
+      "windows": 25,
+      "raw_rate": 1.0,
+      "gated_raw": 1.0,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "ludb_normal",
+      "params": {
+        "carrier": "PTB_patient001_s0010_re_leadii_5_35s",
+        "noise": null,
+        "fs_src": 1000,
+        "erratum": "PTB test patient, gt label=1 (NOT LUDB normal)"
+      },
+      "windows": 25,
+      "raw_rate": 1.0,
+      "gated_raw": 1.0,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "ludb_noise_on_mit",
+      "params": {
+        "carrier": "mit100",
+        "noise": "ludb_real_artifact",
+        "snr_db": 10
+      },
+      "windows": 25,
+      "raw_rate": 0.28,
+      "gated_raw": 0.28,
+      "valid_mean": 1.0
+    }
+  ]
+}

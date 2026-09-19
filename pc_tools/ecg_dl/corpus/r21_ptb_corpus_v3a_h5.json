@@ -1,0 +1,93 @@
+{
+  "tool": "eval_r21_ptb_corpus.py",
+  "label": "v3a_h5",
+  "h5": "best_resnet_large_clean_baseline_v3.h5",
+  "tflite": "",
+  "group": {
+    "ptb_tp_group_mean": 0.7543,
+    "ptb_tp_group_min": 0.36,
+    "ptb_tp_group_n": 7
+  },
+  "results": [
+    {
+      "name": "ptbtp_p003_mi",
+      "segment": 41,
+      "diagnosis": "MI",
+      "carrier": "PTB_patient003/s0017lre_leadii_5_35s",
+      "windows": 25,
+      "raw_rate": 0.88,
+      "gated_raw": 0.88,
+      "valid_mean": 1.0,
+      "conf_mean": 0.8867
+    },
+    {
+      "name": "ptbtp_p013_mi",
+      "segment": 42,
+      "diagnosis": "MI",
+      "carrier": "PTB_patient013/s0045lre_leadii_5_35s",
+      "windows": 25,
+      "raw_rate": 0.36,
+      "gated_raw": 0.36,
+      "valid_mean": 1.0,
+      "conf_mean": 0.3794
+    },
+    {
+      "name": "ptbtp_p025_mi",
+      "segment": 43,
+      "diagnosis": "MI",
+      "carrier": "PTB_patient025/s0087lre_leadii_5_35s",
+      "windows": 25,
+      "raw_rate": 0.88,
+      "gated_raw": 0.88,
+      "valid_mean": 1.0,
+      "conf_mean": 0.8966
+    },
+    {
+      "name": "ptbtp_p157_dysr",
+      "segment": 44,
+      "diagnosis": "dysrhythmia (AF)",
+      "carrier": "PTB_patient157/s0338lre_leadii_5_35s",
+      "windows": 25,
+      "raw_rate": 0.72,
+      "gated_raw": 0.72,
+      "valid_mean": 1.0,
+      "conf_mean": 0.7106
+    },
+    {
+      "name": "ptbtp_p167_cmp",
+      "segment": 45,
+      "diagnosis": "cardiomyopathy (HOCM)",
+      "carrier": "PTB_patient167/s0200_re_leadii_5_35s",
+      "windows": 25,
+      "raw_rate": 0.48,
+      "gated_raw": 0.48,
+      "valid_mean": 1.0,
+      "conf_mean": 0.4323
+    },
+    {
+      "name": "ptbtp_p217_bbb",
+      "segment": 46,
+      "diagnosis": "bundle branch block",
+      "carrier": "PTB_patient217/s0439_re_leadii_5_35s",
+      "windows": 25,
+      "raw_rate": 0.96,
+      "gated_raw": 0.96,
+      "valid_mean": 1.0,
+      "conf_mean": 0.9794
+    },
+    {
+      "name": "ludb_normal",
+      "segment": 32,
+      "diagnosis": "MI (s0010, existing hard line)",
+      "carrier": "PTB_patient001/s0010_re",
+      "windows": 25,
+      "raw_rate": 1.0,
+      "gated_raw": 1.0,
+      "valid_mean": 1.0,
+      "conf_mean": 0.9998
+    }
+  ],
+  "note": "W0 基线披露 (判据冻结前的测量); 单头 v3-A gated≡raw; 组含 6 新 case + ludb_normal(s0010)",
+  "timestamp": "2026-09-19 10:59:58",
+  "wall_s": 0.7
+}

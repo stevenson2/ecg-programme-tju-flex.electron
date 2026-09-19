@@ -1,0 +1,561 @@
+{
+  "tool": "eval_r21_gated.py",
+  "label": "kd_it1_s43",
+  "h5": "r21_kd_seed43.h5",
+  "b0": "best_resnet_large_clean_baseline_v3_seed43.h5",
+  "criteria": {
+    "pure_motion_gated_max": 0.3,
+    "abnormal_noise10_gated_min": 0.56,
+    "normal_noise_gated_max": 0.1827,
+    "clean_normal_gated_max": 0.21,
+    "clean_abnormal_gated_min": 0.6,
+    "ludb_gated_min": 0.9,
+    "ptb_tp_group_mean_min": 0.7,
+    "ptb_tp_dRaw_group_mean_min": -0.05,
+    "ptb_tp_dRaw_case_min": -0.15,
+    "ptb_tp_gate_suppress_case_min": -0.05
+  },
+  "gate2": {
+    "groups": {
+      "pure_motion": 0.0,
+      "abnormal_noise10_mean": 0.69,
+      "normal_noise_mean": 0.136,
+      "clean_normal": 0.2,
+      "clean_abnormal": 0.72,
+      "ludb": 0.6
+    },
+    "verdict": {
+      "pure_motion": true,
+      "abnormal_noise10": true,
+      "normal_noise": true,
+      "clean_normal": true,
+      "clean_abnormal": true,
+      "ludb": false
+    },
+    "pass": false
+  },
+  "ptb_tp_group": {
+    "stats": {
+      "group_mean_gated": 0.5829,
+      "d_raw_mean": -0.0514,
+      "d_raw_min": -0.28,
+      "gate_suppress_min": 0.0
+    },
+    "cases": [
+      {
+        "name": "ptbtp_p003_mi",
+        "cand_raw": 0.96,
+        "cand_gated": 0.96,
+        "cand_valid": 0.9572,
+        "b0_raw": 0.8,
+        "d_raw": 0.16,
+        "d_gate": 0.0
+      },
+      {
+        "name": "ptbtp_p013_mi",
+        "cand_raw": 0.2,
+        "cand_gated": 0.2,
+        "cand_valid": 0.9899,
+        "b0_raw": 0.16,
+        "d_raw": 0.04,
+        "d_gate": 0.0
+      },
+      {
+        "name": "ptbtp_p025_mi",
+        "cand_raw": 0.56,
+        "cand_gated": 0.56,
+        "cand_valid": 0.9943,
+        "b0_raw": 0.64,
+        "d_raw": -0.08,
+        "d_gate": 0.0
+      },
+      {
+        "name": "ptbtp_p157_dysr",
+        "cand_raw": 0.72,
+        "cand_gated": 0.72,
+        "cand_valid": 0.9224,
+        "b0_raw": 0.56,
+        "d_raw": 0.16,
+        "d_gate": 0.0
+      },
+      {
+        "name": "ptbtp_p167_cmp",
+        "cand_raw": 0.36,
+        "cand_gated": 0.36,
+        "cand_valid": 0.9875,
+        "b0_raw": 0.48,
+        "d_raw": -0.12,
+        "d_gate": 0.0
+      },
+      {
+        "name": "ptbtp_p217_bbb",
+        "cand_raw": 0.68,
+        "cand_gated": 0.68,
+        "cand_valid": 0.9919,
+        "b0_raw": 0.92,
+        "d_raw": -0.24,
+        "d_gate": 0.0
+      },
+      {
+        "name": "ludb_normal",
+        "cand_raw": 0.6,
+        "cand_gated": 0.6,
+        "cand_valid": 0.963,
+        "b0_raw": 0.88,
+        "d_raw": -0.28,
+        "d_gate": 0.0
+      }
+    ],
+    "verdict": {
+      "a_group_mean": false,
+      "b_anchor": false,
+      "c_no_suppress": true
+    },
+    "pass": false
+  },
+  "mech": {
+    "pure_noise_valid_mean": 0.0649,
+    "clean_carrier_valid_mean": 0.9674999999999999
+  },
+  "results_corpus1": [
+    {
+      "name": "clean_normal",
+      "windows": 25,
+      "raw_rate": 0.2,
+      "gated_raw": 0.2,
+      "valid_mean": 0.9924
+    },
+    {
+      "name": "clean_abnormal",
+      "windows": 25,
+      "raw_rate": 0.72,
+      "gated_raw": 0.72,
+      "valid_mean": 0.9471
+    },
+    {
+      "name": "normal_baseline_wander_snr0",
+      "windows": 25,
+      "raw_rate": 0.2,
+      "gated_raw": 0.2,
+      "valid_mean": 0.9927
+    },
+    {
+      "name": "normal_baseline_wander_snr10",
+      "windows": 25,
+      "raw_rate": 0.2,
+      "gated_raw": 0.2,
+      "valid_mean": 0.9927
+    },
+    {
+      "name": "normal_baseline_wander_snr20",
+      "windows": 25,
+      "raw_rate": 0.16,
+      "gated_raw": 0.16,
+      "valid_mean": 0.9923
+    },
+    {
+      "name": "normal_respiratory_snr0",
+      "windows": 25,
+      "raw_rate": 0.08,
+      "gated_raw": 0.08,
+      "valid_mean": 0.9914
+    },
+    {
+      "name": "normal_respiratory_snr10",
+      "windows": 25,
+      "raw_rate": 0.12,
+      "gated_raw": 0.12,
+      "valid_mean": 0.992
+    },
+    {
+      "name": "normal_respiratory_snr20",
+      "windows": 25,
+      "raw_rate": 0.2,
+      "gated_raw": 0.2,
+      "valid_mean": 0.9922
+    },
+    {
+      "name": "normal_mains_snr0",
+      "windows": 25,
+      "raw_rate": 0.2,
+      "gated_raw": 0.2,
+      "valid_mean": 0.9924
+    },
+    {
+      "name": "normal_mains_snr10",
+      "windows": 25,
+      "raw_rate": 0.2,
+      "gated_raw": 0.2,
+      "valid_mean": 0.9924
+    },
+    {
+      "name": "normal_mains_snr20",
+      "windows": 25,
+      "raw_rate": 0.2,
+      "gated_raw": 0.2,
+      "valid_mean": 0.9924
+    },
+    {
+      "name": "normal_emg_snr0",
+      "windows": 25,
+      "raw_rate": 0.0,
+      "gated_raw": 0.0,
+      "valid_mean": 0.9899
+    },
+    {
+      "name": "normal_emg_snr10",
+      "windows": 25,
+      "raw_rate": 0.08,
+      "gated_raw": 0.08,
+      "valid_mean": 0.9941
+    },
+    {
+      "name": "normal_emg_snr20",
+      "windows": 25,
+      "raw_rate": 0.08,
+      "gated_raw": 0.08,
+      "valid_mean": 0.9924
+    },
+    {
+      "name": "normal_motion_snr0",
+      "windows": 25,
+      "raw_rate": 0.08,
+      "gated_raw": 0.08,
+      "valid_mean": 0.985
+    },
+    {
+      "name": "normal_motion_snr10",
+      "windows": 25,
+      "raw_rate": 0.08,
+      "gated_raw": 0.08,
+      "valid_mean": 0.985
+    },
+    {
+      "name": "normal_motion_snr20",
+      "windows": 25,
+      "raw_rate": 0.16,
+      "gated_raw": 0.16,
+      "valid_mean": 0.9923
+    },
+    {
+      "name": "normal_elec_off_mild",
+      "windows": 25,
+      "raw_rate": 0.12,
+      "gated_raw": 0.12,
+      "valid_mean": 0.985
+    },
+    {
+      "name": "normal_elec_off_severe",
+      "windows": 25,
+      "raw_rate": 0.32,
+      "gated_raw": 0.28,
+      "valid_mean": 0.9379
+    },
+    {
+      "name": "normal_adc_quant_12bit",
+      "windows": 25,
+      "raw_rate": 0.2,
+      "gated_raw": 0.2,
+      "valid_mean": 0.9924
+    },
+    {
+      "name": "normal_adc_quant_10bit",
+      "windows": 25,
+      "raw_rate": 0.2,
+      "gated_raw": 0.2,
+      "valid_mean": 0.9924
+    },
+    {
+      "name": "normal_adc_quant_8bit",
+      "windows": 25,
+      "raw_rate": 0.2,
+      "gated_raw": 0.2,
+      "valid_mean": 0.9926
+    },
+    {
+      "name": "abnormal_baseline_wander_snr10",
+      "windows": 25,
+      "raw_rate": 0.72,
+      "gated_raw": 0.72,
+      "valid_mean": 0.933
+    },
+    {
+      "name": "abnormal_emg_snr10",
+      "windows": 25,
+      "raw_rate": 0.64,
+      "gated_raw": 0.64,
+      "valid_mean": 0.9737
+    },
+    {
+      "name": "abnormal_motion_snr10",
+      "windows": 25,
+      "raw_rate": 0.68,
+      "gated_raw": 0.68,
+      "valid_mean": 0.9314
+    },
+    {
+      "name": "abnormal_mains_snr10",
+      "windows": 25,
+      "raw_rate": 0.72,
+      "gated_raw": 0.72,
+      "valid_mean": 0.9471
+    },
+    {
+      "name": "pure_emg",
+      "windows": 25,
+      "raw_rate": 0.0,
+      "gated_raw": 0.0,
+      "valid_mean": 0.0252
+    },
+    {
+      "name": "pure_motion",
+      "windows": 25,
+      "raw_rate": 0.76,
+      "gated_raw": 0.0,
+      "valid_mean": 0.1046
+    },
+    {
+      "name": "synthetic_vf_probe",
+      "windows": 25,
+      "raw_rate": 1.0,
+      "gated_raw": 0.8,
+      "valid_mean": 0.8288
+    },
+    {
+      "name": "ludb_normal",
+      "windows": 25,
+      "raw_rate": 0.6,
+      "gated_raw": 0.6,
+      "valid_mean": 0.963
+    },
+    {
+      "name": "ludb_noise_on_mit",
+      "windows": 25,
+      "raw_rate": 0.12,
+      "gated_raw": 0.12,
+      "valid_mean": 0.9936
+    }
+  ],
+  "results_b0_corpus1": [
+    {
+      "name": "clean_normal",
+      "windows": 25,
+      "raw_rate": 0.08,
+      "gated_raw": 0.08,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "clean_abnormal",
+      "windows": 25,
+      "raw_rate": 0.48,
+      "gated_raw": 0.48,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_baseline_wander_snr0",
+      "windows": 25,
+      "raw_rate": 0.16,
+      "gated_raw": 0.16,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_baseline_wander_snr10",
+      "windows": 25,
+      "raw_rate": 0.16,
+      "gated_raw": 0.16,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_baseline_wander_snr20",
+      "windows": 25,
+      "raw_rate": 0.12,
+      "gated_raw": 0.12,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_respiratory_snr0",
+      "windows": 25,
+      "raw_rate": 0.08,
+      "gated_raw": 0.08,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_respiratory_snr10",
+      "windows": 25,
+      "raw_rate": 0.16,
+      "gated_raw": 0.16,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_respiratory_snr20",
+      "windows": 25,
+      "raw_rate": 0.12,
+      "gated_raw": 0.12,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_mains_snr0",
+      "windows": 25,
+      "raw_rate": 0.08,
+      "gated_raw": 0.08,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_mains_snr10",
+      "windows": 25,
+      "raw_rate": 0.08,
+      "gated_raw": 0.08,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_mains_snr20",
+      "windows": 25,
+      "raw_rate": 0.08,
+      "gated_raw": 0.08,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_emg_snr0",
+      "windows": 25,
+      "raw_rate": 0.04,
+      "gated_raw": 0.04,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_emg_snr10",
+      "windows": 25,
+      "raw_rate": 0.04,
+      "gated_raw": 0.04,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_emg_snr20",
+      "windows": 25,
+      "raw_rate": 0.08,
+      "gated_raw": 0.08,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_motion_snr0",
+      "windows": 25,
+      "raw_rate": 0.28,
+      "gated_raw": 0.28,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_motion_snr10",
+      "windows": 25,
+      "raw_rate": 0.16,
+      "gated_raw": 0.16,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_motion_snr20",
+      "windows": 25,
+      "raw_rate": 0.08,
+      "gated_raw": 0.08,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_elec_off_mild",
+      "windows": 25,
+      "raw_rate": 0.12,
+      "gated_raw": 0.12,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_elec_off_severe",
+      "windows": 25,
+      "raw_rate": 0.2,
+      "gated_raw": 0.2,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_adc_quant_12bit",
+      "windows": 25,
+      "raw_rate": 0.08,
+      "gated_raw": 0.08,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_adc_quant_10bit",
+      "windows": 25,
+      "raw_rate": 0.08,
+      "gated_raw": 0.08,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "normal_adc_quant_8bit",
+      "windows": 25,
+      "raw_rate": 0.08,
+      "gated_raw": 0.08,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "abnormal_baseline_wander_snr10",
+      "windows": 25,
+      "raw_rate": 0.4,
+      "gated_raw": 0.4,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "abnormal_emg_snr10",
+      "windows": 25,
+      "raw_rate": 0.36,
+      "gated_raw": 0.36,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "abnormal_motion_snr10",
+      "windows": 25,
+      "raw_rate": 0.6,
+      "gated_raw": 0.6,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "abnormal_mains_snr10",
+      "windows": 25,
+      "raw_rate": 0.48,
+      "gated_raw": 0.48,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "pure_emg",
+      "windows": 25,
+      "raw_rate": 0.0,
+      "gated_raw": 0.0,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "pure_motion",
+      "windows": 25,
+      "raw_rate": 0.76,
+      "gated_raw": 0.76,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "synthetic_vf_probe",
+      "windows": 25,
+      "raw_rate": 1.0,
+      "gated_raw": 1.0,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "ludb_normal",
+      "windows": 25,
+      "raw_rate": 0.88,
+      "gated_raw": 0.88,
+      "valid_mean": 1.0
+    },
+    {
+      "name": "ludb_noise_on_mit",
+      "windows": 25,
+      "raw_rate": 0.08,
+      "gated_raw": 0.08,
+      "valid_mean": 1.0
+    }
+  ],
+  "timestamp": "2026-09-19 11:28:16",
+  "wall_s": 4.0,
+  "gate_all_pass": false
+}

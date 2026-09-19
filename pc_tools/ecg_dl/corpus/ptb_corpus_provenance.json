@@ -1,0 +1,150 @@
+{
+  "generator": "build_r21_ptb_corpus.py",
+  "seed": null,
+  "fs": 500,
+  "dur_s": 30,
+  "n_cases": 6,
+  "segment_base": 41,
+  "units": "header int16 microvolt (x0.001 -> mV numeric at runtime)",
+  "recipe": "lead II, 1000->500Hz resample_poly(1,2), 5-35s, mean-removed (identical to make_replay_corpus ludb_normal)",
+  "purpose": "R21 W0: TP 保护判据去单点化 (ludb=s0010 单 case 硬线 → ptb_tp_group ≥6 case)",
+  "existing_corpora_audit": {
+    "corpus1_cases_md5_match": 31,
+    "corpus2_cases_md5_match": 7
+  },
+  "leakage_note": "全部 case 为 PTB test 患者 (评测侧素材, 无训练接触); 划分断言经 data/split_guard.py seed 42 在生成时执行。",
+  "cases": [
+    {
+      "index": 0,
+      "segment": 41,
+      "name": "ptbtp_p003_mi",
+      "params": {
+        "carrier": "PTB_patient003/s0017lre_leadii_5_35s",
+        "noise": null,
+        "fs_src": 1000,
+        "diagnosis_tag": "MI",
+        "diagnosis_hea": {
+          "Reason for admission": "Myocardial infarction",
+          "Additional diagnoses": "no"
+        },
+        "record_id": 400004,
+        "split": "ptb_test (seed 42)",
+        "gt_label_semantics": 1,
+        "erratum_note": "PTB test 患者, 非健康对照 → 部署标签语义 label=1 (preprocess_ptb.py 规则)"
+      },
+      "md5_int16uv": "5f273d74cc95835190e7dc6b3d1c2820",
+      "p2p_mV": 1.0187,
+      "rms_mV": 0.1355
+    },
+    {
+      "index": 1,
+      "segment": 42,
+      "name": "ptbtp_p013_mi",
+      "params": {
+        "carrier": "PTB_patient013/s0045lre_leadii_5_35s",
+        "noise": null,
+        "fs_src": 1000,
+        "diagnosis_tag": "MI",
+        "diagnosis_hea": {
+          "Reason for admission": "Myocardial infarction",
+          "Additional diagnoses": "Diabetes mellitus, Renal insufficiency"
+        },
+        "record_id": 400032,
+        "split": "ptb_test (seed 42)",
+        "gt_label_semantics": 1,
+        "erratum_note": "PTB test 患者, 非健康对照 → 部署标签语义 label=1 (preprocess_ptb.py 规则)"
+      },
+      "md5_int16uv": "47634b7bdf78e2cc4454b45a5c02f3e4",
+      "p2p_mV": 1.182,
+      "rms_mV": 0.1458
+    },
+    {
+      "index": 2,
+      "segment": 43,
+      "name": "ptbtp_p025_mi",
+      "params": {
+        "carrier": "PTB_patient025/s0087lre_leadii_5_35s",
+        "noise": null,
+        "fs_src": 1000,
+        "diagnosis_tag": "MI",
+        "diagnosis_hea": {
+          "Reason for admission": "Myocardial infarction",
+          "Additional diagnoses": "Diabetes mellitus, Arterial hypertension"
+        },
+        "record_id": 400071,
+        "split": "ptb_test (seed 42)",
+        "gt_label_semantics": 1,
+        "erratum_note": "PTB test 患者, 非健康对照 → 部署标签语义 label=1 (preprocess_ptb.py 规则)"
+      },
+      "md5_int16uv": "798bb4064b35e988462c0aaee483e866",
+      "p2p_mV": 1.824,
+      "rms_mV": 0.1387
+    },
+    {
+      "index": 3,
+      "segment": 44,
+      "name": "ptbtp_p157_dysr",
+      "params": {
+        "carrier": "PTB_patient157/s0338lre_leadii_5_35s",
+        "noise": null,
+        "fs_src": 1000,
+        "diagnosis_tag": "dysrhythmia (AF)",
+        "diagnosis_hea": {
+          "Reason for admission": "Dysrhythmia",
+          "Additional diagnoses": "Atrial Fibrillation, Diabetes mellitus, Peripheral atherosclerosis, Chronic lymphatic leucemia"
+        },
+        "record_id": 400370,
+        "split": "ptb_test (seed 42)",
+        "gt_label_semantics": 1,
+        "erratum_note": "PTB test 患者, 非健康对照 → 部署标签语义 label=1 (preprocess_ptb.py 规则)"
+      },
+      "md5_int16uv": "9907cab184fc62ca09e93df003d0d0b1",
+      "p2p_mV": 1.7974,
+      "rms_mV": 0.3774
+    },
+    {
+      "index": 4,
+      "segment": 45,
+      "name": "ptbtp_p167_cmp",
+      "params": {
+        "carrier": "PTB_patient167/s0200_re_leadii_5_35s",
+        "noise": null,
+        "fs_src": 1000,
+        "diagnosis_tag": "cardiomyopathy (HOCM)",
+        "diagnosis_hea": {
+          "Reason for admission": "Cardiomyopathy",
+          "Additional diagnoses": "Hypertropic obstructive cardiomyopathy (intraventricular gradient 70mmHg)"
+        },
+        "record_id": 400382,
+        "split": "ptb_test (seed 42)",
+        "gt_label_semantics": 1,
+        "erratum_note": "PTB test 患者, 非健康对照 → 部署标签语义 label=1 (preprocess_ptb.py 规则)"
+      },
+      "md5_int16uv": "2df735b38bc0da1c7b0483ac9c5934cb",
+      "p2p_mV": 2.619,
+      "rms_mV": 0.5025
+    },
+    {
+      "index": 5,
+      "segment": 46,
+      "name": "ptbtp_p217_bbb",
+      "params": {
+        "carrier": "PTB_patient217/s0439_re_leadii_5_35s",
+        "noise": null,
+        "fs_src": 1000,
+        "diagnosis_tag": "bundle branch block",
+        "diagnosis_hea": {
+          "Reason for admission": "Bundle branch block",
+          "Additional diagnoses": "Diabetes mellitus, Arterial hypertension"
+        },
+        "record_id": 400449,
+        "split": "ptb_test (seed 42)",
+        "gt_label_semantics": 1,
+        "erratum_note": "PTB test 患者, 非健康对照 → 部署标签语义 label=1 (preprocess_ptb.py 规则)"
+      },
+      "md5_int16uv": "85ace16fb4dd13c45890979122cd83ea",
+      "p2p_mV": 2.8067,
+      "rms_mV": 0.2011
+    }
+  ]
+}

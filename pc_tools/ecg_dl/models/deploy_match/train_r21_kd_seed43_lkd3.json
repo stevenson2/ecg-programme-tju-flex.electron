@@ -1,0 +1,89 @@
+{
+  "date": "2026-09-19 11:34:19",
+  "purpose": "R21 kd (seed 43)",
+  "prereg": "runs/R21M_PREREG.md §1-§2",
+  "gpu": [
+    "PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')"
+  ],
+  "arm": "kd",
+  "seed": 43,
+  "smoke": false,
+  "output_model": "models/r21_kd_seed43_lkd3.h5",
+  "data": {
+    "main": {
+      "mit_bih": {
+        "abn": 1500,
+        "norm": 1500
+      },
+      "incart": {
+        "abn": 400,
+        "norm": 400
+      },
+      "ptb": {
+        "abn": 600,
+        "norm": 400
+      }
+    },
+    "sampling_audit": {
+      "mit_bih": {
+        "assert_train_only": "passed",
+        "sampled_records_vs_test_intersection": 0,
+        "sampled_unique_records": 31
+      },
+      "incart": {
+        "assert_train_only": "passed",
+        "sampled_records_vs_test_intersection": 0,
+        "sampled_unique_records": 42
+      },
+      "ptb": {
+        "assert_train_only": "passed",
+        "sampled_records_vs_test_intersection": 0,
+        "sampled_unique_records": 283
+      }
+    },
+    "real_afe_holdout": 40,
+    "noise_train": {
+      "total": 1200,
+      "counts": {
+        "motion": 600,
+        "emg": 240,
+        "mains": 240,
+        "baseline_wander": 60,
+        "respiratory": 60
+      },
+      "h8_corrupted": 0,
+      "h8_prov": null
+    },
+    "noise_val": 200,
+    "train_total": 7142,
+    "teacher_probe": {
+      "n": 7142,
+      "p_t_mean_mask1": 0.4057,
+      "p_t_frac_gt05_mask1": 0.4036
+    }
+  },
+  "config": {
+    "architecture": "build_ecg_resnet_lite_large_dualhead",
+    "params": 62899,
+    "lambda_v": 1.0,
+    "lambda_kd": 3.0,
+    "lr": 0.0003,
+    "epochs_requested": 80,
+    "epochs_run": 28,
+    "batch": 32,
+    "patience": 20,
+    "noise_rng_seed": 20260964,
+    "teacher_h5": "best_resnet_large_clean_baseline_v3.h5",
+    "kd_form": "binary prob KL (soft-target BCE), mask=1 only"
+  },
+  "results": {
+    "best_val_auc": 0.8232424019607842,
+    "real_holdout_frac_gt_0.5": 0.0,
+    "noise_train_valid_mean": 0.020889127627015114,
+    "noise_train_abn_frac_gt_05": 0.5758333333333333,
+    "kd_abs_dist_mask1_mean": 0.05351663753390312,
+    "lambda_v": 1.0,
+    "lambda_kd": 3.0,
+    "train_time_s": 140.4
+  }
+}
