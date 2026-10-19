@@ -63,6 +63,13 @@ extern "C" {
 bool ecgRecorderInit(void);
 
 /**
+ * @brief 启动 ECGR 终结任务。栈在内部 RAM（SPIFFS 会关 cache）。
+ *
+ * 在 esp_wifi_init 之后调用。失败时 Stop 改在调用方栈上同步写盘。
+ */
+void ecgRecorderEnsureWorker(void);
+
+/**
  * @brief 开始录制
  *
  * 创建新 .ecgr 文件 (路径: /ecgdata/ecg_rec_<unixTime>.ecgr),

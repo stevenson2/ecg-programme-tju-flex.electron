@@ -670,6 +670,8 @@ extern "C" void app_main(void) {
                 if (!ecgWifiIsOn() && (!ecgWifiInit() || !ecgWifiStart())) {
                     printf("[main] Wi-Fi unavailable; BLE and ECG continue\n");
                 }
+                /* Wi-Fi 任务栈已经留下。ECGR 写 SPIFFS，栈必须在内部 RAM。 */
+                ecgRecorderEnsureWorker();
             }
         }
         uint64_t tWork0 = esp_timer_get_time();

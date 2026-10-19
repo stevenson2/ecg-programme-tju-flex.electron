@@ -64,12 +64,10 @@ typedef struct {
 
 static QueueHandle_t g_finQueue = NULL;
 static TaskHandle_t g_workerTask = NULL;
-static StaticTask_t g_workerTcb;
-static StackType_t *g_workerStack = NULL;
 static SemaphoreHandle_t g_ioMutex = NULL;
 static volatile uint32_t g_finPending = 0;
 
-static void ecgrWorkerInit(void);   /* Round-G: 定义于文件后部 */
+static void ecgrIoInit(void);
 
 static void *ecgrAlloc(size_t size) {
     void *p = heap_caps_malloc_prefer(size, 2, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT, MALLOC_CAP_8BIT);
@@ -256,7 +254,8 @@ static void pushSampleToBuffer(int16_t sample) {
 }
 
 bool ecgRecorderInit(void) {
-    ecgrWorkerInit();   /* Round-G: 先起终结 worker (幂等) */
+    /* 只建队列。worker 栈必须是内部 RAM，且要等 Wi-Fi init 之后再占。 */
+    ecgrIoInit();
     if (!g_storageMounted) {
         esp_vfs_spiffs_conf_t conf = {
             .base_path = "/spiffs",
@@ -462,26 +461,22 @@ static void ecgrWorkerTask(void *arg) {
     }
 }
 
-static void ecgrWorkerInit(void) {
+static void ecgrIoInit(void) {
+    if (!g_ioMutex) g_ioMutex = xSemaphoreCreateMutex();
+    if (!g_finQueue) g_finQueue = xQueueCreate(4, sizeof(EcgrFinalize *));
+}
+
+void ecgRecorderEnsureWorker(void) {
     if (g_workerTask) return;
-    g_ioMutex = xSemaphoreCreateMutex();
-    g_finQueue = xQueueCreate(4, sizeof(EcgrFinalize *));
+    ecgrIoInit();
     if (!g_ioMutex || !g_finQueue) return;
-    /* 栈放 PSRAM。TCB 留在内部 RAM。分配失败再退回内部栈。 */
-    const uint32_t words = 4096 / sizeof(StackType_t);
-    if (!g_workerStack) {
-        g_workerStack = (StackType_t *)heap_caps_malloc(
-            words * sizeof(StackType_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
-    }
-    if (g_workerStack) {
-        g_workerTask = xTaskCreateStaticPinnedToCore(
-            ecgrWorkerTask, "ecgr_worker", words, NULL, 3,
-            g_workerStack, &g_workerTcb, 1);
-    }
-    if (!g_workerTask) {
-        printf("[ECGR] PSRAM worker stack unavailable; using internal\n");
-        xTaskCreatePinnedToCore(ecgrWorkerTask, "ecgr_worker", 4096, NULL, 3,
-                                &g_workerTask, 1);
+    /* finalize 走 SPIFFS，会关掉 flash cache。PSRAM 栈会在
+     * esp_task_stack_is_sane_cache_disabled() 上复位。栈留在内部 DRAM。
+     * 调用放在 esp_wifi_init 之后，避免这 4KB 抢在 Wi-Fi 任务前面。 */
+    if (xTaskCreatePinnedToCore(ecgrWorkerTask, "ecgr_worker", 4096, NULL, 3,
+                                &g_workerTask, 1) != pdPASS) {
+        g_workerTask = NULL;
+        printf("[ECGR] internal worker create failed; finalize stays on caller\n");
     }
 }
 
@@ -506,15 +501,18 @@ bool ecgRecorderStop(void) {
     g_totalSamples = 0; g_durationSec = 0; g_abnormalSec = 0;
     g_startUnix = 0; g_currentPath[0] = '\0';
     g_rearmCooldown = ECG_REC_AUTO_STOP_ABNORMAL_SECS;   /* M1: 时间冷却式再武装 */
-    if (xQueueSend(g_finQueue, &it, 0) != pdTRUE) {
-        /* 队列满 (4 个未终结会话): 回退为同步终结, 保数据不保节拍 */
-        if (xSemaphoreTake(g_ioMutex, pdMS_TO_TICKS(10000)) == pdTRUE) {
+    if (g_workerTask && g_finQueue && xQueueSend(g_finQueue, &it, 0) == pdTRUE) {
+        g_finPending = g_finPending + 1;
+    } else {
+        /* worker 还没建（Wi-Fi init 之前）或队列满：在调用方栈上写盘。
+         * 自动停止的调用方是 main，栈在内部 RAM。 */
+        if (g_ioMutex && xSemaphoreTake(g_ioMutex, pdMS_TO_TICKS(10000)) == pdTRUE) {
             finalizeItem(it);
             xSemaphoreGive(g_ioMutex);
+        } else if (!g_ioMutex) {
+            finalizeItem(it);
         }
         free(it);
-    } else {
-        g_finPending = g_finPending + 1;
     }
     return true;
 }

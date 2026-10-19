@@ -299,7 +299,9 @@ bool ecg_ai_init(const uint8_t *model_data, size_t model_size,
             printf("[ecg_ai] handoff queue create failed\n");
             return false;
         }
-        /* 栈放 PSRAM，腾出内部 DRAM 给 Wi-Fi 任务。TCB 留在内部 RAM。 */
+        /* 栈放 PSRAM，腾出内部 DRAM 给 Wi-Fi 任务。TCB 留在内部 RAM。
+         * 本任务只做量化 + Invoke，不调用 SPIFFS / NVS / esp_flash。
+         * 模型在 flash 上通过 cache 读。关 cache 的写盘在 ecgr_worker（内部栈）。 */
         const uint32_t words = (uint32_t)(kAsyncTaskStack / (int)sizeof(StackType_t));
         g_ai.task_stack = static_cast<StackType_t *>(heap_caps_malloc(
             words * sizeof(StackType_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT));

@@ -537,6 +537,12 @@ Flashing this branch on the 4MB SuperMini reset-looped: BLE came up, then `creat
 - NimBLE host allocation is `CONFIG_BT_NIMBLE_MEM_ALLOC_MODE_EXTERNAL` (host pools and the host task stack). The controller stays internal. `CONFIG_BT_CTRL_BLE_MASTER` stays on because connectable advertising needs it. Central, observer, GATT client, and controller scan (plus the scan-duplicate cache) are off. Activities are 3 (828 bytes each). Host pool counts are MSYS 8/8, ACL 6, HCI events 8, preferred MTU 185. The same symbols are set in the legacy `CONFIG_NIMBLE_*` tail.
 - Wi-Fi static RX is 4. Dynamic RX/TX are 8. Management short buffers are 6 (the minimum). RX management buffers are dynamic (`rx_mgmt_buf_type` 1, count 5) so they are not internal DMA at init. SoftAP beacon length stays 752, which is the Kconfig minimum. `ecgWifiStart` applies the same numbers after `WIFI_INIT_CONFIG_DEFAULT()` and logs internal free and largest before the call, after success, and after `ESP_ERR_NO_MEM`. The 16KB skip is gone. Failure still returns; it does not abort.
 - Boot no longer calls `ecgWifiStart` before the sample loop. The loop starts Wi-Fi once `bleHostIsReady()` is true, or after 5 seconds. `WIFI_ON` still calls `ecgWifiStart` directly.
-- The AI infer stack (8192) and the ECGR worker stack (4096) are PSRAM static stacks. The TCB stays internal. If the PSRAM alloc fails, each task falls back to an internal stack.
+- The AI infer stack (8192) is a PSRAM static stack. The task only quantizes and calls `Invoke`. It does not call SPIFFS, NVS, or `esp_flash`. The model is read through the cache. `vf_worker` is the same: math only, stack in PSRAM.
 
-`sdkconfig.n16r8` is unchanged. The runtime Wi-Fi pool override applies to both boards. This was not flashed here. Rebuild with `SDKCONFIG=sdkconfig.supermini` (the defaults fragment is not what the flash script loads) and watch for `starting Wi-Fi after BLE settle`, `esp_wifi_init ok`, and `AP started`, with BLE still advertising.
+`sdkconfig.n16r8` is unchanged. The runtime Wi-Fi pool override applies to both boards. Rebuild with `SDKCONFIG=sdkconfig.supermini`.
+
+### SuperMini ECGR stack (cache disabled)
+
+A flash of the DRAM fix brought the AP up, then reset about 3 s later on auto-record stop: `assert failed: esp_task_stack_is_sane_cache_disabled()`. The ECGR worker stack was in PSRAM while `finalize` wrote SPIFFS, which disables the flash cache. PSRAM is not reachable in that window.
+
+`ecgr_worker` is an internal-RAM stack again (4096). `ecgRecorderEnsureWorker()` runs after the Wi-Fi boot attempt, so those 4KB are not taken before `esp_wifi_init`. If the task cannot be created, `ecgRecorderStop` writes the file on the caller (the main task, also an internal stack). Wi-Fi failure is still non-fatal. The AI infer stack stays in PSRAM. This was not flashed here.
