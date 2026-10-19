@@ -164,6 +164,15 @@ static inline uint32_t ecgrHeaderStartUnix(const uint8_t* hdr) {
 }
 
 /**
+ * @brief 本秒要写入位图的字节。v2 原样保存 asrc 掩码 (LEADOFF/VF/FLAT/RS/AI)。
+ *
+ * 非零即异常秒。不得把非零掩码折叠成 0x01。
+ */
+static inline uint8_t ecgrCommitBitmapByte(uint8_t asrc) {
+    return asrc;
+}
+
+/**
  * @brief 更新头部中的计数字段 (停止录制时调用)
  *
  * 修改 totalSamples / durationSec / abnormalSec 三个字段；

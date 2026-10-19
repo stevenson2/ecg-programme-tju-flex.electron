@@ -13,18 +13,49 @@
 
 #include <string.h>
 #include <math.h>
+#include <stdio.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/semphr.h"
+#include "freertos/queue.h"
+#include "esp_heap_caps.h"
 
-static float s_buf[VF_WIN_SAMPLES];     /* 5s 窗缓冲 */
+/* 6×1250 float ≈ 30KB。放内部 BSS 会在 SuperMini 上把 Wi-Fi 任务挤到
+ * ESP_ERR_NO_MEM。整块从 PSRAM 分配。 */
+static float *s_mem = NULL;
+static float *s_buf = NULL;             /* 5s 窗缓冲 */
 static uint32_t s_pos = 0;              /* 写指针 */
 /* 4-10Hz 带通状态: scipy butter(4,[4,10],fs=250) 的 4 个二阶节 (全精度, v2) */
 static float s_f1[2], s_f2[2], s_f3[2], s_f4[2];
-/* v2 窗内计算工作区 (静态, 避免 15KB 栈) */
-static float s_work[VF_WIN_SAMPLES];    /* demeaned 原始窗 */
-static float s_fwd[VF_WIN_SAMPLES];     /* 前向滤波结果 / abs 排序暂存 */
-static float s_xf[VF_WIN_SAMPLES];      /* 反向滤波最终结果 */
+/* v2 窗内计算工作区 (PSRAM, 避免 15KB 内部 RAM 和栈) */
+static float *s_work = NULL;            /* demeaned 原始窗 */
+static float *s_fwd = NULL;             /* 前向滤波结果 / abs 排序暂存 */
+static float *s_xf = NULL;              /* 反向滤波最终结果 */
 /* 历史窗判定 */
 static uint8_t s_lastSuspect = 0;       /* 上一窗是否疑似 */
 static VF_Result s_res;
+static float s_lastRms = 0.0f;
+
+/* qsort + filtfilt 不在 500Hz 采样循环里跑。窗满时拷到 s_job，核 1 的
+ * vf_worker 计算；结果经深度 1 的队列交回，报警标志只在交出的那一次调用上为真。 */
+static float *s_job = NULL;
+static float *s_src = NULL;
+static StackType_t *s_workerStack = NULL;
+static StaticTask_t s_workerTcb;
+static volatile bool s_jobPending = false;
+static volatile bool s_busy = false;
+static uint32_t s_epoch = 0;
+static uint32_t s_jobEpoch = 0;
+static SemaphoreHandle_t s_jobMutex = NULL;
+static QueueHandle_t s_resultQ = NULL;
+static TaskHandle_t s_worker = NULL;
+
+typedef struct {
+    float score;
+    float rms;
+    uint8_t suspect;
+    uint8_t alarm;
+} VfJobResult;
 
 /* scipy.signal.butter(4,[4,10],fs=250, output='sos') 全精度 4 节 (2026-08-16
  * 修正: 旧固件只有 2 节 5 位小数近似, 与 PC 训练失配致 CUDB Se 0.936→0.86) */
@@ -78,16 +109,16 @@ static int cmpFloatAsc(const void* a, const void* b)
     return 0;
 }
 
-static void compute_features(float *feat)
+static void compute_features(const float *src, float *feat)
 {
     /* 均值去除 (窗内) */
     float mean = 0.0f;
-    for (uint32_t i = 0; i < VF_WIN_SAMPLES; i++) mean += s_buf[i];
+    for (uint32_t i = 0; i < VF_WIN_SAMPLES; i++) mean += src[i];
     mean /= VF_WIN_SAMPLES;
 
     float rms = 0.0f;
     for (uint32_t i = 0; i < VF_WIN_SAMPLES; i++) {
-        float v = s_buf[i] - mean;
+        float v = src[i] - mean;
         s_work[i] = v;
         rms += v * v;
     }
@@ -140,34 +171,10 @@ static void compute_features(float *feat)
     feat[5] = dom_freq;
 }
 
-void vfInit(void)
+static void score_window(const float *src, VfJobResult *out)
 {
-    memset(s_buf, 0, sizeof(s_buf));
-    bpfResetStates();
-    s_pos = 0;
-    s_lastSuspect = 0;
-    memset(&s_res, 0, sizeof(s_res));
-}
-
-void vfReset(void)
-{
-    vfInit();
-}
-
-VF_Result vfProcess(float sample)
-{
-    s_res.vfAlarm = false;
-    s_res.windowSuspect = false;
-
-    s_buf[s_pos++] = sample;
-    if (s_pos < VF_WIN_SAMPLES) {
-        return s_res;  /* 窗未满 */
-    }
-    s_pos = 0;  /* 每窗计算一次 (非滑动; 5s 粒度 + 2 窗确认 = 时延 ≤10s) */
-
-    /* 特征 + 标准化 + 逻辑回归 */
     float feat[VF_FEATURES];
-    compute_features(feat);
+    compute_features(src, feat);
     const float mean_[6] = {VF_MEAN_0, VF_MEAN_1, VF_MEAN_2, VF_MEAN_3, VF_MEAN_4, VF_MEAN_5};
     const float std_[6] = {VF_STD_0, VF_STD_1, VF_STD_2, VF_STD_3, VF_STD_4, VF_STD_5};
     const float coef[6] = {VF_COEF_0, VF_COEF_1, VF_COEF_2, VF_COEF_3, VF_COEF_4, VF_COEF_5};
@@ -176,15 +183,176 @@ VF_Result vfProcess(float sample)
         z += coef[i] * ((feat[i] - mean_[i]) / std_[i]);
     }
     float p = sigmoid(z);
-    s_res.score = p;
-    s_res.lastRms = feat[0];
+    out->score = p;
+    out->rms = feat[0];
+    out->suspect = (p >= VF_THETA) ? 1 : 0;
+    out->alarm = 0;
+}
 
-    uint8_t suspect = (p >= VF_THETA) ? 1 : 0;
-    s_res.windowSuspect = (suspect == 1);
-    /* 连续 2 窗确认 */
-    if (suspect && s_lastSuspect) {
-        s_res.vfAlarm = true;
+static void vfWorker(void *arg)
+{
+    (void)arg;
+    for (;;) {
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        for (;;) {
+            uint32_t epoch = 0;
+            if (s_jobMutex == NULL ||
+                xSemaphoreTake(s_jobMutex, portMAX_DELAY) != pdTRUE) {
+                break;
+            }
+            if (!s_jobPending) {
+                xSemaphoreGive(s_jobMutex);
+                break;
+            }
+            memcpy(s_src, s_job, VF_WIN_SAMPLES * sizeof(float));
+            epoch = s_jobEpoch;
+            s_jobPending = false;
+            xSemaphoreGive(s_jobMutex);
+
+            VfJobResult local;
+            score_window(s_src, &local);
+
+            if (xSemaphoreTake(s_jobMutex, portMAX_DELAY) != pdTRUE) break;
+            if (epoch != s_epoch) {
+                s_busy = false;
+                xSemaphoreGive(s_jobMutex);
+                continue;
+            }
+            local.alarm = (local.suspect && s_lastSuspect) ? 1 : 0;
+            s_lastSuspect = local.suspect;
+            s_busy = false;
+            if (s_resultQ) xQueueOverwrite(s_resultQ, &local);
+            xSemaphoreGive(s_jobMutex);
+        }
     }
-    s_lastSuspect = suspect;
+}
+
+static bool vfAllocBufs(void)
+{
+    if (s_mem) return true;
+    const size_t samples = (size_t)VF_WIN_SAMPLES * 6;
+    s_mem = (float *)heap_caps_malloc(samples * sizeof(float),
+                                      MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    if (!s_mem) {
+        printf("[VF] PSRAM window alloc failed; VF off, BLE/ECG continue\n");
+        return false;
+    }
+    memset(s_mem, 0, samples * sizeof(float));
+    s_buf  = s_mem;
+    s_work = s_mem + VF_WIN_SAMPLES;
+    s_fwd  = s_work + VF_WIN_SAMPLES;
+    s_xf   = s_fwd + VF_WIN_SAMPLES;
+    s_job  = s_xf + VF_WIN_SAMPLES;
+    s_src  = s_job + VF_WIN_SAMPLES;
+    return true;
+}
+
+static void vfEnsureWorker(void)
+{
+    if (s_worker || !vfAllocBufs()) return;
+    if (!s_jobMutex) s_jobMutex = xSemaphoreCreateMutex();
+    if (!s_resultQ) s_resultQ = xQueueCreate(1, sizeof(VfJobResult));
+    if (!s_jobMutex || !s_resultQ) return;
+    /* 栈放 PSRAM。SuperMini 内部 RAM 要留给 Wi-Fi 任务。 */
+    const uint32_t words = 8192 / sizeof(StackType_t);
+    if (!s_workerStack) {
+        s_workerStack = (StackType_t *)heap_caps_malloc(
+            words * sizeof(StackType_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    }
+    if (!s_workerStack) {
+        printf("[VF] PSRAM stack alloc failed; window math stays on caller\n");
+        return;
+    }
+    s_worker = xTaskCreateStaticPinnedToCore(
+        vfWorker, "vf_worker", words, NULL, 3, s_workerStack, &s_workerTcb, 1);
+}
+
+void vfInit(void)
+{
+    vfEnsureWorker();
+    vfReset();
+}
+
+void vfReset(void)
+{
+    if (s_jobMutex && xSemaphoreTake(s_jobMutex, pdMS_TO_TICKS(200)) == pdTRUE) {
+        s_epoch++;
+        s_jobPending = false;
+        s_busy = false;
+        s_lastSuspect = 0;
+        s_pos = 0;
+        s_lastRms = 0.0f;
+        if (s_buf) memset(s_buf, 0, VF_WIN_SAMPLES * sizeof(float));
+        memset(&s_res, 0, sizeof(s_res));
+        bpfResetStates();
+        if (s_resultQ) {
+            VfJobResult dump;
+            while (xQueueReceive(s_resultQ, &dump, 0) == pdTRUE) {}
+        }
+        xSemaphoreGive(s_jobMutex);
+        return;
+    }
+    s_pos = 0;
+    s_lastSuspect = 0;
+    s_lastRms = 0.0f;
+    if (s_buf) memset(s_buf, 0, VF_WIN_SAMPLES * sizeof(float));
+    memset(&s_res, 0, sizeof(s_res));
+    bpfResetStates();
+}
+
+VF_Result vfProcess(float sample)
+{
+    vfEnsureWorker();
+    s_res.vfAlarm = false;
+    s_res.windowSuspect = false;
+    s_res.lastRms = s_lastRms;
+    if (!s_buf) return s_res;
+
+    VfJobResult jr;
+    if (s_resultQ && xQueueReceive(s_resultQ, &jr, 0) == pdTRUE) {
+        s_res.score = jr.score;
+        s_lastRms = jr.rms;
+        s_res.lastRms = s_lastRms;
+        s_res.windowSuspect = (jr.suspect != 0);
+        s_res.vfAlarm = (jr.alarm != 0);
+    }
+
+    s_buf[s_pos++] = sample;
+    if (s_pos < VF_WIN_SAMPLES) {
+        return s_res;
+    }
+    s_pos = 0;  /* 每窗一次 (非滑动; 5s 粒度 + 2 窗确认) */
+
+    if (s_worker && s_jobMutex &&
+        xSemaphoreTake(s_jobMutex, 0) == pdTRUE) {
+        if (!s_busy) {
+            memcpy(s_job, s_buf, VF_WIN_SAMPLES * sizeof(float));
+            s_jobEpoch = s_epoch;
+            s_jobPending = true;
+            s_busy = true;
+            xSemaphoreGive(s_jobMutex);
+            xTaskNotifyGive(s_worker);
+        } else {
+            /* 丢掉的窗打断“连续两窗”确认，避免隔着一个空洞确认 VF。 */
+            s_lastSuspect = 0;
+            xSemaphoreGive(s_jobMutex);
+        }
+        return s_res;
+    }
+    if (s_worker) {
+        /* 锁被 worker 短暂占用：丢掉这一窗，不堵采样循环。 */
+        return s_res;
+    }
+
+    /* worker 没起来时仍在调用方算完，行为和原来的同步路径一致。 */
+    VfJobResult local;
+    score_window(s_buf, &local);
+    local.alarm = (local.suspect && s_lastSuspect) ? 1 : 0;
+    s_lastSuspect = local.suspect;
+    s_res.score = local.score;
+    s_lastRms = local.rms;
+    s_res.lastRms = s_lastRms;
+    s_res.windowSuspect = (local.suspect != 0);
+    s_res.vfAlarm = (local.alarm != 0);
     return s_res;
 }

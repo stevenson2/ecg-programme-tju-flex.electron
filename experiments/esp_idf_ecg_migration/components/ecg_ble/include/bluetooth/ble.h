@@ -29,12 +29,22 @@ extern "C" {
  */
 void initBLE(void);
 
+/** @brief NimBLE on_sync 已跑完并开始广播。Wi-Fi 等这个再占内部 RAM。 */
+bool bleHostIsReady(void);
+
 /**
- * @brief 通过 BLE 发送 CSV 文本行
+ * @brief 通过 BLE 发送文本。按当前 ATT_MTU-3 在 ';' 或换行处切块。
  *
- * @param message 以 null 结尾的字符串（当前固件 2 帧批量，约 160 字节；需 MTU≥185）
+ * 未连接、TX 未订阅、或协议栈拒绝时返回 false，且不把失败当成已送达。
+ * 订阅前的调用不计入 radio 失败计数。
+ *
+ * @param message 以 null 结尾的字符串
+ * @return true 全部切块都已交给协议栈
  */
-void sendBLEMessage(const char* message);
+bool sendBLEMessage(const char* message);
+
+/** @brief notify 被协议栈拒绝的累计次数（订阅前的跳过不计入）。 */
+uint32_t bleNotifyFailCount(void);
 
 /**
  * @brief 检查 BLE 是否已连接

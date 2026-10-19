@@ -279,7 +279,9 @@ class ECGProvider extends ChangeNotifier implements WaveformDataSource {
         : 0;
     double max = -999, min = 999;
     for (int i = start; i < _samples.length; i++) {
+      if (_samples[i].isGap) continue;
       final val = _getChannelValue(_samples[i]);
+      if (val.isNaN) continue;
       if (val > max) max = val;
       if (val < min) min = val;
     }
@@ -312,7 +314,7 @@ class ECGProvider extends ChangeNotifier implements WaveformDataSource {
         : 0;
     return _samples
         .sublist(start)
-        .map((s) => _getChannelValue(s))
+        .map((s) => s.isGap ? double.nan : _getChannelValue(s))
         .toList();
   }
 

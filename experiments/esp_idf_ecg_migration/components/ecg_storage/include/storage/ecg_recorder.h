@@ -63,6 +63,13 @@ extern "C" {
 bool ecgRecorderInit(void);
 
 /**
+ * @brief 启动 ECGR 终结任务。栈在内部 RAM（SPIFFS 会关 cache）。
+ *
+ * 在 esp_wifi_init 之后调用。失败时 Stop 改在调用方栈上同步写盘。
+ */
+void ecgRecorderEnsureWorker(void);
+
+/**
  * @brief 开始录制
  *
  * 创建新 .ecgr 文件 (路径: /ecgdata/ecg_rec_<unixTime>.ecgr),
@@ -142,10 +149,18 @@ uint32_t ecgRecorderRecordCount(void);
 /**
  * @brief 重新扫描 /ecgdata 目录并同步内存中的记录计数
  *
- * 供 WiFi DELETE 等外部删除路径调用: 外部删除文件后 records.idx 虽已重建,
- * 但 recorder 的 g_recordCount 可能仍为旧值, 导致保留策略/REC_STATUS 计数漂移。
+ * 只重数目录里的 .ecgr 文件，不改 records.idx。删除请用
+ * ecgRecorderDeleteByStart，那条路径会重写索引。
  */
 void ecgRecorderRefreshCount(void);
+
+/**
+ * @brief 按起始时间戳删除一条记录并重建 records.idx。
+ *
+ * 路径为 /spiffs/ecgdata/ecg_rec_<startUnix>.ecgr。持有录制 I/O 互斥，
+ * 删除成功后重写索引。未初始化或文件不存在时返回 false。
+ */
+bool ecgRecorderDeleteByStart(uint32_t startUnix);
 
 /**
  * @brief 获取当前录制起始 Unix 时间戳

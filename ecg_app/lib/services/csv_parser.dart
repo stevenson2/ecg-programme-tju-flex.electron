@@ -20,6 +20,12 @@ ECGSample? parseEcgCsvLine(String line) {
   final parts = str.split(',');
   if (parts.length < 3) return null;
 
+  // records.idx / REC_LIST 行是恰好 5 个整数。波形帧带小数或不是 5 列。
+  if (parts.length == 5 &&
+      parts.every((p) => RegExp(r'^-?\d+$').hasMatch(p.trim()))) {
+    return null;
+  }
+
   try {
     final clean = double.parse(parts[0].trim());
     final noisy = double.parse(parts[1].trim());
@@ -71,4 +77,82 @@ List<ECGSample> parseBleFrames(String raw) {
     if (sample != null) result.add(sample);
   }
   return result;
+}
+
+/// 125 Hz 波形在两次到达之间少了多少个样本。
+///
+/// [elapsedUs] 是上一批完整帧到这一批的时间。[frameCount] 是这一批的帧数。
+/// 允许多一个采样周期的抖动；缺口最多补 1 秒（125 点）。
+int missingSampleCount({required int elapsedUs, required int frameCount}) {
+  const periodUs = 8000; // 1e6 / 125
+  if (frameCount <= 0) return 0;
+  final expected = periodUs * frameCount;
+  if (elapsedUs <= expected + periodUs) return 0;
+  var missing = ((elapsedUs - expected) / periodUs).round();
+  if (missing < 0) return 0;
+  if (missing > 125) return 125;
+  return missing;
+}
+
+/// 把多次 Notify 拼成以 ';'、换行或回车结束的帧。
+///
+/// 没有结束符的数字片段留在缓冲里，避免把 "0.125,-0.010,0." 当成一条样本。
+/// 旧固件的字母命令（无结束符）如果下一块以数字、'-' 或 '.' 开头，先单独吐出，
+/// 避免和波形粘成一行。
+class BleNotifyAssembler {
+  static const int cap = 2048;
+  String _buf = '';
+
+  void reset() => _buf = '';
+
+  List<String> push(String chunk) {
+    if (chunk.isEmpty) return const [];
+    final out = <String>[];
+    if (_buf.isNotEmpty &&
+        !_hasTerminator(_buf) &&
+        _isCommandLead(_buf) &&
+        _looksWaveStart(chunk)) {
+      out.add(_buf);
+      _buf = '';
+    }
+    _buf += chunk;
+    if (_buf.length > cap) {
+      _buf = _buf.substring(_buf.length - cap);
+    }
+    out.addAll(_drain());
+    return out;
+  }
+
+  List<String> _drain() {
+    final out = <String>[];
+    var start = 0;
+    for (var i = 0; i < _buf.length; i++) {
+      final c = _buf.codeUnitAt(i);
+      if (c == 0x3B || c == 0x0A || c == 0x0D) {
+        final frame = _buf.substring(start, i).trim();
+        if (frame.isNotEmpty) out.add(frame);
+        start = i + 1;
+      }
+    }
+    _buf = _buf.substring(start);
+    return out;
+  }
+}
+
+bool _hasTerminator(String s) {
+  return s.contains(';') || s.contains('\n') || s.contains('\r');
+}
+
+bool _isCommandLead(String s) {
+  final t = s.trimLeft();
+  if (t.isEmpty) return false;
+  final c = t.codeUnitAt(0);
+  final upper = c >= 0x41 && c <= 0x5A;
+  final lower = c >= 0x61 && c <= 0x7A;
+  return upper || lower;
+}
+
+bool _looksWaveStart(String chunk) {
+  final c = chunk.codeUnitAt(0);
+  return (c >= 0x30 && c <= 0x39) || c == 0x2D || c == 0x2E;
 }

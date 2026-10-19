@@ -1,4 +1,5 @@
 #include "ecg_ai.h"
+#include "ecg_ai_round.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -76,6 +77,8 @@ struct AiState {
      * ecg_ai_async_dropped()。 */
     QueueHandle_t handoff = nullptr;
     TaskHandle_t task = nullptr;
+    StackType_t *task_stack = nullptr;
+    StaticTask_t task_tcb{};
     float slots[kAsyncSlots][kDefaultWindow] = {{0}};
     int slot_rr = 0;
     volatile uint32_t async_dropped = 0;
@@ -129,7 +132,7 @@ bool fill_int8_and_invoke(const float *window) {
     const float scale = g_ai.input->params.scale;
     const int32_t zp = g_ai.input->params.zero_point;
     for (int i = 0; i < kDefaultWindow; i++) {
-        int32_t q = (int32_t)(window[i] / scale + 0.5f) + zp;
+        int32_t q = ecg_ai_round_half_even(window[i] / scale) + zp;
         if (q < -128) q = -128;
         if (q > 127) q = 127;
         g_ai.input->data.int8[i] = (int8_t)q;
@@ -296,11 +299,25 @@ bool ecg_ai_init(const uint8_t *model_data, size_t model_size,
             printf("[ecg_ai] handoff queue create failed\n");
             return false;
         }
-        if (xTaskCreatePinnedToCore(async_infer_task, "ecg_ai_infer",
-                                    kAsyncTaskStack, nullptr, kAsyncTaskPrio,
-                                    &g_ai.task, kAsyncTaskCore) != pdPASS) {
-            printf("[ecg_ai] infer task create failed\n");
-            return false;
+        /* 栈放 PSRAM，腾出内部 DRAM 给 Wi-Fi 任务。TCB 留在内部 RAM。
+         * 本任务只做量化 + Invoke，不调用 SPIFFS / NVS / esp_flash。
+         * 模型在 flash 上通过 cache 读。关 cache 的写盘在 ecgr_worker（内部栈）。 */
+        const uint32_t words = (uint32_t)(kAsyncTaskStack / (int)sizeof(StackType_t));
+        g_ai.task_stack = static_cast<StackType_t *>(heap_caps_malloc(
+            words * sizeof(StackType_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT));
+        if (g_ai.task_stack) {
+            g_ai.task = xTaskCreateStaticPinnedToCore(
+                async_infer_task, "ecg_ai_infer", words, nullptr, kAsyncTaskPrio,
+                g_ai.task_stack, &g_ai.task_tcb, kAsyncTaskCore);
+        }
+        if (!g_ai.task) {
+            printf("[ecg_ai] PSRAM infer stack unavailable; using internal\n");
+            if (xTaskCreatePinnedToCore(async_infer_task, "ecg_ai_infer",
+                                        kAsyncTaskStack, nullptr, kAsyncTaskPrio,
+                                        &g_ai.task, kAsyncTaskCore) != pdPASS) {
+                printf("[ecg_ai] infer task create failed\n");
+                return false;
+            }
         }
         printf("[ecg_ai] async inference task on core %d (prio %d)\n",
                kAsyncTaskCore, kAsyncTaskPrio);
@@ -330,6 +347,10 @@ void ecg_ai_reset(void) {
     if (g_ai.task) {
         vTaskDelete(g_ai.task);
         g_ai.task = nullptr;
+    }
+    if (g_ai.task_stack) {
+        heap_caps_free(g_ai.task_stack);
+        g_ai.task_stack = nullptr;
     }
     if (g_ai.handoff) {
         vQueueDelete(g_ai.handoff);

@@ -23,6 +23,7 @@
 #include "esp_http_server.h"
 #include "nvs_flash.h"
 #include "esp_log.h"
+#include "esp_heap_caps.h"
 
 #define ECGR_BASE_PATH "/spiffs/ecgdata"
 
@@ -36,6 +37,16 @@ static bool s_diagSeqSlow = false;
  * 只 stop/start WiFi 与 httpd, 不 deinit — 避免 netif 重复创建/deinit 失败
  * (2026-09-12 修复: 命令泵打通后 WIFI_ON/OFF 已成为可达路径)。 */
 static bool s_wifiInited = false;
+static bool s_netReady = false;
+static esp_netif_t *s_ap_netif = NULL;
+
+/* 失败只打日志并返回 false。ESP_ERROR_CHECK / assert 会 abort() 重启，
+ * SuperMini 上 Wi-Fi NO_MEM 不能把 BLE 和采样一起带走。 */
+static bool wifi_log_err(esp_err_t err, const char *what) {
+    if (err == ESP_OK) return true;
+    ESP_LOGE(TAG, "%s failed: %s; BLE/ECG keep running", what, esp_err_to_name(err));
+    return false;
+}
 
 /* ======================== 内部辅助 ======================== */
 
@@ -207,14 +218,8 @@ static int ecgWifiDeleteHandler(httpd_req_t *req) {
         httpd_resp_send_404(req);
         return ESP_OK;
     }
-    struct stat st;
-    if (stat(path, &st) != 0) {
-        httpd_resp_set_type(req, "application/json");
-        httpd_resp_sendstr(req, "{\"deleted\":false}");
-        return ESP_OK;
-    }
-    if (remove(path) == 0) {
-        ecgRecorderRefreshCount();
+    /* 删除文件并重写 records.idx（仅刷新计数会让列表仍返回已删记录）。 */
+    if (ecgRecorderDeleteByStart(id)) {
         httpd_resp_set_type(req, "application/json");
         httpd_resp_sendstr(req, "{\"deleted\":true}");
     } else {
@@ -242,31 +247,103 @@ static void register_uri_handlers(httpd_handle_t server) {
 /* ======================== 公开 API ======================== */
 
 bool ecgWifiInit(void) {
+    if (s_netReady) return true;
     esp_err_t err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        ESP_ERROR_CHECK(nvs_flash_erase());
+        if (!wifi_log_err(nvs_flash_erase(), "nvs_flash_erase")) return false;
         err = nvs_flash_init();
     }
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG, "nvs_flash_init failed: %s", esp_err_to_name(err));
+    if (!wifi_log_err(err, "nvs_flash_init")) return false;
+    err = esp_netif_init();
+    if (err != ESP_OK && err != ESP_ERR_INVALID_STATE) {
+        return wifi_log_err(err, "esp_netif_init");
+    }
+    err = esp_event_loop_create_default();
+    if (err != ESP_OK && err != ESP_ERR_INVALID_STATE) {
+        return wifi_log_err(err, "esp_event_loop_create_default");
+    }
+    s_netReady = true;
+    return true;
+}
+
+static void wifi_drop_driver(void) {
+    esp_wifi_stop();
+    esp_err_t err = esp_wifi_deinit();
+    if (err != ESP_OK && err != ESP_ERR_WIFI_NOT_INIT) {
+        ESP_LOGE(TAG, "esp_wifi_deinit: %s", esp_err_to_name(err));
+    }
+    if (s_ap_netif) {
+        esp_netif_destroy(s_ap_netif);
+        s_ap_netif = NULL;
+    }
+    s_wifiInited = false;
+}
+
+static void wifi_log_internal(const char *when) {
+    size_t free_b = heap_caps_get_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+    size_t largest = heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+    ESP_LOGI(TAG, "%s: internal free=%u largest=%u",
+             when, (unsigned)free_b, (unsigned)largest);
+}
+
+/* SuperMini 内部 DRAM 只够放下 Wi-Fi 任务栈和静态 RX DMA。
+ * 动态缓冲和 RX MGMT 走 PSRAM（CONFIG_SPIRAM_TRY_ALLOCATE_WIFI_LWIP）。
+ * rx_mgmt_buf_type: 0 = 静态 DMA，1 = 动态。beacon_max_len 不能低于 752。 */
+static void wifi_fit_supermini(wifi_init_config_t *cfg) {
+    cfg->static_rx_buf_num = 4;
+    cfg->dynamic_rx_buf_num = 8;
+    cfg->dynamic_tx_buf_num = 8;
+    cfg->rx_mgmt_buf_type = 1;
+    cfg->rx_mgmt_buf_num = 5;
+    cfg->mgmt_sbuf_num = 6;
+    cfg->rx_ba_win = 6;
+}
+
+static bool ensure_ap_netif(void) {
+    if (s_ap_netif) return true;
+    /* 不用 esp_netif_create_default_wifi_ap()：失败时它内部 assert / ESP_ERROR_CHECK。 */
+    esp_netif_config_t cfg = ESP_NETIF_DEFAULT_WIFI_AP();
+    s_ap_netif = esp_netif_new(&cfg);
+    if (!s_ap_netif) {
+        ESP_LOGE(TAG, "esp_netif_new failed; BLE/ECG keep running");
         return false;
     }
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    if (!wifi_log_err(esp_netif_attach_wifi_ap(s_ap_netif), "esp_netif_attach_wifi_ap")) {
+        esp_netif_destroy(s_ap_netif);
+        s_ap_netif = NULL;
+        return false;
+    }
+    if (!wifi_log_err(esp_wifi_set_default_wifi_ap_handlers(),
+                      "esp_wifi_set_default_wifi_ap_handlers")) {
+        esp_netif_destroy(s_ap_netif);
+        s_ap_netif = NULL;
+        return false;
+    }
     return true;
 }
 
 bool ecgWifiStart(void) {
     if (g_wifi_on) return false;
+    if (!ecgWifiInit()) return false;
 
     if (!s_wifiInited) {
+        wifi_log_internal("before esp_wifi_init");
         wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+        wifi_fit_supermini(&cfg);
+        ESP_LOGI(TAG,
+                 "wifi cfg static_rx=%d dyn_rx=%d dyn_tx=%d mgmt_type=%d mgmt_num=%d sbuf=%d ba=%d",
+                 cfg.static_rx_buf_num, cfg.dynamic_rx_buf_num, cfg.dynamic_tx_buf_num,
+                 cfg.rx_mgmt_buf_type, cfg.rx_mgmt_buf_num, cfg.mgmt_sbuf_num, cfg.rx_ba_win);
         esp_err_t ierr = esp_wifi_init(&cfg);
-        if (ierr != ESP_OK) {
-            ESP_LOGE(TAG, "esp_wifi_init failed: %s", esp_err_to_name(ierr));
+        if (!wifi_log_err(ierr, "esp_wifi_init")) {
+            wifi_log_internal("esp_wifi_init failed");
             return false;
         }
-        esp_netif_create_default_wifi_ap();
+        wifi_log_internal("esp_wifi_init ok");
+        if (!ensure_ap_netif()) {
+            wifi_drop_driver();
+            return false;
+        }
 
         uint8_t mac[6] = {0};
         esp_wifi_get_mac(WIFI_IF_AP, mac);
@@ -281,8 +358,11 @@ bool ecgWifiStart(void) {
         wc.ap.authmode = WIFI_AUTH_WPA2_PSK;
         wc.ap.max_connection = 4;
 
-        ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
-        ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wc));
+        if (!wifi_log_err(esp_wifi_set_mode(WIFI_MODE_AP), "esp_wifi_set_mode") ||
+            !wifi_log_err(esp_wifi_set_config(WIFI_IF_AP, &wc), "esp_wifi_set_config")) {
+            wifi_drop_driver();
+            return false;
+        }
         s_wifiInited = true;
     }
 
@@ -305,7 +385,7 @@ bool ecgWifiStart(void) {
     }
     register_uri_handlers(g_server);
     g_wifi_on = true;
-    ESP_LOGI(TAG, "AP started");
+    wifi_log_internal("AP started");
     return true;
 }
 

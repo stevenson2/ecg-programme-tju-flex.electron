@@ -49,6 +49,16 @@ void main() {
       expect(sample.confidence, 0.0);
     });
 
+    test('REC_LIST 的 5 个整数行不是心电样本', () {
+      expect(parseEcgCsvLine('1700000000,30,7500,2,15032'), isNull);
+    });
+
+    test('5 列里带小数仍按波形解析', () {
+      final sample = parseEcgCsvLine('0.1,0.2,0.3,70,1.5');
+      expect(sample, isNotNull);
+      expect(sample!.bpm, 70);
+    });
+
     test('空行与不足 3 列返回 null', () {
       expect(parseEcgCsvLine(''), isNull);
       expect(parseEcgCsvLine('   '), isNull);
@@ -98,6 +108,45 @@ void main() {
       final samples = parseBleFrames(raw);
       expect(samples.length, 1);
       expect(samples[0].abnormal, 1);
+    });
+
+    test('半截数字帧要等结束符', () {
+      final asm = BleNotifyAssembler();
+      expect(asm.push('0.125,-0.010,0.'), isEmpty);
+      final done = asm.push('100,75,0,0.90,0,0,0.10,16;');
+      expect(done.length, 1);
+      final sample = parseEcgCsvLine(done.single);
+      expect(sample, isNotNull);
+      expect(sample!.clean, closeTo(0.125, 1e-9));
+    });
+
+    test('无结束符的命令不粘到下一条波形', () {
+      final asm = BleNotifyAssembler();
+      expect(asm.push('REC_START ok'), isEmpty);
+      final frames = asm.push('0.1,0.2,0.3,70;');
+      expect(frames.length, 2);
+      expect(frames[0], 'REC_START ok');
+      expect(parseEcgCsvLine(frames[0]), isNull);
+      expect(parseEcgCsvLine(frames[1]), isNotNull);
+    });
+
+    test('两帧被 MTU 切开后仍是两条样本', () {
+      final raw = '0.1,0.2,0.3,75,75,0.66,0,0,0.010,0;'
+          '0.2,0.3,0.4,76,75,0.66,0,1,0.870,20;';
+      final asm = BleNotifyAssembler();
+      final frames = <String>[];
+      for (var i = 0; i < raw.length; i += 20) {
+        final end = i + 20 > raw.length ? raw.length : i + 20;
+        frames.addAll(asm.push(raw.substring(i, end)));
+      }
+      expect(frames.length, 2);
+      expect(parseEcgCsvLine(frames[1])!.asrc, 20);
+    });
+
+    test('丢帧按 125Hz 补点，正常两帧间隔不补', () {
+      expect(missingSampleCount(elapsedUs: 16000, frameCount: 2), 0);
+      expect(missingSampleCount(elapsedUs: 32000, frameCount: 2), 2);
+      expect(missingSampleCount(elapsedUs: 2000000, frameCount: 2), 125);
     });
 
     test('单帧(无分号)也能解析', () {

@@ -68,6 +68,18 @@ static void test_header_version_v1_compat(void) {
     PASS();
 }
 
+static void test_bitmap_byte_keeps_full_mask(void) {
+    TEST("bitmap byte keeps LEADOFF/VF mask (not forced to AI)");
+    CHECK(ecgrCommitBitmapByte(0x14) == 0x14, "0x14 must stay 0x14");
+    CHECK(ecgrCommitBitmapByte(0x10) != 0x01, "LEADOFF must not collapse to AI");
+    CHECK(ecgrCommitBitmapByte(0x10) == 0x10, "LEADOFF bit preserved");
+    CHECK(ecgrCommitBitmapByte(0x08) == 0x08, "VF bit preserved");
+    CHECK(ecgrCommitBitmapByte(0x04) == 0x04, "flatline bit preserved");
+    CHECK(ecgrCommitBitmapByte(0x02) == 0x02, "rhythm bit preserved");
+    CHECK(ecgrCommitBitmapByte(0) == 0, "normal second stays 0");
+    PASS();
+}
+
 static void test_header_v2_bitmap_asrc_flag(void) {
     TEST("header v2: reserved0 marks asrc bitmap");
     uint8_t hdr[ECGR_HEADER_SIZE];
@@ -379,6 +391,7 @@ int main(void) {
     test_header_magic_wrong();
     test_header_version_wrong();
     test_header_version_v1_compat();
+    test_bitmap_byte_keeps_full_mask();
     test_header_v2_bitmap_asrc_flag();
     test_header_sample_rate_mismatch();
 

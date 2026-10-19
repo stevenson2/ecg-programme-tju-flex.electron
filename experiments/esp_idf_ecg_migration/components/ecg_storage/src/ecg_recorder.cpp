@@ -67,7 +67,7 @@ static TaskHandle_t g_workerTask = NULL;
 static SemaphoreHandle_t g_ioMutex = NULL;
 static volatile uint32_t g_finPending = 0;
 
-static void ecgrWorkerInit(void);   /* Round-G: 定义于文件后部 */
+static void ecgrIoInit(void);
 
 static void *ecgrAlloc(size_t size) {
     void *p = heap_caps_malloc_prefer(size, 2, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT, MALLOC_CAP_8BIT);
@@ -254,7 +254,8 @@ static void pushSampleToBuffer(int16_t sample) {
 }
 
 bool ecgRecorderInit(void) {
-    ecgrWorkerInit();   /* Round-G: 先起终结 worker (幂等) */
+    /* 只建队列。worker 栈必须是内部 RAM，且要等 Wi-Fi init 之后再占。 */
+    ecgrIoInit();
     if (!g_storageMounted) {
         esp_vfs_spiffs_conf_t conf = {
             .base_path = "/spiffs",
@@ -331,17 +332,13 @@ void ecgRecorderPushSample(int16_t sample) {
 }
 
 /**
- * P0-3: 设置当前秒 asrc 位掩码 (v2 位图字节)。
- * 语义: asrc=0 正常; 非 0 异常。bool 旧接口等价 asrc = abnormal ? 0x01 : 0。
+ * 提交本秒 asrc。位图字节是完整掩码 (0x01 AI / 0x02 RS / 0x04 FLAT /
+ * 0x08 VF / 0x10 LEADOFF)，非零即异常。bool 旧接口走 0x01/0x00。
  */
-void ecgRecorderSetSecondAsrc(uint8_t asrc) {
-    ecgRecorderSetSecondAbnormal(asrc != 0);
-    g_currentSecondAsrc = asrc;   /* 覆盖 bool 兜底的 AI 位 */
-}
-
-void ecgRecorderSetSecondAbnormal(bool abnormal) {
+static void commitSecond(uint8_t asrc) {
+    bool abnormal = (asrc != 0);
     g_currentSecondAbnormal = abnormal;
-    g_currentSecondAsrc = abnormal ? 0x01 : 0;
+    g_currentSecondAsrc = asrc;
     if (!g_isRecording) {
         /* M1 修复: 再武装改为时间冷却 (停止后 5 秒), 逐秒递减不受 abnormal 冻结。
          * 原条件 "连续正常>=5s 或计数==0" 在持续 abnormal (如 M1 报警擎住 >=30s)
@@ -365,11 +362,11 @@ void ecgRecorderSetSecondAbnormal(bool abnormal) {
             if (p) { g_bmpBuf = p; g_bmpCap = newCap; }
         }
         if (g_bmpBuf && need <= g_bmpCap) {
-            /* P0-3 v2: 位图存 asrc 位掩码 (v1 会话为 0/1); 非零 = 异常秒。 */
-            g_bmpBuf[need - 1] = g_currentSecondAsrc;
+            /* v2: 位图存完整 asrc。ecgrCommitBitmapByte 不做 0/1 折叠。 */
+            g_bmpBuf[need - 1] = ecgrCommitBitmapByte(asrc);
         }
     }
-    if (g_currentSecondAbnormal) g_abnormalSec++;
+    if (abnormal) g_abnormalSec++;
     if (g_autoRecord) {
         if (!abnormal) {
             g_consecutiveNormal++;
@@ -382,6 +379,14 @@ void ecgRecorderSetSecondAbnormal(bool abnormal) {
             g_consecutiveNormal = 0;
         }
     }
+}
+
+void ecgRecorderSetSecondAsrc(uint8_t asrc) {
+    commitSecond(asrc);
+}
+
+void ecgRecorderSetSecondAbnormal(bool abnormal) {
+    commitSecond(abnormal ? 0x01 : 0);
 }
 
 /* Round-G: 终结一个会话 (写文件+索引+保留策略)。worker 任务或队列满时的
@@ -456,13 +461,23 @@ static void ecgrWorkerTask(void *arg) {
     }
 }
 
-static void ecgrWorkerInit(void) {
+static void ecgrIoInit(void) {
+    if (!g_ioMutex) g_ioMutex = xSemaphoreCreateMutex();
+    if (!g_finQueue) g_finQueue = xQueueCreate(4, sizeof(EcgrFinalize *));
+}
+
+void ecgRecorderEnsureWorker(void) {
     if (g_workerTask) return;
-    g_ioMutex = xSemaphoreCreateMutex();
-    g_finQueue = xQueueCreate(4, sizeof(EcgrFinalize *));
+    ecgrIoInit();
     if (!g_ioMutex || !g_finQueue) return;
-    xTaskCreatePinnedToCore(ecgrWorkerTask, "ecgr_worker", 4096, NULL, 3,
-                            &g_workerTask, 1);
+    /* finalize 走 SPIFFS，会关掉 flash cache。PSRAM 栈会在
+     * esp_task_stack_is_sane_cache_disabled() 上复位。栈留在内部 DRAM。
+     * 调用放在 esp_wifi_init 之后，避免这 4KB 抢在 Wi-Fi 任务前面。 */
+    if (xTaskCreatePinnedToCore(ecgrWorkerTask, "ecgr_worker", 4096, NULL, 3,
+                                &g_workerTask, 1) != pdPASS) {
+        g_workerTask = NULL;
+        printf("[ECGR] internal worker create failed; finalize stays on caller\n");
+    }
 }
 
 bool ecgRecorderStop(void) {
@@ -486,15 +501,18 @@ bool ecgRecorderStop(void) {
     g_totalSamples = 0; g_durationSec = 0; g_abnormalSec = 0;
     g_startUnix = 0; g_currentPath[0] = '\0';
     g_rearmCooldown = ECG_REC_AUTO_STOP_ABNORMAL_SECS;   /* M1: 时间冷却式再武装 */
-    if (xQueueSend(g_finQueue, &it, 0) != pdTRUE) {
-        /* 队列满 (4 个未终结会话): 回退为同步终结, 保数据不保节拍 */
-        if (xSemaphoreTake(g_ioMutex, pdMS_TO_TICKS(10000)) == pdTRUE) {
+    if (g_workerTask && g_finQueue && xQueueSend(g_finQueue, &it, 0) == pdTRUE) {
+        g_finPending = g_finPending + 1;
+    } else {
+        /* worker 还没建（Wi-Fi init 之前）或队列满：在调用方栈上写盘。
+         * 自动停止的调用方是 main，栈在内部 RAM。 */
+        if (g_ioMutex && xSemaphoreTake(g_ioMutex, pdMS_TO_TICKS(10000)) == pdTRUE) {
             finalizeItem(it);
             xSemaphoreGive(g_ioMutex);
+        } else if (!g_ioMutex) {
+            finalizeItem(it);
         }
         free(it);
-    } else {
-        g_finPending = g_finPending + 1;
     }
     return true;
 }
@@ -528,6 +546,21 @@ void ecgRecorderRefreshCount(void) {
         while ((e = readdir(d)) != NULL) if (nameIsEcgr(e->d_name)) g_recordCount++;
         closedir(d);
     }
+}
+
+bool ecgRecorderDeleteByStart(uint32_t startUnix) {
+    if (!g_ioMutex) return false;
+    if (xSemaphoreTake(g_ioMutex, pdMS_TO_TICKS(10000)) != pdTRUE) return false;
+    char path[160];
+    snprintf(path, sizeof(path), ECGR_BASE_PATH "/ecg_rec_%u.ecgr",
+             (unsigned)startUnix);
+    bool ok = (remove(path) == 0);
+    if (ok) {
+        /* rebuildIndex 自己不取锁；调用方已持有 g_ioMutex。 */
+        rebuildIndex();
+    }
+    xSemaphoreGive(g_ioMutex);
+    return ok;
 }
 
 uint32_t ecgRecorderCurrentRecordStart(void) { return g_isRecording ? g_startUnix : 0; }

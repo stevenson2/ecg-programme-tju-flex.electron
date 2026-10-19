@@ -3,6 +3,7 @@
  * @brief ECG BLE NUS 模块（ESP-IDF NimBLE 移植版）
  */
 #include "bluetooth/ble.h"
+#include "bluetooth/ble_chunk.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -15,6 +16,7 @@
 #include "nimble/nimble_port.h"
 #include "nimble/nimble_port_freertos.h"
 #include "host/ble_hs.h"
+#include "host/ble_att.h"
 #include "host/util/util.h"
 #include "services/gap/ble_svc_gap.h"
 #include "services/gatt/ble_svc_gatt.h"
@@ -38,6 +40,8 @@ static uint16_t g_rx_handle;
 static uint8_t g_own_addr_type = BLE_OWN_ADDR_PUBLIC;
 static uint16_t g_conn_handle = BLE_HS_CONN_HANDLE_NONE;
 static bool g_connected = false;
+static bool g_tx_subscribed = false;
+static uint32_t g_notify_fail = 0;
 static QueueHandle_t g_cmd_queue = nullptr;
 static char g_rx_line[64];
 static int g_rx_len = 0;
@@ -173,6 +177,7 @@ static int gap_event(struct ble_gap_event *event, void *arg) {
         return 0;
     case BLE_GAP_EVENT_DISCONNECT:
         g_connected = false;
+        g_tx_subscribed = false;
         g_conn_handle = BLE_HS_CONN_HANDLE_NONE;
         g_adv_slow = false; /* 断连后重开快速广播 60s, 方便立即回连 */
         start_advertising();
@@ -189,13 +194,16 @@ static int gap_event(struct ble_gap_event *event, void *arg) {
                  event->subscribe.cur_indicate);
         /* TX 特征值 Notify 关闭 (App 退后台) → 长连接间隔; 重开 → 短间隔。 */
         if (event->subscribe.attr_handle == g_tx_handle) {
-            update_conn_interval_idle(!event->subscribe.cur_notify);
+            g_tx_subscribed = event->subscribe.cur_notify != 0;
+            update_conn_interval_idle(!g_tx_subscribed);
         }
         return 0;
     default:
         return 0;
     }
 }
+
+static volatile bool g_host_ready = false;
 
 static void on_sync(void) {
     uint8_t addr_type;
@@ -204,9 +212,11 @@ static void on_sync(void) {
     g_own_addr_type = addr_type;
     g_adv_slow = false; /* 主机重启 (on_reset/on_sync) 后从快档重来 */
     start_advertising();
+    g_host_ready = true;
 }
 
 static void on_reset(int reason) {
+    g_host_ready = false;
     ESP_LOGE(TAG, "reset reason=%d", reason);
 }
 
@@ -276,11 +286,46 @@ extern "C" void initBLE(void) {
     ESP_LOGI(TAG, "BLE init OK, device=%s", DEVICE_NAME);
 }
 
-extern "C" void sendBLEMessage(const char *message) {
-    if (!message || !g_connected || !message[0]) return;
-    struct os_mbuf *om = ble_hs_mbuf_from_flat(message, strlen(message));
-    if (!om) return;
-    ble_gatts_notify_custom(g_conn_handle, g_tx_handle, om);
+extern "C" bool bleHostIsReady(void) {
+    return g_host_ready;
+}
+
+extern "C" uint32_t bleNotifyFailCount(void) {
+    return g_notify_fail;
+}
+
+extern "C" bool sendBLEMessage(const char *message) {
+    if (!message || !message[0]) return false;
+    if (!g_connected || g_conn_handle == BLE_HS_CONN_HANDLE_NONE) return false;
+    /* 订阅前不发、不计失败：HELLO 保持待发，等 CCCD 打开后重试。 */
+    if (!g_tx_subscribed) return false;
+
+    uint16_t mtu = ble_att_mtu(g_conn_handle);
+    size_t maxp = (mtu > 3) ? (size_t)(mtu - 3) : 20;
+    if (maxp < 20) maxp = 20;
+
+    size_t len = strlen(message);
+    size_t off = 0;
+    while (off < len) {
+        size_t n = ble_next_chunk(message, off, len, maxp);
+        if (n == 0) {
+            g_notify_fail++;
+            return false;
+        }
+        struct os_mbuf *om = ble_hs_mbuf_from_flat(message + off, n);
+        if (!om) {
+            g_notify_fail++;
+            return false;
+        }
+        /* 失败时 NimBLE 已接管 mbuf，这里不再释放。 */
+        int rc = ble_gatts_notify_custom(g_conn_handle, g_tx_handle, om);
+        if (rc != 0) {
+            g_notify_fail++;
+            return false;
+        }
+        off += n;
+    }
+    return true;
 }
 
 extern "C" bool isBLEConnected(void) {

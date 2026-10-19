@@ -13,6 +13,8 @@ import threading
 import argparse
 import time
 
+from plotter_handshake import wait_until_pong
+
 
 DEFAULT_BAUD = 460800
 DATA_RATE = 100  # 串口 CSV 输出率 (Hz), 2026-08-08: 固件 25Hz→100Hz, 时间轴标定 250→100
@@ -68,17 +70,27 @@ def set_mode_label(label):
 def serial_reader(port, baud):
     global serial_port, running, sample_count, current_bpm, current_true_bpm, bpm_confidence, current_abnormal, current_abnormal_conf
     try:
-        serial_port = serial.Serial(port, baud, timeout=1)
-        # USB-Serial-JTAG / CH343 初始化：DTR/RTS 不置位，避免把板子按在 reset/boot。
-        serial_port.rts = False
-        serial_port.dtr = True
-        time.sleep(0.2)
+        # DTR/RTS 在 open 之前拉低。open 时的 DTR 上升沿会复位自动下载接线的板子，
+        # 随后立刻发的 WAVE 1 会在启动期间丢失。
+        serial_port = serial.Serial()
+        serial_port.port = port
+        serial_port.baudrate = baud
+        serial_port.timeout = 0.2
         serial_port.dtr = False
         serial_port.rts = False
-        time.sleep(0.5)
-        serial_port.reset_input_buffer()
+        serial_port.open()
         print("Connected: " + port + " @ " + str(baud) + " bps")
-        send_command("WAVE 1")
+
+        def _write_ping(text):
+            serial_port.write(text.encode("ascii"))
+
+        def _read_line():
+            return serial_port.readline().decode("utf-8", errors="ignore")
+
+        if wait_until_pong(_write_ping, _read_line, time.monotonic, timeout_s=3.0):
+            send_command("WAVE 1")
+        else:
+            print("PONG timeout; WAVE 1 not sent")
     except Exception as e:
         print("Error: cannot open " + port + ": " + str(e))
         running = False
