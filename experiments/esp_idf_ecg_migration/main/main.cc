@@ -645,10 +645,12 @@ extern "C" void app_main(void) {
     };
     gpio_config(&io);
 
-    /* 先把 BLE/WiFi 启起来，避免 SPIFFS 首次格式化阻塞导致手机扫不到设备。 */
+    /* 先把 BLE 启起来，避免 SPIFFS 首次格式化阻塞导致手机扫不到设备。
+     * Wi-Fi 失败只记日志：SuperMini 内部 RAM 不够时不能 abort 重启循环。 */
     initBLE();
-    ecgWifiInit();
-    ecgWifiStart();
+    if (!ecgWifiInit() || !ecgWifiStart()) {
+        printf("[main] Wi-Fi unavailable; BLE and ECG continue\n");
+    }
 
     xTaskCreate(storage_init_task, "storage_init", 4096, NULL, 2, NULL);
     uartCommandInit();

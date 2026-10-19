@@ -30,3 +30,12 @@ CONFIG_MONITOR_BAUD=460800
 
 # 同 sdkconfig.defaults: TFLM 推理在 main 任务, 需 8192 栈 (TUNING_HISTORY §104)
 CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
+
+# SuperMini internal RAM is shared with NimBLE. Keep Wi-Fi, but put dynamic
+# buffers in PSRAM and shrink the static RX pool so a NO_MEM init can be
+# skipped instead of reset-looping the board.
+CONFIG_SPIRAM_TRY_ALLOCATE_WIFI_LWIP=y
+CONFIG_ESP_WIFI_STATIC_RX_BUFFER_NUM=6
+CONFIG_ESP_WIFI_DYNAMIC_RX_BUFFER_NUM=16
+CONFIG_ESP_WIFI_DYNAMIC_TX_BUFFER_NUM=16
+CONFIG_ESP_WIFI_MGMT_SBUF_NUM=16

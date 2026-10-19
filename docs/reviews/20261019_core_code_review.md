@@ -525,3 +525,7 @@ Host checks that ran on this machine:
 - `test/plotter_handshake_test.py` with a fake clock.
 
 Flutter and Dart are not installed here, so `ecg_app/test/csv_parse_test.dart` (REC_LIST rejection, reassembly, 16 ms vs 32 ms gap counts) was not executed. The VF worker was not run on hardware; it is FreeRTOS-only and has no host double. The live BLE column-10 path in `main.cc` was not edited.
+
+### SuperMini boot (2026-10-19)
+
+Flashing this branch on the 4MB SuperMini reset-looped: BLE came up, then `create wifi task failed` / `esp_wifi_init` `ESP_ERR_NO_MEM`, then `abort()`. The VF move had added about 10KB of internal BSS plus an 8KB internal task stack before `ecgWifiStart`. Wi-Fi is still enabled. The six VF windows and the worker stack now come from PSRAM. `sdkconfig.supermini` puts LWIP/Wi-Fi dynamic buffers in PSRAM and cuts the static RX pool (10→6) and dynamic buffers (32→16). Every `ESP_ERROR_CHECK` on the Wi-Fi start path is gone: failure logs and returns, and `app_main` keeps BLE and the sample loop. If the largest internal block is under 16KB, `esp_wifi_init` is not called. This was not run on the board here.

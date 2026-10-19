@@ -8,7 +8,7 @@ idf_component_register(
         "src/signal_generator/ecg_simulator.cpp"
         "src/signal_generator/ecg_replay.cpp"
     INCLUDE_DIRS "include"
-    REQUIRES esp_timer freertos
+    REQUIRES esp_timer freertos heap
 )
 target_compile_options(${COMPONENT_LIB} PRIVATE -Wno-error=missing-field-initializers)
 
