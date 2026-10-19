@@ -69,14 +69,13 @@ RS_Result rsProcess(const HR_Result *hr)
         s_rrCount++;
     }
 
-    /* ---- 30s 窗平均 HR (窗 = 最近累计时长 ≥ 30s 的 RR 集合) ---- */
+    /* ---- 30s 窗平均 HR (最近累计时长 ≥ 30s 的 RR, 从最新一拍往回) ----
+     * 缓冲可容纳约 120 拍。从最旧端截断会把过缓/过速判在约一分钟之前。 */
     float acc = 0.0f;
     float sqiAcc = 0.0f;
     uint32_t n = 0;
-    /* 从旧到新扫描, 累计时长 ≥ 30s 即停 */
-    uint32_t i = (s_rrHead + RS_RR_BUF - s_rrCount) % RS_RR_BUF;
     for (uint32_t k = 0; k < s_rrCount; k++) {
-        uint32_t idx = (i + k) % RS_RR_BUF;
+        uint32_t idx = (s_rrHead + RS_RR_BUF - 1 - k) % RS_RR_BUF;
         acc += s_rrBuf[idx];
         sqiAcc += s_sqiBuf[idx];
         n++;

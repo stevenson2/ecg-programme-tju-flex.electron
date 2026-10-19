@@ -331,17 +331,13 @@ void ecgRecorderPushSample(int16_t sample) {
 }
 
 /**
- * P0-3: 设置当前秒 asrc 位掩码 (v2 位图字节)。
- * 语义: asrc=0 正常; 非 0 异常。bool 旧接口等价 asrc = abnormal ? 0x01 : 0。
+ * 提交本秒 asrc。位图字节是完整掩码 (0x01 AI / 0x02 RS / 0x04 FLAT /
+ * 0x08 VF / 0x10 LEADOFF)，非零即异常。bool 旧接口走 0x01/0x00。
  */
-void ecgRecorderSetSecondAsrc(uint8_t asrc) {
-    ecgRecorderSetSecondAbnormal(asrc != 0);
-    g_currentSecondAsrc = asrc;   /* 覆盖 bool 兜底的 AI 位 */
-}
-
-void ecgRecorderSetSecondAbnormal(bool abnormal) {
+static void commitSecond(uint8_t asrc) {
+    bool abnormal = (asrc != 0);
     g_currentSecondAbnormal = abnormal;
-    g_currentSecondAsrc = abnormal ? 0x01 : 0;
+    g_currentSecondAsrc = asrc;
     if (!g_isRecording) {
         /* M1 修复: 再武装改为时间冷却 (停止后 5 秒), 逐秒递减不受 abnormal 冻结。
          * 原条件 "连续正常>=5s 或计数==0" 在持续 abnormal (如 M1 报警擎住 >=30s)
@@ -365,11 +361,11 @@ void ecgRecorderSetSecondAbnormal(bool abnormal) {
             if (p) { g_bmpBuf = p; g_bmpCap = newCap; }
         }
         if (g_bmpBuf && need <= g_bmpCap) {
-            /* P0-3 v2: 位图存 asrc 位掩码 (v1 会话为 0/1); 非零 = 异常秒。 */
-            g_bmpBuf[need - 1] = g_currentSecondAsrc;
+            /* v2: 位图存完整 asrc。ecgrCommitBitmapByte 不做 0/1 折叠。 */
+            g_bmpBuf[need - 1] = ecgrCommitBitmapByte(asrc);
         }
     }
-    if (g_currentSecondAbnormal) g_abnormalSec++;
+    if (abnormal) g_abnormalSec++;
     if (g_autoRecord) {
         if (!abnormal) {
             g_consecutiveNormal++;
@@ -382,6 +378,14 @@ void ecgRecorderSetSecondAbnormal(bool abnormal) {
             g_consecutiveNormal = 0;
         }
     }
+}
+
+void ecgRecorderSetSecondAsrc(uint8_t asrc) {
+    commitSecond(asrc);
+}
+
+void ecgRecorderSetSecondAbnormal(bool abnormal) {
+    commitSecond(abnormal ? 0x01 : 0);
 }
 
 /* Round-G: 终结一个会话 (写文件+索引+保留策略)。worker 任务或队列满时的
@@ -528,6 +532,21 @@ void ecgRecorderRefreshCount(void) {
         while ((e = readdir(d)) != NULL) if (nameIsEcgr(e->d_name)) g_recordCount++;
         closedir(d);
     }
+}
+
+bool ecgRecorderDeleteByStart(uint32_t startUnix) {
+    if (!g_ioMutex) return false;
+    if (xSemaphoreTake(g_ioMutex, pdMS_TO_TICKS(10000)) != pdTRUE) return false;
+    char path[160];
+    snprintf(path, sizeof(path), ECGR_BASE_PATH "/ecg_rec_%u.ecgr",
+             (unsigned)startUnix);
+    bool ok = (remove(path) == 0);
+    if (ok) {
+        /* rebuildIndex 自己不取锁；调用方已持有 g_ioMutex。 */
+        rebuildIndex();
+    }
+    xSemaphoreGive(g_ioMutex);
+    return ok;
 }
 
 uint32_t ecgRecorderCurrentRecordStart(void) { return g_isRecording ? g_startUnix : 0; }

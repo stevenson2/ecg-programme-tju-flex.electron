@@ -114,6 +114,7 @@ class PlaybackProvider extends ChangeNotifier implements WaveformDataSource {
     double max = -999, min = 999;
     for (int i = start; i < _buffer.length; i++) {
       final v = _buffer[i];
+      if (v.isNaN) continue;
       if (v > max) max = v;
       if (v < min) min = v;
     }

@@ -90,12 +90,21 @@ class BLEService {
   StreamSubscription<BluetoothConnectionState>? _connectionSub;
   StreamSubscription<List<int>>? _notifySub;
   int _connectionEpoch = 0; // 连接代次：旧设备/旧订阅回调到达时直接忽略
+  final BleNotifyAssembler _rxAsm = BleNotifyAssembler();
+  final Stopwatch _rxClock = Stopwatch()..start();
+  int? _lastWaveUs;
+
+  void _resetRxAssembly() {
+    _rxAsm.reset();
+    _lastWaveUs = null;
+  }
 
   /// 清理上一连接的订阅与设备引用（重连防泄漏，2026-08-14 阶梯感修复）。
   /// 旧 connectionState / onValueReceived 订阅若不取消，重连后会继续向
   /// dataStream 注入样本，并可能在新连接建立后被旧 disconnected 事件误清空。
   Future<void> _teardownCurrentConnection() async {
     _connectionEpoch++;
+    _resetRxAssembly();
     _connectionSub?.cancel();
     _connectionSub = null;
     _notifySub?.cancel();
@@ -309,6 +318,7 @@ class BLEService {
           if (epoch != _connectionEpoch) return; // 旧代次回调：忽略
         if (state == BluetoothConnectionState.disconnected) {
             _connectionEpoch++;
+            _resetRxAssembly();
             _connectionSub?.cancel();
             _connectionSub = null;
             _notifySub?.cancel();
@@ -360,14 +370,14 @@ class BLEService {
   /// CSV 格式: clean,noisy,filtered,bpm,true_bpm,sqi,motion,abnormal_flag,confidence
   /// 固件 2 帧以 ';' 批量拼接（Arduino 线曾为 4 帧），按帧分割解析（2026-08-10 修复多帧错位）
   void _onDataReceived(List<int> value) {
-    final str = utf8.decode(value, allowMalformed: true).trim();
+    final str = utf8.decode(value, allowMalformed: true);
     if (str.isEmpty) return;
 
-    // P0-2: 连接后首帧 HELLO,<proto_ver>,<fw_ver>,<capabilities>;
-    // 未收到 HELLO 的设备按 v1 行为降级（protoVersion=0）。
-    for (final rawFrame in str.split(';')) {
-      final frame = rawFrame.trim();
-      if (frame.isEmpty) continue;
+    final frames = _rxAsm.push(str);
+    final samples = <ECGSample>[];
+    for (final frame in frames) {
+      // P0-2: 连接后首帧 HELLO,<proto_ver>,<fw_ver>,<capabilities>;
+      // 未收到 HELLO 的设备按 v1 行为降级（protoVersion=0）。
       if (frame.startsWith('HELLO')) {
         final p = frame.split(',');
         if (p.length >= 3) {
@@ -389,7 +399,24 @@ class BLEService {
         continue;
       }
       final sample = parseEcgCsvLine(frame);
-      if (sample != null) _dataController.add(sample);
+      if (sample != null) samples.add(sample);
+    }
+    if (samples.isEmpty) return;
+
+    final nowUs = _rxClock.elapsedMicroseconds;
+    var missing = 0;
+    if (_lastWaveUs != null) {
+      missing = missingSampleCount(
+        elapsedUs: nowUs - _lastWaveUs!,
+        frameCount: samples.length,
+      );
+    }
+    _lastWaveUs = nowUs;
+    for (var i = 0; i < missing; i++) {
+      _dataController.add(ECGSample.gap);
+    }
+    for (final sample in samples) {
+      _dataController.add(sample);
     }
   }
 

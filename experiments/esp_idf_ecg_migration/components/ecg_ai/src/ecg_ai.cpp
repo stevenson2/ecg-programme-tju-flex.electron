@@ -1,4 +1,5 @@
 #include "ecg_ai.h"
+#include "ecg_ai_round.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -129,7 +130,7 @@ bool fill_int8_and_invoke(const float *window) {
     const float scale = g_ai.input->params.scale;
     const int32_t zp = g_ai.input->params.zero_point;
     for (int i = 0; i < kDefaultWindow; i++) {
-        int32_t q = (int32_t)(window[i] / scale + 0.5f) + zp;
+        int32_t q = ecg_ai_round_half_even(window[i] / scale) + zp;
         if (q < -128) q = -128;
         if (q > 127) q = 127;
         g_ai.input->data.int8[i] = (int8_t)q;

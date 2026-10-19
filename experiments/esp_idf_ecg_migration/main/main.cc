@@ -336,7 +336,15 @@ static bool strStartsWithIgnoreCase(const char *s, const char *prefix) {
 }
 
 static void sendBleReply(const char *reply) {
-    if (reply && reply[0]) sendBLEMessage(reply);
+    if (!reply || !reply[0]) return;
+    /* BLE 重组以 ';' 或换行为帧界。命令应答补换行，避免粘到下一条波形上。 */
+    char buf[192];
+    size_t n = strlen(reply);
+    if (n >= sizeof(buf) - 1) n = sizeof(buf) - 2;
+    memcpy(buf, reply, n);
+    if (n == 0 || buf[n - 1] != '\n') buf[n++] = '\n';
+    buf[n] = '\0';
+    (void)sendBLEMessage(buf);
 }
 
 static void cmdReply(bool fromUart, const char *msg) {
@@ -836,8 +844,9 @@ extern "C" void app_main(void) {
                 snprintf(hello, sizeof(hello), "HELLO,%d,%s,%s;",
                          ECG_PROTO_VERSION, ECG_PROTO_FW_VER,
                          ECG_BLE_CAPABILITIES_STR);
-                sendBLEMessage(hello);
-                s_helloPending = false;
+                if (sendBLEMessage(hello)) {
+                    s_helloPending = false;
+                }
             }
             /* 第 8 列 (M1 起) = 固件侧擎住的报警位 (持续异常持续为 1);
              * 第 9 列 = 最近一次推理置信度;
@@ -858,7 +867,8 @@ extern "C" void app_main(void) {
             }
             if (s_bleBatchCount >= BLE_BATCH_SIZE) {
                 s_bleBatchBuf[s_bleBatchLen] = '\0';
-                sendBLEMessage(s_bleBatchBuf);
+                /* 失败也丢掉这批：过期样本不能卡住后续发送。HELLO 不受影响。 */
+                (void)sendBLEMessage(s_bleBatchBuf);
                 s_bleBatchLen = 0;
                 s_bleBatchCount = 0;
             }
@@ -882,7 +892,7 @@ extern "C" void app_main(void) {
 #if ECG_HOT_LOG
             uint32_t busyPct = s_lastTickUs
                 ? (uint32_t)((s_busyAccumUs * 100) / (nowUs - s_lastTickUs)) : 0;
-            printf("TICK,%lu,src=%s,bpm=%u,sqi=%.3f,disp=%.4f,comb=%.4f,busy=%u%%,ovr=%lu,alarm=%u,asrc=0x%02x,seg=%u,sqimin=%.3f,vrms=%.4f,aidrop=%lu,nw=%lu,nt=%lu,lo=%u,%u,%.4f,%.2f\n",
+            printf("TICK,%lu,src=%s,bpm=%u,sqi=%.3f,disp=%.4f,comb=%.4f,busy=%u%%,ovr=%lu,alarm=%u,asrc=0x%02x,seg=%u,sqimin=%.3f,vrms=%.4f,aidrop=%lu,nw=%lu,nt=%lu,lo=%u,%u,%.4f,%.2f,nf=%lu\n",
                    (unsigned long)frame, modeName(s_mode),
                    (unsigned)hr.bpm, hr.sqi, displaySample, combOut,
                    (unsigned)busyPct, (unsigned long)s_loopOverruns,
@@ -892,7 +902,8 @@ extern "C" void app_main(void) {
                    (unsigned long)ecg_ai_async_dropped(),
                    (unsigned long)nextWake, (unsigned long)xTaskGetTickCount(),
                    (unsigned)s_loQuietSec, (unsigned)s_loQualCnt,
-                   (double)s_loRmsMv, (double)s_loCrest);
+                   (double)s_loRmsMv, (double)s_loCrest,
+                   (unsigned long)bleNotifyFailCount());
 #endif
             s_busyAccumUs = 0;
             s_loopOverruns = 0;

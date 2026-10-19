@@ -13,6 +13,10 @@
 
 #include <string.h>
 #include <math.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/semphr.h"
+#include "freertos/queue.h"
 
 static float s_buf[VF_WIN_SAMPLES];     /* 5s 窗缓冲 */
 static uint32_t s_pos = 0;              /* 写指针 */
@@ -25,6 +29,26 @@ static float s_xf[VF_WIN_SAMPLES];      /* 反向滤波最终结果 */
 /* 历史窗判定 */
 static uint8_t s_lastSuspect = 0;       /* 上一窗是否疑似 */
 static VF_Result s_res;
+static float s_lastRms = 0.0f;
+
+/* qsort + filtfilt 不在 500Hz 采样循环里跑。窗满时拷到 s_job，核 1 的
+ * vf_worker 计算；结果经深度 1 的队列交回，报警标志只在交出的那一次调用上为真。 */
+static float s_job[VF_WIN_SAMPLES];
+static float s_src[VF_WIN_SAMPLES];
+static volatile bool s_jobPending = false;
+static volatile bool s_busy = false;
+static uint32_t s_epoch = 0;
+static uint32_t s_jobEpoch = 0;
+static SemaphoreHandle_t s_jobMutex = NULL;
+static QueueHandle_t s_resultQ = NULL;
+static TaskHandle_t s_worker = NULL;
+
+typedef struct {
+    float score;
+    float rms;
+    uint8_t suspect;
+    uint8_t alarm;
+} VfJobResult;
 
 /* scipy.signal.butter(4,[4,10],fs=250, output='sos') 全精度 4 节 (2026-08-16
  * 修正: 旧固件只有 2 节 5 位小数近似, 与 PC 训练失配致 CUDB Se 0.936→0.86) */
@@ -78,16 +102,16 @@ static int cmpFloatAsc(const void* a, const void* b)
     return 0;
 }
 
-static void compute_features(float *feat)
+static void compute_features(const float *src, float *feat)
 {
     /* 均值去除 (窗内) */
     float mean = 0.0f;
-    for (uint32_t i = 0; i < VF_WIN_SAMPLES; i++) mean += s_buf[i];
+    for (uint32_t i = 0; i < VF_WIN_SAMPLES; i++) mean += src[i];
     mean /= VF_WIN_SAMPLES;
 
     float rms = 0.0f;
     for (uint32_t i = 0; i < VF_WIN_SAMPLES; i++) {
-        float v = s_buf[i] - mean;
+        float v = src[i] - mean;
         s_work[i] = v;
         rms += v * v;
     }
@@ -140,34 +164,10 @@ static void compute_features(float *feat)
     feat[5] = dom_freq;
 }
 
-void vfInit(void)
+static void score_window(const float *src, VfJobResult *out)
 {
-    memset(s_buf, 0, sizeof(s_buf));
-    bpfResetStates();
-    s_pos = 0;
-    s_lastSuspect = 0;
-    memset(&s_res, 0, sizeof(s_res));
-}
-
-void vfReset(void)
-{
-    vfInit();
-}
-
-VF_Result vfProcess(float sample)
-{
-    s_res.vfAlarm = false;
-    s_res.windowSuspect = false;
-
-    s_buf[s_pos++] = sample;
-    if (s_pos < VF_WIN_SAMPLES) {
-        return s_res;  /* 窗未满 */
-    }
-    s_pos = 0;  /* 每窗计算一次 (非滑动; 5s 粒度 + 2 窗确认 = 时延 ≤10s) */
-
-    /* 特征 + 标准化 + 逻辑回归 */
     float feat[VF_FEATURES];
-    compute_features(feat);
+    compute_features(src, feat);
     const float mean_[6] = {VF_MEAN_0, VF_MEAN_1, VF_MEAN_2, VF_MEAN_3, VF_MEAN_4, VF_MEAN_5};
     const float std_[6] = {VF_STD_0, VF_STD_1, VF_STD_2, VF_STD_3, VF_STD_4, VF_STD_5};
     const float coef[6] = {VF_COEF_0, VF_COEF_1, VF_COEF_2, VF_COEF_3, VF_COEF_4, VF_COEF_5};
@@ -176,15 +176,144 @@ VF_Result vfProcess(float sample)
         z += coef[i] * ((feat[i] - mean_[i]) / std_[i]);
     }
     float p = sigmoid(z);
-    s_res.score = p;
-    s_res.lastRms = feat[0];
+    out->score = p;
+    out->rms = feat[0];
+    out->suspect = (p >= VF_THETA) ? 1 : 0;
+    out->alarm = 0;
+}
 
-    uint8_t suspect = (p >= VF_THETA) ? 1 : 0;
-    s_res.windowSuspect = (suspect == 1);
-    /* 连续 2 窗确认 */
-    if (suspect && s_lastSuspect) {
-        s_res.vfAlarm = true;
+static void vfWorker(void *arg)
+{
+    (void)arg;
+    for (;;) {
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        for (;;) {
+            uint32_t epoch = 0;
+            if (s_jobMutex == NULL ||
+                xSemaphoreTake(s_jobMutex, portMAX_DELAY) != pdTRUE) {
+                break;
+            }
+            if (!s_jobPending) {
+                xSemaphoreGive(s_jobMutex);
+                break;
+            }
+            memcpy(s_src, s_job, sizeof(s_src));
+            epoch = s_jobEpoch;
+            s_jobPending = false;
+            xSemaphoreGive(s_jobMutex);
+
+            VfJobResult local;
+            score_window(s_src, &local);
+
+            if (xSemaphoreTake(s_jobMutex, portMAX_DELAY) != pdTRUE) break;
+            if (epoch != s_epoch) {
+                s_busy = false;
+                xSemaphoreGive(s_jobMutex);
+                continue;
+            }
+            local.alarm = (local.suspect && s_lastSuspect) ? 1 : 0;
+            s_lastSuspect = local.suspect;
+            s_busy = false;
+            if (s_resultQ) xQueueOverwrite(s_resultQ, &local);
+            xSemaphoreGive(s_jobMutex);
+        }
     }
-    s_lastSuspect = suspect;
+}
+
+static void vfEnsureWorker(void)
+{
+    if (s_worker) return;
+    if (!s_jobMutex) s_jobMutex = xSemaphoreCreateMutex();
+    if (!s_resultQ) s_resultQ = xQueueCreate(1, sizeof(VfJobResult));
+    if (!s_jobMutex || !s_resultQ) return;
+    xTaskCreatePinnedToCore(vfWorker, "vf_worker", 8192, NULL, 3, &s_worker, 1);
+}
+
+void vfInit(void)
+{
+    vfEnsureWorker();
+    vfReset();
+}
+
+void vfReset(void)
+{
+    if (s_jobMutex && xSemaphoreTake(s_jobMutex, pdMS_TO_TICKS(200)) == pdTRUE) {
+        s_epoch++;
+        s_jobPending = false;
+        s_busy = false;
+        s_lastSuspect = 0;
+        s_pos = 0;
+        s_lastRms = 0.0f;
+        memset(s_buf, 0, sizeof(s_buf));
+        memset(&s_res, 0, sizeof(s_res));
+        bpfResetStates();
+        if (s_resultQ) {
+            VfJobResult dump;
+            while (xQueueReceive(s_resultQ, &dump, 0) == pdTRUE) {}
+        }
+        xSemaphoreGive(s_jobMutex);
+        return;
+    }
+    s_pos = 0;
+    s_lastSuspect = 0;
+    s_lastRms = 0.0f;
+    memset(s_buf, 0, sizeof(s_buf));
+    memset(&s_res, 0, sizeof(s_res));
+    bpfResetStates();
+}
+
+VF_Result vfProcess(float sample)
+{
+    vfEnsureWorker();
+    s_res.vfAlarm = false;
+    s_res.windowSuspect = false;
+    s_res.lastRms = s_lastRms;
+
+    VfJobResult jr;
+    if (s_resultQ && xQueueReceive(s_resultQ, &jr, 0) == pdTRUE) {
+        s_res.score = jr.score;
+        s_lastRms = jr.rms;
+        s_res.lastRms = s_lastRms;
+        s_res.windowSuspect = (jr.suspect != 0);
+        s_res.vfAlarm = (jr.alarm != 0);
+    }
+
+    s_buf[s_pos++] = sample;
+    if (s_pos < VF_WIN_SAMPLES) {
+        return s_res;
+    }
+    s_pos = 0;  /* 每窗一次 (非滑动; 5s 粒度 + 2 窗确认) */
+
+    if (s_worker && s_jobMutex &&
+        xSemaphoreTake(s_jobMutex, 0) == pdTRUE) {
+        if (!s_busy) {
+            memcpy(s_job, s_buf, sizeof(s_job));
+            s_jobEpoch = s_epoch;
+            s_jobPending = true;
+            s_busy = true;
+            xSemaphoreGive(s_jobMutex);
+            xTaskNotifyGive(s_worker);
+        } else {
+            /* 丢掉的窗打断“连续两窗”确认，避免隔着一个空洞确认 VF。 */
+            s_lastSuspect = 0;
+            xSemaphoreGive(s_jobMutex);
+        }
+        return s_res;
+    }
+    if (s_worker) {
+        /* 锁被 worker 短暂占用：丢掉这一窗，不堵采样循环。 */
+        return s_res;
+    }
+
+    /* worker 没起来时仍在调用方算完，行为和原来的同步路径一致。 */
+    VfJobResult local;
+    score_window(s_buf, &local);
+    local.alarm = (local.suspect && s_lastSuspect) ? 1 : 0;
+    s_lastSuspect = local.suspect;
+    s_res.score = local.score;
+    s_lastRms = local.rms;
+    s_res.lastRms = s_lastRms;
+    s_res.windowSuspect = (local.suspect != 0);
+    s_res.vfAlarm = (local.alarm != 0);
     return s_res;
 }

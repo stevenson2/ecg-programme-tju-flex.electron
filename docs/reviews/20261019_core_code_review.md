@@ -2,7 +2,7 @@
 
 Review of the product path that is actually on `main`: firmware in `experiments/esp_idf_ecg_migration`, the contract in `protocol/ecg_proto.json`, the Flutter app in `ecg_app/`, and the PC plotter in `pc_tools/ecg_plotter.py`. The on-device model symbol is `models_ecg_model_v3a_int8_tflite` (`ECG_MODEL_NAME` = `"v3-A"`). Research training scripts under `pc_tools/ecg_dl/` were used only to check quantization and class index. `legacy_arduino/` was compared only for divergence.
 
-No product code was changed. The bugs below are evidenced from the current sources. Several are one-function fixes, but they change alarm attribution, rhythm timing, or the INT8 input the locked model sees, so they need a regression test before they are patched.
+The findings below are the review of the tree as it was. The Critical and High items that could be fixed without moving the v3-A model are now patched; see section 7 for the changelog and what was actually run.
 
 ## How to read this
 
@@ -492,11 +492,36 @@ Not covered, in the order they should be added:
 `legacy_arduino` divergence to remember when porting a fix:
 
 - Replay VF gain is `×0.001` there and `×1` here (F15).
-- The RS window bug is in both trees (F2).
+- The RS window bug is fixed on the IDF path. `legacy_arduino/src/rhythm_safety/rhythm_safety.cpp` still scans the oldest 30 s (F2).
 - The IDF tree added the alarm latch, LEADOFF, async invoke, and the v2 bitmap. The Arduino `main.cpp` still logs RS/AF directly and does not have `SetSecondAsrc`. A patch to `ecg_recorder.cpp` does not exist on the Arduino side until that file is compared on purpose.
 
 ---
 
 ## 6. What this review did not do
 
-The v3-A flatbuffer, the filter coefficients, the VF logistic weights, and the `0.763` AFE scale were not edited. Those are calibrated constants; changing them without a capture would move the locked model. The findings are documentation of the current tree so a later patch can be one bug at a time, with the test named next to it.
+The v3-A flatbuffer, the filter coefficients, the VF logistic weights, and the `0.763` AFE scale were not edited. Those are calibrated constants; changing them without a capture would move the locked model. F10–F18 are still open. Wi-Fi stays on CPU0. `ECG_HOT_LOG` is unchanged.
+
+## 7. Fixes applied (2026-10-19)
+
+| Item | Change |
+| --- | --- |
+| F1 | `commitSecond` writes the full asrc byte through `ecgrCommitBitmapByte`. `SetSecondAbnormal` still stores 0x01/0x00. Live BLE column 10 is still `s_alarmSrc`. |
+| F2 | IDF `rsProcess` accumulates the newest RR intervals until 30 s. Legacy Arduino copy is unchanged. |
+| F3 | `ecg_ai_round_half_even` matches `numpy.round` on negatives. Threshold, class index, and the flatbuffer are unchanged. |
+| F4/F5 | Notify payload is split on `;` or newline to `ATT_MTU-3`. HELLO clears only after a successful send. Unsubscribed calls do not count as radio failures. Waveform batches are still dropped on failure so a stuck buffer cannot stall the loop. `nf=` is appended to TICK. VF `qsort` and filtfilt run on a core-1 task (`vf_worker`, priority 3); the 500 Hz loop only copies the 5 s window. |
+| F6 | A line of exactly five integers is not an ECG sample. Three- and four-column waveform lines still parse. |
+| F7 | Gap samples come from inter-arrival time at 125 Hz (one period of slack, cap 125). The trace breaks on NaN. Axis caption is `25mm/s  auto-gain (V)`. Samples are not rescaled by 0.763. |
+| F8 | `DELETE` calls `ecgRecorderDeleteByStart`, which removes the file and rewrites `records.idx` under the recorder mutex. |
+| F9 | The plotter opens with DTR and RTS already low, waits for `PONG`, then sends `WAVE 1`. |
+
+### Verification
+
+Host checks that ran on this machine:
+
+- `test/rhythm_safety_window_test.cpp` against IDF `rhythm_safety.cpp`. Before the scan change the fixture (20×2.0 s then 100×0.3 s) reported bradycardia at 30 bpm. After it, tachycardia, window about 189 bpm (float32 `0.3` sums a hair under 30 s, so one older beat is included; still the newest end, and above 180).
+- `test/ecg_ai_round_test.cpp` against `numpy.round` for the negative and tie values listed in F3.
+- `test/ble_chunk_test.cpp` for boundary and raw-fragment reassembly.
+- `test/ecg_recorder_format_test.cpp`, including `ecgrCommitBitmapByte(0x14) == 0x14`.
+- `test/plotter_handshake_test.py` with a fake clock.
+
+Flutter and Dart are not installed here, so `ecg_app/test/csv_parse_test.dart` (REC_LIST rejection, reassembly, 16 ms vs 32 ms gap counts) was not executed. The VF worker was not run on hardware; it is FreeRTOS-only and has no host double. The live BLE column-10 path in `main.cc` was not edited.

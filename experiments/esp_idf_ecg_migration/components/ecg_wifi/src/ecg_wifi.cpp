@@ -207,14 +207,8 @@ static int ecgWifiDeleteHandler(httpd_req_t *req) {
         httpd_resp_send_404(req);
         return ESP_OK;
     }
-    struct stat st;
-    if (stat(path, &st) != 0) {
-        httpd_resp_set_type(req, "application/json");
-        httpd_resp_sendstr(req, "{\"deleted\":false}");
-        return ESP_OK;
-    }
-    if (remove(path) == 0) {
-        ecgRecorderRefreshCount();
+    /* 删除文件并重写 records.idx（仅刷新计数会让列表仍返回已删记录）。 */
+    if (ecgRecorderDeleteByStart(id)) {
         httpd_resp_set_type(req, "application/json");
         httpd_resp_sendstr(req, "{\"deleted\":true}");
     } else {

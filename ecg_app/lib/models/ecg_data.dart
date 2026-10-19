@@ -21,12 +21,18 @@ class ECGSample {
   /// 旧 9 列帧降级为 abnormal != 0 ? 0x01 : 0x00。
   final int asrc;
 
+  /// 丢帧补点。绘图时占住时间轴并断开折线，数值不参与纵轴范围。
+  final bool isGap;
+
   const ECGSample(this.clean, this.noisy, this.filtered,
       {this.bpm = 0,
       this.sqi = 0.0,
       this.abnormal = 0,
       this.confidence = 0.0,
-      this.asrc = 0});
+      this.asrc = 0,
+      this.isGap = false});
+
+  static const ECGSample gap = ECGSample(0, 0, 0, isGap: true);
 
   @override
   String toString() =>

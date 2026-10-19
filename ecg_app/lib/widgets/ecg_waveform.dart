@@ -8,15 +8,11 @@ import '../models/waveform_data_source.dart';
  *
  * 医用标准（IEC 60601-2-25 显示约定）：
  *   - 走纸速度 25 mm/s：横轴 1 秒 = 25 个小格；
- *   - 增益 10 mm/mV：纵轴 1 mV = 10 个小格（垂直方向为自适应增益，
- *     见下方说明）；
+ *   - 纵轴是协议里的伏特（AFE 为减 1.65 后的 ADC 电压，回放为 ECGR/8000），
+ *     自适应增益，角标写 auto-gain (V)；
  *   - 1 mm 细格 + 5 mm 粗格双层网格（方格为正方形）；
  *   - 走纸扫描头：新样本自左向右推进，未写入区域（右侧）留白；
- *   - 横轴标注绝对秒，纵轴标注 mV。
- *
- * 关于垂直增益：实时监测需要保证任何幅度下波形都可见，故纵向采用
- * 自适应增益（等效于监护仪 auto-gain）。网格方格仍保持正方形，
- * 纵向刻度按当前实际增益换算并标注真实 mV 值（不伪造"恰好 0.5mV"）。
+ *   - 丢帧补的 NaN 只占时间、断开折线。
  *
  * 性能（P2-2）：
  *   - 网格位于 RepaintBoundary 静态层，数据刷新不触发网格重绘；
@@ -30,9 +26,6 @@ class _EcgPaper {
 
   /// 走纸速度（mm/s）——医用标准。
   static const double speedMmPerSec = 25.0;
-
-  /// 增益（mm/mV）——医用标准标注；纵向实际使用自适应增益。
-  static const double gainMmPerMv = 10.0;
 
   /// 网格方格边长下限（像素），防止极限窗口下网格过密。
   /// 网格方格边长下限（像素）。手机屏上 1mm 若小于 ~6px 会糊成灰雾，
@@ -144,13 +137,8 @@ class _EcgGridPainter extends CustomPainter {
       tp.paint(canvas, Offset(s * secPx + 2, size.height - tp.height - 1));
     }
 
-    // 走纸/增益注记（监护仪式角标；真实 mV 数值由波形层按实际增益标注）
-    // 标准增益 10 mm/mV：据此换算"1 mV 等效高度"，供波形层标注参考。
-    final mvEquivalentPx = _EcgPaper.gainMmPerMv * pxPerMm;
     tp.text = TextSpan(
-      text: '${_EcgPaper.speedMmPerSec.toInt()}mm/s  '
-          '${_EcgPaper.gainMmPerMv.toInt()}mm/mV'
-          ' (1mV≈${mvEquivalentPx.round()}px)',
+      text: '${_EcgPaper.speedMmPerSec.toInt()}mm/s  auto-gain (V)',
       style: labelStyle,
     );
     tp.layout();
@@ -224,12 +212,19 @@ class _EcgTracePainter extends CustomPainter {
 
     final traceColor = alert ? AppColors.alert : AppColors.traceLine;
     final path = Path();
+    var penDown = false;
     for (int i = firstIndex; i < lastIndex; i++) {
+      final v = data[i];
+      if (v.isNaN) {
+        penDown = false;
+        continue;
+      }
       final x = xBase + (i - firstIndex) * dx;
-      final y = (size.height - (data[i] - minVal) * pxPerMv)
+      final y = (size.height - (v - minVal) * pxPerMv)
           .clamp(0.0, size.height);
-      if (i == firstIndex) {
+      if (!penDown) {
         path.moveTo(x, y);
+        penDown = true;
       } else {
         path.lineTo(x, y);
       }
@@ -253,8 +248,7 @@ class _EcgTracePainter extends CustomPainter {
         ..strokeJoin = StrokeJoin.round,
     );
 
-    // ---- 纵轴 mV 标注（按当前实际增益换算，保证"标注 = 实际"）----
-    // 纵向自适应增益下，绘图区高度对应 span（mV），中点为 0。
+    // 纵轴标注伏特。自适应增益下绘图区高度对应可见 span。
     final mvPerPx = span / size.height;
     final labelStyle = TextStyle(
       color: AppColors.traceLabel,
@@ -268,8 +262,8 @@ class _EcgTracePainter extends CustomPainter {
         : _EcgPaper.minPxPerMm;
     final stepPx = pxPerMm * 5;
     for (double y = 0; y <= size.height; y += stepPx) {
-      final mv = (size.height / 2 - y) * mvPerPx;
-      tp.text = TextSpan(text: mv.toStringAsFixed(2), style: labelStyle);
+      final volts = (size.height / 2 - y) * mvPerPx;
+      tp.text = TextSpan(text: '${volts.toStringAsFixed(2)} V', style: labelStyle);
       tp.layout();
       tp.paint(canvas, Offset(2, y + 1));
     }
