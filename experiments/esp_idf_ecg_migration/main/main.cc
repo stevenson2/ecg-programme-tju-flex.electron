@@ -646,11 +646,9 @@ extern "C" void app_main(void) {
     gpio_config(&io);
 
     /* 先把 BLE 启起来，避免 SPIFFS 首次格式化阻塞导致手机扫不到设备。
-     * Wi-Fi 失败只记日志：SuperMini 内部 RAM 不够时不能 abort 重启循环。 */
+     * Wi-Fi 等到主机 sync（或 5s）再 init，给 NimBLE 把池子放到 PSRAM。
+     * 失败只记日志：内部 RAM 不够时不能 abort 重启循环。 */
     initBLE();
-    if (!ecgWifiInit() || !ecgWifiStart()) {
-        printf("[main] Wi-Fi unavailable; BLE and ECG continue\n");
-    }
 
     xTaskCreate(storage_init_task, "storage_init", 4096, NULL, 2, NULL);
     uartCommandInit();
@@ -658,9 +656,22 @@ extern "C" void app_main(void) {
     uint32_t frame = 0;
     float last_conf = 0.0f;
     TickType_t nextWake = xTaskGetTickCount();
+    const int64_t bootUs = esp_timer_get_time();
+    bool wifiBootTried = false;
     printf("[main] ESP-IDF ECG demo start, mode=%s\n", modeName(s_mode));
 
     while (true) {
+        if (!wifiBootTried) {
+            int64_t elapsedUs = esp_timer_get_time() - bootUs;
+            if (bleHostIsReady() || elapsedUs >= 5000000) {
+                wifiBootTried = true;
+                printf("[main] starting Wi-Fi after BLE settle (%lld ms)\n",
+                       (long long)(elapsedUs / 1000));
+                if (!ecgWifiIsOn() && (!ecgWifiInit() || !ecgWifiStart())) {
+                    printf("[main] Wi-Fi unavailable; BLE and ECG continue\n");
+                }
+            }
+        }
         uint64_t tWork0 = esp_timer_get_time();
         checkButton();
         uartCommandPoll();

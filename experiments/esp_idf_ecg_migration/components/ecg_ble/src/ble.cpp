@@ -203,6 +203,8 @@ static int gap_event(struct ble_gap_event *event, void *arg) {
     }
 }
 
+static volatile bool g_host_ready = false;
+
 static void on_sync(void) {
     uint8_t addr_type;
     ble_hs_util_ensure_addr(0);
@@ -210,9 +212,11 @@ static void on_sync(void) {
     g_own_addr_type = addr_type;
     g_adv_slow = false; /* 主机重启 (on_reset/on_sync) 后从快档重来 */
     start_advertising();
+    g_host_ready = true;
 }
 
 static void on_reset(int reason) {
+    g_host_ready = false;
     ESP_LOGE(TAG, "reset reason=%d", reason);
 }
 
@@ -280,6 +284,10 @@ extern "C" void initBLE(void) {
 
     nimble_port_freertos_init(host_task);
     ESP_LOGI(TAG, "BLE init OK, device=%s", DEVICE_NAME);
+}
+
+extern "C" bool bleHostIsReady(void) {
+    return g_host_ready;
 }
 
 extern "C" uint32_t bleNotifyFailCount(void) {

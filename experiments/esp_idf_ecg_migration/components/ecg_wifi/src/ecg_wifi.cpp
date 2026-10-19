@@ -279,6 +279,26 @@ static void wifi_drop_driver(void) {
     s_wifiInited = false;
 }
 
+static void wifi_log_internal(const char *when) {
+    size_t free_b = heap_caps_get_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+    size_t largest = heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+    ESP_LOGI(TAG, "%s: internal free=%u largest=%u",
+             when, (unsigned)free_b, (unsigned)largest);
+}
+
+/* SuperMini 内部 DRAM 只够放下 Wi-Fi 任务栈和静态 RX DMA。
+ * 动态缓冲和 RX MGMT 走 PSRAM（CONFIG_SPIRAM_TRY_ALLOCATE_WIFI_LWIP）。
+ * rx_mgmt_buf_type: 0 = 静态 DMA，1 = 动态。beacon_max_len 不能低于 752。 */
+static void wifi_fit_supermini(wifi_init_config_t *cfg) {
+    cfg->static_rx_buf_num = 4;
+    cfg->dynamic_rx_buf_num = 8;
+    cfg->dynamic_tx_buf_num = 8;
+    cfg->rx_mgmt_buf_type = 1;
+    cfg->rx_mgmt_buf_num = 5;
+    cfg->mgmt_sbuf_num = 6;
+    cfg->rx_ba_win = 6;
+}
+
 static bool ensure_ap_netif(void) {
     if (s_ap_netif) return true;
     /* 不用 esp_netif_create_default_wifi_ap()：失败时它内部 assert / ESP_ERROR_CHECK。 */
@@ -307,17 +327,19 @@ bool ecgWifiStart(void) {
     if (!ecgWifiInit()) return false;
 
     if (!s_wifiInited) {
-        size_t largest = heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
-        /* Wi-Fi 任务栈和静态 RX 都要内部 RAM。块太小就不要进 esp_wifi_init，
-         * 那条路径在 NO_MEM 时会把板子打进 abort 重启。 */
-        if (largest < 16 * 1024) {
-            ESP_LOGE(TAG, "skip Wi-Fi: internal largest block %u < 16KB",
-                     (unsigned)largest);
+        wifi_log_internal("before esp_wifi_init");
+        wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+        wifi_fit_supermini(&cfg);
+        ESP_LOGI(TAG,
+                 "wifi cfg static_rx=%d dyn_rx=%d dyn_tx=%d mgmt_type=%d mgmt_num=%d sbuf=%d ba=%d",
+                 cfg.static_rx_buf_num, cfg.dynamic_rx_buf_num, cfg.dynamic_tx_buf_num,
+                 cfg.rx_mgmt_buf_type, cfg.rx_mgmt_buf_num, cfg.mgmt_sbuf_num, cfg.rx_ba_win);
+        esp_err_t ierr = esp_wifi_init(&cfg);
+        if (!wifi_log_err(ierr, "esp_wifi_init")) {
+            wifi_log_internal("esp_wifi_init failed");
             return false;
         }
-        wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-        esp_err_t ierr = esp_wifi_init(&cfg);
-        if (!wifi_log_err(ierr, "esp_wifi_init")) return false;
+        wifi_log_internal("esp_wifi_init ok");
         if (!ensure_ap_netif()) {
             wifi_drop_driver();
             return false;
@@ -363,7 +385,7 @@ bool ecgWifiStart(void) {
     }
     register_uri_handlers(g_server);
     g_wifi_on = true;
-    ESP_LOGI(TAG, "AP started");
+    wifi_log_internal("AP started");
     return true;
 }
 

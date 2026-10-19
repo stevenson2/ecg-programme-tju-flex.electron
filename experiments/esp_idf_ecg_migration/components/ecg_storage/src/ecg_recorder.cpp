@@ -64,6 +64,8 @@ typedef struct {
 
 static QueueHandle_t g_finQueue = NULL;
 static TaskHandle_t g_workerTask = NULL;
+static StaticTask_t g_workerTcb;
+static StackType_t *g_workerStack = NULL;
 static SemaphoreHandle_t g_ioMutex = NULL;
 static volatile uint32_t g_finPending = 0;
 
@@ -465,8 +467,22 @@ static void ecgrWorkerInit(void) {
     g_ioMutex = xSemaphoreCreateMutex();
     g_finQueue = xQueueCreate(4, sizeof(EcgrFinalize *));
     if (!g_ioMutex || !g_finQueue) return;
-    xTaskCreatePinnedToCore(ecgrWorkerTask, "ecgr_worker", 4096, NULL, 3,
-                            &g_workerTask, 1);
+    /* 栈放 PSRAM。TCB 留在内部 RAM。分配失败再退回内部栈。 */
+    const uint32_t words = 4096 / sizeof(StackType_t);
+    if (!g_workerStack) {
+        g_workerStack = (StackType_t *)heap_caps_malloc(
+            words * sizeof(StackType_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    }
+    if (g_workerStack) {
+        g_workerTask = xTaskCreateStaticPinnedToCore(
+            ecgrWorkerTask, "ecgr_worker", words, NULL, 3,
+            g_workerStack, &g_workerTcb, 1);
+    }
+    if (!g_workerTask) {
+        printf("[ECGR] PSRAM worker stack unavailable; using internal\n");
+        xTaskCreatePinnedToCore(ecgrWorkerTask, "ecgr_worker", 4096, NULL, 3,
+                                &g_workerTask, 1);
+    }
 }
 
 bool ecgRecorderStop(void) {
