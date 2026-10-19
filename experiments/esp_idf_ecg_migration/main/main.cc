@@ -34,21 +34,22 @@
  * 背景: App 冻结不可改, 报警持续性必须在固件侧。原链路 BLE 第 8 列跟随
  * ecg_ai 的 confirmed (1-of-5 + 冷却 5 拍), 持续异常下呈 1s 亮 / 5s 灭闪断
  * (§104 基线: 90s 连续病理信号, 报警位从未持续超过 1s)。
- * 策略: 任何生理报警源触发 -> abnormal 位擎住 >= 30s; 解除需信号质量恢复 +
+ * 策略: 任何生理报警源触发 -> abnormal 位擎住 >= ALARM_MIN_HOLD_S (现 12s); 解除需信号质量恢复 +
  * 最近窗 raw 密度回落 + 规则源静默。AI 内部冷却只用于事件计数, 不再压制
  * 持续 (AI_RESULT 的 confirmed 列保持原语义, 供对照/调参)。
  * 注意: 注释中禁止出现 "某词加斜杠星号" 组合, 会提前终结块注释 (2e759e4)。 */
-#define ALARM_MIN_HOLD_S     30      /* 最短擎住时长 (秒) */
-#define ALARM_AI_WIN         30      /* AI 进入判据: 最近 30 窗中 raw 异常 >= ALARM_AI_TH */
-#define ALARM_AI_TH          10      /* (v3-A replay_normal raw 密度实测后再定稿) */
+#define ALARM_MIN_HOLD_S     12      /* min hold seconds; 2026-10-19: 30->12 */
+#define ALARM_AI_WIN         10      /* AI enter: dens in last 10 wins; was 30 */
+#define ALARM_AI_TH          8       /* 8/10 ~8-10s confirm; was 10/30 */
 #define ALARM_AI_SQI_MIN     0.80f   /* AI 源 SQI 门控 (Round-D2, TH §110):
  * 语料定标: pure_motion FP 时秒内 min-SQI 恒 0.667, 而 alarm 中 TP case 最低
  * 0.861 (PTB s0010) / 0.973 (MIT-106)。门控只作用于 0x01 AI 密度源;
  * 规则源 (停搏/过缓过速/VF) 不受影响。口径披露: 语料 n=1/条件, 阈值
  * 0.80 居中 (0.667 vs 0.861), 待更多条件数据复核。 */
-#define ALARM_REL_WIN        10      /* 解除判据: 最近 10 窗 raw 异常 <= ALARM_REL_TH */
+#define ALARM_REL_WIN        5       /* release dens window; was 10 */
 #define ALARM_REL_TH         1
 #define ALARM_REL_SQI_MIN    0.50f   /* 解除判据: SQI 需恢复到此线 */
+#define ALARM_COOLDOWN_S     25      /* AI cooldown after CLEAR (s); critical rules exempt; 2026-10-19 */
 #define ALARM_ASYSTOLE_MS    4000u   /* 距最近心拍超时 -> 时间停搏 (电极脱落等效) */
 #define ALARM_VF_GATE_MS     2500u   /* VF 互锁: 距最近拍小于此值不放行 (压正常窦律误报) */
 #define ALARM_VF_RMS_MIN     0.05f   /* VF rms 下限 (Round-E1, TH §111):
@@ -140,6 +141,7 @@ static bool s_schedActiveRec = false;
 /* ---- M1 报警擎住状态机状态 ---- */
 static bool     s_alarmLatched = false;    /* 擎住中的报警位 (BLE 第 8 列来源) */
 static uint32_t s_alarmLastTrigSec = 0;    /* 最近一次触发时刻 (擎住计时锚点) */
+static uint32_t s_alarmCooldownUntilSec = 0; /* AI cooldown until sec after CLEAR */
 static uint8_t  s_alarmSrc = 0;            /* 擎住期间累计的触发源位图 */
 static uint8_t  s_ruleHitSec = 0;          /* 本秒内命中过的规则源 (逐帧累积, 秒边界清零) */
 static bool     s_aiConfirmedSec = false;  /* 本秒内出现过 AI confirmed (录制位图用) */
@@ -199,6 +201,7 @@ static void alarmReset(void) {
     s_alarmLatched = false;
     s_alarmSrc = 0;
     s_alarmLastTrigSec = 0;
+    s_alarmCooldownUntilSec = 0;
     memset(s_aiRawHist, 0, sizeof(s_aiRawHist));
     s_aiRawHistLen = 0;
     s_aiRawHistIdx = 0;
@@ -246,7 +249,12 @@ static void alarmSecondTick(uint32_t nowSec, uint8_t ruleHits, float sqiMin,
                             bool vfHit, bool beatRecent) {
     uint8_t trig = ruleHits;
     int dens = alarmAiDensity(ALARM_AI_WIN);
-    if (dens >= ALARM_AI_TH && sqiMin >= ALARM_AI_SQI_MIN) trig |= ALARM_SRC_AI;
+    /* AI dens: cooldown blocks new latch; while latched still EXTEND */
+    if (dens >= ALARM_AI_TH && sqiMin >= ALARM_AI_SQI_MIN) {
+        if (s_alarmLatched || nowSec >= s_alarmCooldownUntilSec) {
+            trig |= ALARM_SRC_AI;
+        }
+    }
     if (vfHit && (trig != 0 || s_alarmLatched)) {
         trig |= ALARM_SRC_VF;
     } else if (vfHit) {
@@ -278,6 +286,7 @@ static void alarmSecondTick(uint32_t nowSec, uint8_t ruleHits, float sqiMin,
                s_alarmSrc, (unsigned long)nowSec);
         s_alarmLatched = false;
         s_alarmSrc = 0;
+        s_alarmCooldownUntilSec = nowSec + ALARM_COOLDOWN_S; /* AI re-entry only */
     }
 }
 
