@@ -2,6 +2,7 @@ idf_component_register(
     SRCS
         "src/filter.cpp"
         "src/heartrate.cpp"
+        "src/ai_qrs.c"
         "src/rhythm_safety.cpp"
         "src/af_detect.cpp"
         "src/vf_detect.cpp"

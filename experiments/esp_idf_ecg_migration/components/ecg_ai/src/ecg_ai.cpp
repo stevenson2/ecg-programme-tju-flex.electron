@@ -84,7 +84,12 @@ struct AiState {
     /* R-peak centered trigger (2026-10-20) */
     uint32_t rpeak_fire_at = 0;      /* sample_count to fire; 0=none */
     uint32_t last_rpeak_sc = 0;      /* last scheduled R at sample_count */
-    uint32_t rpeak_min_rr = 150;     /* ~600ms @250Hz antiretrig */
+    uint32_t rpeak_min_rr = 150;     /* ~600ms @250Hz antiretrig (cfg.rpeak_min_rr 覆盖) */
+    /* 待发射 R 中心窗 FIFO (2026-10-20): 宽松触发下相邻 R 可 < 半窗, 单槽会被覆盖丢拍 */
+    static constexpr int kPendN = 4;
+    uint32_t pend[kPendN] = {0};
+    int pend_n = 0;
+    uint32_t pend_dropped = 0;
 };
 
 AiState g_ai;
@@ -220,6 +225,7 @@ void ecg_ai_config_default(ecg_ai_config_t *cfg) {
     cfg->async_infer = false;   /* 兼容默认: 内联推理 (Round-F 起可选) */
     cfg->trigger_mode = ECG_AI_TRIGGER_BLIND;
     cfg->rpeak_half_win = 125;  /* R at center of 250-pt window */
+    cfg->rpeak_min_rr = 0;      /* 0 → 150 (legacy 600 ms) */
 }
 
 uint32_t ecg_ai_async_dropped(void) {
@@ -324,6 +330,8 @@ bool ecg_ai_init(const uint8_t *model_data, size_t model_size,
 void ecg_ai_reset(void) {
     g_ai.rpeak_fire_at = 0;
     g_ai.last_rpeak_sc = 0;
+    g_ai.pend_n = 0;
+    g_ai.rpeak_min_rr = (g_ai.cfg.rpeak_min_rr > 0) ? (uint32_t)g_ai.cfg.rpeak_min_rr : 150u;
     if (g_ai.interpreter) {
         delete g_ai.interpreter;
         g_ai.interpreter = nullptr;
@@ -410,10 +418,10 @@ void ecg_ai_feed_sample(float sample_500hz) {
     g_ai.sample_count++;
     /* R-peak deferred fire */
     if (g_ai.cfg.trigger_mode == ECG_AI_TRIGGER_RPEAK) {
-        if (g_ai.rpeak_fire_at != 0 && g_ai.sample_count >= g_ai.rpeak_fire_at
-            && g_ai.sample_count >= kDefaultWindow) {
-            g_ai.rpeak_fire_at = 0;
-            maybe_fire_window();
+        if (g_ai.pend_n > 0 && g_ai.sample_count >= g_ai.pend[0]) {
+            for (int i = 1; i < g_ai.pend_n; i++) g_ai.pend[i - 1] = g_ai.pend[i];
+            g_ai.pend_n--;
+            if (g_ai.sample_count >= kDefaultWindow) maybe_fire_window();
         }
     } else if ((g_ai.sample_count % (uint32_t)g_ai.cfg.stride) == (uint32_t)g_ai.cfg.trigger_offset &&
                g_ai.sample_count >= kDefaultWindow) {
@@ -488,4 +496,19 @@ void ecg_ai_on_rpeak(void) {
     }
     g_ai.last_rpeak_sc = g_ai.sample_count;
     g_ai.rpeak_fire_at = g_ai.sample_count + half;
+    if (g_ai.pend_n < AiState::kPendN) g_ai.pend[g_ai.pend_n++] = g_ai.rpeak_fire_at;
+    else g_ai.pend_dropped++;
+}
+
+void ecg_ai_on_rpeak_at(uint32_t lag_250) {
+    if (!g_ai.initialized) return;
+    if (g_ai.cfg.trigger_mode != ECG_AI_TRIGGER_RPEAK) return;
+    uint32_t half = (g_ai.cfg.rpeak_half_win > 0) ? (uint32_t)g_ai.cfg.rpeak_half_win : 125u;
+    if (lag_250 > half - 5u) lag_250 = half - 5u;   /* 窗口须仍在 250 点环形缓冲内 */
+    if (lag_250 > g_ai.sample_count) return;
+    uint32_t r_sc = g_ai.sample_count - lag_250;
+    if (g_ai.last_rpeak_sc != 0 && (r_sc - g_ai.last_rpeak_sc) < g_ai.rpeak_min_rr) return;
+    g_ai.last_rpeak_sc = r_sc;
+    if (g_ai.pend_n < AiState::kPendN) g_ai.pend[g_ai.pend_n++] = r_sc + half;
+    else g_ai.pend_dropped++;
 }

@@ -52,6 +52,7 @@ typedef struct {
     bool async_infer;         /* true: 推理在独立任务执行 (Round-F)；默认 false 内联 */
     int trigger_mode;         /* 0=blind stride (default), 1=R-peak centered */
     int rpeak_half_win;       /* @250Hz samples after R before fire; default 125 */
+    int rpeak_min_rr;         /* @250Hz AI 防重触发; 0=默认150(600ms); 宽松 QRS 触发用 50(200ms) */
 } ecg_ai_config_t;
 
 typedef struct {
@@ -76,6 +77,8 @@ void ecg_ai_feed_sample(float sample_500hz);
 
 /* R峰触发：在 hr.beatDetected 时调用，预约 R 中心窗（仅 trigger_mode=RPEAK） */
 void ecg_ai_on_rpeak(void);
+/* 宽松 QRS 触发 (ai_qrs): R 位于当前样本之前 lag_250 个 250Hz 样本; 支持多拍排队 */
+void ecg_ai_on_rpeak_at(uint32_t lag_250);
 
 /* 直接跑已经 Z-score 过的 250 点窗口（用于一致性测试） */
 bool ecg_ai_run_preprocessed(const float *window_250);

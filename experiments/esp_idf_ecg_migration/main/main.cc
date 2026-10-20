@@ -22,6 +22,13 @@
 #include "signal_generator/ecg_simulator.h"
 #include "signal_generator/ecg_replay.h"
 #include "heartrate/heartrate.h"
+#include "ai_qrs/ai_qrs.h"
+
+/* 2026-10-20: AI 通道独立宽松 QRS 触发 (不做早搏拒绝)。1=新 (默认), 0=恢复旧行为
+ * (hr.beatDetected → ecg_ai_on_rpeak, 600 ms 防重触发)。心率仍由 hrProcess 严格检测器负责。 */
+#ifndef ECG_AI_PERMISSIVE_QRS
+#define ECG_AI_PERMISSIVE_QRS 1
+#endif
 #include "rhythm_safety/rhythm_safety.h"
 #include "af_detect/af_detect.h"
 #include "vf_detect/vf_detect.h"
@@ -313,7 +320,7 @@ static void switchMode(int newMode) {
     alarmReset();
     filterReset();
     aiFilterReset();
-    hrFullReset();
+    hrFullReset(); aiqrsInit(NULL);
     rsReset();
     afReset();
     vfReset();
@@ -676,6 +683,9 @@ extern "C" void app_main(void) {
     cfg.async_infer = true;   /* Round-F: 推理出环 (核 1), 采样循环不再被 invoke 阻塞 */
     cfg.trigger_mode = ECG_AI_TRIGGER_RPEAK; /* 2026-10-20: R-centered AI windows */
     cfg.rpeak_half_win = 125;
+#if ECG_AI_PERMISSIVE_QRS
+    cfg.rpeak_min_rr = 50;   /* 200 ms */
+#endif
     if (!ecg_ai_init(models_ecg_model_v3a_int8_tflite,
                      models_ecg_model_v3a_int8_tflite_len, &cfg)) {
         printf("[main] ecg_ai init failed\n");
@@ -685,6 +695,7 @@ extern "C" void app_main(void) {
     ecgSimulatorInit();
     ecgReplayInit();
     hrInit();
+    aiqrsInit(NULL);
     rsInit();
     afInit();
     vfInit();
@@ -757,6 +768,10 @@ extern "C" void app_main(void) {
         ecg_ai_feed_sample(ai_in);
 
         HR_Result hr = hrProcess(filteredSample);
+#if ECG_AI_PERMISSIVE_QRS
+        AIQRS_Result aq = aiqrsProcess(filteredSample);
+        if (aq.fired) ecg_ai_on_rpeak_at((uint32_t)aq.r_lag / 2u);
+#endif
         RS_Result rs = rsProcess(&hr);
         AF_Result af = afProcess(&hr);
         (void)af;   /* Lane A 研究线 (AF 头) 精度未达部署线, 暂不入报警通道 */
@@ -771,7 +786,9 @@ extern "C" void app_main(void) {
         if (hr.beatDetected) {
             s_lastBeatSeenMs = nowMs;
             s_beatEverSeen = true;
-            ecg_ai_on_rpeak(); /* schedule R-centered AI window */
+#if !ECG_AI_PERMISSIVE_QRS
+            ecg_ai_on_rpeak(); /* legacy: schedule R-centered AI window */
+#endif
         }
         /* 时间停搏 (电极脱落等效): 主循环侧独立跟踪最近拍时刻。
          * 不能用 hrGetLastBeatMillis —— hr 内部 3s 超时软复位会把它刷新为
