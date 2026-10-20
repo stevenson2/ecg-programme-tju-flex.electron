@@ -630,6 +630,8 @@ extern "C" void app_main(void) {
     cfg.confirm_n = 5;
     cfg.cooldown_beats = 5;
     cfg.async_infer = true;   /* Round-F: 推理出环 (核 1), 采样循环不再被 invoke 阻塞 */
+    cfg.trigger_mode = ECG_AI_TRIGGER_RPEAK; /* 2026-10-20: R-centered AI windows */
+    cfg.rpeak_half_win = 125;
     if (!ecg_ai_init(models_ecg_model_v3a_int8_tflite,
                      models_ecg_model_v3a_int8_tflite_len, &cfg)) {
         printf("[main] ecg_ai init failed\n");
@@ -722,6 +724,7 @@ extern "C" void app_main(void) {
         if (hr.beatDetected) {
             s_lastBeatSeenMs = nowMs;
             s_beatEverSeen = true;
+            ecg_ai_on_rpeak(); /* schedule R-centered AI window */
         }
         /* 时间停搏 (电极脱落等效): 主循环侧独立跟踪最近拍时刻。
          * 不能用 hrGetLastBeatMillis —— hr 内部 3s 超时软复位会把它刷新为

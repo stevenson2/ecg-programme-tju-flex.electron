@@ -8,7 +8,7 @@
  * 迁移自 Arduino src/ai_inference/ai_inference.cpp，保留：
  *   - 2:1 输入抽取（500Hz -> 250Hz）
  *   - 因果 0.5Hz 高通（aiApplyFilter 同系数，流式状态跨窗口）
- *   - 250 点窗口（默认每 250 个抽取样本触发一次，可配置 stride/offset）
+ *   - 250 点窗口（默认盲切 stride；可选 R 峰中心触发，与学生模型契约对齐）
  *   - Z-score（总体标准差，std<1e-6 置 1）
  *   - INT8 输入填充（round + zero_point + clip）
  *   - exp7c INT8 推理（esp-tflite-micro + ESP-NN）
@@ -35,6 +35,9 @@ typedef enum {
     ECG_AI_CONFIRM_ONE_OF_N = 1,
 } ecg_ai_confirm_mode_t;
 
+#define ECG_AI_TRIGGER_BLIND  0
+#define ECG_AI_TRIGGER_RPEAK  1
+
 typedef struct {
     float threshold;          /* abnormal 概率阈值，默认 0.60 */
     int confirm_mode;         /* ECG_AI_CONFIRM_K_OF_N / ECG_AI_CONFIRM_ONE_OF_N */
@@ -47,6 +50,8 @@ typedef struct {
     bool use_psram;           /* true 时从 PSRAM 分配 arena */
     int queue_length;         /* 结果队列长度，0 表示只用回调 */
     bool async_infer;         /* true: 推理在独立任务执行 (Round-F)；默认 false 内联 */
+    int trigger_mode;         /* 0=blind stride (default), 1=R-peak centered */
+    int rpeak_half_win;       /* @250Hz samples after R before fire; default 125 */
 } ecg_ai_config_t;
 
 typedef struct {
@@ -68,6 +73,9 @@ bool ecg_ai_is_initialized(void);
 
 /* 流式喂入 500Hz（已梳状 + HP0.05 + LP40）样本 */
 void ecg_ai_feed_sample(float sample_500hz);
+
+/* R峰触发：在 hr.beatDetected 时调用，预约 R 中心窗（仅 trigger_mode=RPEAK） */
+void ecg_ai_on_rpeak(void);
 
 /* 直接跑已经 Z-score 过的 250 点窗口（用于一致性测试） */
 bool ecg_ai_run_preprocessed(const float *window_250);

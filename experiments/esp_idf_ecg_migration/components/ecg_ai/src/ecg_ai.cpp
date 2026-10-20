@@ -80,6 +80,11 @@ struct AiState {
     float slots[kAsyncSlots][kDefaultWindow] = {{0}};
     int slot_rr = 0;
     volatile uint32_t async_dropped = 0;
+
+    /* R-peak centered trigger (2026-10-20) */
+    uint32_t rpeak_fire_at = 0;      /* sample_count to fire; 0=none */
+    uint32_t last_rpeak_sc = 0;      /* last scheduled R at sample_count */
+    uint32_t rpeak_min_rr = 150;     /* ~600ms @250Hz antiretrig */
 };
 
 AiState g_ai;
@@ -213,6 +218,8 @@ void ecg_ai_config_default(ecg_ai_config_t *cfg) {
     cfg->use_psram = true;
     cfg->queue_length = 8;
     cfg->async_infer = false;   /* 兼容默认: 内联推理 (Round-F 起可选) */
+    cfg->trigger_mode = ECG_AI_TRIGGER_BLIND;
+    cfg->rpeak_half_win = 125;  /* R at center of 250-pt window */
 }
 
 uint32_t ecg_ai_async_dropped(void) {
@@ -315,6 +322,8 @@ bool ecg_ai_init(const uint8_t *model_data, size_t model_size,
 }
 
 void ecg_ai_reset(void) {
+    g_ai.rpeak_fire_at = 0;
+    g_ai.last_rpeak_sc = 0;
     if (g_ai.interpreter) {
         delete g_ai.interpreter;
         g_ai.interpreter = nullptr;
@@ -367,6 +376,28 @@ bool ecg_ai_is_initialized(void) {
     return g_ai.initialized;
 }
 
+
+/* Build+zscore current ring and invoke (async or inline). */
+bool maybe_fire_window(void) {
+    float win[kDefaultWindow];
+    if (!build_current_window(win)) return false;
+    zscore(win, kDefaultWindow);
+    if (g_ai.cfg.async_infer && g_ai.handoff) {
+        int slot = g_ai.slot_rr;
+        float *dst = g_ai.slots[slot];
+        memcpy(dst, win, sizeof(float) * kDefaultWindow);
+        g_ai.next_sample_index = g_ai.sample_count;
+        if (xQueueSend(g_ai.handoff, &slot, 0) != pdTRUE) {
+            g_ai.async_dropped++;
+            return false;
+        }
+        g_ai.slot_rr = (g_ai.slot_rr + 1) % kAsyncSlots;
+        return true;
+    }
+    g_ai.next_sample_index = g_ai.sample_count;
+    return fill_int8_and_invoke(win);
+}
+
 void ecg_ai_feed_sample(float sample_500hz) {
     if (!g_ai.initialized) return;
     /* 2:1 抽取：保留偶数样本 */
@@ -377,25 +408,16 @@ void ecg_ai_feed_sample(float sample_500hz) {
     g_ai.buffer[g_ai.write_idx] = v;
     g_ai.write_idx = (g_ai.write_idx + 1) % kDefaultWindow;
     g_ai.sample_count++;
-    if ((g_ai.sample_count % (uint32_t)g_ai.cfg.stride) == (uint32_t)g_ai.cfg.trigger_offset &&
-        g_ai.sample_count >= kDefaultWindow) {
-        float win[kDefaultWindow];
-        if (build_current_window(win)) {
-            zscore(win, kDefaultWindow);
-            if (g_ai.cfg.async_infer && g_ai.handoff) {
-                /* Round-F: 拷入轮转槽交接; z-score 在主任务完成 (便宜且确定性),
-                 * 量化/Invoke/发布全在推理任务。3 槽轮转 + 队列深 2: 推理
-                 * ~50ms/窗 << 1s/窗, 实际不会堆积; 槽满即丢并计数。 */
-                float *dst = g_ai.slots[g_ai.slot_rr];
-                g_ai.slot_rr = (g_ai.slot_rr + 1) % kAsyncSlots;
-                memcpy(dst, win, sizeof(float) * kDefaultWindow);
-                if (xQueueSend(g_ai.handoff, &dst, 0) != pdTRUE) {
-                    g_ai.async_dropped = g_ai.async_dropped + 1;
-                }
-            } else {
-                fill_int8_and_invoke(win);
-            }
+    /* R-peak deferred fire */
+    if (g_ai.cfg.trigger_mode == ECG_AI_TRIGGER_RPEAK) {
+        if (g_ai.rpeak_fire_at != 0 && g_ai.sample_count >= g_ai.rpeak_fire_at
+            && g_ai.sample_count >= kDefaultWindow) {
+            g_ai.rpeak_fire_at = 0;
+            maybe_fire_window();
         }
+    } else if ((g_ai.sample_count % (uint32_t)g_ai.cfg.stride) == (uint32_t)g_ai.cfg.trigger_offset &&
+               g_ai.sample_count >= kDefaultWindow) {
+        maybe_fire_window();
     }
 }
 
@@ -451,4 +473,19 @@ uint32_t ecg_ai_total_inferences(void) {
 
 uint32_t ecg_ai_total_confirmed(void) {
     return g_ai.total_confirmed;
+}
+
+
+void ecg_ai_on_rpeak(void) {
+    if (!g_ai.initialized) return;
+    if (g_ai.cfg.trigger_mode != ECG_AI_TRIGGER_RPEAK) return;
+    /* sample_count is the 250Hz index of the most recently stored sample
+     * (R peak approximately "now"). Fire after half window so R is centered. */
+    uint32_t half = (g_ai.cfg.rpeak_half_win > 0) ? (uint32_t)g_ai.cfg.rpeak_half_win : 125u;
+    if (g_ai.last_rpeak_sc != 0 &&
+        (g_ai.sample_count - g_ai.last_rpeak_sc) < g_ai.rpeak_min_rr) {
+        return; /* refractory */
+    }
+    g_ai.last_rpeak_sc = g_ai.sample_count;
+    g_ai.rpeak_fire_at = g_ai.sample_count + half;
 }
