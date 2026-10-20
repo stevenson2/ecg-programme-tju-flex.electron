@@ -15,6 +15,8 @@ MODELS = ["student_hard", "distill_v2", "exp5_int8"]
 THR = s13.THR
 FILES = ["serial_20261019_145244_leadI_standard_AD8232.csv", "serial_20261019_155455_leadI_standard_AD8232.csv",
          "serial_20261019_143011_wearable_Lchest_horiz_AD8232.csv", "serial_20261019_143825_wearable_Lchest_horiz_AD8232.csv"]
+import sys
+FILES += [a for a in sys.argv[1:] if a.endswith(".csv")]   # extra sessions (cache must exist: scripts/22_replay_new_session.py)
 out = {"generated_by": "scripts/18_export_annot_data.py", "detector": "aiqrs (ECG_AI_PERMISSIVE_QRS=1, tools/hr_host mode 2)",
        "fs": 250, "thr": THR, "rule": s13.RULE, "models": MODELS, "sessions": []}
 for fn in FILES:
@@ -22,8 +24,12 @@ for fn in FILES:
     if not path.exists():
         print("missing", fn); continue
     df = pd.read_csv(path)
-    x = df["filtered"].to_numpy(np.float64) if "filtered" in df.columns else \
-        df["raw_line"].astype(str).str.split(",", expand=True)[2].astype(float).to_numpy(np.float64)
+    if "filtered" in df.columns:
+        x = df["filtered"].to_numpy(np.float64)
+    else:  # same row-validity filter as scripts/22_replay_new_session.py (old sessions: all rows valid)
+        parts = df["raw_line"].astype(str).str.split(",", expand=True); num = parts.iloc[:, :3].apply(pd.to_numeric, errors="coerce")
+        ok = (parts.notna().sum(1) >= 10) & num.notna().all(1)
+        x = num[ok].iloc[:, 2].to_numpy(np.float64)
     fs = 100.0
     mp = path.with_name(path.stem + "_meta.json")
     if mp.exists():

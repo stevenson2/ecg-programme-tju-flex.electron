@@ -1,0 +1,9 @@
+set,cls,n,qrsE_off_med,qrsE_off_IQR,qrsE_within_pm10,maxabs_off_med,maxabs_within_pm10,globalE_within_pm20
+student_train_leadI,N,105754,1.0,-1..2,0.9628,1.0,0.85775,0.9148
+student_train_leadI,V,13722,2.0,-4..9,0.8689695379682262,-3.0,0.47077685468590585,0.4426468444833115
+leadI_incart_beats[val],N,24411,0.0,0..1,0.9994,0.0,0.8402,0.8859
+leadI_incart_beats[val],V,2730,-5.0,-6..6,0.9326007326007326,-101.0,0.3663003663003663,0.25934065934065936
+leadI_incart_beats[test],N,23431,1.0,0..3,0.96715,2.0,0.6411,0.76835
+leadI_incart_beats[test],V,3773,6.0,-2..10,0.7927378743705275,5.0,0.4667373442883647,0.5404187649085608
+INCART_test_recut_causal(script13),N,23431,1.0,0..3,0.96715,2.0,0.6411,0.76835
+INCART_test_recut_causal(script13),V,3773,6.0,-2..10,0.7927378743705275,5.0,0.4667373442883647,0.5404187649085608
