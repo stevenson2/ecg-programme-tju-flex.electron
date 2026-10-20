@@ -60,6 +60,12 @@ bool isBLEConnected(void);
  */
 bool bleCommandQueueTake(char* out, size_t len);
 
+/**
+ * @brief 实时波形流开关 (STREAM 1/0)。关流时连接参数切到慢间隔 (省射频),
+ * 开流且 TX 已订阅时切回快间隔。
+ */
+void bleSetStreamActive(bool active);
+
 #ifdef __cplusplus
 }
 #endif

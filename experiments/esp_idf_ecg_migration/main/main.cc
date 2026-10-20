@@ -108,6 +108,23 @@ static uint32_t s_lastButtonMs = 0;
 static bool s_buttonWasLow = false;
 /* BLE 批量发送：攒 BLE_BATCH_SIZE 帧再 Notify 一次，降低射频占空比/发热。 */
 #define BLE_BATCH_SIZE   2
+
+/* ---- 降功耗开关 (2026-10-20) ----
+ * ECG_WIFI_AUTOSTART_AT_BOOT: 1=旧行为 (开机即开 SoftAP); 0=按需 (BLE WIFI_ON/UPLOAD)。
+ * ECG_WIFI_SYNC_INTERVAL_S: >0 时每 N 秒若有未上传记录且未在录制, 自动开 AP 等手机来取
+ *   (空闲超时后自动关)。默认 0: 由 App 用 WIFI_ON 触发。
+ * ECG_BLE_STREAM_DEFAULT: 1=开连即 125 样本/s 实时流 (兼容冻结版 App);
+ *   0=默认 1Hz 摘要帧 + 报警变化立即发, App 打开波形页时发 STREAM 1。 */
+#ifndef ECG_WIFI_AUTOSTART_AT_BOOT
+#define ECG_WIFI_AUTOSTART_AT_BOOT 0
+#endif
+#ifndef ECG_WIFI_SYNC_INTERVAL_S
+#define ECG_WIFI_SYNC_INTERVAL_S 0
+#endif
+#ifndef ECG_BLE_STREAM_DEFAULT
+#define ECG_BLE_STREAM_DEFAULT 1
+#endif
+static bool s_bleStream = (ECG_BLE_STREAM_DEFAULT != 0);
 #define BLE_BATCH_BUF_SIZE (160 * BLE_BATCH_SIZE + 1)
 static char s_bleBatchBuf[BLE_BATCH_BUF_SIZE];
 static int  s_bleBatchLen   = 0;
@@ -525,6 +542,33 @@ static void processCommand(const char *cmd, bool fromUart) {
         }
         return;
     }
+    if (strEqualsIgnoreCase(cmd, "STREAM 1") || strEqualsIgnoreCase(cmd, "STREAM 0")) {
+        s_bleStream = (cmd[7] == '1');
+        bleSetStreamActive(s_bleStream);
+        cmdReply(fromUart, s_bleStream ? "STREAM 1 ok" : "STREAM 0 ok");
+        return;
+    }
+    if (strEqualsIgnoreCase(cmd, "STREAM?")) {
+        cmdReply(fromUart, s_bleStream ? "STREAM 1" : "STREAM 0");
+        return;
+    }
+    if (strEqualsIgnoreCase(cmd, "WIFI?")) {
+        snprintf(reply, sizeof(reply), "WIFI %s idle=%lus", ecgWifiIsOn() ? "on" : "off",
+                 (unsigned long)ecgWifiIdleSec());
+        cmdReply(fromUart, reply);
+        return;
+    }
+    if (strEqualsIgnoreCase(cmd, "UPLOAD")) {   /* 别名: 开 AP 供 App 拉取记录 */
+        bool ok = ecgWifiIsOn() || ecgWifiStart();
+        snprintf(reply, sizeof(reply), "UPLOAD %s", ok ? "ok" : "fail");
+        cmdReply(fromUart, reply);
+        return;
+    }
+    if (strEqualsIgnoreCase(cmd, "UPLOAD_DONE")) {   /* App 传完立即关, 不等空闲超时 */
+        ecgWifiStop();
+        cmdReply(fromUart, "UPLOAD_DONE ok");
+        return;
+    }
     if (strEqualsIgnoreCase(cmd, "WIFI_ON")) {
         bool ok = ecgWifiStart();
         snprintf(reply, sizeof(reply), "WIFI_ON %s", ok ? "ok" : "fail");
@@ -658,8 +702,11 @@ extern "C" void app_main(void) {
 
     /* 先把 BLE/WiFi 启起来，避免 SPIFFS 首次格式化阻塞导致手机扫不到设备。 */
     initBLE();
-    ecgWifiInit();
-    ecgWifiStart();
+    ecgWifiInit();          /* 只做 NVS/netif/事件循环, 不开射频 */
+#if ECG_WIFI_AUTOSTART_AT_BOOT
+    ecgWifiStart();         /* 旧行为: 开机常开 SoftAP */
+#endif
+    bleSetStreamActive(s_bleStream);
 
     xTaskCreate(storage_init_task, "storage_init", 4096, NULL, 2, NULL);
     uartCommandInit();
@@ -781,6 +828,17 @@ extern "C" void app_main(void) {
             static uint32_t s_lastRecSec = 0;
             if (nowSec != s_lastRecSec) {
                 s_lastRecSec = nowSec;
+                /* 按需 Wi-Fi: 空闲/硬上限到期自动关, 并经 BLE 告知 App */
+                if (ecgWifiPoll()) {
+                    cmdReply(false, "WIFI_OFF auto");
+                }
+#if ECG_WIFI_SYNC_INTERVAL_S > 0
+                if (s_storageReady && !ecgWifiIsOn() && !ecgRecorderIsRecording()
+                    && (nowSec % ECG_WIFI_SYNC_INTERVAL_S) == 0
+                    && ecgRecorderRecordCount() > 0) {
+                    if (ecgWifiStart()) cmdReply(false, "WIFI_ON sched");
+                }
+#endif
                 /* ---- Round-H: LEADOFF 秒级评估 ----
                  * 3s 环统计 (去均值 RMS + crest): 去均值抗 AFE 悬空 DC 轨
                  * (恒定轨位应归入"静默"而非能量)。 */
@@ -846,7 +904,29 @@ extern "C" void app_main(void) {
             }
         }
 
-        if ((frame % 4) == 0 && isBLEConnected()) {
+        /* 关流 (STREAM 0): 每秒 1 帧摘要 (同 10 列格式, App 兼容), 报警位变化立即补发。 */
+        static bool s_lastSentLatched = false;
+        bool bleSummaryDue = !s_bleStream
+            && ((frame % 500) == 0 || s_alarmLatched != s_lastSentLatched);
+        if (bleSummaryDue && isBLEConnected()) {
+            char sum_line[192];
+            uint8_t trueBPM = (s_mode == SOURCE_SIMULATOR) ? ecgSimulatorGetTrueBPM() : 0;
+            uint8_t asrc = s_alarmLatched ? s_alarmSrc : 0;
+            if (s_helloPending) {
+                char hello[96];
+                snprintf(hello, sizeof(hello), "HELLO,%d,%s,%s;",
+                         ECG_PROTO_VERSION, ECG_PROTO_FW_VER,
+                         ECG_BLE_CAPABILITIES_STR);
+                if (sendBLEMessage(hello)) s_helloPending = false;
+            }
+            snprintf(sum_line, sizeof(sum_line),
+                     "%.3f,%.3f,%.3f,%u,%u,%.2f,0,%d,%.3f,%u;",
+                     cleanSample, noisyNoDC, displaySample,
+                     (unsigned)hr.bpm, (unsigned)trueBPM, hr.sqi,
+                     s_alarmLatched ? 1 : 0, last_conf, (unsigned)asrc);
+            if (sendBLEMessage(sum_line)) s_lastSentLatched = s_alarmLatched;
+        }
+        if (s_bleStream && (frame % 4) == 0 && isBLEConnected()) {
             char ble_line[192];
             uint8_t trueBPM = (s_mode == SOURCE_SIMULATOR) ? ecgSimulatorGetTrueBPM() : 0;
             uint8_t asrc = s_alarmLatched ? s_alarmSrc : 0;

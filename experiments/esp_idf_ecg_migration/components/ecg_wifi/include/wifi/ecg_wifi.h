@@ -47,6 +47,25 @@ extern "C" {
 #define ECG_WIFI_PORT  80
 #endif
 
+/* ---- 按需 Wi-Fi (2026-10-20 降功耗) ----
+ * Wi-Fi 只用于上传 ECG 记录, 不再开机常开。空闲超时自动关; 关时 deinit 释放 RAM。 */
+/** @brief 无 HTTP 请求且无已关联手机持续 N 秒后自动关 AP (0=不自动关) */
+#ifndef ECG_WIFI_IDLE_TIMEOUT_S
+#define ECG_WIFI_IDLE_TIMEOUT_S  120
+#endif
+/** @brief 单次开启的硬上限秒数, 防止手机一直挂着 AP (0=不限) */
+#ifndef ECG_WIFI_MAX_ON_S
+#define ECG_WIFI_MAX_ON_S  900
+#endif
+/** @brief 1=ecgWifiStop 时 esp_wifi_deinit + 销毁 netif 释放驱动 RAM; 0=旧行为只 stop */
+#ifndef ECG_WIFI_DEINIT_ON_STOP
+#define ECG_WIFI_DEINIT_ON_STOP  1
+#endif
+/** @brief AP 最大发射功率 (单位 0.25dBm; 34=8.5dBm)。贴身/桌边传输足够, 降 PA 电流与发热 */
+#ifndef ECG_WIFI_MAX_TX_QDBM
+#define ECG_WIFI_MAX_TX_QDBM  34
+#endif
+
 /* ======================== 公共 API ======================== */
 
 /**
@@ -92,6 +111,15 @@ bool ecgWifiIsOn(void);
  * 空闲时极廉价 (微秒级), 建议每迭代调用一次。
  */
 void ecgWifiProcess(void);
+
+/**
+ * @brief 每秒调用一次: 检查空闲/硬上限超时, 到期自动 ecgWifiStop()。
+ * @return true 本次调用发生了自动关闭 (调用方可发 BLE 通知)
+ */
+bool ecgWifiPoll(void);
+
+/** @brief 距上次 HTTP 活动的秒数 (未开启返回 0) */
+uint32_t ecgWifiIdleSec(void);
 
 /* ======================== 诊断配置 API (WiFi beacon 专项, 2026-08-10) ========================
  * 由 main.cpp 的 DIAG 命令 (串口+BLE 双通道) 调用。

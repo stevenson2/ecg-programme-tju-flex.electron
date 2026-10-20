@@ -388,7 +388,7 @@ bool maybe_fire_window(void) {
         memcpy(dst, win, sizeof(float) * kDefaultWindow);
         g_ai.next_sample_index = g_ai.sample_count;
         if (xQueueSend(g_ai.handoff, &slot, 0) != pdTRUE) {
-            g_ai.async_dropped++;
+            g_ai.async_dropped = g_ai.async_dropped + 1; /* C++20: volatile ++ deprecated (-Werror) */
             return false;
         }
         g_ai.slot_rr = (g_ai.slot_rr + 1) % kAsyncSlots;

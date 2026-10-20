@@ -23,6 +23,7 @@
 #include "esp_http_server.h"
 #include "nvs_flash.h"
 #include "esp_log.h"
+#include "esp_timer.h"
 
 #define ECGR_BASE_PATH "/spiffs/ecgdata"
 
@@ -36,6 +37,11 @@ static bool s_diagSeqSlow = false;
  * 只 stop/start WiFi 与 httpd, 不 deinit — 避免 netif 重复创建/deinit 失败
  * (2026-09-12 修复: 命令泵打通后 WIFI_ON/OFF 已成为可达路径)。 */
 static bool s_wifiInited = false;
+static esp_netif_t *s_apNetif = NULL;
+static int64_t s_onSinceUs = 0;        /* 本次开启时刻 */
+static volatile int64_t s_lastActUs = 0; /* 最近 HTTP 请求或有 STA 关联的时刻 */
+
+static inline void wifiTouch(void) { s_lastActUs = esp_timer_get_time(); }
 
 /* ======================== 内部辅助 ======================== */
 
@@ -77,6 +83,7 @@ static bool get_record_id_path(httpd_req_t *req, char *path, size_t path_len, ui
  * 从 records.idx 逐行解析，返回 {"records":[{id,duration,size,abnormal_seconds,start},...]}
  */
 static int ecgWifiListHandler(httpd_req_t *req) {
+    wifiTouch();
     char idx[4096] = {0};
     int n = ecgRecorderList(idx, sizeof(idx));
     if (n < 0) {
@@ -123,6 +130,7 @@ static int ecgWifiListHandler(httpd_req_t *req) {
  * 从 .ecgr 头部解析，返回 {"id",sample_rate,start_unix,start,duration,total_samples,abnormal_seconds}
  */
 static int ecgWifiMetaHandler(httpd_req_t *req) {
+    wifiTouch();
     char path[160];
     uint32_t id = 0;
     if (!get_record_id_path(req, path, sizeof(path), &id)) {
@@ -167,6 +175,7 @@ static int ecgWifiMetaHandler(httpd_req_t *req) {
  * 返回原始 .ecgr 二进制流 (chunked)。App 当前不发送 Range，保底返回全文件。
  */
 static int ecgWifiDataHandler(httpd_req_t *req) {
+    wifiTouch();
     char path[160];
     uint32_t id = 0;
     if (!get_record_id_path(req, path, sizeof(path), &id)) {
@@ -187,6 +196,7 @@ static int ecgWifiDataHandler(httpd_req_t *req) {
     uint8_t chunk[ECG_WIFI_CHUNK_BYTES];
     size_t rd;
     while ((rd = fread(chunk, 1, sizeof(chunk), f)) > 0) {
+        wifiTouch();
         if (httpd_resp_send_chunk(req, (const char *)chunk, rd) != ESP_OK) {
             break;
         }
@@ -201,6 +211,7 @@ static int ecgWifiDataHandler(httpd_req_t *req) {
  * 删除 .ecgr 文件并重建索引，返回 {"deleted":true/false}
  */
 static int ecgWifiDeleteHandler(httpd_req_t *req) {
+    wifiTouch();
     char path[160];
     uint32_t id = 0;
     if (!get_record_id_path(req, path, sizeof(path), &id)) {
@@ -260,7 +271,7 @@ bool ecgWifiStart(void) {
             ESP_LOGE(TAG, "esp_wifi_init failed: %s", esp_err_to_name(ierr));
             return false;
         }
-        esp_netif_create_default_wifi_ap();
+        s_apNetif = esp_netif_create_default_wifi_ap();
 
         uint8_t mac[6] = {0};
         esp_wifi_get_mac(WIFI_IF_AP, mac);
@@ -288,6 +299,8 @@ bool ecgWifiStart(void) {
     /* 与 Arduino 线的 setSleep(false) 对齐：AP 下关闭 WiFi 省电，
      * 避免省电/共存调度挤压 BLE 广播与连接响应。 */
     esp_wifi_set_ps(WIFI_PS_NONE);
+    /* 降功耗: 限制 AP 最大发射功率 (默认 8.5dBm, 原先跟随 PHY 默认 ~20dBm) */
+    esp_wifi_set_max_tx_power((int8_t)ECG_WIFI_MAX_TX_QDBM);
 
     httpd_config_t hc = HTTPD_DEFAULT_CONFIG();
     hc.lru_purge_enable = true;
@@ -299,7 +312,9 @@ bool ecgWifiStart(void) {
     }
     register_uri_handlers(g_server);
     g_wifi_on = true;
-    ESP_LOGI(TAG, "AP started");
+    s_onSinceUs = esp_timer_get_time();
+    s_lastActUs = s_onSinceUs;
+    ESP_LOGI(TAG, "AP started (on-demand, idle timeout %ds)", ECG_WIFI_IDLE_TIMEOUT_S);
     return true;
 }
 
@@ -312,7 +327,47 @@ void ecgWifiStop(void) {
     /* 只 stop 不 deinit: 默认 AP netif 与驱动配置保留, 下次 WIFI_ON 直接
      * esp_wifi_start 即可, 避免反复 deinit/init 踩 netif 生命周期问题。 */
     esp_wifi_stop();
+#if ECG_WIFI_DEINIT_ON_STOP
+    /* 按需模式: 释放 Wi-Fi 驱动/缓冲区 RAM (数十 KB), 下次 ecgWifiStart 重新 init。 */
+    esp_wifi_deinit();
+    if (s_apNetif) {
+        esp_netif_destroy_default_wifi(s_apNetif);
+        s_apNetif = NULL;
+    }
+    s_wifiInited = false;
+#endif
     g_wifi_on = false;
+    ESP_LOGI(TAG, "AP stopped");
+}
+
+bool ecgWifiPoll(void) {
+    if (!g_wifi_on) return false;
+    int64_t now = esp_timer_get_time();
+    wifi_sta_list_t sta;
+    if (esp_wifi_ap_get_sta_list(&sta) == ESP_OK && sta.num > 0) {
+        /* 已关联手机算活动, 避免 App 连上 AP 还没发请求就被关 */
+        wifiTouch();
+    }
+#if ECG_WIFI_MAX_ON_S > 0
+    if (now - s_onSinceUs >= (int64_t)ECG_WIFI_MAX_ON_S * 1000000LL) {
+        ESP_LOGI(TAG, "auto-off: max on-time");
+        ecgWifiStop();
+        return true;
+    }
+#endif
+#if ECG_WIFI_IDLE_TIMEOUT_S > 0
+    if (now - s_lastActUs >= (int64_t)ECG_WIFI_IDLE_TIMEOUT_S * 1000000LL) {
+        ESP_LOGI(TAG, "auto-off: idle");
+        ecgWifiStop();
+        return true;
+    }
+#endif
+    return false;
+}
+
+uint32_t ecgWifiIdleSec(void) {
+    if (!g_wifi_on) return 0;
+    return (uint32_t)((esp_timer_get_time() - s_lastActUs) / 1000000LL);
 }
 
 bool ecgWifiIsOn(void) { return g_wifi_on; }

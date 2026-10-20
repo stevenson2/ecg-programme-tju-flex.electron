@@ -24,6 +24,15 @@
 #define TAG "ecg_ble"
 #define DEVICE_NAME "ESP32-ECG"
 
+/* 降功耗旋钮 (2026-10-20)。ESP_PWR_LVL_N0=0dBm; 贴身+手机 1m 内可试 ESP_PWR_LVL_N6/N12。 */
+#ifndef ECG_BLE_TX_PWR_LVL
+#define ECG_BLE_TX_PWR_LVL ESP_PWR_LVL_N0
+#endif
+/* 慢间隔时允许的从机延迟 (跳过的连接事件数)。超时须 > (1+lat)*itvl_max*2 = 2.4s < 5s。 */
+#ifndef ECG_BLE_IDLE_LATENCY
+#define ECG_BLE_IDLE_LATENCY 2
+#endif
+
 /* NUS UUIDs（与 Arduino 版相同） */
 static const ble_uuid128_t nus_svc_uuid =
     BLE_UUID128_INIT(0x9e,0xca,0xdc,0x24,0x0e,0xe5,0xa9,0xe0,
@@ -41,6 +50,7 @@ static uint8_t g_own_addr_type = BLE_OWN_ADDR_PUBLIC;
 static uint16_t g_conn_handle = BLE_HS_CONN_HANDLE_NONE;
 static bool g_connected = false;
 static bool g_tx_subscribed = false;
+static bool g_stream_active = true;   /* STREAM 1/0, main 设置 */
 static uint32_t g_notify_fail = 0;
 static QueueHandle_t g_cmd_queue = nullptr;
 static char g_rx_line[64];
@@ -138,7 +148,7 @@ static void start_advertising(void) {
 static const struct ble_gap_upd_params kConnParamsIdle = {
     .itvl_min = 160,   /* 200ms */
     .itvl_max = 320,   /* 400ms */
-    .latency = 0,
+    .latency = ECG_BLE_IDLE_LATENCY,
     .supervision_timeout = 500, /* 5s */
     .min_ce_len = 0,
     .max_ce_len = 0,
@@ -167,7 +177,7 @@ static int gap_event(struct ble_gap_event *event, void *arg) {
             g_conn_handle = event->connect.conn_handle;
             /* 控制器连接功率档是 HDL0..HDL8（连接序号），不是 NimBLE conn_handle。
              * MAX_CONNECTIONS=1 时第一条链路就是 HDL0。 */
-            esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_CONN_HDL0, ESP_PWR_LVL_N0);
+            esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_CONN_HDL0, ECG_BLE_TX_PWR_LVL);
             ESP_LOGI(TAG, "connected handle=%u", (unsigned)g_conn_handle);
         } else {
             ESP_LOGI(TAG, "connect failed");
@@ -195,7 +205,7 @@ static int gap_event(struct ble_gap_event *event, void *arg) {
         /* TX 特征值 Notify 关闭 (App 退后台) → 长连接间隔; 重开 → 短间隔。 */
         if (event->subscribe.attr_handle == g_tx_handle) {
             g_tx_subscribed = event->subscribe.cur_notify != 0;
-            update_conn_interval_idle(!g_tx_subscribed);
+            update_conn_interval_idle(!(g_tx_subscribed && g_stream_active));
         }
         return 0;
     default:
@@ -258,8 +268,8 @@ extern "C" void initBLE(void) {
     }
     /* 可穿戴低功耗：BLE 默认发射功率从 +9dBm 降到 0dBm。
      * 手机贴身场景 0dBm 足够，能明显降低射频发热。 */
-    esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_ADV, ESP_PWR_LVL_N0);
-    esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_DEFAULT, ESP_PWR_LVL_N0);
+    esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_ADV, ECG_BLE_TX_PWR_LVL);
+    esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_DEFAULT, ECG_BLE_TX_PWR_LVL);
     ble_svc_gap_init();
     ble_svc_gatt_init();
     ble_svc_gap_device_name_set(DEVICE_NAME);
@@ -331,4 +341,12 @@ extern "C" bool bleCommandQueueTake(char *out, size_t len) {
     strncpy(out, buf, len);
     out[len - 1] = '\0';
     return true;
+}
+
+extern "C" void bleSetStreamActive(bool active) {
+    if (g_stream_active == active) return;
+    g_stream_active = active;
+    if (g_connected && g_tx_subscribed) {
+        update_conn_interval_idle(!active);
+    }
 }
