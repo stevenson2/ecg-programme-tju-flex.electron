@@ -1,0 +1,2800 @@
+{
+ "generated_local": "2026-10-20T13:13:48+0800",
+ "rule": {
+  "win": 10,
+  "th": 8,
+  "hold_s": 12,
+  "rel_win": 5,
+  "rel_th": 1,
+  "cooldown_s": 25
+ },
+ "thr": 0.5,
+ "grace_s": 15,
+ "rank": [
+  {
+   "model": "student_hard",
+   "leak_flag": "",
+   "incart": {
+    "model": "student_hard",
+    "db": "INCART_LeadI",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 11,
+    "hours": 5.5,
+    "n_events": 19,
+    "n_det": 5,
+    "sens": 0.2631578947368421,
+    "n_fp": 3,
+    "fph": 0.5454545454545454,
+    "lat_med": 15.0,
+    "lat_p95": 80.6,
+    "n_runs": 57,
+    "n_runs_det": 11,
+    "n_runs_undet_spec": 17,
+    "n_runs_undet_spec_det": 2,
+    "sens_ci": [
+     0.0,
+     0.4375
+    ],
+    "fph_ci": [
+     0.0,
+     1.2727272727272727
+    ]
+   },
+   "mit": {
+    "model": "student_hard",
+    "db": "MITBIH_MLII_crosslead",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 4,
+    "hours": 2.0055555555555555,
+    "n_events": 2,
+    "n_det": 1,
+    "sens": 0.5,
+    "n_fp": 0,
+    "fph": 0.0,
+    "lat_med": 10.0,
+    "lat_p95": 10.0,
+    "n_runs": 6,
+    "n_runs_det": 3,
+    "n_runs_undet_spec": 1,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     0.5,
+     0.5
+    ],
+    "fph_ci": [
+     0.0,
+     0.0
+    ]
+   },
+   "incart_proxyDet": {
+    "model": "student_hard",
+    "db": "INCART_LeadI",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 11,
+    "hours": 5.5,
+    "n_events": 19,
+    "n_det": 11,
+    "sens": 0.5789473684210527,
+    "n_fp": 4,
+    "fph": 0.7272727272727273,
+    "lat_med": 8.0,
+    "lat_p95": 93.5,
+    "n_runs": 57,
+    "n_runs_det": 19,
+    "n_runs_undet_spec": 17,
+    "n_runs_undet_spec_det": 2,
+    "sens_ci": [
+     0.2727272727272727,
+     1.0
+    ],
+    "fph_ci": [
+     0.0,
+     1.6363636363636365
+    ]
+   },
+   "mit_proxyDet": {
+    "model": "student_hard",
+    "db": "MITBIH_MLII_crosslead",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 4,
+    "hours": 2.0055555555555555,
+    "n_events": 2,
+    "n_det": 1,
+    "sens": 0.5,
+    "n_fp": 0,
+    "fph": 0.0,
+    "lat_med": 7.0,
+    "lat_p95": 7.0,
+    "n_runs": 6,
+    "n_runs_det": 3,
+    "n_runs_undet_spec": 1,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     0.5,
+     0.5
+    ],
+    "fph_ci": [
+     0.0,
+     0.0
+    ]
+   },
+   "realL_proxyDet": {
+    "model": "student_hard",
+    "db": "REAL_leadI",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 1,
+    "fph": 15.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     0.0,
+     30.0
+    ]
+   },
+   "realW_proxyDet": {
+    "model": "student_hard",
+    "db": "REAL_wearable",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 0,
+    "fph": 0.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     0.0,
+     0.0
+    ]
+   },
+   "ptb": {
+    "model": "student_hard",
+    "db": "PTB_LeadI_control",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 80,
+    "hours": 2.620833333333333,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 1,
+    "fph": 0.3815580286168522,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     0.0,
+     1.1501689339243213
+    ]
+   },
+   "realL": {
+    "model": "student_hard",
+    "db": "REAL_leadI",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 0,
+    "fph": 0.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     0.0,
+     0.0
+    ]
+   },
+   "realW": {
+    "model": "student_hard",
+    "db": "REAL_wearable",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 0,
+    "fph": 0.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     0.0,
+     0.0
+    ]
+   },
+   "noise_fph": {
+    "em12dB": 5.636363636363637,
+    "em6dB": 6.909090909090909,
+    "em0dB": 8.181818181818182,
+    "ma12dB": 1.2727272727272727,
+    "ma6dB": 1.0909090909090908,
+    "ma0dB": 0.9090909090909091
+   },
+   "noise_sens": {
+    "em12dB": 0.3684210526315789,
+    "em6dB": 0.10526315789473684,
+    "em0dB": 0.3684210526315789,
+    "ma12dB": 0.2631578947368421,
+    "ma6dB": 0.0,
+    "ma0dB": 0.0
+   },
+   "gate_pass_thr050": true,
+   "best_thr_under_gate": [
+    0.3,
+    0.3157894736842105,
+    0.7272727272727273
+   ]
+  },
+  {
+   "model": "exp0_h5",
+   "leak_flag": "trained on MIT-BIH/INCART historical split (MIT leakage likely)",
+   "incart": {
+    "model": "exp0_h5",
+    "db": "INCART_LeadI",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 11,
+    "hours": 5.5,
+    "n_events": 19,
+    "n_det": 19,
+    "sens": 1.0,
+    "n_fp": 27,
+    "fph": 4.909090909090909,
+    "lat_med": 0.0,
+    "lat_p95": 0.0,
+    "n_runs": 57,
+    "n_runs_det": 56,
+    "n_runs_undet_spec": 17,
+    "n_runs_undet_spec_det": 16,
+    "sens_ci": [
+     1.0,
+     1.0
+    ],
+    "fph_ci": [
+     1.2727272727272727,
+     10.181818181818182
+    ]
+   },
+   "mit": {
+    "model": "exp0_h5",
+    "db": "MITBIH_MLII_crosslead",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 4,
+    "hours": 2.0055555555555555,
+    "n_events": 2,
+    "n_det": 2,
+    "sens": 1.0,
+    "n_fp": 19,
+    "fph": 9.473684210526315,
+    "lat_med": 0.0,
+    "lat_p95": 0.0,
+    "n_runs": 6,
+    "n_runs_det": 6,
+    "n_runs_undet_spec": 1,
+    "n_runs_undet_spec_det": 1,
+    "sens_ci": [
+     1.0,
+     1.0
+    ],
+    "fph_ci": [
+     3.490304709141274,
+     16.952908587257618
+    ]
+   },
+   "incart_proxyDet": {
+    "model": "exp0_h5",
+    "db": "INCART_LeadI",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 11,
+    "hours": 5.5,
+    "n_events": 19,
+    "n_det": 18,
+    "sens": 0.9473684210526315,
+    "n_fp": 14,
+    "fph": 2.5454545454545454,
+    "lat_med": 0.0,
+    "lat_p95": 8.0,
+    "n_runs": 57,
+    "n_runs_det": 52,
+    "n_runs_undet_spec": 17,
+    "n_runs_undet_spec_det": 13,
+    "sens_ci": [
+     0.7272727272727273,
+     1.0
+    ],
+    "fph_ci": [
+     0.9090909090909091,
+     5.090909090909091
+    ]
+   },
+   "mit_proxyDet": {
+    "model": "exp0_h5",
+    "db": "MITBIH_MLII_crosslead",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 4,
+    "hours": 2.0055555555555555,
+    "n_events": 2,
+    "n_det": 2,
+    "sens": 1.0,
+    "n_fp": 5,
+    "fph": 2.4930747922437675,
+    "lat_med": 7.0,
+    "lat_p95": 7.0,
+    "n_runs": 6,
+    "n_runs_det": 5,
+    "n_runs_undet_spec": 1,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     1.0,
+     1.0
+    ],
+    "fph_ci": [
+     0.0,
+     6.481994459833795
+    ]
+   },
+   "realL_proxyDet": {
+    "model": "exp0_h5",
+    "db": "REAL_leadI",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 2,
+    "fph": 30.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     30.0,
+     30.0
+    ]
+   },
+   "realW_proxyDet": {
+    "model": "exp0_h5",
+    "db": "REAL_wearable",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 3,
+    "fph": 45.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     30.0,
+     60.0
+    ]
+   },
+   "ptb": {
+    "model": "exp0_h5",
+    "db": "PTB_LeadI_control",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 80,
+    "hours": 2.620833333333333,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 85,
+    "fph": 32.432432432432435,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     30.219313690614367,
+     34.69245657110817
+    ]
+   },
+   "realL": {
+    "model": "exp0_h5",
+    "db": "REAL_leadI",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 2,
+    "fph": 30.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     30.0,
+     30.0
+    ]
+   },
+   "realW": {
+    "model": "exp0_h5",
+    "db": "REAL_wearable",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 2,
+    "fph": 30.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     30.0,
+     30.0
+    ]
+   },
+   "noise_fph": {
+    "em12dB": 3.272727272727273,
+    "em6dB": 2.1818181818181817,
+    "em0dB": 1.0909090909090908,
+    "ma12dB": 3.272727272727273,
+    "ma6dB": 5.090909090909091,
+    "ma0dB": 7.2727272727272725
+   },
+   "noise_sens": {
+    "em12dB": 1.0,
+    "em6dB": 1.0,
+    "em0dB": 1.0,
+    "ma12dB": 1.0,
+    "ma6dB": 1.0,
+    "ma0dB": 0.8947368421052632
+   },
+   "gate_pass_thr050": false,
+   "best_thr_under_gate": null
+  },
+  {
+   "model": "distill_v1",
+   "leak_flag": "",
+   "incart": {
+    "model": "distill_v1",
+    "db": "INCART_LeadI",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 11,
+    "hours": 5.5,
+    "n_events": 19,
+    "n_det": 15,
+    "sens": 0.7894736842105263,
+    "n_fp": 26,
+    "fph": 4.7272727272727275,
+    "lat_med": 0.0,
+    "lat_p95": 31.89999999999994,
+    "n_runs": 57,
+    "n_runs_det": 36,
+    "n_runs_undet_spec": 17,
+    "n_runs_undet_spec_det": 7,
+    "sens_ci": [
+     0.4166666666666667,
+     1.0
+    ],
+    "fph_ci": [
+     1.0863636363636366,
+     9.272727272727273
+    ]
+   },
+   "mit": {
+    "model": "distill_v1",
+    "db": "MITBIH_MLII_crosslead",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 4,
+    "hours": 2.0055555555555555,
+    "n_events": 2,
+    "n_det": 1,
+    "sens": 0.5,
+    "n_fp": 11,
+    "fph": 5.484764542936288,
+    "lat_med": 10.0,
+    "lat_p95": 10.0,
+    "n_runs": 6,
+    "n_runs_det": 3,
+    "n_runs_undet_spec": 1,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     0.5,
+     0.5
+    ],
+    "fph_ci": [
+     0.0,
+     16.454293628808866
+    ]
+   },
+   "incart_proxyDet": {
+    "model": "distill_v1",
+    "db": "INCART_LeadI",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 11,
+    "hours": 5.5,
+    "n_events": 19,
+    "n_det": 16,
+    "sens": 0.8421052631578947,
+    "n_fp": 14,
+    "fph": 2.5454545454545454,
+    "lat_med": 0.0,
+    "lat_p95": 26.0,
+    "n_runs": 57,
+    "n_runs_det": 48,
+    "n_runs_undet_spec": 17,
+    "n_runs_undet_spec_det": 11,
+    "sens_ci": [
+     0.6,
+     1.0
+    ],
+    "fph_ci": [
+     0.7272727272727273,
+     4.545454545454546
+    ]
+   },
+   "mit_proxyDet": {
+    "model": "distill_v1",
+    "db": "MITBIH_MLII_crosslead",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 4,
+    "hours": 2.0055555555555555,
+    "n_events": 2,
+    "n_det": 2,
+    "sens": 1.0,
+    "n_fp": 0,
+    "fph": 0.0,
+    "lat_med": 7.5,
+    "lat_p95": 7.95,
+    "n_runs": 6,
+    "n_runs_det": 5,
+    "n_runs_undet_spec": 1,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     1.0,
+     1.0
+    ],
+    "fph_ci": [
+     0.0,
+     0.0
+    ]
+   },
+   "realL_proxyDet": {
+    "model": "distill_v1",
+    "db": "REAL_leadI",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 2,
+    "fph": 30.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     30.0,
+     30.0
+    ]
+   },
+   "realW_proxyDet": {
+    "model": "distill_v1",
+    "db": "REAL_wearable",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 2,
+    "fph": 30.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     30.0,
+     30.0
+    ]
+   },
+   "ptb": {
+    "model": "distill_v1",
+    "db": "PTB_LeadI_control",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 80,
+    "hours": 2.620833333333333,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 13,
+    "fph": 4.960254372019079,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     1.9116245404293624,
+     8.408647587348868
+    ]
+   },
+   "realL": {
+    "model": "distill_v1",
+    "db": "REAL_leadI",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 2,
+    "fph": 30.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     30.0,
+     30.0
+    ]
+   },
+   "realW": {
+    "model": "distill_v1",
+    "db": "REAL_wearable",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 2,
+    "fph": 30.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     30.0,
+     30.0
+    ]
+   },
+   "noise_fph": {
+    "em12dB": 7.636363636363637,
+    "em6dB": 3.6363636363636362,
+    "em0dB": 2.5454545454545454,
+    "ma12dB": 6.7272727272727275,
+    "ma6dB": 8.545454545454545,
+    "ma0dB": 7.636363636363637
+   },
+   "noise_sens": {
+    "em12dB": 1.0,
+    "em6dB": 1.0,
+    "em0dB": 1.0,
+    "ma12dB": 0.5789473684210527,
+    "ma6dB": 0.3684210526315789,
+    "ma0dB": 0.2631578947368421
+   },
+   "gate_pass_thr050": false,
+   "best_thr_under_gate": [
+    0.95,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "model": "distill_v2",
+   "leak_flag": "",
+   "incart": {
+    "model": "distill_v2",
+    "db": "INCART_LeadI",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 11,
+    "hours": 5.5,
+    "n_events": 19,
+    "n_det": 7,
+    "sens": 0.3684210526315789,
+    "n_fp": 9,
+    "fph": 1.6363636363636365,
+    "lat_med": 17.0,
+    "lat_p95": 84.29999999999994,
+    "n_runs": 57,
+    "n_runs_det": 23,
+    "n_runs_undet_spec": 17,
+    "n_runs_undet_spec_det": 8,
+    "sens_ci": [
+     0.13333333333333333,
+     0.6923076923076923
+    ],
+    "fph_ci": [
+     0.36363636363636365,
+     3.272727272727273
+    ]
+   },
+   "mit": {
+    "model": "distill_v2",
+    "db": "MITBIH_MLII_crosslead",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 4,
+    "hours": 2.0055555555555555,
+    "n_events": 2,
+    "n_det": 1,
+    "sens": 0.5,
+    "n_fp": 0,
+    "fph": 0.0,
+    "lat_med": 10.0,
+    "lat_p95": 10.0,
+    "n_runs": 6,
+    "n_runs_det": 3,
+    "n_runs_undet_spec": 1,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     0.5,
+     0.5
+    ],
+    "fph_ci": [
+     0.0,
+     0.0
+    ]
+   },
+   "incart_proxyDet": {
+    "model": "distill_v2",
+    "db": "INCART_LeadI",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 11,
+    "hours": 5.5,
+    "n_events": 19,
+    "n_det": 13,
+    "sens": 0.6842105263157895,
+    "n_fp": 13,
+    "fph": 2.3636363636363638,
+    "lat_med": 9.0,
+    "lat_p95": 57.39999999999991,
+    "n_runs": 57,
+    "n_runs_det": 29,
+    "n_runs_undet_spec": 17,
+    "n_runs_undet_spec_det": 7,
+    "sens_ci": [
+     0.5,
+     1.0
+    ],
+    "fph_ci": [
+     0.36363636363636365,
+     5.2727272727272725
+    ]
+   },
+   "mit_proxyDet": {
+    "model": "distill_v2",
+    "db": "MITBIH_MLII_crosslead",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 4,
+    "hours": 2.0055555555555555,
+    "n_events": 2,
+    "n_det": 2,
+    "sens": 1.0,
+    "n_fp": 0,
+    "fph": 0.0,
+    "lat_med": 7.5,
+    "lat_p95": 7.95,
+    "n_runs": 6,
+    "n_runs_det": 5,
+    "n_runs_undet_spec": 1,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     1.0,
+     1.0
+    ],
+    "fph_ci": [
+     0.0,
+     0.0
+    ]
+   },
+   "realL_proxyDet": {
+    "model": "distill_v2",
+    "db": "REAL_leadI",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 2,
+    "fph": 30.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     30.0,
+     30.0
+    ]
+   },
+   "realW_proxyDet": {
+    "model": "distill_v2",
+    "db": "REAL_wearable",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 2,
+    "fph": 30.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     0.0,
+     60.0
+    ]
+   },
+   "ptb": {
+    "model": "distill_v2",
+    "db": "PTB_LeadI_control",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 80,
+    "hours": 2.620833333333333,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 6,
+    "fph": 2.2893481717011133,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     0.3802261293418079,
+     4.956629513637852
+    ]
+   },
+   "realL": {
+    "model": "distill_v2",
+    "db": "REAL_leadI",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 2,
+    "fph": 30.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     30.0,
+     30.0
+    ]
+   },
+   "realW": {
+    "model": "distill_v2",
+    "db": "REAL_wearable",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 3,
+    "fph": 45.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     30.0,
+     60.0
+    ]
+   },
+   "noise_fph": {
+    "em12dB": 8.909090909090908,
+    "em6dB": 11.272727272727273,
+    "em0dB": 9.818181818181818,
+    "ma12dB": 1.0909090909090908,
+    "ma6dB": 1.0909090909090908,
+    "ma0dB": 1.2727272727272727
+   },
+   "noise_sens": {
+    "em12dB": 1.0,
+    "em6dB": 1.0,
+    "em0dB": 1.0,
+    "ma12dB": 0.2631578947368421,
+    "ma6dB": 0.10526315789473684,
+    "ma0dB": 0.0
+   },
+   "gate_pass_thr050": false,
+   "best_thr_under_gate": [
+    0.6,
+    0.21052631578947367,
+    0.18181818181818182
+   ]
+  },
+  {
+   "model": "ecgfm_probe_approx",
+   "leak_flag": " | APPROX: GT-aligned FM emb, clean INCART only",
+   "incart": {
+    "model": "ecgfm_probe_approx",
+    "db": "INCART_LeadI",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 11,
+    "hours": 5.5,
+    "n_events": 19,
+    "n_det": 7,
+    "sens": 0.3684210526315789,
+    "n_fp": 16,
+    "fph": 2.909090909090909,
+    "lat_med": 16.0,
+    "lat_p95": 38.59999999999999,
+    "n_runs": 57,
+    "n_runs_det": 14,
+    "n_runs_undet_spec": 17,
+    "n_runs_undet_spec_det": 1,
+    "sens_ci": [
+     0.0,
+     0.6842105263157895
+    ],
+    "fph_ci": [
+     0.0,
+     6.545454545454546
+    ]
+   },
+   "mit": null,
+   "incart_proxyDet": {
+    "model": "ecgfm_probe_approx",
+    "db": "INCART_LeadI",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 11,
+    "hours": 5.5,
+    "n_events": 19,
+    "n_det": 13,
+    "sens": 0.6842105263157895,
+    "n_fp": 13,
+    "fph": 2.3636363636363638,
+    "lat_med": 9.0,
+    "lat_p95": 32.39999999999998,
+    "n_runs": 57,
+    "n_runs_det": 30,
+    "n_runs_undet_spec": 17,
+    "n_runs_undet_spec_det": 1,
+    "sens_ci": [
+     0.4072222222222222,
+     1.0
+    ],
+    "fph_ci": [
+     0.5454545454545454,
+     4.909090909090909
+    ]
+   },
+   "mit_proxyDet": null,
+   "realL_proxyDet": null,
+   "realW_proxyDet": null,
+   "ptb": null,
+   "realL": null,
+   "realW": null,
+   "noise_fph": {
+    "em12dB": null,
+    "em6dB": null,
+    "em0dB": null,
+    "ma12dB": null,
+    "ma6dB": null,
+    "ma0dB": null
+   },
+   "noise_sens": {
+    "em12dB": null,
+    "em6dB": null,
+    "em0dB": null,
+    "ma12dB": null,
+    "ma6dB": null,
+    "ma0dB": null
+   },
+   "gate_pass_thr050": false,
+   "best_thr_under_gate": [
+    0.9,
+    0.15789473684210525,
+    0.5454545454545454
+   ]
+  },
+  {
+   "model": "v3a_h5",
+   "leak_flag": "trained on MIT-BIH/INCART historical split (MIT leakage likely)",
+   "incart": {
+    "model": "v3a_h5",
+    "db": "INCART_LeadI",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 11,
+    "hours": 5.5,
+    "n_events": 19,
+    "n_det": 6,
+    "sens": 0.3157894736842105,
+    "n_fp": 19,
+    "fph": 3.4545454545454546,
+    "lat_med": 9.0,
+    "lat_p95": 24.25,
+    "n_runs": 57,
+    "n_runs_det": 18,
+    "n_runs_undet_spec": 17,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     0.0,
+     0.75
+    ],
+    "fph_ci": [
+     0.0,
+     6.913636363636339
+    ]
+   },
+   "mit": {
+    "model": "v3a_h5",
+    "db": "MITBIH_MLII_crosslead",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 4,
+    "hours": 2.0055555555555555,
+    "n_events": 2,
+    "n_det": 1,
+    "sens": 0.5,
+    "n_fp": 2,
+    "fph": 0.997229916897507,
+    "lat_med": 6.0,
+    "lat_p95": 6.0,
+    "n_runs": 6,
+    "n_runs_det": 3,
+    "n_runs_undet_spec": 1,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     0.5,
+     0.5
+    ],
+    "fph_ci": [
+     0.0,
+     2.9916897506925206
+    ]
+   },
+   "incart_proxyDet": {
+    "model": "v3a_h5",
+    "db": "INCART_LeadI",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 11,
+    "hours": 5.5,
+    "n_events": 19,
+    "n_det": 8,
+    "sens": 0.42105263157894735,
+    "n_fp": 17,
+    "fph": 3.090909090909091,
+    "lat_med": 3.0,
+    "lat_p95": 19.99999999999999,
+    "n_runs": 57,
+    "n_runs_det": 20,
+    "n_runs_undet_spec": 17,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     0.09090909090909091,
+     0.8666666666666667
+    ],
+    "fph_ci": [
+     1.2727272727272727,
+     5.2727272727272725
+    ]
+   },
+   "mit_proxyDet": {
+    "model": "v3a_h5",
+    "db": "MITBIH_MLII_crosslead",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 4,
+    "hours": 2.0055555555555555,
+    "n_events": 2,
+    "n_det": 2,
+    "sens": 1.0,
+    "n_fp": 2,
+    "fph": 0.997229916897507,
+    "lat_med": 8.0,
+    "lat_p95": 8.9,
+    "n_runs": 6,
+    "n_runs_det": 5,
+    "n_runs_undet_spec": 1,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     1.0,
+     1.0
+    ],
+    "fph_ci": [
+     0.0,
+     2.9916897506925206
+    ]
+   },
+   "realL_proxyDet": {
+    "model": "v3a_h5",
+    "db": "REAL_leadI",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 1,
+    "fph": 15.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     0.0,
+     30.0
+    ]
+   },
+   "realW_proxyDet": {
+    "model": "v3a_h5",
+    "db": "REAL_wearable",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 3,
+    "fph": 45.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     30.0,
+     60.0
+    ]
+   },
+   "ptb": {
+    "model": "v3a_h5",
+    "db": "PTB_LeadI_control",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 80,
+    "hours": 2.620833333333333,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 10,
+    "fph": 3.815580286168522,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     1.5189673234887866,
+     6.865879599991943
+    ]
+   },
+   "realL": {
+    "model": "v3a_h5",
+    "db": "REAL_leadI",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 2,
+    "fph": 30.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     30.0,
+     30.0
+    ]
+   },
+   "realW": {
+    "model": "v3a_h5",
+    "db": "REAL_wearable",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 2,
+    "fph": 30.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     30.0,
+     30.0
+    ]
+   },
+   "noise_fph": {
+    "em12dB": 9.454545454545455,
+    "em6dB": 12.909090909090908,
+    "em0dB": 12.727272727272727,
+    "ma12dB": 0.18181818181818182,
+    "ma6dB": 0.0,
+    "ma0dB": 0.0
+   },
+   "noise_sens": {
+    "em12dB": 0.5789473684210527,
+    "em6dB": 0.8421052631578947,
+    "em0dB": 0.8947368421052632,
+    "ma12dB": 0.15789473684210525,
+    "ma6dB": 0.05263157894736842,
+    "ma0dB": 0.0
+   },
+   "gate_pass_thr050": false,
+   "best_thr_under_gate": null
+  },
+  {
+   "model": "exp5_int8",
+   "leak_flag": "historical split may overlap INCART test & MIT-BIH (leakage NOT excluded)",
+   "incart": {
+    "model": "exp5_int8",
+    "db": "INCART_LeadI",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 11,
+    "hours": 5.5,
+    "n_events": 19,
+    "n_det": 3,
+    "sens": 0.15789473684210525,
+    "n_fp": 9,
+    "fph": 1.6363636363636365,
+    "lat_med": 19.0,
+    "lat_p95": 44.199999999999996,
+    "n_runs": 57,
+    "n_runs_det": 5,
+    "n_runs_undet_spec": 17,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     0.0,
+     0.38461538461538464
+    ],
+    "fph_ci": [
+     0.0,
+     4.909090909090909
+    ]
+   },
+   "mit": {
+    "model": "exp5_int8",
+    "db": "MITBIH_MLII_crosslead",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 4,
+    "hours": 2.0055555555555555,
+    "n_events": 2,
+    "n_det": 1,
+    "sens": 0.5,
+    "n_fp": 0,
+    "fph": 0.0,
+    "lat_med": 10.0,
+    "lat_p95": 10.0,
+    "n_runs": 6,
+    "n_runs_det": 3,
+    "n_runs_undet_spec": 1,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     0.5,
+     0.5
+    ],
+    "fph_ci": [
+     0.0,
+     0.0
+    ]
+   },
+   "incart_proxyDet": {
+    "model": "exp5_int8",
+    "db": "INCART_LeadI",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 11,
+    "hours": 5.5,
+    "n_events": 19,
+    "n_det": 7,
+    "sens": 0.3684210526315789,
+    "n_fp": 4,
+    "fph": 0.7272727272727273,
+    "lat_med": 13.0,
+    "lat_p95": 70.19999999999996,
+    "n_runs": 57,
+    "n_runs_det": 19,
+    "n_runs_undet_spec": 17,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     0.1875,
+     0.625
+    ],
+    "fph_ci": [
+     0.0,
+     2.1818181818181817
+    ]
+   },
+   "mit_proxyDet": {
+    "model": "exp5_int8",
+    "db": "MITBIH_MLII_crosslead",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 4,
+    "hours": 2.0055555555555555,
+    "n_events": 2,
+    "n_det": 2,
+    "sens": 1.0,
+    "n_fp": 0,
+    "fph": 0.0,
+    "lat_med": 8.0,
+    "lat_p95": 8.0,
+    "n_runs": 6,
+    "n_runs_det": 5,
+    "n_runs_undet_spec": 1,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     1.0,
+     1.0
+    ],
+    "fph_ci": [
+     0.0,
+     0.0
+    ]
+   },
+   "realL_proxyDet": {
+    "model": "exp5_int8",
+    "db": "REAL_leadI",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 2,
+    "fph": 30.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     30.0,
+     30.0
+    ]
+   },
+   "realW_proxyDet": {
+    "model": "exp5_int8",
+    "db": "REAL_wearable",
+    "cond": "clean_proxyDet",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 2,
+    "fph": 30.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     0.0,
+     60.0
+    ]
+   },
+   "ptb": {
+    "model": "exp5_int8",
+    "db": "PTB_LeadI_control",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 80,
+    "hours": 2.620833333333333,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 2,
+    "fph": 0.7631160572337043,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     0.0,
+     1.912462350502874
+    ]
+   },
+   "realL": {
+    "model": "exp5_int8",
+    "db": "REAL_leadI",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 2,
+    "fph": 30.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     0.0,
+     60.0
+    ]
+   },
+   "realW": {
+    "model": "exp5_int8",
+    "db": "REAL_wearable",
+    "cond": "clean",
+    "thr": 0.5,
+    "n_rec": 2,
+    "hours": 0.06666666666666667,
+    "n_events": 0,
+    "n_det": 0,
+    "sens": NaN,
+    "n_fp": 1,
+    "fph": 15.0,
+    "lat_med": NaN,
+    "lat_p95": NaN,
+    "n_runs": 0,
+    "n_runs_det": 0,
+    "n_runs_undet_spec": 0,
+    "n_runs_undet_spec_det": 0,
+    "sens_ci": [
+     NaN,
+     NaN
+    ],
+    "fph_ci": [
+     0.0,
+     30.0
+    ]
+   },
+   "noise_fph": {
+    "em12dB": 4.181818181818182,
+    "em6dB": 7.090909090909091,
+    "em0dB": 7.2727272727272725,
+    "ma12dB": 1.0909090909090908,
+    "ma6dB": 1.6363636363636365,
+    "ma0dB": 0.5454545454545454
+   },
+   "noise_sens": {
+    "em12dB": 0.2631578947368421,
+    "em6dB": 0.3684210526315789,
+    "em0dB": 0.3157894736842105,
+    "ma12dB": 0.10526315789473684,
+    "ma6dB": 0.0,
+    "ma0dB": 0.0
+   },
+   "gate_pass_thr050": false,
+   "best_thr_under_gate": [
+    0.8,
+    0.15789473684210525,
+    0.5454545454545454
+   ]
+  }
+ ],
+ "inventory": [
+  {
+   "db": "INCART_LeadI",
+   "rec": "I01",
+   "hours": 0.5,
+   "n_V": 344,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 344,
+   "isolated_V_per_h": 688.0
+  },
+  {
+   "db": "INCART_LeadI",
+   "rec": "I05",
+   "hours": 0.5,
+   "n_V": 256,
+   "spec_events": 3,
+   "vt_runs": 14,
+   "vt_runs_outside_spec": 3,
+   "isolated_V": 125,
+   "isolated_V_per_h": 250.0
+  },
+  {
+   "db": "INCART_LeadI",
+   "rec": "I11",
+   "hours": 0.5,
+   "n_V": 4,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 4,
+   "isolated_V_per_h": 8.0
+  },
+  {
+   "db": "INCART_LeadI",
+   "rec": "I13",
+   "hours": 0.5,
+   "n_V": 230,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 230,
+   "isolated_V_per_h": 460.0
+  },
+  {
+   "db": "INCART_LeadI",
+   "rec": "I29",
+   "hours": 0.5,
+   "n_V": 783,
+   "spec_events": 7,
+   "vt_runs": 26,
+   "vt_runs_outside_spec": 9,
+   "isolated_V": 408,
+   "isolated_V_per_h": 816.0
+  },
+  {
+   "db": "INCART_LeadI",
+   "rec": "I35",
+   "hours": 0.5,
+   "n_V": 476,
+   "spec_events": 1,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 463,
+   "isolated_V_per_h": 926.0
+  },
+  {
+   "db": "INCART_LeadI",
+   "rec": "I36",
+   "hours": 0.5,
+   "n_V": 462,
+   "spec_events": 3,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 402,
+   "isolated_V_per_h": 804.0
+  },
+  {
+   "db": "INCART_LeadI",
+   "rec": "I62",
+   "hours": 0.5,
+   "n_V": 807,
+   "spec_events": 4,
+   "vt_runs": 13,
+   "vt_runs_outside_spec": 1,
+   "isolated_V": 17,
+   "isolated_V_per_h": 34.0
+  },
+  {
+   "db": "INCART_LeadI",
+   "rec": "I64",
+   "hours": 0.5,
+   "n_V": 26,
+   "spec_events": 0,
+   "vt_runs": 1,
+   "vt_runs_outside_spec": 1,
+   "isolated_V": 26,
+   "isolated_V_per_h": 52.0
+  },
+  {
+   "db": "INCART_LeadI",
+   "rec": "I65",
+   "hours": 0.5,
+   "n_V": 386,
+   "spec_events": 1,
+   "vt_runs": 3,
+   "vt_runs_outside_spec": 3,
+   "isolated_V": 360,
+   "isolated_V_per_h": 720.0
+  },
+  {
+   "db": "INCART_LeadI",
+   "rec": "I70",
+   "hours": 0.5,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "MITBIH_MLII_crosslead",
+   "rec": "mit113",
+   "hours": 0.501,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "MITBIH_MLII_crosslead",
+   "rec": "mit201",
+   "hours": 0.501,
+   "n_V": 200,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 200,
+   "isolated_V_per_h": 398.9
+  },
+  {
+   "db": "MITBIH_MLII_crosslead",
+   "rec": "mit205",
+   "hours": 0.501,
+   "n_V": 82,
+   "spec_events": 2,
+   "vt_runs": 6,
+   "vt_runs_outside_spec": 1,
+   "isolated_V": 33,
+   "isolated_V_per_h": 65.8
+  },
+  {
+   "db": "MITBIH_MLII_crosslead",
+   "rec": "mit231",
+   "hours": 0.501,
+   "n_V": 2,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 2,
+   "isolated_V_per_h": 4.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient104_s0306lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient105_s0303lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient116_s0302lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient117_s0291lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient117_s0292lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient121_s0311lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient122_s0312lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient131_s0273lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient150_s0287lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient155_s0301lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient156_s0299lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient165_s0322lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient165_s0323lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient166_s0275lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient169_s0328lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient169_s0329lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient170_s0274lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient172_s0304lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient173_s0305lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient174_s0300lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient174_s0324lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient174_s0325lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient180_s0374lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient180_s0475_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient180_s0476_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient180_s0477_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient180_s0490_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient180_s0545_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient180_s0561_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient182_s0308lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient184_s0363lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient185_s0336lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient198_s0402lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient198_s0415lre",
+   "hours": 0.032,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient214_s0436_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient229_s0452_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient229_s0453_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient233_s0457_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient233_s0458_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient233_s0459_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient233_s0482_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient233_s0483_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient234_s0460_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient235_s0461_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient236_s0462_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient236_s0463_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient236_s0464_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient237_s0465_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient238_s0466_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient239_s0467_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient240_s0468_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient241_s0469_re",
+   "hours": 0.027,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient241_s0470_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient242_s0471_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient243_s0472_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient244_s0473_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient245_s0474_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient245_s0480_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient246_s0478_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient247_s0479_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient248_s0481_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient251_s0486_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient251_s0503_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient251_s0506_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient252_s0487_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient255_s0491_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient260_s0496_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient263_s0499_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient264_s0500_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient266_s0502_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient267_s0504_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient276_s0526_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient277_s0527_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient279_s0531_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient279_s0532_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient279_s0533_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient279_s0534_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient284_s0543_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient284_s0551_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "PTB_LeadI_control",
+   "rec": "ptb_patient284_s0552_re",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "REAL_leadI",
+   "rec": "real_145244",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "REAL_leadI",
+   "rec": "real_155455",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "REAL_wearable",
+   "rec": "real_143011",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  },
+  {
+   "db": "REAL_wearable",
+   "rec": "real_143825",
+   "hours": 0.033,
+   "n_V": 0,
+   "spec_events": 0,
+   "vt_runs": 0,
+   "vt_runs_outside_spec": 0,
+   "isolated_V": 0,
+   "isolated_V_per_h": 0.0
+  }
+ ],
+ "elapsed_s": 22.1
+}
