@@ -543,6 +543,7 @@ def summarize_flags(recs, flags_by_record: dict[str, np.ndarray], min_dur: float
         "n_records_scored": len(per),
         "window": {"tp": tp, "fn": fn, "fp": fp, "tn": tn, "se": se_win, "se_bootstrap": se_win_boot},
         "event_ge10": {"hits": evt_hits, "n": evt_n, "se": se_evt, "se_bootstrap": se_evt_boot, "by_rhythm": by_ci, "delay_s": delay},
+        # Duration >= 15 s, any overlap. Not Se15, and not the latched user alarm.
         "event_ge15": {"hits": evt15_hits, "n": evt15_n, "se": wilson(evt15_hits, evt15_n)},
         "event_all": {"hits": evt_all_hits, "n": evt_all_n, "se": wilson(evt_all_hits, evt_all_n)},
         "record_ge10": se_rec,
@@ -734,6 +735,8 @@ def write_report(summary: dict, path: Path) -> None:
     a("MIT-BIH 里成串的 `!`（室扑波）若没有被节律标注盖住，也算一段 VFL。")
     a("")
     a("- **事件级（主结果）**：一段可电击节律时长 ≥ 10 s。两窗确认的最短几何长度就是 10 s；短于 10 s 的段另报，不进主分母。≥ 15 s 的段保证无论相位如何都能罩住两个完整 5 s 窗，也另报。")
+    a("- **event_ge15 不是 Se15**。上一条里「≥ 15 s 另报」只按时长进分母，命中仍是任意重叠，时延不设上限。Se15 用同一分母，但要求首次命中延迟 ≤ 15 s（`vf_layers.score_episodes`）。这次没有把旧 `event_ge15` 改记成 Se15，也没有为这个口径重跑整库。")
+    a("- **分层**。L0 是分数和当窗疑似（`score ≥ 0.15`）。L1 是 `vfAlarm`（连续两窗）。L2 是 L1 再经过 RMS 和拍间门，主表的 `firmware` 列就是 L2。L3 是 `alarmSecondTick` 擎住后的 BLE 第 8 列；VF 单独命中只打遥测，不擎住。主表不是 L3，也不是最终用户报警。")
     a("- 检出：任一被门控放行的报警窗与该段有时间重叠（不要求 50%）。")
     a("- **窗级**：窗内可电击时间 ≥ 50%，且噪声 < 50%，算阳性。噪声或未标注占多数的窗排除。停搏占多数的窗不进 VF 的灵敏度和假阳，单独交给 FLAT。")
     a("- **记录级**：记录里至少有一段 ≥ 10 s 可电击节律，且其中至少一段被检出。")
@@ -846,7 +849,7 @@ def write_report(summary: dict, path: Path) -> None:
     a("")
     a("### ≥15 s、全部事件、去掉前 10 s 的假阳")
     a("")
-    a("| 库 | 事件 Se ≥15 s | 事件 Se（不限时长） | 记录级 Se（任意时长） | 前 10 s 之后的 FP 段 |")
+    a("| 库 | event_ge15（时长≥15 s，任意时延，不是 Se15） | 事件 Se（不限时长） | 记录级 Se（任意时长） | 前 10 s 之后的 FP 段 |")
     a("|---|---|---|---|---:|")
     for db in ("vfdb", "cudb", "mitdb"):
         block = fe.get(db) or {}
