@@ -1,0 +1,286 @@
+{
+  "input_commit": "6913749f90db15fb9e0acc983dfc5d02e0c1d5a5",
+  "pr": 2,
+  "packet_path": "C:\\ecg_data\\round_20261021\\next_packets\\V01_PR2契约适配与小复现_CursorGrok.md",
+  "packet_readable_on_runner": false,
+  "e02_contract_received": false,
+  "heavy_slot_records": 0,
+  "heavy_slot_limit": 3,
+  "full_library_replay": false,
+  "thresholds_changed": false,
+  "new_gates": false,
+  "product_branch_switched": false,
+  "flashed": false,
+  "stored_pr2_summary": {
+    "profile": "firmware",
+    "database": "vfdb",
+    "event_ge15": {
+      "hits": 12,
+      "n": 40,
+      "se": {
+        "k": 12,
+        "n": 40,
+        "est": 0.3,
+        "lo": 0.18074845229746528,
+        "hi": 0.45430018818144935,
+        "method": "wilson"
+      }
+    },
+    "has_se15_key": false,
+    "reinterpreted": false
+  },
+  "definitions": {
+    "L0": "logistic score and current-window suspect, score >= 0.15",
+    "L1": "vfAlarm, two consecutive suspect windows",
+    "L2": "L1 and RMS >= 0.05 mV and armed beat gap > 2500 ms",
+    "L3": "BLE column 8, alarmSecondTick latch; VF alone does not latch",
+    "event_ge15": "shockable episodes with duration >= 15 s and any overlap",
+    "se15": "same denominator as event_ge15, first-hit delay <= 15 s"
+  },
+  "delays_s": {
+    "late_window_6": 34.996,
+    "early_window_1": 9.996,
+    "budget_window_2": 14.996,
+    "trace_l1_window_5": 29.996
+  },
+  "cases": {
+    "late_overlap": {
+      "event_ge15": {
+        "hits": 1,
+        "n": 1,
+        "est": 1.0
+      },
+      "se15": {
+        "hits": 0,
+        "n": 1,
+        "est": 0.0
+      },
+      "legacy_event_counts_hits": 1,
+      "legacy_matches_event_ge15": true,
+      "legacy_matches_se15": false
+    },
+    "pool_early_and_late": {
+      "event_ge15": {
+        "hits": 2,
+        "n": 2,
+        "est": 1.0
+      },
+      "se15": {
+        "hits": 1,
+        "n": 2,
+        "est": 0.5
+      }
+    },
+    "window_end_15s": {
+      "event_ge15": {
+        "hits": 1,
+        "n": 1,
+        "est": 1.0
+      },
+      "se15": {
+        "hits": 1,
+        "n": 1,
+        "est": 1.0
+      }
+    },
+    "duration_12s_in_neither_denominator": {
+      "event_ge15": {
+        "hits": 0,
+        "n": 0,
+        "est": null
+      },
+      "se15": {
+        "hits": 0,
+        "n": 0,
+        "est": null
+      }
+    },
+    "one_record_four_layers": {
+      "L0_suspect": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0
+      ],
+      "L1_vfAlarm": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "L2_vfHit": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "L2_consumed_at_sec": [
+        30
+      ],
+      "L3_user_alarm_any": 0,
+      "L0_n_suspect": 2,
+      "L0_has_se15": false,
+      "L1": {
+        "event_ge15": {
+          "hits": 1,
+          "n": 1,
+          "est": 1.0
+        },
+        "se15": {
+          "hits": 0,
+          "n": 1,
+          "est": 0.0
+        }
+      },
+      "L2": {
+        "event_ge15": {
+          "hits": 1,
+          "n": 1,
+          "est": 1.0
+        },
+        "se15": {
+          "hits": 0,
+          "n": 1,
+          "est": 0.0
+        }
+      },
+      "L3": {
+        "event_ge15": {
+          "hits": 0,
+          "n": 1,
+          "est": 0.0
+        },
+        "se15": {
+          "hits": 0,
+          "n": 1,
+          "est": 0.0
+        }
+      }
+    },
+    "vf_hit_alone_30s": {
+      "n": 30,
+      "ble_alarm_sum": 0,
+      "ble_asrc_sum": 0,
+      "telemetry_only_all": true,
+      "vf_started_latch_any": false
+    },
+    "rs_latch_without_vf": [
+      {
+        "sec": 0,
+        "ble_alarm": 1,
+        "ble_asrc": 2,
+        "vf_in_ble_asrc": false,
+        "vf_telemetry_only": false,
+        "vf_started_latch": false
+      },
+      {
+        "sec": 11,
+        "ble_alarm": 1,
+        "ble_asrc": 2,
+        "vf_in_ble_asrc": false,
+        "vf_telemetry_only": false,
+        "vf_started_latch": false
+      }
+    ],
+    "rs_then_vf_extends_hold": [
+      {
+        "sec": 0,
+        "ble_alarm": 1,
+        "ble_asrc": 2,
+        "vf_in_ble_asrc": false,
+        "vf_telemetry_only": false,
+        "vf_started_latch": false
+      },
+      {
+        "sec": 5,
+        "ble_alarm": 1,
+        "ble_asrc": 10,
+        "vf_in_ble_asrc": true,
+        "vf_telemetry_only": false,
+        "vf_started_latch": false
+      },
+      {
+        "sec": 16,
+        "ble_alarm": 1,
+        "ble_asrc": 10,
+        "vf_in_ble_asrc": true,
+        "vf_telemetry_only": false,
+        "vf_started_latch": false
+      },
+      {
+        "sec": 17,
+        "ble_alarm": 0,
+        "ble_asrc": 0,
+        "vf_in_ble_asrc": false,
+        "vf_telemetry_only": false,
+        "vf_started_latch": false
+      }
+    ],
+    "same_second_rs_and_vf": [
+      {
+        "sec": 3,
+        "ble_alarm": 1,
+        "ble_asrc": 10,
+        "vf_in_ble_asrc": true,
+        "vf_telemetry_only": false,
+        "vf_started_latch": false
+      }
+    ],
+    "ai_latch_without_vf": [
+      {
+        "sec": 0,
+        "ble_alarm": 1,
+        "ble_asrc": 1,
+        "vf_in_ble_asrc": false,
+        "vf_telemetry_only": false,
+        "vf_started_latch": false
+      }
+    ],
+    "ai_and_vf_same_second": [
+      {
+        "sec": 0,
+        "ble_alarm": 1,
+        "ble_asrc": 9,
+        "vf_in_ble_asrc": true,
+        "vf_telemetry_only": false,
+        "vf_started_latch": false
+      }
+    ],
+    "ai_cooldown_blocks_relatch": {
+      "rows": [
+        {
+          "sec": 0,
+          "ble_alarm": 1,
+          "ble_asrc": 1,
+          "vf_in_ble_asrc": false,
+          "vf_telemetry_only": false,
+          "vf_started_latch": false
+        },
+        {
+          "sec": 12,
+          "ble_alarm": 0,
+          "ble_asrc": 0,
+          "vf_in_ble_asrc": false,
+          "vf_telemetry_only": false,
+          "vf_started_latch": false
+        }
+      ],
+      "sec_13_ai_again": {
+        "ble_alarm": 0,
+        "ble_asrc": 0
+      }
+    }
+  }
+}
