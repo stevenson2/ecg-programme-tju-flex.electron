@@ -1,0 +1,40 @@
+{
+  "ann": {
+    "cv_thr": 0.2,
+    "ent_thr": 1.4,
+    "score": 0.8215663458233466,
+    "dev_event_se": 0.9176029962546817,
+    "dev_fph": 4.801832521566749,
+    "dev_analyzable_frac": 0.6193913410510441
+  },
+  "ann_manual": {
+    "cv_thr": 0.08,
+    "ent_thr": 1.2,
+    "score": null,
+    "fallback": "default_unanalyzable_grid"
+  },
+  "fw_strict": {
+    "cv_thr": 0.15,
+    "ent_thr": 1.4,
+    "score": 0.6197019692366903,
+    "dev_event_se": 0.7602996254681648,
+    "dev_fph": 7.02988281157372,
+    "dev_analyzable_frac": 0.5251331471091782
+  },
+  "fw_aiqrs": {
+    "cv_thr": 0.12,
+    "ent_thr": 1.4,
+    "score": 0.6862847158481246,
+    "dev_event_se": 0.850187265917603,
+    "dev_fph": 8.195127503473918,
+    "dev_analyzable_frac": 0.6433305510369587
+  },
+  "xqrs": {
+    "cv_thr": 0.12,
+    "ent_thr": 1.4,
+    "score": 0.6920257954256553,
+    "dev_event_se": 0.8426966292134831,
+    "dev_fph": 7.533541689391388,
+    "dev_analyzable_frac": 0.6278603508538962
+  }
+}

@@ -118,3 +118,11 @@ papers_fulltext/
 
 # M2 语料生成缓存 (npy 大文件不入库; provenance JSON 与固件头入库)
 pc_tools/ecg_dl/corpus/*.npy
+
+# AF RR-source experiment: PhysioNet 原始数据与峰缓存不得入库
+experiments/esp_idf_ecg_migration/pc_tools/ecg_dl/reports/leadI_benchmark_20261020/af_rr_source/data/
+experiments/esp_idf_ecg_migration/pc_tools/ecg_dl/reports/leadI_benchmark_20261020/af_rr_source/cache/
+experiments/esp_idf_ecg_migration/pc_tools/ecg_dl/reports/leadI_benchmark_20261020/af_rr_source/host/hr_host
+experiments/esp_idf_ecg_migration/pc_tools/ecg_dl/reports/leadI_benchmark_20261020/af_rr_source/host/af_host
+experiments/esp_idf_ecg_migration/pc_tools/ecg_dl/reports/leadI_benchmark_20261020/af_rr_source/host/*.o
+experiments/esp_idf_ecg_migration/pc_tools/ecg_dl/reports/leadI_benchmark_20261020/af_rr_source/.venv/

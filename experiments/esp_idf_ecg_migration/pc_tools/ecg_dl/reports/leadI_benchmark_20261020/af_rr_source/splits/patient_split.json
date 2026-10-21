@@ -1,0 +1,935 @@
+{
+  "records": [
+    {
+      "db": "afdb",
+      "rec": "04015",
+      "patient": "afdb/04015",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "04043",
+      "patient": "afdb/04043",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "04048",
+      "patient": "afdb/04048",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "04126",
+      "patient": "afdb/04126",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "04746",
+      "patient": "afdb/04746",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "04908",
+      "patient": "afdb/04908",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "04936",
+      "patient": "afdb/04936",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "05091",
+      "patient": "afdb/05091",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "05121",
+      "patient": "afdb/05121",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "05261",
+      "patient": "afdb/05261",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "06426",
+      "patient": "afdb/06426",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "06453",
+      "patient": "afdb/06453",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "06995",
+      "patient": "afdb/06995",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "07162",
+      "patient": "afdb/07162",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "07859",
+      "patient": "afdb/07859",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "07879",
+      "patient": "afdb/07879",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "07910",
+      "patient": "afdb/07910",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "08215",
+      "patient": "afdb/08215",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "08219",
+      "patient": "afdb/08219",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "08378",
+      "patient": "afdb/08378",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "08405",
+      "patient": "afdb/08405",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "08434",
+      "patient": "afdb/08434",
+      "split": "dev"
+    },
+    {
+      "db": "afdb",
+      "rec": "08455",
+      "patient": "afdb/08455",
+      "split": "dev"
+    },
+    {
+      "db": "mitdb",
+      "rec": "100",
+      "patient": "mitdb/100",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "101",
+      "patient": "mitdb/101",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "102",
+      "patient": "mitdb/102",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "103",
+      "patient": "mitdb/103",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "104",
+      "patient": "mitdb/104",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "105",
+      "patient": "mitdb/105",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "106",
+      "patient": "mitdb/106",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "107",
+      "patient": "mitdb/107",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "108",
+      "patient": "mitdb/108",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "109",
+      "patient": "mitdb/109",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "111",
+      "patient": "mitdb/111",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "112",
+      "patient": "mitdb/112",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "113",
+      "patient": "mitdb/113",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "114",
+      "patient": "mitdb/114",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "115",
+      "patient": "mitdb/115",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "116",
+      "patient": "mitdb/116",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "117",
+      "patient": "mitdb/117",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "118",
+      "patient": "mitdb/118",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "119",
+      "patient": "mitdb/119",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "121",
+      "patient": "mitdb/121",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "122",
+      "patient": "mitdb/122",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "123",
+      "patient": "mitdb/123",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "124",
+      "patient": "mitdb/124",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "200",
+      "patient": "mitdb/200",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "201",
+      "patient": "mitdb/201_202",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "202",
+      "patient": "mitdb/201_202",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "203",
+      "patient": "mitdb/203",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "205",
+      "patient": "mitdb/205",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "207",
+      "patient": "mitdb/207",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "208",
+      "patient": "mitdb/208",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "209",
+      "patient": "mitdb/209",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "210",
+      "patient": "mitdb/210",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "212",
+      "patient": "mitdb/212",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "213",
+      "patient": "mitdb/213",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "214",
+      "patient": "mitdb/214",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "215",
+      "patient": "mitdb/215",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "217",
+      "patient": "mitdb/217",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "219",
+      "patient": "mitdb/219",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "220",
+      "patient": "mitdb/220",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "221",
+      "patient": "mitdb/221",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "222",
+      "patient": "mitdb/222",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "223",
+      "patient": "mitdb/223",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "228",
+      "patient": "mitdb/228",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "230",
+      "patient": "mitdb/230",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "231",
+      "patient": "mitdb/231",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "232",
+      "patient": "mitdb/232",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "233",
+      "patient": "mitdb/233",
+      "split": "test_mit"
+    },
+    {
+      "db": "mitdb",
+      "rec": "234",
+      "patient": "mitdb/234",
+      "split": "test_mit"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "00",
+      "patient": "ltafdb/00",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "01",
+      "patient": "ltafdb/01",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "03",
+      "patient": "ltafdb/03",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "05",
+      "patient": "ltafdb/05",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "06",
+      "patient": "ltafdb/06",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "07",
+      "patient": "ltafdb/07",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "08",
+      "patient": "ltafdb/08",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "10",
+      "patient": "ltafdb/10",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "100",
+      "patient": "ltafdb/100",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "101",
+      "patient": "ltafdb/101",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "102",
+      "patient": "ltafdb/102",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "103",
+      "patient": "ltafdb/103",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "104",
+      "patient": "ltafdb/104",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "105",
+      "patient": "ltafdb/105",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "11",
+      "patient": "ltafdb/11",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "110",
+      "patient": "ltafdb/110",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "111",
+      "patient": "ltafdb/111",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "112",
+      "patient": "ltafdb/112",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "113",
+      "patient": "ltafdb/113",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "114",
+      "patient": "ltafdb/114",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "115",
+      "patient": "ltafdb/115",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "116",
+      "patient": "ltafdb/116",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "117",
+      "patient": "ltafdb/117",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "118",
+      "patient": "ltafdb/118",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "119",
+      "patient": "ltafdb/119",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "12",
+      "patient": "ltafdb/12",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "120",
+      "patient": "ltafdb/120",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "121",
+      "patient": "ltafdb/121",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "122",
+      "patient": "ltafdb/122",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "13",
+      "patient": "ltafdb/13",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "15",
+      "patient": "ltafdb/15",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "16",
+      "patient": "ltafdb/16",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "17",
+      "patient": "ltafdb/17",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "18",
+      "patient": "ltafdb/18",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "19",
+      "patient": "ltafdb/19",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "20",
+      "patient": "ltafdb/20",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "200",
+      "patient": "ltafdb/200",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "201",
+      "patient": "ltafdb/201",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "202",
+      "patient": "ltafdb/202",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "203",
+      "patient": "ltafdb/203",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "204",
+      "patient": "ltafdb/204",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "205",
+      "patient": "ltafdb/205",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "206",
+      "patient": "ltafdb/206",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "207",
+      "patient": "ltafdb/207",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "208",
+      "patient": "ltafdb/208",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "21",
+      "patient": "ltafdb/21",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "22",
+      "patient": "ltafdb/22",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "23",
+      "patient": "ltafdb/23",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "24",
+      "patient": "ltafdb/24",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "25",
+      "patient": "ltafdb/25",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "26",
+      "patient": "ltafdb/26",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "28",
+      "patient": "ltafdb/28",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "30",
+      "patient": "ltafdb/30",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "32",
+      "patient": "ltafdb/32",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "33",
+      "patient": "ltafdb/33",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "34",
+      "patient": "ltafdb/34",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "35",
+      "patient": "ltafdb/35",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "37",
+      "patient": "ltafdb/37",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "38",
+      "patient": "ltafdb/38",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "39",
+      "patient": "ltafdb/39",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "42",
+      "patient": "ltafdb/42",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "43",
+      "patient": "ltafdb/43",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "44",
+      "patient": "ltafdb/44",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "45",
+      "patient": "ltafdb/45",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "47",
+      "patient": "ltafdb/47",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "48",
+      "patient": "ltafdb/48",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "49",
+      "patient": "ltafdb/49",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "51",
+      "patient": "ltafdb/51",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "53",
+      "patient": "ltafdb/53",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "54",
+      "patient": "ltafdb/54",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "55",
+      "patient": "ltafdb/55",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "56",
+      "patient": "ltafdb/56",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "58",
+      "patient": "ltafdb/58",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "60",
+      "patient": "ltafdb/60",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "62",
+      "patient": "ltafdb/62",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "64",
+      "patient": "ltafdb/64",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "65",
+      "patient": "ltafdb/65",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "68",
+      "patient": "ltafdb/68",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "69",
+      "patient": "ltafdb/69",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "70",
+      "patient": "ltafdb/70",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "71",
+      "patient": "ltafdb/71",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "72",
+      "patient": "ltafdb/72",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "74",
+      "patient": "ltafdb/74",
+      "split": "test_ltaf"
+    },
+    {
+      "db": "ltafdb",
+      "rec": "75",
+      "patient": "ltafdb/75",
+      "split": "test_ltaf"
+    }
+  ],
+  "seed": 20261021
+}
