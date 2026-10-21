@@ -1,0 +1,305 @@
+{
+  "passed": true,
+  "score_atol": 0.0005,
+  "feat_atol": [
+    0.0001,
+    0.0001,
+    0.0001,
+    1e-06,
+    0.0001,
+    0.001
+  ],
+  "max_abs_score": 5.960464477539063e-08,
+  "max_abs_feat": {
+    "rms": 0.0,
+    "med_abs": 0.0,
+    "vf_ratio": 0.0,
+    "vf_zcr": 0.0,
+    "pv_rate": 0.0,
+    "dom_freq": 0.0
+  },
+  "suspect_mismatches_away_from_theta": 0,
+  "stream_alarm_matches_confirm": true,
+  "stream_score_gap_vs_score_window": 0.0,
+  "legacy_attachment_max_abs_feat": {
+    "rms": 4.6321449653774494e-07,
+    "med_abs": 2.9802322387695312e-08,
+    "vf_ratio": 0.36121351319598954,
+    "vf_zcr": 0.008800000816583633,
+    "pv_rate": 85.3999984741211,
+    "dom_freq": 55.40000457763672
+  },
+  "scipy_sosfiltfilt_padlen0_vs_zero_state_max_abs": 0.4028368346167975,
+  "synth_qrs_beats_20s": 19,
+  "windows": [
+    {
+      "name": "zeros",
+      "c_score": 2.1039302737335674e-05,
+      "py_score": 2.1039302737335674e-05,
+      "c_suspect": 0,
+      "abs_score": 0.0,
+      "abs_feat": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "c_feat": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "legacy_abs": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scipy_filtfilt_pad0_max_abs": 0.0,
+      "rms_matches_feat0": true
+    },
+    {
+      "name": "const",
+      "c_score": 2.1039302737335674e-05,
+      "py_score": 2.1039302737335674e-05,
+      "c_suspect": 0,
+      "abs_score": 0.0,
+      "abs_feat": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "c_feat": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "legacy_abs": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scipy_filtfilt_pad0_max_abs": 0.0,
+      "rms_matches_feat0": true
+    },
+    {
+      "name": "sine5",
+      "c_score": 0.993653416633606,
+      "py_score": 0.993653416633606,
+      "c_suspect": 1,
+      "abs_score": 0.0,
+      "abs_feat": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "c_feat": [
+        0.5656849145889282,
+        0.5476385354995728,
+        0.9307728409767151,
+        0.040800001472234726,
+        5.0,
+        4.900000095367432
+      ],
+      "legacy_abs": [
+        4.6321449653774494e-07,
+        2.9802322387695312e-08,
+        0.034841997172208705,
+        0.0008000014722347251,
+        5.0,
+        0.09999990463256836
+      ],
+      "scipy_filtfilt_pad0_max_abs": 0.2225665178561338,
+      "rms_matches_feat0": true
+    },
+    {
+      "name": "sine1",
+      "c_score": 0.9999059438705444,
+      "py_score": 0.9999059438705444,
+      "c_suspect": 1,
+      "abs_score": 0.0,
+      "abs_feat": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "c_feat": [
+        0.7071069478988647,
+        0.7026504874229431,
+        4.895919482805766e-05,
+        0.03680000081658363,
+        1.0,
+        1.0
+      ],
+      "legacy_abs": [
+        1.7739193347576787e-07,
+        0.0,
+        0.0069481416938386095,
+        0.008800000816583633,
+        1.0,
+        2.5
+      ],
+      "scipy_filtfilt_pad0_max_abs": 6.930133786609597e-05,
+      "rms_matches_feat0": true
+    },
+    {
+      "name": "sine7_small",
+      "c_score": 0.9705997109413147,
+      "py_score": 0.9705997109413147,
+      "c_suspect": 1,
+      "abs_score": 0.0,
+      "abs_feat": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "c_feat": [
+        0.0353553406894207,
+        0.03513266146183014,
+        0.9681344628334045,
+        0.0551999993622303,
+        7.0,
+        7.0
+      ],
+      "legacy_abs": [
+        1.1510525518843018e-09,
+        4.684019214162838e-10,
+        0.014304848882381704,
+        0.0008000006377697003,
+        7.0,
+        0.0
+      ],
+      "scipy_filtfilt_pad0_max_abs": 0.00987527352678133,
+      "rms_matches_feat0": true
+    },
+    {
+      "name": "impulses",
+      "c_score": 0.8143323063850403,
+      "py_score": 0.8143323659896851,
+      "c_suspect": 1,
+      "abs_score": 5.960464477539063e-08,
+      "abs_feat": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "c_feat": [
+        0.11193503439426422,
+        0.00839999970048666,
+        0.03726010397076607,
+        0.040800001472234726,
+        1.2000000476837158,
+        1.2999999523162842
+      ],
+      "legacy_abs": [
+        5.3266825755793334e-08,
+        2.9951333947730863e-10,
+        0.36121351319598954,
+        0.0008000014722347251,
+        1.3999999523162843,
+        3.700000047683716
+      ],
+      "scipy_filtfilt_pad0_max_abs": 0.4028368346167975,
+      "rms_matches_feat0": true
+    },
+    {
+      "name": "gauss",
+      "c_score": 1.0,
+      "py_score": 1.0,
+      "c_suspect": 1,
+      "abs_score": 0.0,
+      "abs_feat": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "c_feat": [
+        0.4141911566257477,
+        0.27582859992980957,
+        0.039459507912397385,
+        0.06239999830722809,
+        85.4000015258789,
+        62.89999771118164
+      ],
+      "legacy_abs": [
+        2.7968379112675024e-08,
+        0.0,
+        0.16335973695420208,
+        0.0008000016927719178,
+        85.3999984741211,
+        54.99999771118164
+      ],
+      "scipy_filtfilt_pad0_max_abs": 0.18554025535443777,
+      "rms_matches_feat0": true
+    },
+    {
+      "name": "with_zeros",
+      "c_score": 1.0,
+      "py_score": 1.0,
+      "c_suspect": 1,
+      "abs_score": 0.0,
+      "abs_feat": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "c_feat": [
+        0.2888436019420624,
+        0.18157699704170227,
+        0.05441487208008766,
+        0.0575999990105629,
+        84.4000015258789,
+        62.70000457763672
+      ],
+      "legacy_abs": [
+        2.3104923441152891e-07,
+        1.0434305364181995e-09,
+        0.17860159115466154,
+        0.0008000009894371038,
+        84.5999984741211,
+        55.40000457763672
+      ],
+      "scipy_filtfilt_pad0_max_abs": 0.01211418601839018,
+      "rms_matches_feat0": true
+    }
+  ],
+  "notes": [
+    "Python port is float32 and sequential, matching vf_detect.cpp.",
+    "scipy.signal.sosfiltfilt(..., padlen=0) still applies sosfilt_zi initial conditions; the firmware clears state to zero before both passes.",
+    "legacy_attachment_max_abs_feat is the previous 32_vf_rules_eval.py formulas against the firmware features on the same windows."
+  ]
+}
