@@ -1,0 +1,9 @@
+data/
+cache/
+host/hr_host
+host/af_host
+host/*.o
+.venv/
+__pycache__/
+.pytest_cache/
+tests/.pytest_cache/
