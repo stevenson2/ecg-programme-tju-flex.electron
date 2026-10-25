@@ -1,5 +1,0 @@
-numpy>=1.24
-scipy>=1.10
-wfdb>=4.0
-matplotlib>=3.7
-pytest>=7.0

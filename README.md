@@ -51,14 +51,14 @@ idf.py -B build_supermini monitor       # 串口 460800
 
 ## 4. 研究进展（简要，2026-10-25）
 
-- **v3-A 保留决策**：R16–R21 多轮预注册探索（形态学修复、双头/valid 门控、域扩展、mixup、KD 锚定联合训练）均未过门槛，v3-A 仍是板上模型——详见 `docs/03_Software_Docs/TUNING_HISTORY.md`。
+- **v3-A 保留决策**：R16–R21 多轮预注册探索（形态学修复、双头/valid 门控、域扩展、mixup、KD 锚定联合训练）均未过门槛，v3-A 仍是板上模型。调参记录在内部文档中，未纳入公开树；公开说明见各子目录 README。
 - **N/V（正常/室性异位）新模型仍在研究侧训练中**（2026-10-24 起长程任务进行中，实时状态以任务输出为准）；**未部署到固件**，未形成最终结论。等权基线（2026-10-23，开发集）N 误判 3.3%、V 检出 87.2%，属研究中间结果。
 - **QRS/PVC 形态能力与 AF/VF 记录级检测仍是研究目标**，不是已交付的产品能力；仓内 `pc_tools/ecg_dl/reports/` 下的 VF/AF 规则评测（含 open PR 中的）是研究评测，不是产品性能声明。论文主线（AF 优先/形态优先等）**尚未由用户最终裁定**。
 - **口径警示**：当前开发集已用于多轮分析；旧 INCART 划分曾存在患者级泄漏。下文 AI 指标为开发期数字，**不是盲测结果，也不构成跨设备泛化证明**。
 
-## 5. 历史轮次归档（2026-09，详见 TUNING_HISTORY）
+## 5. 历史轮次归档（2026-09）
 
-以下为已归档的历史轮次结论（保留供追溯，状态以第 1–4 节为准）：
+以下为已归档的历史轮次结论（保留供追溯，状态以第 1–4 节为准；对应内部调参记录未纳入公开树）：
 
 - **R21（09-19）**：KD 锚定双头联合训练两迭代未过线，双头方向整体关闭（§120）。
 - **R18/R19M/R20M（09-18/19）**：双头 valid 门控 6/6 压制运动伪迹但校准漂移；冻结骨干变体因 TP 保护项关闭；四象限设计空间图谱成立（§118/§119）。
@@ -68,7 +68,7 @@ idf.py -B build_supermini monitor       # 串口 460800
 - **Round-D/E（09-13）**：ludb 载波勘误（§109）；VF RMS 下限门控（§111）；AI 密度报警 min-SQI≥0.80 门（§110）；纯噪声重训 v3-N 三连败保留 v3-A（§107）。
 - **M0–M2（09-12/13）**：-O2/两档广播/240MHz 维持；M1 报警擎住状态机（**擎住 ≥12s**，2026-10-19 由 30s 调整为 12s，`main.cc` 为准）+ UART 命令通道；30 case 板上噪声语料（§104–§106）。
 - **R16 设备闭环（exp7c 时代）**：官方固件首次上板 90s 三模式测试，设备 vs PC 相关 0.886/0.827——**exp7c 数字不能当 v3-A 指标**。
-- **P1-1 A1 Gate（09-14）**：R18 二分类 gate FAIL（仅 1/3 seed 过线且 Sn=0.058），决策 FAIL_TO_3CLASS；证据 `pc_tools/ecg_dl/models/gate/r18_gate_*.json`、TUNING_HISTORY §116。
+- **P1-1 A1 Gate（09-14）**：R18 二分类 gate FAIL（仅 1/3 seed 过线且 Sn=0.058），决策 FAIL_TO_3CLASS；证据 `pc_tools/ecg_dl/models/gate/r18_gate_*.json`（内部调参记录 §116 未纳入公开树）。
 - **ECG Plotter 串口修复（09-14）**：固件支持 `WAVE 1/0` 串口流（默认关）；Plotter 修正 DTR/RTS 初始化。预编译 exe 未重建，运行 `python pc_tools/ecg_plotter.py`。
 
 ---
@@ -123,15 +123,15 @@ experiments/esp_idf_ecg_migration/  # 官方 IDF 固件线（README 含构建/�
   main/                            # 主程序（采样/滤波/心率/报警/记录/BLE/WiFi）
   components/                      # ecg_ai · ecg_core · ecg_ble · ecg_wifi · ecg_storage · ecg_afe
                                    # + esp-tflite-micro · esp-nn（vendored）
-legacy_arduino/                    # 旧 Arduino/PlatformIO 线（已归档）
+legacy_arduino/                    # 旧 Arduino/PlatformIO 线（已归档，无 README）
 pc_tools/                          # PC 工具：ecg_plotter + ecg_dl（训练/评估/导出）
 ecg_app/                           # Flutter 手机 App
 web/                               # Web 记录下载前端
 protocol/                          # ecg_proto.json 三端协议单一真值源
-docs/                              # 论文与结果文档（权威数字：docs/01_Project_Overview/FINAL_RESULTS.md）
 test/                              # 测试代码
-papers/                            # 文献
 ```
+
+内部文档（调参记录、结题数字、协作规则）与文献目录未纳入公开树，请看各子目录 README。
 
 ---
 
@@ -155,7 +155,7 @@ papers/                            # 文献
 - **PC 绘图** `pc_tools/ecg_plotter.py`：实时三通道波形 + AI 异常标签（可打包 ECG-Plotter.exe）。
 - **深度学习** `pc_tools/ecg_dl/`：训练 / INT8 导出 / 评估（患者级无泄漏划分 + SplitGuard 守卫）。
 - **手机 App** `ecg_app/`：BLE NUS 波形显示、AI 高亮报警、记录列表/回放。
-- **跨 Shell 协作**：`scripts/project_paths.json`（唯一路径真值）+ 读取器 + `scripts/cross_shell.py` 调度器；规则见 `docs/03_Software_Docs/AGENTS.md`（内部）。
+- **跨 Shell 协作**：`scripts/project_paths.json`（唯一路径真值）+ 读取器 + `scripts/cross_shell.py` 调度器。协作规则在内部文档中，未纳入公开树。
 
 ---
 

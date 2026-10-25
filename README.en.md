@@ -52,14 +52,14 @@ idf.py -B build_supermini monitor       # serial 460800
 
 ## 4. Research Progress (brief, 2026-10-25)
 
-- **v3-A retained**: preregistered exploration rounds R16–R21 (morphology repair, dual-head/valid gating, domain expansion, mixup, KD-anchored joint training) all failed their gates; v3-A remains the on-board model — see `docs/03_Software_Docs/TUNING_HISTORY.md`.
+- **v3-A retained**: preregistered exploration rounds R16–R21 (morphology repair, dual-head/valid gating, domain expansion, mixup, KD-anchored joint training) all failed their gates; v3-A remains the on-board model. The tuning log is an internal document and is not in the public tree; public notes are in each subdirectory README.
 - **New N/V (normal/ventricular-ectopic) models remain research-side** (a long-run training task started 2026-10-24; live status comes from the task output); **not deployed to firmware**, no final conclusion yet. The equal-weight baseline (2026-10-23, dev set) — N misclassification 3.3%, V detection 87.2% — is an intermediate research result.
 - **QRS/PVC morphology capability and record-level AF/VF detection remain research goals**, not shipped product capabilities; the VF/AF rule evaluations under `pc_tools/ecg_dl/reports/` (including those in open PRs) are research evaluations, not product performance claims. The paper's main line has **not been finally decided by the user**.
 - **Caveat**: the current dev set has been used for many rounds of analysis, and the old INCART split once had patient-level leakage. The AI metrics below are development-era numbers — **not blind-test results and not proof of cross-device generalization**.
 
-## 5. Archived History (2026-09, see TUNING_HISTORY)
+## 5. Archived History (2026-09)
 
-Archived round conclusions, kept for traceability (current state is §1–§4 above):
+Archived round conclusions, kept for traceability (current state is §1–§4 above; the internal tuning log is not in the public tree):
 
 - **R21 (09-19)**: KD-anchored dual-head joint training failed after two iterations; dual-head direction closed (§120).
 - **R18/R19M/R20M (09-18/19)**: dual-head valid gating suppressed motion artifact in 6/6 runs but drifted calibration; frozen-backbone variants closed on TP protection; the four-quadrant design-space map holds (§118/§119).
@@ -69,7 +69,7 @@ Archived round conclusions, kept for traceability (current state is §1–§4 ab
 - **Round-D/E (09-13)**: ludb carrier erratum (§109); VF RMS floor gate (§111); AI-density alarm min-SQI ≥ 0.80 gate (§110); pure-noise retrain v3-N failed three times, v3-A retained (§107).
 - **M0–M2 (09-12/13)**: -O2 / two-stage advertising / 240 MHz kept; M1 latched alarm state machine (**latch ≥12s**, adjusted 30s→12s on 2026-10-19, `main.cc` authoritative) + UART command channel; 30-case on-board noise corpus (§104–§106).
 - **R16 device loop (exp7c era)**: first on-board 90s three-mode test, device vs PC correlation 0.886/0.827 — **exp7c numbers are not v3-A metrics**.
-- **P1-1 A1 Gate (09-14)**: R18 binary gate FAIL (only 1/3 seeds passed, that seed Sn=0.058); decision FAIL_TO_3CLASS; evidence `pc_tools/ecg_dl/models/gate/r18_gate_*.json`, TUNING_HISTORY §116.
+- **P1-1 A1 Gate (09-14)**: R18 binary gate FAIL (only 1/3 seeds passed, that seed Sn=0.058); decision FAIL_TO_3CLASS; evidence `pc_tools/ecg_dl/models/gate/r18_gate_*.json` (internal tuning-log §116 is not in the public tree).
 - **ECG Plotter serial fix (09-14)**: firmware supports `WAVE 1/0` serial streaming (default off); Plotter DTR/RTS init fixed. The prebuilt exe was not rebuilt; run `python pc_tools/ecg_plotter.py`.
 
 ---
@@ -124,15 +124,15 @@ experiments/esp_idf_ecg_migration/  # official ESP-IDF firmware line (README has
   main/                            # main (sampling/filter/HR/alarm/record/BLE/WiFi)
   components/                      # ecg_ai · ecg_core · ecg_ble · ecg_wifi · ecg_storage · ecg_afe
                                    # + esp-tflite-micro · esp-nn (vendored)
-legacy_arduino/                    # legacy Arduino/PlatformIO line (archived)
+legacy_arduino/                    # legacy Arduino/PlatformIO line (archived, no README)
 pc_tools/                          # PC tools: ecg_plotter + ecg_dl (train/eval/export)
 ecg_app/                           # Flutter mobile app
 web/                               # web recording-download frontend
 protocol/                          # ecg_proto.json — single protocol source of truth
-docs/                              # papers & results (authoritative numbers: docs/01_Project_Overview/FINAL_RESULTS.md)
 test/                              # tests
-papers/                            # literature
 ```
+
+Internal docs (tuning history, final results, collaboration rules) and the literature folder are not in the public tree; see each subdirectory README.
 
 ---
 
