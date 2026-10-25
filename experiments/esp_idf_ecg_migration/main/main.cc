@@ -37,6 +37,12 @@
 #define COMB_TAPS 10
 #define BUTTON_DEBOUNCE_MS 250
 
+/* Explicit on-board fixed-input test build. Never mount/modify stored data,
+ * initialize radios, or permit ADC acquisition in this build. Default is off. */
+#ifndef ECG_FIXED_INPUT_BOARD_TEST
+#define ECG_FIXED_INPUT_BOARD_TEST 0
+#endif
+
 /* ================= M1 报警擎住状态机 (2026-09-12) =================
  * 背景: App 冻结不可改, 报警持续性必须在固件侧。原链路 BLE 第 8 列跟随
  * ecg_ai 的 confirmed (1-of-5 + 冷却 5 拍), 持续异常下呈 1s 亮 / 5s 灭闪断
@@ -111,6 +117,9 @@ typedef enum {
 } InputSource;
 
 static int s_mode = SOURCE_SIMULATOR;
+static bool s_verifyActive = false;
+static uint32_t s_verifyRemaining = 0;
+static constexpr uint32_t kVerifySamples = 20000; // 40s of fixed digital input
 static uint32_t s_lastButtonMs = 0;
 static bool s_buttonWasLow = false;
 /* BLE 批量发送：攒 BLE_BATCH_SIZE 帧再 Notify 一次，降低射频占空比/发热。 */
@@ -208,6 +217,13 @@ static float applyCombFilter(float x) {
     s_combSum2 += y1;
     s_combIdx2 = (s_combIdx2 + 1) % COMB_TAPS;
     return s_combSum2 / (float)COMB_TAPS;
+}
+
+static void resetCombFilter(void) {
+    memset(s_combBuf1, 0, sizeof(s_combBuf1));
+    memset(s_combBuf2, 0, sizeof(s_combBuf2));
+    s_combIdx1 = s_combIdx2 = 0;
+    s_combSum1 = s_combSum2 = 0.0f;
 }
 
 static const char *modeName(int mode) {
@@ -314,7 +330,17 @@ static void alarmSecondTick(uint32_t nowSec, uint8_t ruleHits, float sqiMin,
     }
 }
 
-static void switchMode(int newMode) {
+static esp_err_t switchMode(int newMode) {
+    if (s_verifyActive && newMode == SOURCE_AFE_REAL) return ESP_ERR_NOT_SUPPORTED;
+#if ECG_FIXED_INPUT_BOARD_TEST
+    if (newMode == SOURCE_AFE_REAL) return ESP_ERR_NOT_SUPPORTED;
+#endif
+    if (newMode == SOURCE_AFE_REAL) {
+        AFE_HAL_Config cfg = AFE_HAL_DEFAULT_3V3;
+        cfg.oversample = 1;
+        esp_err_t err = afeHalInit(&cfg);
+        if (err != ESP_OK) return err; // keep the current mode and DSP state
+    }
     s_mode = newMode;
     printf("[main] mode -> %s\n", modeName(newMode));
     alarmReset();
@@ -329,11 +355,7 @@ static void switchMode(int newMode) {
     if (newMode == SOURCE_REPLAY_NORMAL || newMode == SOURCE_REPLAY_ABNORMAL) {
         ecgReplayReset();
     }
-    if (newMode == SOURCE_AFE_REAL) {
-        AFE_HAL_Config cfg = AFE_HAL_DEFAULT_3V3;
-        cfg.oversample = 1;
-        afeHalInit(&cfg);
-    }
+    return ESP_OK;
 }
 
 static void checkButton(void) {
@@ -388,6 +410,23 @@ static void cmdReply(bool fromUart, const char *msg) {
     }
 }
 
+static bool initAi(void) {
+    ecg_ai_config_t cfg;
+    ecg_ai_config_default(&cfg);
+    cfg.threshold = 0.50f;
+    cfg.confirm_mode = ECG_AI_CONFIRM_ONE_OF_N;
+    cfg.confirm_n = 5;
+    cfg.cooldown_beats = 5;
+    cfg.async_infer = true;
+    cfg.trigger_mode = ECG_AI_TRIGGER_RPEAK;
+    cfg.rpeak_half_win = 125;
+#if ECG_AI_PERMISSIVE_QRS
+    cfg.rpeak_min_rr = 50;
+#endif
+    return ecg_ai_init(models_ecg_model_v3a_int8_tflite,
+                       models_ecg_model_v3a_int8_tflite_len, &cfg);
+}
+
 /* 命令处理器 (M1): BLE NUS 与 UART0 RX 共用同一命令集。
  * - fromUart=1: 应答走串口 (CMD 前缀), pc_tools 全自动驱动;
  * - fromUart=0: 应答走 BLE, 与 App 的旧行为逐字节兼容。
@@ -395,12 +434,63 @@ static void cmdReply(bool fromUart, const char *msg) {
  * REC 与 WIFI 前缀命令集合保持不变 (App 冻结, 逐字节兼容)。
  * 注意: 注释里不要写 "REC 前缀加斜杠星号" 之类组合, 会提前终结块注释。 */
 static void processCommand(const char *cmd, bool fromUart) {
-    char reply[128];
+    char reply[192];
+
+    // Bounded verification on the release image, only by explicit USB/UART
+    // request. A clean AI/frontend state makes every window reproducible on PC.
+    if (strStartsWithIgnoreCase(cmd, "AI_VERIFY ")) {
+        if (!fromUart) { cmdReply(false, "AI_VERIFY fail UART_only"); return; }
+        if (strEqualsIgnoreCase(cmd, "AI_VERIFY STOP")) {
+            ecg_ai_set_trace(false);
+            s_verifyActive = false;
+            s_verifyRemaining = 0;
+            switchMode(SOURCE_SIMULATOR);
+            cmdReply(true, "AI_VERIFY stopped SIMULATOR");
+            return;
+        }
+        int seg = strEqualsIgnoreCase(cmd, "AI_VERIFY 0") ? 0 :
+                  strEqualsIgnoreCase(cmd, "AI_VERIFY 1") ? 1 : -1;
+        if (seg < 0 || ecgRecorderIsRecording() || ecgRecorderAutoRecordEnabled()) {
+            cmdReply(true, "AI_VERIFY fail use_0_or_1_recording_must_be_off");
+            return;
+        }
+        ecg_ai_reset();
+        if (!initAi()) { cmdReply(true, "AI_VERIFY fail init"); return; }
+        resetCombFilter();
+        switchMode(seg ? SOURCE_REPLAY_ABNORMAL : SOURCE_REPLAY_NORMAL);
+        s_verifyRemaining = kVerifySamples;
+        s_verifyActive = true;
+        ecg_ai_set_trace(true);
+        snprintf(reply, sizeof(reply), "AI_VERIFY start seg=%d samples=%lu async=1",
+                 seg, (unsigned long)kVerifySamples);
+        cmdReply(true, reply);
+        return;
+    }
+    if (s_verifyActive && !(strEqualsIgnoreCase(cmd, "PING") ||
+                            strEqualsIgnoreCase(cmd, "STATUS") ||
+                            strEqualsIgnoreCase(cmd, "AFE_STATUS") ||
+                            strEqualsIgnoreCase(cmd, "REC_STATUS"))) {
+        cmdReply(fromUart, "AI_VERIFY busy; use AI_VERIFY STOP");
+        return;
+    }
 
     /* ---- 自动化命令 (不依赖存储就绪) ---- */
     if (strEqualsIgnoreCase(cmd, "PING")) {
         snprintf(reply, sizeof(reply), "PONG %lu",
                  (unsigned long)(esp_timer_get_time() / 1000));
+        cmdReply(fromUart, reply);
+        return;
+    }
+    if (strEqualsIgnoreCase(cmd, "AFE_STATUS")) {
+        AFE_HAL_Diagnostics d;
+        afeHalGetDiagnostics(&d);
+        snprintf(reply, sizeof(reply),
+                 "AFE_STATUS mode=%s ready=%u valid=%u init=0x%x read=0x%x ok=%lu fail=%lu status=%u cal=%u ovs=%u",
+                 modeName(s_mode), (unsigned)d.ready, (unsigned)d.sample_valid,
+                 (unsigned)d.init_error, (unsigned)d.read_error,
+                 (unsigned long)d.samples_ok, (unsigned long)d.samples_failed,
+                 (unsigned)afeHalGetStatus(), (unsigned)d.calibrated,
+                 (unsigned)afeHalGetOversample());
         cmdReply(fromUart, reply);
         return;
     }
@@ -443,9 +533,18 @@ static void processCommand(const char *cmd, bool fromUart) {
             src = SOURCE_AFE_REAL;
         }
         if (src >= 0) {
-            switchMode(src);
-            if (seg >= 0) ecgReplaySetSegment((uint8_t)seg);
-            snprintf(reply, sizeof(reply), "MODE ok %s", modeName(s_mode));
+            esp_err_t err = switchMode(src);
+            if (err == ESP_OK) {
+                if (seg >= 0) ecgReplaySetSegment((uint8_t)seg);
+                snprintf(reply, sizeof(reply), "MODE ok %s", modeName(s_mode));
+            } else {
+                AFE_HAL_Diagnostics d;
+                afeHalGetDiagnostics(&d);
+                snprintf(reply, sizeof(reply),
+                         "MODE fail AFE_REAL err=%s(0x%x) active=%s ready=%u",
+                         esp_err_to_name(err), (unsigned)err, modeName(s_mode),
+                         (unsigned)d.ready);
+            }
         } else {
             snprintf(reply, sizeof(reply), "MODE fail '%s'", m);
         }
@@ -658,36 +757,31 @@ static void processRecSchedule(void) {
     }
 }
 
-static void storage_init_task(void *arg) {
+[[maybe_unused]] static void storage_init_task(void *arg) {
     (void)arg;
     if (!ecgRecorderInit()) {
         printf("[storage] ecgRecorderInit failed\n");
         vTaskDelete(NULL);
         return;
     }
-    /* 异常触发自动录制: 异常秒 -> 启动, 连续 N 秒正常 -> 停止。
-     * BLE REC_* 命令已接入；auto-record 仍默认开，保证无 App 时也能落盘。 */
-    ecgRecorderSetAutoRecord(true);
+    // Boot must preserve stored data. Recording is an explicit REC_* request.
+    ecgRecorderSetAutoRecord(false);
     s_storageReady = true;
-    printf("[storage] recorder init OK, auto-record enabled\n");
+    printf("[storage] recorder init OK, auto-record disabled, boot preserves records\n");
     vTaskDelete(NULL);
 }
 
+static void paceSampleLoop(TickType_t &nextWake) {
+    TickType_t nowTick = xTaskGetTickCount();
+    if ((int32_t)(nowTick - nextWake) > 8) nextWake = nowTick;
+    vTaskDelayUntil(&nextWake, 2);
+}
+
 extern "C" void app_main(void) {
-    ecg_ai_config_t cfg;
-    ecg_ai_config_default(&cfg);
-    cfg.threshold = 0.50f;
-    cfg.confirm_mode = ECG_AI_CONFIRM_ONE_OF_N;
-    cfg.confirm_n = 5;
-    cfg.cooldown_beats = 5;
-    cfg.async_infer = true;   /* Round-F: 推理出环 (核 1), 采样循环不再被 invoke 阻塞 */
-    cfg.trigger_mode = ECG_AI_TRIGGER_RPEAK; /* 2026-10-20: R-centered AI windows */
-    cfg.rpeak_half_win = 125;
-#if ECG_AI_PERMISSIVE_QRS
-    cfg.rpeak_min_rr = 50;   /* 200 ms */
+#if ECG_FIXED_INPUT_BOARD_TEST
+    vTaskDelay(pdMS_TO_TICKS(3000)); // allow USB monitor to reconnect after reset
 #endif
-    if (!ecg_ai_init(models_ecg_model_v3a_int8_tflite,
-                     models_ecg_model_v3a_int8_tflite_len, &cfg)) {
+    if (!initAi()) {
         printf("[main] ecg_ai init failed\n");
         return;
     }
@@ -711,7 +805,13 @@ extern "C" void app_main(void) {
     };
     gpio_config(&io);
 
-    /* 先把 BLE/WiFi 启起来，避免 SPIFFS 首次格式化阻塞导致手机扫不到设备。 */
+    /* Normal release: initialize radios and mount existing storage, no format. */
+#if ECG_FIXED_INPUT_BOARD_TEST
+    ecgRecorderSetAutoRecord(false);
+    switchMode(SOURCE_REPLAY_NORMAL);
+    printf("[BOARD_TEST] fixed-input-only flash=%s max_seg=%u storage=OFF radio=OFF afe=BLOCKED\n",
+           CONFIG_ESPTOOLPY_FLASHSIZE, (unsigned)ecgReplayMaxSegment());
+#else
     initBLE();
     ecgWifiInit();          /* 只做 NVS/netif/事件循环, 不开射频 */
 #if ECG_WIFI_AUTOSTART_AT_BOOT
@@ -720,6 +820,7 @@ extern "C" void app_main(void) {
     bleSetStreamActive(s_bleStream);
 
     xTaskCreate(storage_init_task, "storage_init", 4096, NULL, 2, NULL);
+#endif
     uartCommandInit();
 
     uint32_t frame = 0;
@@ -729,10 +830,17 @@ extern "C" void app_main(void) {
 
     while (true) {
         uint64_t tWork0 = esp_timer_get_time();
-        checkButton();
+        if (!s_verifyActive) checkButton();
         uartCommandPoll();
         handleBleCommands();
         processRecSchedule();
+        if (s_verifyActive && s_verifyRemaining == 0) {
+            // Let the last async window drain; keep commands/status available.
+            ecg_ai_result_t pending;
+            while (ecg_ai_pop_result(&pending)) {}
+            paceSampleLoop(nextWake);
+            continue;
+        }
 
         float noisySample, cleanSample;
         if (s_mode == SOURCE_SIMULATOR) {
@@ -742,7 +850,13 @@ extern "C" void app_main(void) {
             noisySample = ecgReplayNextSample();
             cleanSample = noisySample;
         } else {
-            noisySample = afeHalReadSample();
+            if (afeHalReadSampleChecked(&noisySample) != ESP_OK) {
+                // No fabricated zero/NAN may enter DSP, AI, recording or WAVE.
+                // Keep command polling/cadence alive; AFE_STATUS exposes the gap.
+                frame++;
+                paceSampleLoop(nextWake);
+                continue;
+            }
             cleanSample = noisySample - 1.65f;
         }
 
@@ -828,6 +942,10 @@ extern "C" void app_main(void) {
             last_conf = r.confidence;
             if (r.confirmed) s_aiConfirmedSec = true;
             alarmPushAiRaw(r.raw_abnormal);
+#if ECG_FIXED_INPUT_BOARD_TEST
+            printf("BOARD_AI,%lu,%.6f,%lu\n", (unsigned long)r.sample_index,
+                   (double)r.confidence, (unsigned long)r.latency_us);
+#endif
 #if ECG_HOT_LOG
             printf("AI_RESULT,%.4f,%u,%u,%lu\n", r.confidence,
                    (unsigned)r.raw_abnormal, (unsigned)r.confirmed,
@@ -1018,6 +1136,10 @@ extern "C" void app_main(void) {
             s_loopOverruns = 0;
             s_lastTickUs = nowUs;
         }
+        if (s_verifyActive && --s_verifyRemaining == 0) {
+            printf("AI_VERIFY input_done samples=%lu dropped=%lu\n",
+                   (unsigned long)kVerifySamples, (unsigned long)ecg_ai_async_dropped());
+        }
         frame++;
         {
             uint64_t dtWorkUs = (uint64_t)esp_timer_get_time() - tWork0;
@@ -1028,12 +1150,6 @@ extern "C" void app_main(void) {
          * 注意: xTaskDelayUntil 在 prev 处于未来时视为 tick 回绕, 永不延迟
          * 且 prev 照加 (自由跑) —— 所以重锚只能设 prev = nowTick (不得超前)。
          * 落后 > 8 tick (SPIFFS/BLE 停顿) 时丢债重锚, 最多补 8 帧。 */
-        {
-            TickType_t nowTick = xTaskGetTickCount();
-            if ((int32_t)(nowTick - nextWake) > 8) {
-                nextWake = nowTick;
-            }
-            vTaskDelayUntil(&nextWake, 2);
-        }
+        paceSampleLoop(nextWake);
     }
 }

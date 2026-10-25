@@ -5,6 +5,7 @@
 #include <string.h>
 #include <math.h>
 #include <new>
+#include <atomic>
 #include "esp_heap_caps.h"
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
@@ -20,11 +21,10 @@ namespace {
 
 constexpr int kMaxConfirmN = 64;
 constexpr int kDefaultWindow = 250;
-constexpr int kAsyncSlots = 3;          /* Round-F 窗口交接槽 */
-constexpr int kAsyncQueueDepth = 2;
-constexpr int kAsyncTaskStack = 8192;   /* TFLM 调用链 + win[250] */
-constexpr int kAsyncTaskPrio = 4;       /* 低于 main(5)/BLE/WiFi, 高于 idle */
-constexpr int kAsyncTaskCore = 1;       /* BLE/WiFi 同在核 1 但合计占用 << 5% */
+constexpr int kAsyncQueueDepth = 2;    /* 按值整窗交接深度 (Round-F) */
+constexpr int kAsyncTaskStack = 8192;  /* TFLM 调用链 + AiWindowMsg(1KB) */
+constexpr int kAsyncTaskPrio = 4;      /* 低于 main(5)/BLE/WiFi, 高于 idle */
+constexpr int kAsyncTaskCore = 1;      /* BLE/WiFi 同在核 1 但合计占用 << 5% */
 
 /* AI 输入链因果 0.5Hz @250Hz 系数（与 include/filter/filter.h 完全一致） */
 constexpr double kAiHpA1 = -1.9822289297925284;
@@ -33,8 +33,17 @@ constexpr double kAiHpB0 =  0.99115359510166301;
 constexpr double kAiHpB1 = -1.982307190203326;
 constexpr double kAiHpB2 =  0.99115359510166301;
 
+/* Round-F 异步交接消息: 整窗按值 (1004B) + 窗口生成时固定的编号。
+ * xQueueSend 复制入队后所有权完全转移给消费者, 无槽别名。 */
+struct AiWindowMsg {
+    float win[kDefaultWindow];
+    uint32_t sample_index;   /* 窗口生成时的 sample_count, 随窗固定 */
+};
+
 struct AiState {
-    bool initialized = false;
+    /* worker 每次推理入口都会读, reset 会写: 原子化消除数据竞争
+     * (bool 值语义不变; ESP32-S3 字节原子为原生指令) */
+    std::atomic<bool> initialized{false};
 
     ecg_ai_config_t cfg{};
 
@@ -69,16 +78,15 @@ struct AiState {
     uint32_t total_inferences = 0;
     uint32_t total_confirmed = 0;
 
-    uint32_t next_sample_index = 0;
-
-    /* Round-F 异步推理: 主任务在窗口就绪时把窗口拷入轮转槽并入队,
-     * 推理任务 (核 1) 出队后直接量化+Invoke+发布。
-     * 槽满即丢 (正常不会发生: 推理 ~50ms/窗 << 1s/窗), 计数暴露在
-     * ecg_ai_async_dropped()。 */
+    /* Round-F 异步推理: 主任务在窗口就绪时把整窗按值拷入交接队列。
+     * 队满即丢 (正常不会发生: 推理 ~50ms/窗 << 1s/窗), 计数暴露在
+     * ecg_ai_async_dropped()。send_msg 是生产者 scratch: feed_sample/
+     * maybe_fire_window 只允许在流式所有者任务单线程调用。 */
     QueueHandle_t handoff = nullptr;
     TaskHandle_t task = nullptr;
-    float slots[kAsyncSlots][kDefaultWindow] = {{0}};
-    int slot_rr = 0;
+    AiWindowMsg send_msg{};
+    std::atomic<bool> task_stop{false};
+    std::atomic<bool> task_exited{false};
     volatile uint32_t async_dropped = 0;
 
     /* R-peak centered trigger (2026-10-20) */
@@ -93,6 +101,7 @@ struct AiState {
 };
 
 AiState g_ai;
+std::atomic<bool> g_trace{false};
 
 inline double biquad(double x, double b0, double b1, double b2,
                      double a1, double a2, double *w1, double *w2) {
@@ -119,23 +128,25 @@ void zscore(float *buf, int n) {
     }
 }
 
-bool fill_int8_and_invoke(const float *window);   /* 前置: 定义于下方 */
+bool fill_int8_and_invoke(const float *window, uint32_t sample_index);   /* 前置: 定义于下方 */
 
-/* Round-F 推理任务 (核 1): 出队 → 立即拷到本地栈 → 量化/Invoke/发布。
- * 拷贝后槽即视为已释放 (发送侧 3 槽轮转 + 队列深 2 保证不别名)。 */
+/* Round-F 推理任务 (核 1): 出队即持有整窗按值拷贝 (无别名) → 量化/Invoke/发布。
+ * 100ms 超时轮询 task_stop: reset 置停后最多一个在途 Invoke 完成本拍即退出,
+ * 队列中积压窗口按 reset 语义丢弃 (不再推理)。 */
 void async_infer_task(void *arg) {
     (void)arg;
-    float win[kDefaultWindow];
-    while (true) {
-        float *src = nullptr;
-        if (xQueueReceive(g_ai.handoff, &src, portMAX_DELAY) == pdTRUE && src) {
-            memcpy(win, src, sizeof(float) * kDefaultWindow);
-            fill_int8_and_invoke(win);
+    AiWindowMsg msg;
+    while (!g_ai.task_stop.load()) {
+        if (xQueueReceive(g_ai.handoff, &msg, pdMS_TO_TICKS(100)) == pdTRUE) {
+            if (g_ai.task_stop.load()) break;
+            fill_int8_and_invoke(msg.win, msg.sample_index);
         }
     }
+    g_ai.task_exited.store(true);
+    vTaskDelete(nullptr);
 }
 
-bool fill_int8_and_invoke(const float *window) {
+bool fill_int8_and_invoke(const float *window, uint32_t sample_index) {
     if (!g_ai.initialized || !g_ai.input || !g_ai.output) return false;
     const float scale = g_ai.input->params.scale;
     const int32_t zp = g_ai.input->params.zero_point;
@@ -145,11 +156,21 @@ bool fill_int8_and_invoke(const float *window) {
         if (q > 127) q = 127;
         g_ai.input->data.int8[i] = (int8_t)q;
     }
+    const bool trace = g_trace.load();
+    char input_hex[kDefaultWindow * 2 + 1];
+    if (trace) {
+        static const char digits[] = "0123456789abcdef";
+        for (int i = 0; i < kDefaultWindow; i++) {
+            uint8_t q = (uint8_t)g_ai.input->data.int8[i];
+            input_hex[i * 2] = digits[q >> 4];
+            input_hex[i * 2 + 1] = digits[q & 15];
+        }
+        input_hex[kDefaultWindow * 2] = '\0';
+    }
     uint32_t t0 = (uint32_t)esp_timer_get_time();
     TfLiteStatus st = g_ai.interpreter->Invoke();
     uint32_t dt = (uint32_t)(esp_timer_get_time() - t0);
     if (st != kTfLiteOk) return false;
-    g_ai.next_sample_index = g_ai.sample_count;
     float out_scale = g_ai.output->params.scale;
     int32_t out_zp = g_ai.output->params.zero_point;
     float p0 = (float)((g_ai.output->data.int8[0] - out_zp) * out_scale);
@@ -159,7 +180,7 @@ bool fill_int8_and_invoke(const float *window) {
     ecg_ai_result_t r{};
     r.confidence = p1;
     r.raw_abnormal = (p1 > g_ai.cfg.threshold) ? 1 : 0;
-    r.sample_index = g_ai.next_sample_index;
+    r.sample_index = sample_index;   /* 窗口生成时固定, 不随 Invoke 完成时刻漂移 */
     r.latency_us = dt;
 
     /* 确认策略 */
@@ -192,6 +213,13 @@ bool fill_int8_and_invoke(const float *window) {
 
     g_ai.total_inferences++;
     if (r.confirmed) g_ai.total_confirmed++;
+
+    if (trace) {
+        printf("AI_TRACE,%lu,%s,%d,%d,%u,%u\n",
+               (unsigned long)sample_index, input_hex,
+               (int)g_ai.output->data.int8[0], (int)g_ai.output->data.int8[1],
+               (unsigned)r.raw_abnormal, (unsigned)r.confirmed);
+    }
 
     if (g_ai.callback) g_ai.callback(&r);
     if (g_ai.queue) {
@@ -232,9 +260,14 @@ uint32_t ecg_ai_async_dropped(void) {
     return g_ai.async_dropped;
 }
 
+void ecg_ai_set_trace(bool enabled) { g_trace.store(enabled); }
+
 bool ecg_ai_init(const uint8_t *model_data, size_t model_size,
                  const ecg_ai_config_t *cfg) {
     if (!model_data || !cfg) return false;
+    /* 生命周期 API 禁止在推理任务上下文 (如结果回调内) 调用:
+     * reset 须等待 worker 退出, 从 worker 自身调用会自死锁。 */
+    if (g_ai.task && xTaskGetCurrentTaskHandle() == g_ai.task) return false;
     if (g_ai.initialized) ecg_ai_reset();
 
     g_ai.cfg = *cfg;
@@ -255,6 +288,7 @@ bool ecg_ai_init(const uint8_t *model_data, size_t model_size,
     }
     if (!g_ai.arena) {
         printf("[ecg_ai] arena alloc failed (%d bytes)\n", g_ai.cfg.arena_size);
+        ecg_ai_reset();   /* 部分初始化失败: 统一清理, 不留半初始化状态 */
         return false;
     }
     g_ai.arena_size = g_ai.cfg.arena_size;
@@ -263,6 +297,7 @@ bool ecg_ai_init(const uint8_t *model_data, size_t model_size,
     g_ai.model = tflite::GetModel(model_data);
     if (g_ai.model->version() != TFLITE_SCHEMA_VERSION) {
         printf("[ecg_ai] model schema mismatch\n");
+        ecg_ai_reset();
         return false;
     }
 
@@ -287,10 +322,12 @@ bool ecg_ai_init(const uint8_t *model_data, size_t model_size,
         g_ai.model, g_ai.resolver, g_ai.arena, g_ai.arena_size);
     if (!g_ai.interpreter) {
         printf("[ecg_ai] interpreter alloc failed\n");
+        ecg_ai_reset();
         return false;
     }
     if (g_ai.interpreter->AllocateTensors() != kTfLiteOk) {
         printf("[ecg_ai] AllocateTensors failed\n");
+        ecg_ai_reset();
         return false;
     }
     g_ai.input = g_ai.interpreter->input(0);
@@ -300,20 +337,25 @@ bool ecg_ai_init(const uint8_t *model_data, size_t model_size,
         g_ai.queue = xQueueCreate(g_ai.cfg.queue_length, sizeof(ecg_ai_result_t));
         if (!g_ai.queue) {
             printf("[ecg_ai] queue create failed\n");
+            ecg_ai_reset();
             return false;
         }
     }
 
     if (g_ai.cfg.async_infer) {
-        g_ai.handoff = xQueueCreate(kAsyncQueueDepth, sizeof(float *));
+        g_ai.handoff = xQueueCreate(kAsyncQueueDepth, sizeof(AiWindowMsg));
         if (!g_ai.handoff) {
             printf("[ecg_ai] handoff queue create failed\n");
+            ecg_ai_reset();
             return false;
         }
+        g_ai.task_stop = false;
+        g_ai.task_exited = false;
         if (xTaskCreatePinnedToCore(async_infer_task, "ecg_ai_infer",
                                     kAsyncTaskStack, nullptr, kAsyncTaskPrio,
                                     &g_ai.task, kAsyncTaskCore) != pdPASS) {
             printf("[ecg_ai] infer task create failed\n");
+            ecg_ai_reset();
             return false;
         }
         printf("[ecg_ai] async inference task on core %d (prio %d)\n",
@@ -328,10 +370,44 @@ bool ecg_ai_init(const uint8_t *model_data, size_t model_size,
 }
 
 void ecg_ai_reset(void) {
-    g_ai.rpeak_fire_at = 0;
-    g_ai.last_rpeak_sc = 0;
-    g_ai.pend_n = 0;
-    g_ai.rpeak_min_rr = (g_ai.cfg.rpeak_min_rr > 0) ? (uint32_t)g_ai.cfg.rpeak_min_rr : 150u;
+    /* 生命周期 API 只允许在流式所有者上下文调用 (典型: main 采样任务)。
+     * 从推理任务上下文 (结果回调内) 调用会被拒绝: reset 需等待 worker
+     * 退出, 自等待会死锁。 */
+    if (g_ai.task && xTaskGetCurrentTaskHandle() == g_ai.task) {
+        printf("[ecg_ai] reset refused: called from infer task context\n");
+        return;
+    }
+    g_ai.initialized = false;   /* 先关门: feed/direct API 立即变 no-op */
+    g_trace.store(false);
+
+    /* 1. 停止推理任务并同步退出: worker 阻塞收队列(≤100ms 轮询)、正在
+     * Invoke、队列积压三种状态下, 置停后最多完成一个在途 Invoke 即退出;
+     * 超时 (回调恶意阻塞等) 才兜底强删。退出前 worker 不再触碰任何资源。 */
+    if (g_ai.task) {
+        g_ai.task_stop = true;
+        int waited_ms = 0;
+        while (!g_ai.task_exited && waited_ms < 1000) {
+            vTaskDelay(pdMS_TO_TICKS(10));
+            waited_ms += 10;
+        }
+        if (!g_ai.task_exited) {
+            printf("[ecg_ai] infer task exit timeout, force delete\n");
+            vTaskDelete(g_ai.task);
+        }
+        g_ai.task = nullptr;
+        g_ai.task_stop = false;
+        g_ai.task_exited = false;
+    }
+    /* 2. worker 已停, 再释放其使用过的资源 (旧序 interpreter/arena 先于
+     * 任务释放构成 use-after-free)。积压窗口与未取出结果随队列一并丢弃。 */
+    if (g_ai.handoff) {
+        vQueueDelete(g_ai.handoff);
+        g_ai.handoff = nullptr;
+    }
+    if (g_ai.queue) {
+        vQueueDelete(g_ai.queue);
+        g_ai.queue = nullptr;
+    }
     if (g_ai.interpreter) {
         delete g_ai.interpreter;
         g_ai.interpreter = nullptr;
@@ -340,30 +416,17 @@ void ecg_ai_reset(void) {
         heap_caps_free(g_ai.arena);
         g_ai.arena = nullptr;
     }
-    if (g_ai.queue) {
-        vQueueDelete(g_ai.queue);
-        g_ai.queue = nullptr;
-    }
-    /* Round-F: 先删推理任务再删交接队列 (任务可能阻塞在 Receive 上) */
-    if (g_ai.task) {
-        vTaskDelete(g_ai.task);
-        g_ai.task = nullptr;
-    }
-    if (g_ai.handoff) {
-        vQueueDelete(g_ai.handoff);
-        g_ai.handoff = nullptr;
-    }
     g_ai.async_dropped = 0;
-    g_ai.slot_rr = 0;
     /* 注意：不能 memset 整个 AiState，因为 MicroMutableOpResolver 是带构造的
      * C++ 对象；这里只清理运行期字段，resolver 保留构造状态。 */
-    g_ai.initialized = false;
     g_ai.model = nullptr;
     g_ai.input = nullptr;
     g_ai.output = nullptr;
-    g_ai.arena = nullptr;
     g_ai.arena_size = 0;
-    g_ai.queue = nullptr;
+    g_ai.rpeak_fire_at = 0;
+    g_ai.last_rpeak_sc = 0;
+    g_ai.pend_n = 0;
+    g_ai.rpeak_min_rr = (g_ai.cfg.rpeak_min_rr > 0) ? (uint32_t)g_ai.cfg.rpeak_min_rr : 150u;
     g_ai.callback = nullptr;
     g_ai.decim_ctr = 0;
     g_ai.sample_count = 0;
@@ -375,7 +438,6 @@ void ecg_ai_reset(void) {
     g_ai.cooldown_remaining = 0;
     g_ai.total_inferences = 0;
     g_ai.total_confirmed = 0;
-    g_ai.next_sample_index = 0;
     for (int i = 0; i < kDefaultWindow; i++) g_ai.buffer[i] = 0.0f;
     for (int i = 0; i < kMaxConfirmN; i++) g_ai.history[i] = false;
 }
@@ -387,23 +449,21 @@ bool ecg_ai_is_initialized(void) {
 
 /* Build+zscore current ring and invoke (async or inline). */
 bool maybe_fire_window(void) {
-    float win[kDefaultWindow];
-    if (!build_current_window(win)) return false;
-    zscore(win, kDefaultWindow);
+    /* send_msg 是生产者 scratch (feed_sample 单线程契约): 构窗+zscore 直接
+     * 在 scratch 上完成, 异步分支由 xQueueSend 按值整窗拷入队列 (1004B),
+     * 入队成功即所有权转移, 生产者后续覆写 scratch 不影响已入队窗口;
+     * 队满即丢 (async_dropped), 不会破坏已入队/在途窗口。 */
+    if (!build_current_window(g_ai.send_msg.win)) return false;
+    zscore(g_ai.send_msg.win, kDefaultWindow);
     if (g_ai.cfg.async_infer && g_ai.handoff) {
-        int slot = g_ai.slot_rr;
-        float *dst = g_ai.slots[slot];
-        memcpy(dst, win, sizeof(float) * kDefaultWindow);
-        g_ai.next_sample_index = g_ai.sample_count;
-        if (xQueueSend(g_ai.handoff, &slot, 0) != pdTRUE) {
+        g_ai.send_msg.sample_index = g_ai.sample_count;   /* 编号随窗口生成时固定 */
+        if (xQueueSend(g_ai.handoff, &g_ai.send_msg, 0) != pdTRUE) {
             g_ai.async_dropped = g_ai.async_dropped + 1; /* C++20: volatile ++ deprecated (-Werror) */
             return false;
         }
-        g_ai.slot_rr = (g_ai.slot_rr + 1) % kAsyncSlots;
         return true;
     }
-    g_ai.next_sample_index = g_ai.sample_count;
-    return fill_int8_and_invoke(win);
+    return fill_int8_and_invoke(g_ai.send_msg.win, g_ai.sample_count);
 }
 
 void ecg_ai_feed_sample(float sample_500hz) {
@@ -429,21 +489,27 @@ void ecg_ai_feed_sample(float sample_500hz) {
     }
 }
 
+/* 直接推理测试 API 的编号语义: sample_index 上报当前流位置 g_ai.sample_count
+ * (由 feed_sample 推进, 未喂入时为 0), 与传入窗口内容无隐式绑定。
+ * async_infer=true 时一律拒绝: 避免与 worker 并发共用同一 interpreter。 */
 bool ecg_ai_run_preprocessed(const float *window_250) {
-    if (!window_250) return false;
-    return fill_int8_and_invoke(window_250);
+    if (!g_ai.initialized || !window_250) return false;
+    if (g_ai.cfg.async_infer) return false;
+    return fill_int8_and_invoke(window_250, g_ai.sample_count);
 }
 
 bool ecg_ai_run_window_raw(const float *window_250) {
-    if (!window_250) return false;
+    if (!g_ai.initialized || !window_250) return false;
+    if (g_ai.cfg.async_infer) return false;
     float buf[kDefaultWindow];
     memcpy(buf, window_250, sizeof(buf));
     zscore(buf, kDefaultWindow);
-    return fill_int8_and_invoke(buf);
+    return fill_int8_and_invoke(buf, g_ai.sample_count);
 }
 
 bool ecg_ai_run_int8(const int8_t *input_250) {
     if (!g_ai.initialized || !input_250 || !g_ai.input) return false;
+    if (g_ai.cfg.async_infer) return false;
     memcpy(g_ai.input->data.int8, input_250, kDefaultWindow);
     uint32_t t0 = (uint32_t)esp_timer_get_time();
     TfLiteStatus st = g_ai.interpreter->Invoke();
@@ -455,7 +521,7 @@ bool ecg_ai_run_int8(const int8_t *input_250) {
     ecg_ai_result_t r{};
     r.confidence = (float)((g_ai.output->data.int8[1] - out_zp) * out_scale);
     r.raw_abnormal = (r.confidence > g_ai.cfg.threshold) ? 1 : 0;
-    r.sample_index = g_ai.next_sample_index;
+    r.sample_index = g_ai.sample_count;
     r.latency_us = dt;
     /* 简化：直接反馈原始拍，不修改确认状态（测试用） */
     r.confirmed = r.raw_abnormal;

@@ -59,7 +59,9 @@ typedef struct {
     float confidence;         /* abnormal 概率 [0,1] */
     uint8_t raw_abnormal;     /* 单拍超阈值 */
     uint8_t confirmed;        /* 经确认/冷却策略后的报警标志 */
-    uint32_t sample_index;    /* 窗口末尾样本计数 */
+    uint32_t sample_index;    /* 窗口生成时的 250Hz 样本计数(窗口末端, 1-based)。
+                                  异步模式下随窗口生成时固定, 不随推理完成时刻/
+                                  后续采样进度漂移。 */
     uint32_t latency_us;      /* Invoke 耗时（不含预处理） */
 } ecg_ai_result_t;
 
@@ -67,6 +69,11 @@ typedef void (*ecg_ai_result_cb_t)(const ecg_ai_result_t *result);
 
 void ecg_ai_config_default(ecg_ai_config_t *cfg);
 
+/* 生命周期: init/reset 必须在流式所有者任务上下文调用 (feed_sample 的调用方),
+ * 禁止在结果回调内调用 (回调运行于推理任务, reset 会等待其退出 -> 拒绝并返回)。
+ * reset 停止推理任务后再释放资源, 丢弃未推理窗口与未取出结果, 重初始化后
+ * 不会有旧会话结果混入。ecg_ai_feed_sample/maybe_fire 为单生产者接口,
+ * 不允许多任务并发喂入。 */
 bool ecg_ai_init(const uint8_t *model_data, size_t model_size,
                  const ecg_ai_config_t *cfg);
 void ecg_ai_reset(void);
@@ -79,6 +86,11 @@ void ecg_ai_feed_sample(float sample_500hz);
 void ecg_ai_on_rpeak(void);
 /* 宽松 QRS 触发 (ai_qrs): R 位于当前样本之前 lag_250 个 250Hz 样本; 支持多拍排队 */
 void ecg_ai_on_rpeak_at(uint32_t lag_250);
+
+/* 以下三个直接推理 API: async_infer=true 时返回 false (与推理任务共用同一
+ * interpreter, 并发不安全); 仅同步模式可用。结果的 sample_index 上报当前流
+ * 位置 (feed_sample 推进的 sample_count, 未喂入时为 0), 与传入窗口内容无
+ * 隐式绑定, 测试须自行维护编号关联。 */
 
 /* 直接跑已经 Z-score 过的 250 点窗口（用于一致性测试） */
 bool ecg_ai_run_preprocessed(const float *window_250);
@@ -94,8 +106,14 @@ bool ecg_ai_pop_result(ecg_ai_result_t *out);
 uint32_t ecg_ai_total_inferences(void);
 uint32_t ecg_ai_total_confirmed(void);
 
-/* async_infer 模式下因交接槽满而被丢弃的窗口数（推理滞后指标，正常应为 0） */
+/* async_infer 模式下因交接队列满而被丢弃的窗口数（推理滞后指标，正常应为 0）；
+ * 丢窗只发生在队满时, 不影响已入队/推理中窗口的内容与编号 */
 uint32_t ecg_ai_async_dropped(void);
+
+/* Explicit serial diagnostics, off by default/reset. AI_TRACE prints the exact
+ * 250 input INT8 bytes and both output INT8 values for each successful Invoke.
+ * Does not bypass preprocessing, the async queue or inference. */
+void ecg_ai_set_trace(bool enabled);
 
 #ifdef __cplusplus
 }

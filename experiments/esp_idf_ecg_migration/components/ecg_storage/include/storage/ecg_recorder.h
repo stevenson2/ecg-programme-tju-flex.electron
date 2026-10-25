@@ -5,12 +5,10 @@
  * 录制格式: .ecgr 文件 (32 字节头部 + int16 样本流 + 可选异常位图),
  * 详情见 ecg_recorder_format.h。
  *
- * 崩溃安全策略:
- *   - REC_START: 立即写入 totalSamples=0 的头部, 随后追加样本
- *   - REC_STOP:  刷缓冲, 回到文件头重写最终头部字段
- *   - 挂载扫描:  删除头部与文件大小不一致的损坏 .ecgr
- *
- * 线程模型: 单任务 (loop() 上下文), 无需锁。
+ * Init only mounts existing SPIFFS and counts records. It never formats,
+ * cleans records, rebuilds the index or applies retention. Auto-record defaults
+ * off. Explicit recording/delete APIs perform writes; finalization runs on the
+ * storage worker under its I/O mutex.
  */
 
 #ifndef ECG_RECORDER_H
@@ -53,10 +51,8 @@ extern "C" {
 /* ======================== 公共 API ======================== */
 
 /**
- * @brief 初始化录制模块 (挂载 SPIFFS + 扫描修复 + 重建索引)
- *
- * 使用 SPIFFS.begin(true, "/spiffs", 8, "ecgdata") 挂载 ecgdata 分区。
- * 挂载后扫描 *.ecgr 文件, 删除损坏文件, 重建 records.idx。
+ * @brief 挂载已有 SPIFFS 并只读计数。挂载失败返回 false，不格式化。
+ * 不删除损坏/过量记录、不创建目录、不重写索引，默认关闭自动录制。
  *
  * @return true 初始化成功
  */
@@ -110,7 +106,7 @@ void ecgRecorderSetSecondAsrc(uint8_t asrc);
  * @brief 停止录制
  *
  * 刷写缓冲区, 回到文件头重写最终头部字段 (seek(0) + 重写),
- * 关闭文件, 追加索引行, 执行保留策略 (最多10条 + 空闲空间检查)。
+ * 关闭文件, 追加索引行, 不自动删除旧记录。
  *
  * @return true 成功停止
  */

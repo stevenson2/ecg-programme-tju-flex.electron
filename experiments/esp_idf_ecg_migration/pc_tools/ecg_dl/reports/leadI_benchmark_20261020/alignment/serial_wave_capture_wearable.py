@@ -1,205 +1,232 @@
-# serial_wave_capture.py — serial-only WAVE/CSV capture to real_captures/inbox
-# Usage: python serial_wave_capture.py COM15 120
-import serial, sys, time, os, json, re
+"""Serial WAVE capture. afe_confirmed proves ADC readiness/reads, not ECG quality."""
+import csv
 from datetime import datetime
+import json
+import math
+import os
+from pathlib import Path
+import sys
+import time
 
-PORT = sys.argv[1] if len(sys.argv) > 1 else "COM15"
-DURATION = float(sys.argv[2]) if len(sys.argv) > 2 else 120.0
-BAUD = 460800
-INBOX = r"C:\Users\cai\OneDrive\Desktop\Fe programme 25261\real_captures\inbox"
-os.makedirs(INBOX, exist_ok=True)
+STATUS_KEYS = ("ready", "valid", "init", "read", "ok", "fail", "status", "cal", "ovs")
 
-stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-session_id = f"serial_{stamp}_wearable_single_lead_AD8232"
-csv_path = os.path.join(INBOX, f"{session_id}.csv")
-meta_path = os.path.join(INBOX, f"{session_id}_meta.json")
-log_path = os.path.join(INBOX, f"{session_id}_log.txt")
 
-log_lines = []
-def log(tag, msg):
-    line = f"[{tag}] {msg}"
-    log_lines.append(line)
-    print(line, flush=True)
-
-# Open WITHOUT DTR reset (DTR toggle boots ESP32 into SIMULATOR often)
-ser = serial.Serial()
-ser.port = PORT
-ser.baudrate = BAUD
-ser.timeout = 0.25
-ser.write_timeout = 2
-ser.dsrdtr = False
-ser.rtscts = False
-ser.dtr = False
-ser.rts = False
-ser.open()
-time.sleep(0.3)
-ser.reset_input_buffer()
-log("OPEN", f"{PORT} @ {BAUD} pid={os.getpid()} dtr=False")
-
-def read_for(sec):
-    end = time.time() + sec
-    buf = b""
-    while time.time() < end:
-        d = ser.read(8192)
-        if d:
-            buf += d
-    return buf.decode("utf-8", "replace")
-
-def send(cmd, wait=1.0):
-    ser.write((cmd + "\n").encode("ascii"))
-    ser.flush()
-    return read_for(wait)
-
-# Enable WAVE stream
-t = send("WAVE 1", 1.5)
-log("WAVE", "sent WAVE 1; reply_snip=" + repr(t[:200].replace("\n"," | ")))
-
-# Prefer explicit MODE afe (also try lowercase 'a' / 'm' if needed)
-confirmed = False
-afe_evidence = []
-for attempt, cmd in enumerate(["MODE afe", "afe", "a", "m", "m", "m"], 1):
-    t = send(cmd, 2.0)
-    probes = [l.strip() for l in t.splitlines() if any(k in l for k in ("切换至", "当前输入", "真实AFE", "模拟", "回放", "AFE", "MODE"))]
-    if probes:
-        log("MODE", f"cmd={cmd!r} probe: {' | '.join(probes[:3])}")
-    # Parse CSV rows for true_bpm (col index 4): 0 => AFE/real, 75 => simulator typically
-    rows = []
-    for l in t.splitlines():
-        l = l.strip()
-        if re.match(r"^-?\d+\.?\d*,", l):
-            p = l.split(",")
-            if len(p) >= 5:
-                rows.append(p)
-    # Also drain extra 3s of live stream
-    extra = read_for(3.0)
-    for l in extra.splitlines():
-        l = l.strip()
-        if re.match(r"^-?\d+\.?\d*,", l):
-            p = l.split(",")
-            if len(p) >= 5:
-                rows.append(p)
-    if not rows:
-        log("MODE", f"cmd={cmd!r} no CSV yet")
-        continue
-    tb = {}
-    for p in rows:
-        k = p[4].strip()
-        tb[k] = tb.get(k, 0) + 1
-    log("MODE", f"cmd={cmd!r} true_bpm hist={tb} n={len(rows)}")
-    # AFE: true_bpm mostly 0; SIM: often 75
-    zero_n = tb.get("0", 0)
-    sim_n = tb.get("75", 0)
-    if zero_n >= max(10, int(0.7 * len(rows))) and sim_n == 0:
-        confirmed = True
-        afe_evidence.append(f"true_bpm=0 rows={zero_n}/{len(rows)} after {cmd}")
-        log("AFE_OK", afe_evidence[-1])
-        break
-    if "真实AFE" in t:
-        confirmed = True
-        afe_evidence.append(f"text 真实AFE after {cmd}")
-        log("AFE_OK", afe_evidence[-1])
-        break
-
-if not confirmed:
-    # Final 4s sample
-    final = read_for(4.0)
-    rows = []
-    for l in final.splitlines():
-        l = l.strip()
-        if re.match(r"^-?\d+\.?\d*,", l):
-            p = l.split(",")
-            if len(p) >= 5:
-                rows.append(p)
-    tb = {}
-    for p in rows:
-        k = p[4].strip()
-        tb[k] = tb.get(k, 0) + 1
-    log("AFE_FAIL", f"could not confirm AFE; hist={tb} n={len(rows)}")
-    open(log_path, "w", encoding="utf-8").write("\n".join(log_lines))
-    meta = {
-        "session_id": session_id,
-        "status": "aborted_not_afe",
-        "port": PORT,
-        "true_bpm_hist": tb,
-        "afe_confirmed": False,
-        "note": "serial capture aborted — src not confirmed AFE",
-    }
-    open(meta_path, "w", encoding="utf-8").write(json.dumps(meta, ensure_ascii=False, indent=2))
-    ser.close()
-    sys.exit(3)
-
-# Capture header: keep raw CSV columns as board emits them
-header = "clean,noisy,filtered,bpm,true_bpm,sqi,motion,abnormal,conf,asrc\n"
-# Board may send 7–10 cols; we store raw line + host timestamp
-with open(csv_path, "w", encoding="utf-8", newline="\n") as f:
-    f.write("host_ts_s,raw_line\n")
-
-log("CAPTURE", f"start {DURATION}s -> {csv_path}")
-t0 = time.time()
-n_lines = 0
-n_csv = 0
-tb_hist = {}
-last_prog = t0
-ser.reset_input_buffer()
-send("WAVE 1", 0.3)
-
-with open(csv_path, "a", encoding="utf-8", newline="\n") as f:
-    while time.time() - t0 < DURATION:
-        raw = ser.read(8192)
-        if not raw:
+def parse_afe_status(text):
+    """Require one complete, unambiguous device status reply."""
+    matches = []
+    for line in text.splitlines():
+        line = line.strip()
+        if line.startswith("CMD "):
+            line = line[4:]
+        if not line.startswith("AFE_STATUS "):
             continue
-        text = raw.decode("utf-8", "replace")
-        for line in text.splitlines():
-            line = line.strip()
-            if not line:
-                continue
-            n_lines += 1
-            elapsed = time.time() - t0
-            if re.match(r"^-?\d+\.?\d*,", line):
-                n_csv += 1
-                parts = line.split(",")
-                if len(parts) >= 5:
-                    k = parts[4].strip()
-                    tb_hist[k] = tb_hist.get(k, 0) + 1
-                # escape commas already in line; store as quoted raw
-                safe = line.replace('"', '""')
-                f.write(f'{elapsed:.3f},"{safe}"\n')
-        if time.time() - last_prog >= 10:
-            log("PROG", f"t={time.time()-t0:.0f}s csv={n_csv} hist={tb_hist}")
-            last_prog = time.time()
-            f.flush()
+        fields = {}
+        for item in line.split()[1:]:
+            if "=" not in item:
+                return None
+            key, value = item.split("=", 1)
+            if key in fields:
+                return None
+            fields[key] = value
+        try:
+            status = {"mode": fields["mode"]}
+            status.update({key: int(fields[key], 0) for key in STATUS_KEYS})
+        except (KeyError, ValueError):
+            return None
+        if any(not 0 <= status[key] <= 0xffffffff for key in STATUS_KEYS):
+            return None
+        matches.append(status)
+    return matches[0] if len(matches) == 1 else None
 
-elapsed = time.time() - t0
-send("WAVE 0", 0.5)
-ser.close()
 
-sim_leak = tb_hist.get("75", 0)
-afe_ok = (tb_hist.get("0", 0) > 0) and (sim_leak == 0 or sim_leak < 0.05 * max(1, n_csv))
-meta = {
-    "session_id": session_id,
-    "capture_method": "serial_wave_csv",
-    "port": PORT,
-    "baud": BAUD,
-    "afe": "AD8232",
-    "lead": "wearable_single_lead (user 2026-10-20 16:08; placement may differ from earlier sessions)",
-    "afe_confirmed": bool(afe_ok and confirmed),
-    "afe_evidence": afe_evidence,
-    "true_bpm_hist": tb_hist,
-    "duration_s_requested": DURATION,
-    "duration_s_actual": round(elapsed, 2),
-    "csv_rows": n_csv,
-    "total_lines_seen": n_lines,
-    "csv_path": csv_path,
-    "pid": os.getpid(),
-    "firmware_note": "true_bpm==0 treated as AFE/real; 75 as simulator",
-    "clipping_note": "user reported baseline drift clipping — review filtered/noisy cols",
-    "label_status": "unlabeled_raw_capture",
-    "do_not_use_onboard_ai_as_gold": True,
-    "created_at_local": datetime.now().isoformat(timespec="seconds"),
-    "timezone": "Asia/Shanghai",
-}
-open(meta_path, "w", encoding="utf-8").write(json.dumps(meta, ensure_ascii=False, indent=2))
-open(log_path, "w", encoding="utf-8").write("\n".join(log_lines + [f"[DONE] csv={n_csv} elapsed={elapsed:.1f}s afe_ok={afe_ok}"]))
-log("DONE", f"csv_rows={n_csv} elapsed={elapsed:.1f}s afe_ok={afe_ok} path={csv_path}")
-print("META", meta_path, flush=True)
-sys.exit(0 if (n_csv > 100 and afe_ok) else 4)
+def confirm_afe(mode_reply, before, after):
+    """Compare fresh snapshots; missing telemetry in legacy firmware fails closed."""
+    replies = {line.strip().removeprefix("CMD ") for line in mode_reply.splitlines()}
+    if "MODE ok AFE_REAL" not in replies or any(s.startswith("MODE fail") for s in replies):
+        return False, "MODE AFE request not acknowledged successfully"
+    if before is None or after is None:
+        return False, "missing or malformed AFE_STATUS"
+    for state in (before, after):
+        if state["mode"] != "AFE_REAL" or state["ready"] != 1 or state["valid"] != 1:
+            return False, "AFE not ready or latest sample invalid"
+        if state["init"] != 0 or state["read"] != 0:
+            return False, "AFE initialization/read error"
+        if state["status"] not in (0, 1, 2):
+            return False, "AFE status has no valid ADC sample"
+        if state["cal"] not in (0, 1) or not 1 <= state["ovs"] <= 16:
+            return False, "invalid calibration/oversampling telemetry"
+    if after["ok"] <= before["ok"]:
+        return False, "valid read count did not advance (or counter reset/wrapped)"
+    if after["fail"] != before["fail"]:
+        return False, "failed read count changed"
+    return True, "AFE_REAL ready; valid reads advanced; no new read failures"
+
+
+def parse_wave(line):
+    parts = line.strip().split(",")
+    if len(parts) != 10:
+        return None
+    try:
+        values = [float(p) for p in parts]
+    except ValueError:
+        return None
+    return values if all(math.isfinite(v) for v in values) else None
+
+
+def main():
+    import serial  # importing confirmation helpers must never open a device
+    port = sys.argv[1] if len(sys.argv) > 1 else "COM15"
+    duration = float(sys.argv[2]) if len(sys.argv) > 2 else 120.0
+    if not math.isfinite(duration) or duration <= 0:
+        raise ValueError("duration must be a positive finite number")
+    inbox = Path(r"C:\Users\cai\OneDrive\Desktop\Fe programme 25261\real_captures\inbox")
+    inbox.mkdir(parents=True, exist_ok=True)
+    session_id = datetime.now().strftime("serial_%Y%m%d_%H%M%S_%f_wearable_single_lead_AD8232")
+    csv_path = inbox / (session_id + ".csv")
+    meta_path = inbox / (session_id + "_meta.json")
+    log_path = inbox / (session_id + "_log.txt")
+    lines, evidence, statuses = [], [], []
+
+    def log(tag, message):
+        entry = f"[{tag}] {message}"
+        lines.append(entry)
+        print(entry, flush=True)
+
+    ser = serial.Serial()
+    ser.port, ser.baudrate, ser.timeout, ser.write_timeout = port, 460800, 0.25, 2
+    ser.dsrdtr = ser.rtscts = ser.dtr = ser.rts = False
+    meta = {
+        "session_id": session_id, "capture_method": "serial_wave_csv",
+        "port": port, "baud": 460800, "afe": "AD8232",
+        "lead": "wearable_single_lead (placement unverified)",
+        "afe_confirmed": False, "afe_evidence": evidence, "afe_status_snapshots": statuses,
+        "confirmation_scope": "ADC path readiness and valid reads; not electrode contact, waveform fidelity or diagnosis",
+        "duration_s_requested": duration, "csv_path": str(csv_path),
+        "label_status": "unlabeled_raw_capture", "do_not_use_onboard_ai_as_gold": True,
+        "created_at_local": datetime.now().isoformat(timespec="seconds"),
+        "timezone": "Asia/Shanghai", "pid": os.getpid(),
+    }
+
+    def read_for(seconds):
+        end, buf = time.monotonic() + seconds, bytearray()
+        while time.monotonic() < end:
+            buf.extend(ser.read(8192))
+        return buf.decode("utf-8", "replace")
+
+    def send(command, wait=0.7):
+        ser.write((command + "\n").encode("ascii"))
+        ser.flush()
+        return read_for(wait)
+
+    code = 3
+    try:
+        ser.open()
+        time.sleep(0.3)
+        ser.reset_input_buffer()
+        log("OPEN", f"{port} @ 460800 dtr=False")
+        send("WAVE 0")
+        mode_reply = send("MODE afe")
+        log("MODE", mode_reply.strip())
+        first = parse_afe_status(send("AFE_STATUS"))
+        second = parse_afe_status(send("AFE_STATUS"))
+        statuses.extend((first, second))
+        confirmed, reason = confirm_afe(mode_reply, first, second)
+        if not confirmed:
+            meta.update(status="aborted_afe_unverified", failure_reason=reason)
+            log("AFE_FAIL", reason)
+            return code
+        evidence.append(reason)
+        meta["firmware_status"] = send("STATUS").strip()
+        send("WAVE 1", 0.3)
+        n_csv, n_lines, hist = 0, 0, {}
+        pending = b""
+        start = last_progress = time.monotonic()
+        previous_status = second
+        observation_ok = True
+        log("CAPTURE", f"start {duration}s -> {csv_path}")
+        with csv_path.open("x", encoding="utf-8", newline="") as stream:
+            writer = csv.writer(stream)
+            writer.writerow(("host_ts_s", "raw_line"))
+            while time.monotonic() - start < duration:
+                pending += ser.read(8192)
+                records = pending.split(b"\n")
+                pending = records.pop()
+                for raw in records:
+                    line = raw.decode("utf-8", "replace").strip()
+                    if not line:
+                        continue
+                    n_lines += 1
+                    if line.startswith(("CMD AFE_STATUS ", "AFE_STATUS ")):
+                        state = parse_afe_status(line)
+                        statuses.append(state)
+                        valid, reason = confirm_afe(mode_reply, previous_status, state)
+                        observation_ok = observation_ok and valid
+                        if not valid:
+                            log("AFE_FAIL", reason)
+                        previous_status = state
+                        continue
+                    values = parse_wave(line)
+                    if values is not None:
+                        n_csv += 1
+                        key = str(int(values[4])) if values[4].is_integer() else str(values[4])
+                        hist[key] = hist.get(key, 0) + 1
+                        writer.writerow((f"{time.monotonic()-start:.3f}", line))
+                if len(pending) > 4096:
+                    raise ValueError("unframed/oversized serial line")
+                if time.monotonic() - last_progress >= 10:
+                    log("PROG", f"t={time.monotonic()-start:.0f}s csv={n_csv}")
+                    ser.write(b"AFE_STATUS\n")
+                    ser.flush()
+                    last_progress = time.monotonic()
+                    stream.flush()
+        elapsed = time.monotonic() - start
+        # WAVE command can drain a pending periodic status: keep that evidence too.
+        tail = send("WAVE 0")
+        for line in tail.splitlines():
+            if line.strip().startswith(("CMD AFE_STATUS ", "AFE_STATUS ")):
+                state = parse_afe_status(line)
+                statuses.append(state)
+                valid, reason = confirm_afe(mode_reply, previous_status, state)
+                observation_ok = observation_ok and valid
+                previous_status = state
+        final = parse_afe_status(send("AFE_STATUS"))
+        statuses.append(final)
+        valid, reason = confirm_afe(mode_reply, previous_status, final)
+        observation_ok = observation_ok and valid
+        # Simulator fields are an additional rejection check, never the proof.
+        observation_ok = observation_ok and bool(n_csv) and set(hist) == {"0"}
+        meta.update(
+            status="captured" if observation_ok else "captured_afe_unverified",
+            afe_confirmed=observation_ok, true_bpm_hist=hist, csv_rows=n_csv,
+            total_lines_seen=n_lines, duration_s_actual=round(elapsed, 2),
+            firmware_note="Requires MODE success and fresh AFE_STATUS counters before/during/after capture",
+        )
+        if observation_ok:
+            evidence.append("Valid read counts advanced with unchanged failure counters throughout observation")
+        else:
+            meta["failure_reason"] = reason if not valid else "AFE observation failed or non-AFE mode leaked into WAVE"
+        code = 0 if observation_ok and n_csv > 100 else 4
+        log("DONE", f"csv={n_csv} afe_confirmed={observation_ok}")
+        return code
+    except Exception as exc:
+        meta.update(status="capture_error", afe_confirmed=False, failure_reason=str(exc))
+        log("ERROR", str(exc))
+        return 5
+    finally:
+        try:
+            if ser.is_open:
+                ser.write(b"WAVE 0\n")
+        except Exception as exc:
+            log("CLOSE", str(exc))
+        finally:
+            if ser.is_open:
+                try:
+                    ser.close()
+                except Exception as exc:
+                    log("CLOSE", str(exc))
+        meta_path.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
+        log_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+if __name__ == "__main__":
+    sys.exit(main())

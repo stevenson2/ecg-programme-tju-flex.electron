@@ -48,6 +48,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "esp_err.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -107,8 +108,22 @@ typedef struct {
 typedef enum {
     AFE_HAL_OK        = 0,  /**< 正常 */
     AFE_HAL_CLIPPING  = 1,  /**< 信号削顶 (接近 0V 或 VRef) */
-    AFE_HAL_SATURATED = 2   /**< ADC 饱和 (读数=0 或 4095) */
+    AFE_HAL_SATURATED = 2,  /**< ADC 饱和 (读数=0 或 4095) */
+    AFE_HAL_NOT_READY = 3,  /**< 未初始化或尚无有效样本 */
+    AFE_HAL_READ_ERROR = 4  /**< 最近一次采样失败, 原码不可当作当前样本 */
 } AFE_HAL_Status;
+
+/* 同一采样所有者任务查询。计数为完整采样调用, 不是过采样子读次数。
+ * ready 不证明电极接触或心电质量; sample_valid 描述最近一次采样。 */
+typedef struct {
+    bool ready;
+    bool sample_valid;
+    bool calibrated;
+    esp_err_t init_error;
+    esp_err_t read_error;
+    uint32_t samples_ok;
+    uint32_t samples_failed;
+} AFE_HAL_Diagnostics;
 
 /* ======================== API ======================== */
 
@@ -123,7 +138,9 @@ typedef enum {
  * @param config  指向 AFE_HAL_Config 的指针
  *                传入 NULL 则使用 AFE_HAL_DEFAULT_3V3
  */
-void afeHalInit(const AFE_HAL_Config *config);
+/* 同 GPIO/校准配置可重复调用并复用 ADC; 存活句柄不支持更换这两项。
+ * 失败不覆盖有效句柄。init/read/status 均由同一所有者任务调用。 */
+esp_err_t afeHalInit(const AFE_HAL_Config *config);
 
 /**
  * @brief 采集一个原始样本 (含 DC 偏置)
@@ -139,9 +156,13 @@ void afeHalInit(const AFE_HAL_Config *config);
  *
  * 行为与 ecg_simulator 的 generateECGSample() 一致。
  *
- * @return float 当前采样电压 (V)
+ * @return float 当前采样电压 (V); 失败为 NAN, 错误见 diagnostics。
  */
 float afeHalReadSample(void);
+
+/* 成功才写 voltage; 任一过采样子读失败则整次无效, 不以零补齐。 */
+esp_err_t afeHalReadSampleChecked(float *voltage);
+void afeHalGetDiagnostics(AFE_HAL_Diagnostics *out);
 
 /** @brief 运行时修改过采样次数 (1-16, 越界自动钳位) — DIAG OVS 用 */
 void afeHalSetOversample(uint8_t oversample);

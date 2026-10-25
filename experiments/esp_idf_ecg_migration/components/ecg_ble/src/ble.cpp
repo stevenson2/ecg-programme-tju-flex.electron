@@ -257,9 +257,10 @@ extern "C" void initBLE(void) {
         g_cmd_queue = xQueueCreate(4, 64);
     }
     esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        nvs_flash_erase();
-        nvs_flash_init();
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "nvs init failed (%s), preserving NVS; BLE disabled",
+                 esp_err_to_name(ret));
+        return;
     }
     ret = nimble_port_init();
     if (ret != ESP_OK) {

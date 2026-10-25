@@ -100,73 +100,6 @@ static void removeRecordFile(const char *name) {
     remove(full);
 }
 
-static uint32_t readHeaderStart(const char *path) {
-    FILE *f = fopen(path, "rb");
-    if (!f) return UINT32_MAX;
-    uint8_t hdr[ECGR_HEADER_SIZE];
-    size_t rd = fread(hdr, 1, ECGR_HEADER_SIZE, f);
-    fclose(f);
-    if (rd != ECGR_HEADER_SIZE) return UINT32_MAX;
-    return ecgrHeaderStartUnix(hdr);
-}
-
-static void deleteOldestRecord(uint32_t protectUnix) {
-    DIR *d = opendir(ECGR_BASE_PATH);
-    if (!d) return;
-    uint32_t oldestUnix = UINT32_MAX;
-    char oldestPath[320] = "";
-    struct dirent *e;
-    while ((e = readdir(d)) != NULL) {
-        if (!nameIsEcgr(e->d_name)) continue;
-        char full[320];
-        makeFullPath(full, sizeof(full), e->d_name);
-        uint32_t st = readHeaderStart(full);
-        if (st == UINT32_MAX) continue;
-        if (st != protectUnix && st < oldestUnix) {
-            oldestUnix = st;
-            snprintf(oldestPath, sizeof(oldestPath), "%s", full);
-        }
-    }
-    closedir(d);
-    if (oldestPath[0]) {
-        printf("[ECGR] delete oldest: %s\n", oldestPath);
-        remove(oldestPath);
-    }
-}
-
-static void scanAndCleanInvalid(void) {
-    DIR *d = opendir(ECGR_BASE_PATH);
-    if (!d) return;
-    struct dirent *e;
-    while ((e = readdir(d)) != NULL) {
-        if (!nameIsEcgr(e->d_name)) continue;
-        char full[320];
-        makeFullPath(full, sizeof(full), e->d_name);
-        FILE *f = fopen(full, "rb");
-        if (!f) {
-            remove(full);
-            continue;
-        }
-        uint8_t hdr[ECGR_HEADER_SIZE];
-        size_t rd = fread(hdr, 1, ECGR_HEADER_SIZE, f);
-        fseek(f, 0, SEEK_END);
-        long sz = ftell(f);
-        fclose(f);
-        if (rd != ECGR_HEADER_SIZE || sz < ECGR_HEADER_SIZE ||
-            !ecgrHeaderValidate(hdr, ECG_REC_SAMPLE_RATE)) {
-            remove(full);
-            continue;
-        }
-        uint32_t samples = ecgrHeaderTotalSamples(hdr);
-        uint32_t dur = ecgrHeaderDurationSec(hdr);
-        bool hasBmp = (hdr[ECGR_OFF_FLAGS] & ECGR_FLAG_HAS_ABNORMAL_BITMAP) != 0;
-        if (samples == 0 || (uint32_t)sz != ecgrFileSize(samples, dur, hasBmp)) {
-            remove(full);
-        }
-    }
-    closedir(d);
-}
-
 static void rebuildIndex(void) {
     char idxPath[160];
     snprintf(idxPath, sizeof(idxPath), ECGR_BASE_PATH "/records.idx");
@@ -220,22 +153,6 @@ static void appendIdxLine(uint32_t startUnix, uint32_t dur, uint32_t samples,
     fclose(idx);
 }
 
-static void enforceRetention(uint32_t protectUnix) {
-    while (g_recordCount > ECG_REC_KEEP_MAX) {
-        uint32_t before = g_recordCount;
-        deleteOldestRecord(protectUnix);
-        /* 文件删除后计数需要重扫 */
-        g_recordCount = 0;
-        DIR *d = opendir(ECGR_BASE_PATH);
-        if (d) {
-            struct dirent *e;
-            while ((e = readdir(d)) != NULL) if (nameIsEcgr(e->d_name)) g_recordCount++;
-            closedir(d);
-        }
-        if (g_recordCount >= before) break; /* 防死循环 */
-    }
-}
-
 static void pushSampleToBuffer(int16_t sample) {
     size_t need = (size_t)g_totalSamples * 2 + 2;
     if (g_psramBuf == NULL || need > g_psramCap) {
@@ -260,7 +177,7 @@ bool ecgRecorderInit(void) {
             .base_path = "/spiffs",
             .partition_label = "storage",
             .max_files = 10,
-            .format_if_mount_failed = true,
+            .format_if_mount_failed = false, // Preserve data even if mount fails.
         };
         esp_err_t err = esp_vfs_spiffs_register(&conf);
         if (err != ESP_OK) {
@@ -269,10 +186,10 @@ bool ecgRecorderInit(void) {
         }
         g_storageMounted = true;
     }
-    mkdir(ECGR_BASE_PATH, 0755);
-    scanAndCleanInvalid();
-    rebuildIndex();
-    enforceRetention(0);   /* Round-G: 保留策略仅在开机维护 (§113) */
+    // Boot is read-only: retain even malformed/old records and the old index.
+    // Creation/deletion must follow an explicit recording/delete request.
+    ecgRecorderRefreshCount();
+    g_autoRecord = false;
     if (g_psramBuf) { free(g_psramBuf); g_psramBuf = NULL; g_psramCap = 0; }
     if (g_bmpBuf) { free(g_bmpBuf); g_bmpBuf = NULL; g_bmpCap = 0; }
     g_isRecording = false;
@@ -283,7 +200,8 @@ bool ecgRecorderInit(void) {
     g_currentPath[0] = '\0';
     g_consecutiveNormal = 0;
     g_currentSecondAbnormal = false;
-    printf("[ECGR] init OK\n");
+    printf("[ECGR] init OK, preserve existing files, count=%u, auto=0\n",
+           (unsigned)g_recordCount);
     return true;
 }
 
@@ -293,6 +211,7 @@ bool ecgRecorderStart(void) {
     /* Round-G: stat 循环触 SPIFFS, 与 worker 终结互斥; 非阻塞拿锁 ——
      * 撞上终结中则本秒放弃 (自动路径下秒重试), 绝不阻塞采样循环 */
     if (xSemaphoreTake(g_ioMutex, 0) != pdTRUE) return false;
+    mkdir(ECGR_BASE_PATH, 0755); // Only an explicit recording may create it.
     g_startUnix = startBase;
     snprintf(g_currentPath, sizeof(g_currentPath),
              ECGR_BASE_PATH "/ecg_rec_%u.ecgr", (unsigned)g_startUnix);
@@ -424,12 +343,7 @@ static void finalizeItem(EcgrFinalize *it) {
                                          it->abnormalSec > 0);
         appendIdxLine(it->startUnix, it->durationSec, it->totalSamples,
                       it->abnormalSec, fileSize);
-        /* Round-G: 保留删除/索引重建挪到仅 Init 时执行 (§113)。
-         * 实测 SPIFFS 删除+重建在 flash 擦写期间全局禁 cache, 两个核一起
-         * 冻结 ~1.1s —— 任务卸载救不了, 只能减少擦写次数。
-         * appendIdxLine 是增量追加, records.idx 对 REC_LIST/下载保持最新;
-         * 保留策略推迟到下次 Init (开机), SPIFFS 4MB 对 2.5KB/记录可攒
-         * ~1600 条, 单次上电会话内不会满。 */
+        // Finalization appends only; no automatic deletion at boot or stop.
         printf("[ECGR] finalized %s (%u samples, %u sec, %u abn, %u B) in %ums\n",
                it->path, (unsigned)it->totalSamples, (unsigned)it->durationSec,
                (unsigned)it->abnormalSec, (unsigned)fileSize,
