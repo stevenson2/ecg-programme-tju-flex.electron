@@ -12,6 +12,7 @@
 
 | 我要… | 去哪 |
 |--------|------|
+| 访客最小可跑通（环境→训练→导出→烧录） | 仓库根 [GETTING_STARTED.md](../../GETTING_STARTED.md)（本文仍是脚本索引） |
 | 复现论文主结果（患者级表2） | `eval_patient_split_all.py` → `eval_patient_split_noaug.py` |
 | 重训主模型 | `train.py`（配置见 `config.py`；启动器 `run_*.sh`） |
 | 部署链口径评估 | `build_deploy_npz.py` → `eval_deploy_match.py` |
