@@ -18,6 +18,8 @@
 
 ## 2. 构建与使用
 
+把环境、MIT-BIH、一次训练、INT8 导出和 SuperMini 烧录串起来，见 [GETTING_STARTED.md](GETTING_STARTED.md)（[English](GETTING_STARTED.en.md)）。
+
 ```bash
 # —— SuperMini（4MB Flash / 2MB PSRAM，2026-10-23 已验证）——
 cd experiments/esp_idf_ecg_migration   # 先加载 ESP-IDF v6 环境

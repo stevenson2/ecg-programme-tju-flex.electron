@@ -18,6 +18,8 @@
 
 ## 2. Build & Use
 
+To walk environment → MIT-BIH → one training run → INT8 export → SuperMini flash, see [GETTING_STARTED.en.md](GETTING_STARTED.en.md) ([中文](GETTING_STARTED.md)).
+
 ```bash
 # —— SuperMini (4MB Flash / 2MB PSRAM, verified 2026-10-23) ——
 cd experiments/esp_idf_ecg_migration   # load the ESP-IDF v6 environment first
