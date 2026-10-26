@@ -80,7 +80,7 @@ def convert_to_tflite(
     
     # 加载模型
     print(f"[导出] 加载 Keras 模型: {h5_path}")
-    model = tf.keras.models.load_model(h5_path)
+    model = tf.keras.models.load_model(h5_path, compile=False)
     
     # 转换为 TFLite
     converter = tf.lite.TFLiteConverter.from_keras_model(model)
