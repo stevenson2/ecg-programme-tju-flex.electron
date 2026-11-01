@@ -1,0 +1,35 @@
+## V beats of selected patients
+pt seg   anchor | preRR postRR post/pre amp | width_ms | S/Q/unm within 2s | margin ref_s42 trig_s42 trig_s43 | prev,next trigger
+ 0   0    90997 |  1.03   3.01     2.92  1.58 |    96 | True  |   +4.55   +7.68   +1.73 | N,N
+ 0   2    12063 |  0.54   1.44     2.67  1.58 |    84 | False |   -4.46   +0.79   -4.59 | N,N
+11  44   157742 |  0.67   1.01     1.52  1.49 |    72 | False |  -10.88   -8.92   -8.99 | N,N
+11  44   227604 |  0.77   1.26     1.63  1.22 |    68 | False |  -10.66  -11.82  -11.54 | N,N
+11  44   334095 |  0.63   0.83     1.31  1.56 |    68 | False |  -13.73   -7.33   -6.16 | N,N
+11  44   358746 |  0.64   1.17     1.84  1.52 |    68 | False |  -12.51   -8.17   -7.60 | N,N
+11  44   712956 |  0.64   0.88     1.38  1.53 |    72 | False |   -8.93   -6.69   -4.62 | N,N
+11  44   848573 |  0.81   1.19     1.46  1.28 |    68 | False |   -8.80   -8.78   -8.11 | N,N
+11  44   979459 |  0.67   1.20     1.79  0.98 |    68 | False |  -10.30  -10.90   -9.69 | N,N
+17  68   905139 |  0.57   1.40     2.46  1.24 |   104 | False |   -2.95   -3.49   +1.14 | N,N
+25 100   921338 |  0.57   1.52     2.65  0.52 |    80 | True  |   +1.20   -3.07   -4.79 | Q,N
+25 102   225086 |  0.48   1.49     3.12  1.34 |    84 | False |   -7.93   -4.03   -1.25 | N,N
+27 110   492167 |  0.92   0.91     0.99  0.73 |    40 | False |   -7.71   -9.83   -6.28 | N,N
+ 9  37   300111 |  0.46   0.57     1.22  1.19 |    80 | False |   +2.33   +1.79   +0.76 | N,N
+ 9  38    67261 |  0.98   0.46     0.47  1.66 |    68 | False |   +4.44   -2.45   -5.50 | N,V
+ 9  38    67363 |  0.46   0.72     1.57  2.04 |   104 | False |   +7.80   +6.65   +8.92 | V,N
+ 9  39   123463 |  0.83   1.18     1.42  1.55 |    60 | False |   +7.06   +6.32   +6.55 | N,N
+
+## QRS-width proxy (ms), median [p10, p90]
+N 48 [32, 96] n=20000
+S 52 [36, 136] n=2449
+V 140 [80, 156] n=6960
+Q 80 [36, 168] n=20000
+AUC of width alone, V vs N: 0.925
+V margin<0 (scored as N)   width 92 [72, 136] n=2209 | med amp 1.21 | med preRR 0.65 | frac preRR>=0.85 0.12
+V margin 0-5               width 132 [84, 156] n=1456 | med amp 1.05 | med preRR 0.68 | frac preRR>=0.85 0.07
+V margin>=5                width 148 [120, 156] n=3295 | med amp 3.06 | med preRR 0.58 | frac preRR>=0.85 0.03
+N amp>2 (top noise bin)    width 60 [48, 172] n=88 | med margin trig_s42 -5.97
+N premature <0.85          width 52 [32, 124] n=449 | med margin trig_s42 -10.54
+N typical                  width 48 [32, 96] n=19452 | med margin trig_s42 -9.79
+S premature <0.85          width 52 [36, 144] n=2010 | med margin -6.62 | p99 +7.73
+AUC of width alone, V vs S: 0.87
+AUC of trig_s42 margin, V vs S: 0.881

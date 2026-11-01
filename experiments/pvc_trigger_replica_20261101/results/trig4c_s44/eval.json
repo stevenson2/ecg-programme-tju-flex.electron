@@ -1,0 +1,153 @@
+{
+ "arm": "trig4c",
+ "seed": 44,
+ "K": 4,
+ "ctx_cols": null,
+ "aux4": false,
+ "dev": [
+  {
+   "epoch": 1,
+   "mean_log2_rank": 2.81,
+   "all": "D3 6/10 D10 7 D30 7 rank 2.0 gap +1.00 auc 0.909",
+   "lt1": "D3 4/8 D10 5 D30 5 rank 3.5 gap +0.41 auc 0.8952",
+   "rare": "D3 1/3 D10 1 D30 1 rank 444.0 gap -5.81 auc 0.8819",
+   "Vitems": 14,
+   "Qitems": 28,
+   "Nitems": 17,
+   "winQU": 29,
+   "D10_all": 7
+  },
+  {
+   "epoch": 2,
+   "mean_log2_rank": 2.554,
+   "all": "D3 6/10 D10 7 D30 8 rank 1.0 gap +1.87 auc 0.9111",
+   "lt1": "D3 4/8 D10 5 D30 6 rank 3.0 gap +0.96 auc 0.8965",
+   "rare": "D3 1/3 D10 1 D30 1 rank 687.0 gap -6.71 auc 0.8753",
+   "Vitems": 15,
+   "Qitems": 32,
+   "Nitems": 13,
+   "winQU": 33,
+   "D10_all": 7
+  },
+  {
+   "epoch": 3,
+   "mean_log2_rank": 2.849,
+   "all": "D3 6/10 D10 6 D30 8 rank 1.5 gap +1.34 auc 0.9151",
+   "lt1": "D3 4/8 D10 4 D30 6 rank 11.0 gap -0.91 auc 0.9007",
+   "rare": "D3 1/3 D10 1 D30 1 rank 468.0 gap -7.04 auc 0.9007",
+   "Vitems": 13,
+   "Qitems": 29,
+   "Nitems": 18,
+   "winQU": 31,
+   "D10_all": 6
+  },
+  {
+   "epoch": 4,
+   "mean_log2_rank": 2.438,
+   "all": "D3 6/10 D10 8 D30 8 rank 2.0 gap +1.23 auc 0.9153",
+   "lt1": "D3 4/8 D10 6 D30 6 rank 4.0 gap +0.20 auc 0.9001",
+   "rare": "D3 0/3 D10 1 D30 1 rank 364.0 gap -5.61 auc 0.8879",
+   "Vitems": 15,
+   "Qitems": 31,
+   "Nitems": 14,
+   "winQU": 35,
+   "D10_all": 8
+  },
+  {
+   "epoch": 5,
+   "mean_log2_rank": 2.363,
+   "all": "D3 7/10 D10 8 D30 8 rank 2.0 gap +1.11 auc 0.9137",
+   "lt1": "D3 5/8 D10 6 D30 6 rank 3.0 gap +0.40 auc 0.9011",
+   "rare": "D3 0/3 D10 1 D30 1 rank 492.0 gap -5.22 auc 0.909",
+   "Vitems": 15,
+   "Qitems": 30,
+   "Nitems": 15,
+   "winQU": 34,
+   "D10_all": 8
+  },
+  {
+   "epoch": 6,
+   "mean_log2_rank": 2.502,
+   "all": "D3 7/10 D10 8 D30 8 rank 2.0 gap +1.12 auc 0.9105",
+   "lt1": "D3 5/8 D10 6 D30 6 rank 3.0 gap +0.73 auc 0.8969",
+   "rare": "D3 0/3 D10 1 D30 1 rank 634.0 gap -5.65 auc 0.8857",
+   "Vitems": 16,
+   "Qitems": 29,
+   "Nitems": 15,
+   "winQU": 34,
+   "D10_all": 8
+  },
+  {
+   "epoch": 7,
+   "mean_log2_rank": 2.472,
+   "all": "D3 7/10 D10 8 D30 8 rank 2.0 gap +1.27 auc 0.9158",
+   "lt1": "D3 5/8 D10 6 D30 6 rank 3.0 gap +0.60 auc 0.9026",
+   "rare": "D3 0/3 D10 1 D30 1 rank 521.0 gap -5.51 auc 0.9024",
+   "Vitems": 16,
+   "Qitems": 29,
+   "Nitems": 15,
+   "winQU": 32,
+   "D10_all": 8
+  },
+  {
+   "epoch": 8,
+   "mean_log2_rank": 2.554,
+   "all": "D3 7/10 D10 7 D30 8 rank 2.0 gap +1.23 auc 0.9161",
+   "lt1": "D3 5/8 D10 5 D30 6 rank 3.0 gap +0.63 auc 0.903",
+   "rare": "D3 0/3 D10 0 D30 1 rank 544.0 gap -5.64 auc 0.902",
+   "Vitems": 16,
+   "Qitems": 29,
+   "Nitems": 15,
+   "winQU": 32,
+   "D10_all": 7
+  }
+ ],
+ "selected_epoch": 5,
+ "final_epoch": 8,
+ "test": {
+  "5": {
+   "primary": {
+    "mean_log2_rank": 2.044,
+    "all": "D3 16/21 D10 16 D30 16 rank 1.0 gap +2.05 auc 0.92",
+    "lt1": "D3 10/15 D10 10 D30 10 rank 2.0 gap +2.05 auc 0.9306",
+    "rare": "D3 4/8 D10 4 D30 4 rank 18.5 gap -1.06 auc 0.8948",
+    "Vitems": 34,
+    "Qitems": 52,
+    "Nitems": 33,
+    "winQU": 53
+   },
+   "vn": {
+    "mean_log2_rank": 1.681,
+    "all": "D3 16/21 D10 18 D30 18 rank 1.0 gap +1.66 auc 0.9168",
+    "lt1": "D3 10/15 D10 12 D30 12 rank 2.0 gap +1.42 auc 0.9238",
+    "rare": "D3 4/8 D10 5 D30 5 rank 5.5 gap +0.13 auc 0.8996",
+    "Vitems": 34,
+    "Qitems": 64,
+    "Nitems": 20,
+    "winQU": 69
+   }
+  },
+  "8": {
+   "primary": {
+    "mean_log2_rank": 2.056,
+    "all": "D3 16/21 D10 16 D30 17 rank 1.0 gap +2.43 auc 0.9167",
+    "lt1": "D3 10/15 D10 10 D30 11 rank 2.0 gap +1.72 auc 0.929",
+    "rare": "D3 4/8 D10 4 D30 5 rank 16.5 gap -0.47 auc 0.8935",
+    "Vitems": 34,
+    "Qitems": 50,
+    "Nitems": 33,
+    "winQU": 52
+   },
+   "vn": {
+    "mean_log2_rank": 1.72,
+    "all": "D3 16/21 D10 18 D30 18 rank 1.0 gap +2.55 auc 0.912",
+    "lt1": "D3 10/15 D10 12 D30 12 rank 2.0 gap +1.19 auc 0.9198",
+    "rare": "D3 5/8 D10 5 D30 5 rank 3.0 gap +0.69 auc 0.8939",
+    "Vitems": 35,
+    "Qitems": 62,
+    "Nitems": 20,
+    "winQU": 70
+   }
+  }
+ }
+}

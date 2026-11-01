@@ -1,0 +1,14 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1793449637.630773   10306 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1793449638.677474   10306 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+offset N: n=630846 median=+7 p10=+1 p90=+8 mean=+6.40
+offset V: n=6960 median=+7 p10=+0 p90=+12 mean=+7.39
+ep1 d=-10 all: D3 10/21 rank 4.0 gap -0.05 | lt1: D3 6/15 rank 13.0 gap -1.46 | rare: D3 2/8 rank 36.0 gap -2.44 | Vitems 20 Qitems 71
+ep1 d=-7 all: D3 12/21 rank 2.0 gap +0.32 | lt1: D3 6/15 rank 6.0 gap -0.77 | rare: D3 1/8 rank 45.5 gap -2.38 | Vitems 25 Qitems 72
+ep1 d=-4 all: D3 13/21 rank 3.0 gap +0.43 | lt1: D3 7/15 rank 6.0 gap -0.52 | rare: D3 2/8 rank 70.0 gap -3.35 | Vitems 22 Qitems 63
+ep1 d=+0 all: D3 11/21 rank 2.0 gap +0.52 | lt1: D3 6/15 rank 23.0 gap -1.71 | rare: D3 2/8 rank 36.5 gap -3.29 | Vitems 25 Qitems 64
+ep8 d=-10 all: D3 12/21 rank 3.0 gap +0.46 | lt1: D3 6/15 rank 5.0 gap -0.28 | rare: D3 2/8 rank 192.5 gap -5.49 | Vitems 26 Qitems 61
+ep8 d=-7 all: D3 13/21 rank 2.0 gap +1.11 | lt1: D3 7/15 rank 4.0 gap -0.07 | rare: D3 2/8 rank 150.0 gap -3.75 | Vitems 32 Qitems 58
+ep8 d=-4 all: D3 14/21 rank 2.0 gap +1.59 | lt1: D3 8/15 rank 3.0 gap +0.71 | rare: D3 2/8 rank 39.5 gap -2.28 | Vitems 29 Qitems 60
+ep8 d=+0 all: D3 12/21 rank 2.0 gap +0.67 | lt1: D3 6/15 rank 4.0 gap -0.35 | rare: D3 1/8 rank 77.5 gap -5.96 | Vitems 28 Qitems 61

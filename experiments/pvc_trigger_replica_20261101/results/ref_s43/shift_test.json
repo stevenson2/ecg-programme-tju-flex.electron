@@ -1,0 +1,210 @@
+{
+ "ep1_d-7": {
+  "all": {
+   "n": 21,
+   "D3": 14,
+   "rand3": 3.23,
+   "D10": 15,
+   "rand10": 5.25,
+   "D30": 16,
+   "rand30": 7.14,
+   "med_rank": 3.0,
+   "auc": 0.8963,
+   "med_gap": 0.08
+  },
+  "lt1": {
+   "n": 15,
+   "D3": 8,
+   "rand3": 0.16,
+   "D10": 9,
+   "rand10": 0.52,
+   "D30": 10,
+   "rand30": 1.42,
+   "med_rank": 3.0,
+   "auc": 0.8898,
+   "med_gap": 0.05
+  },
+  "rare": {
+   "n": 8,
+   "D3": 4,
+   "rand3": 0.02,
+   "D10": 4,
+   "rand10": 0.05,
+   "D30": 4,
+   "rand30": 0.15,
+   "med_rank": 83.0,
+   "auc": 0.8823,
+   "med_gap": -2.04
+  },
+  "cats": {
+   "V_supported": 25,
+   "Q_undetermined": 72,
+   "S_present_noV": 2,
+   "N_only_noV": 17,
+   "no_reference_beat": 4
+  },
+  "winners": {
+   "V": 25,
+   "N": 17,
+   "S": 2,
+   "Q": 50,
+   "unmatched": 26
+  }
+ },
+ "ep1_d+0": {
+  "all": {
+   "n": 21,
+   "D3": 10,
+   "rand3": 3.23,
+   "D10": 15,
+   "rand10": 5.25,
+   "D30": 16,
+   "rand30": 7.14,
+   "med_rank": 4.0,
+   "auc": 0.9052,
+   "med_gap": -0.04
+  },
+  "lt1": {
+   "n": 15,
+   "D3": 5,
+   "rand3": 0.16,
+   "D10": 9,
+   "rand10": 0.52,
+   "D30": 10,
+   "rand30": 1.42,
+   "med_rank": 5.0,
+   "auc": 0.9036,
+   "med_gap": -0.28
+  },
+  "rare": {
+   "n": 8,
+   "D3": 1,
+   "rand3": 0.02,
+   "D10": 3,
+   "rand10": 0.05,
+   "D30": 4,
+   "rand30": 0.15,
+   "med_rank": 107.5,
+   "auc": 0.918,
+   "med_gap": -3.37
+  },
+  "cats": {
+   "V_supported": 22,
+   "Q_undetermined": 75,
+   "S_present_noV": 2,
+   "N_only_noV": 18,
+   "no_reference_beat": 3
+  },
+  "winners": {
+   "V": 23,
+   "N": 16,
+   "S": 2,
+   "Q": 47,
+   "unmatched": 32
+  }
+ },
+ "ep8_d-7": {
+  "all": {
+   "n": 21,
+   "D3": 16,
+   "rand3": 3.23,
+   "D10": 16,
+   "rand10": 5.25,
+   "D30": 16,
+   "rand30": 7.14,
+   "med_rank": 2.0,
+   "auc": 0.9012,
+   "med_gap": 1.58
+  },
+  "lt1": {
+   "n": 15,
+   "D3": 10,
+   "rand3": 0.16,
+   "D10": 10,
+   "rand10": 0.52,
+   "D30": 10,
+   "rand30": 1.42,
+   "med_rank": 3.0,
+   "auc": 0.8926,
+   "med_gap": 0.76
+  },
+  "rare": {
+   "n": 8,
+   "D3": 4,
+   "rand3": 0.02,
+   "D10": 4,
+   "rand10": 0.05,
+   "D30": 4,
+   "rand30": 0.15,
+   "med_rank": 88.0,
+   "auc": 0.8664,
+   "med_gap": -3.12
+  },
+  "cats": {
+   "V_supported": 33,
+   "Q_undetermined": 61,
+   "S_present_noV": 4,
+   "N_only_noV": 19,
+   "no_reference_beat": 3
+  },
+  "winners": {
+   "V": 32,
+   "N": 15,
+   "S": 4,
+   "Q": 39,
+   "unmatched": 30
+  }
+ },
+ "ep8_d+0": {
+  "all": {
+   "n": 21,
+   "D3": 15,
+   "rand3": 3.23,
+   "D10": 16,
+   "rand10": 5.25,
+   "D30": 16,
+   "rand30": 7.14,
+   "med_rank": 2.0,
+   "auc": 0.9141,
+   "med_gap": 0.98
+  },
+  "lt1": {
+   "n": 15,
+   "D3": 9,
+   "rand3": 0.16,
+   "D10": 10,
+   "rand10": 0.52,
+   "D30": 10,
+   "rand30": 1.42,
+   "med_rank": 2.0,
+   "auc": 0.9108,
+   "med_gap": 0.72
+  },
+  "rare": {
+   "n": 8,
+   "D3": 3,
+   "rand3": 0.02,
+   "D10": 4,
+   "rand10": 0.05,
+   "D30": 4,
+   "rand30": 0.15,
+   "med_rank": 105.5,
+   "auc": 0.9091,
+   "med_gap": -4.49
+  },
+  "cats": {
+   "V_supported": 30,
+   "Q_undetermined": 63,
+   "S_present_noV": 3,
+   "N_only_noV": 21,
+   "no_reference_beat": 3
+  },
+  "winners": {
+   "V": 30,
+   "N": 16,
+   "S": 3,
+   "Q": 38,
+   "unmatched": 33
+  }
+ }
+}
