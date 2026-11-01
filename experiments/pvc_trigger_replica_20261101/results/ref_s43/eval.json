@@ -1,0 +1,1878 @@
+{
+ "arm": "ref",
+ "seed": 43,
+ "dev": [
+  {
+   "epoch": 1,
+   "native_ce": 1.031280517578125,
+   "clean": {
+    "cutoff": 1.9589290618896484,
+    "macro_N_FPR": 0.01999970064714142,
+    "macro_V_recall": 0.397258965746937
+   },
+   "D3": 5,
+   "V_items": 9
+  },
+  {
+   "epoch": 2,
+   "native_ce": 1.293239712715149,
+   "clean": {
+    "cutoff": 1.7432224750518799,
+    "macro_N_FPR": 0.01999987513391514,
+    "macro_V_recall": 0.4026986068409023
+   },
+   "D3": 2,
+   "V_items": 5
+  },
+  {
+   "epoch": 3,
+   "native_ce": 1.3419467210769653,
+   "clean": {
+    "cutoff": 4.482664585113525,
+    "macro_N_FPR": 0.019998031395417115,
+    "macro_V_recall": 0.21597610359511368
+   },
+   "D3": 6,
+   "V_items": 11
+  },
+  {
+   "epoch": 4,
+   "native_ce": 1.3397161960601807,
+   "clean": {
+    "cutoff": 4.000120639801025,
+    "macro_N_FPR": 0.01999949306879701,
+    "macro_V_recall": 0.3225629992598648
+   },
+   "D3": 6,
+   "V_items": 13
+  },
+  {
+   "epoch": 5,
+   "native_ce": 1.332581639289856,
+   "clean": {
+    "cutoff": 5.49465274810791,
+    "macro_N_FPR": 0.01999914131230945,
+    "macro_V_recall": 0.28568330688844357
+   },
+   "D3": 6,
+   "V_items": 14
+  },
+  {
+   "epoch": 6,
+   "native_ce": 1.7500622272491455,
+   "clean": {
+    "cutoff": 3.9320921897888184,
+    "macro_N_FPR": 0.019998348531085914,
+    "macro_V_recall": 0.31720476275935455
+   },
+   "D3": 6,
+   "V_items": 12
+  },
+  {
+   "epoch": 7,
+   "native_ce": 1.730353593826294,
+   "clean": {
+    "cutoff": 4.807019233703613,
+    "macro_N_FPR": 0.01999963326210393,
+    "macro_V_recall": 0.30114224340275497
+   },
+   "D3": 6,
+   "V_items": 14
+  },
+  {
+   "epoch": 8,
+   "native_ce": 1.787848949432373,
+   "clean": {
+    "cutoff": 4.4168596267700195,
+    "macro_N_FPR": 0.019998436142888005,
+    "macro_V_recall": 0.30890552154204187
+   },
+   "D3": 6,
+   "V_items": 14
+  }
+ ],
+ "native_best_epoch": 1,
+ "final_epoch": 8,
+ "test": {
+  "1": {
+   "clean_self": {
+    "cutoff": -0.7121787667274475,
+    "macro_N_FPR": 0.019999174359725223,
+    "macro_V_recall": 0.6893140094186451
+   },
+   "clean_dev_locked": {
+    "cutoff": 1.9589290618896484,
+    "macro_N_FPR": 0.003236016150267236,
+    "macro_V_recall": 0.544698947607973
+   },
+   "background": {
+    "all_V_positive": {
+     "patients": 21,
+     "D3": 10,
+     "random_expected": 3.228,
+     "median_best_V_rank": 4.0
+    },
+    "lt1pct": {
+     "patients": 15,
+     "D3": 5,
+     "random_expected": 0.16,
+     "median_best_V_rank": 5.0
+    },
+    "rare_1to5": {
+     "patients": 8,
+     "D3": 1,
+     "random_expected": 0.015,
+     "median_best_V_rank": 107.5
+    },
+    "items": 120,
+    "item_categories": {
+     "V_supported": 22,
+     "Q_undetermined": 75,
+     "S_present_noV": 2,
+     "N_only_noV": 18,
+     "no_reference_beat": 3
+    },
+    "winner_trigger_labels": {
+     "V": 23,
+     "N": 16,
+     "S": 2,
+     "Q": 47,
+     "unmatched": 32,
+     "other": 0
+    }
+   },
+   "per_patient": [
+    {
+     "patient": 0,
+     "grids": 4192,
+     "V_grids": 2,
+     "available_V": 2,
+     "V_fraction": 9.445992537665895e-05,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.001430956192932542,
+     "best_V_rank": 285,
+     "cats": [
+      "Q_undetermined",
+      "N_only_noV",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "V",
+      "unmatched"
+     ]
+    },
+    {
+     "patient": 1,
+     "grids": 4192,
+     "V_grids": 5,
+     "available_V": 5,
+     "V_fraction": 0.00031255860473838843,
+     "hit": true,
+     "V_items": 3,
+     "random_hit": 0.003574829919973932,
+     "best_V_rank": 1,
+     "cats": [
+      "V_supported",
+      "V_supported",
+      "V_supported"
+     ],
+     "winners": [
+      "V",
+      "V",
+      "V"
+     ]
+    },
+    {
+     "patient": 2,
+     "grids": 4189,
+     "V_grids": 51,
+     "available_V": 51,
+     "V_fraction": 0.0047362555720653786,
+     "hit": true,
+     "V_items": 2,
+     "random_hit": 0.036089873029515274,
+     "best_V_rank": 2,
+     "cats": [
+      "Q_undetermined",
+      "V_supported",
+      "V_supported"
+     ],
+     "winners": [
+      "unmatched",
+      "V",
+      "V"
+     ]
+    },
+    {
+     "patient": 3,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "unmatched",
+      "unmatched",
+      "Q"
+     ]
+    },
+    {
+     "patient": 4,
+     "grids": 4191,
+     "V_grids": 28,
+     "available_V": 28,
+     "V_fraction": 0.002325581395348837,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.019914061344620704,
+     "best_V_rank": 4,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "unmatched",
+      "unmatched"
+     ]
+    },
+    {
+     "patient": 5,
+     "grids": 4132,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "unmatched",
+      "Q",
+      "unmatched"
+     ]
+    },
+    {
+     "patient": 6,
+     "grids": 4192,
+     "V_grids": 9,
+     "available_V": 9,
+     "V_fraction": 0.0005314123760037789,
+     "hit": true,
+     "V_items": 3,
+     "random_hit": 0.006428551929616333,
+     "best_V_rank": 1,
+     "cats": [
+      "V_supported",
+      "V_supported",
+      "V_supported"
+     ],
+     "winners": [
+      "V",
+      "V",
+      "V"
+     ]
+    },
+    {
+     "patient": 7,
+     "grids": 4192,
+     "V_grids": 591,
+     "available_V": 689,
+     "V_fraction": 0.04321645863388321,
+     "hit": true,
+     "V_items": 1,
+     "random_hit": 0.36619667821045176,
+     "best_V_rank": 3,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "V_supported"
+     ],
+     "winners": [
+      "Q",
+      "unmatched",
+      "V"
+     ]
+    },
+    {
+     "patient": 8,
+     "grids": 4192,
+     "V_grids": 1835,
+     "available_V": 2345,
+     "V_fraction": 0.10221873501591038,
+     "hit": true,
+     "V_items": 3,
+     "random_hit": 0.822346886864129,
+     "best_V_rank": 1,
+     "cats": [
+      "V_supported",
+      "V_supported",
+      "V_supported"
+     ],
+     "winners": [
+      "V",
+      "V",
+      "V"
+     ]
+    },
+    {
+     "patient": 9,
+     "grids": 4192,
+     "V_grids": 3,
+     "available_V": 4,
+     "V_fraction": 0.00023404130829091335,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.002145922095419639,
+     "best_V_rank": 5,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "N_only_noV"
+     ],
+     "winners": [
+      "unmatched",
+      "unmatched",
+      "N"
+     ]
+    },
+    {
+     "patient": 10,
+     "grids": 4189,
+     "V_grids": 253,
+     "available_V": 259,
+     "V_fraction": 0.017889211217018926,
+     "hit": true,
+     "V_items": 1,
+     "random_hit": 0.170504206908338,
+     "best_V_rank": 2,
+     "cats": [
+      "Q_undetermined",
+      "V_supported",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "unmatched",
+      "V",
+      "Q"
+     ]
+    },
+    {
+     "patient": 11,
+     "grids": 4192,
+     "V_grids": 7,
+     "available_V": 7,
+     "V_fraction": 0.0003526270716840461,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.005002372980685843,
+     "best_V_rank": 425,
+     "cats": [
+      "N_only_noV",
+      "N_only_noV",
+      "N_only_noV"
+     ],
+     "winners": [
+      "N",
+      "N",
+      "N"
+     ]
+    },
+    {
+     "patient": 12,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "N_only_noV"
+     ],
+     "winners": [
+      "Q",
+      "unmatched",
+      "N"
+     ]
+    },
+    {
+     "patient": 13,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "Q",
+      "N"
+     ]
+    },
+    {
+     "patient": 14,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "N_only_noV",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "unmatched",
+      "unmatched"
+     ]
+    },
+    {
+     "patient": 15,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "N_only_noV",
+      "Q_undetermined",
+      "N_only_noV"
+     ],
+     "winners": [
+      "N",
+      "Q",
+      "N"
+     ]
+    },
+    {
+     "patient": 16,
+     "grids": 4192,
+     "V_grids": 1479,
+     "available_V": 1782,
+     "V_fraction": 0.11762376237623762,
+     "hit": true,
+     "V_items": 3,
+     "random_hit": 0.7290332273112445,
+     "best_V_rank": 1,
+     "cats": [
+      "V_supported",
+      "V_supported",
+      "V_supported"
+     ],
+     "winners": [
+      "V",
+      "V",
+      "V"
+     ]
+    },
+    {
+     "patient": 17,
+     "grids": 4185,
+     "V_grids": 1,
+     "available_V": 1,
+     "V_fraction": 5.340168749332479e-05,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0007168458781362519,
+     "best_V_rank": 277,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "no_reference_beat"
+     ],
+     "winners": [
+      "unmatched",
+      "Q",
+      "unmatched"
+     ]
+    },
+    {
+     "patient": 18,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "unmatched",
+      "Q"
+     ]
+    },
+    {
+     "patient": 19,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "N_only_noV",
+      "N_only_noV",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "unmatched",
+      "unmatched",
+      "unmatched"
+     ]
+    },
+    {
+     "patient": 20,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "no_reference_beat",
+      "no_reference_beat"
+     ],
+     "winners": [
+      "unmatched",
+      "unmatched",
+      "unmatched"
+     ]
+    },
+    {
+     "patient": 21,
+     "grids": 4183,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "unmatched",
+      "unmatched",
+      "Q"
+     ]
+    },
+    {
+     "patient": 22,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "Q",
+      "Q"
+     ]
+    },
+    {
+     "patient": 23,
+     "grids": 4191,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "Q",
+      "Q"
+     ]
+    },
+    {
+     "patient": 24,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "Q",
+      "Q"
+     ]
+    },
+    {
+     "patient": 25,
+     "grids": 4181,
+     "V_grids": 2,
+     "available_V": 2,
+     "V_fraction": 0.00016972165648336727,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0014347200653674896,
+     "best_V_rank": 219,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "unmatched",
+      "unmatched"
+     ]
+    },
+    {
+     "patient": 26,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "N_only_noV"
+     ],
+     "winners": [
+      "Q",
+      "Q",
+      "N"
+     ]
+    },
+    {
+     "patient": 27,
+     "grids": 4192,
+     "V_grids": 1,
+     "available_V": 1,
+     "V_fraction": 8.842514811212309e-05,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0007156488549617812,
+     "best_V_rank": 204,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "Q",
+      "Q"
+     ]
+    },
+    {
+     "patient": 28,
+     "grids": 4192,
+     "V_grids": 55,
+     "available_V": 66,
+     "V_fraction": 0.003865979381443299,
+     "hit": true,
+     "V_items": 1,
+     "random_hit": 0.038855672643845374,
+     "best_V_rank": 2,
+     "cats": [
+      "Q_undetermined",
+      "V_supported",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "V",
+      "Q"
+     ]
+    },
+    {
+     "patient": 29,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "unmatched",
+      "Q"
+     ]
+    },
+    {
+     "patient": 30,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "Q",
+      "Q"
+     ]
+    },
+    {
+     "patient": 31,
+     "grids": 4192,
+     "V_grids": 1685,
+     "available_V": 1995,
+     "V_fraction": 0.10638297872340426,
+     "hit": true,
+     "V_items": 3,
+     "random_hit": 0.7862086286479932,
+     "best_V_rank": 1,
+     "cats": [
+      "V_supported",
+      "V_supported",
+      "V_supported"
+     ],
+     "winners": [
+      "V",
+      "V",
+      "V"
+     ]
+    },
+    {
+     "patient": 32,
+     "grids": 4192,
+     "V_grids": 6,
+     "available_V": 10,
+     "V_fraction": 0.0005750431282346176,
+     "hit": true,
+     "V_items": 2,
+     "random_hit": 0.004288772005056396,
+     "best_V_rank": 2,
+     "cats": [
+      "Q_undetermined",
+      "V_supported",
+      "V_supported"
+     ],
+     "winners": [
+      "Q",
+      "V",
+      "V"
+     ]
+    },
+    {
+     "patient": 33,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "N_only_noV",
+      "Q_undetermined",
+      "N_only_noV"
+     ],
+     "winners": [
+      "unmatched",
+      "unmatched",
+      "N"
+     ]
+    },
+    {
+     "patient": 34,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "S_present_noV",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "S",
+      "N",
+      "Q"
+     ]
+    },
+    {
+     "patient": 35,
+     "grids": 4192,
+     "V_grids": 3,
+     "available_V": 3,
+     "V_fraction": 0.00014363688595231256,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.002145922095419639,
+     "best_V_rank": 11,
+     "cats": [
+      "N_only_noV",
+      "N_only_noV",
+      "N_only_noV"
+     ],
+     "winners": [
+      "N",
+      "N",
+      "N"
+     ]
+    },
+    {
+     "patient": 36,
+     "grids": 4192,
+     "V_grids": 290,
+     "available_V": 339,
+     "V_fraction": 0.015838901088632434,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.19355479385982244,
+     "best_V_rank": 4,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "N",
+      "Q",
+      "Q"
+     ]
+    },
+    {
+     "patient": 37,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "N_only_noV",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "N",
+      "Q"
+     ]
+    },
+    {
+     "patient": 38,
+     "grids": 4192,
+     "V_grids": 49,
+     "available_V": 53,
+     "V_fraction": 0.0029133685136323658,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.034666671608202915,
+     "best_V_rank": 6,
+     "cats": [
+      "S_present_noV",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "S",
+      "Q",
+      "Q"
+     ]
+    },
+    {
+     "patient": 39,
+     "grids": 4192,
+     "V_grids": 4,
+     "available_V": 4,
+     "V_fraction": 0.00041109969167523125,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0028605466439309835,
+     "best_V_rank": 4,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "unmatched",
+      "Q",
+      "Q"
+     ]
+    }
+   ]
+  },
+  "8": {
+   "clean_self": {
+    "cutoff": -1.4143264293670654,
+    "macro_N_FPR": 0.01999816111562161,
+    "macro_V_recall": 0.6984797705498849
+   },
+   "clean_dev_locked": {
+    "cutoff": 4.4168596267700195,
+    "macro_N_FPR": 0.0015137765420567533,
+    "macro_V_recall": 0.5383310573296007
+   },
+   "background": {
+    "all_V_positive": {
+     "patients": 21,
+     "D3": 15,
+     "random_expected": 3.228,
+     "median_best_V_rank": 2.0
+    },
+    "lt1pct": {
+     "patients": 15,
+     "D3": 9,
+     "random_expected": 0.16,
+     "median_best_V_rank": 2.0
+    },
+    "rare_1to5": {
+     "patients": 8,
+     "D3": 3,
+     "random_expected": 0.015,
+     "median_best_V_rank": 105.5
+    },
+    "items": 120,
+    "item_categories": {
+     "V_supported": 30,
+     "Q_undetermined": 63,
+     "S_present_noV": 3,
+     "N_only_noV": 21,
+     "no_reference_beat": 3
+    },
+    "winner_trigger_labels": {
+     "V": 30,
+     "N": 16,
+     "S": 3,
+     "Q": 38,
+     "unmatched": 33,
+     "other": 0
+    }
+   },
+   "per_patient": [
+    {
+     "patient": 0,
+     "grids": 4192,
+     "V_grids": 2,
+     "available_V": 2,
+     "V_fraction": 9.445992537665895e-05,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.001430956192932542,
+     "best_V_rank": 1045,
+     "cats": [
+      "N_only_noV",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "V",
+      "Q",
+      "Q"
+     ]
+    },
+    {
+     "patient": 1,
+     "grids": 4192,
+     "V_grids": 5,
+     "available_V": 5,
+     "V_fraction": 0.00031255860473838843,
+     "hit": true,
+     "V_items": 2,
+     "random_hit": 0.003574829919973932,
+     "best_V_rank": 1,
+     "cats": [
+      "V_supported",
+      "V_supported",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "V",
+      "V",
+      "Q"
+     ]
+    },
+    {
+     "patient": 2,
+     "grids": 4189,
+     "V_grids": 51,
+     "available_V": 51,
+     "V_fraction": 0.0047362555720653786,
+     "hit": true,
+     "V_items": 2,
+     "random_hit": 0.036089873029515274,
+     "best_V_rank": 2,
+     "cats": [
+      "S_present_noV",
+      "V_supported",
+      "V_supported"
+     ],
+     "winners": [
+      "S",
+      "V",
+      "V"
+     ]
+    },
+    {
+     "patient": 3,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "N_only_noV",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "unmatched",
+      "unmatched"
+     ]
+    },
+    {
+     "patient": 4,
+     "grids": 4191,
+     "V_grids": 28,
+     "available_V": 28,
+     "V_fraction": 0.002325581395348837,
+     "hit": true,
+     "V_items": 1,
+     "random_hit": 0.019914061344620704,
+     "best_V_rank": 1,
+     "cats": [
+      "V_supported",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "V",
+      "unmatched",
+      "unmatched"
+     ]
+    },
+    {
+     "patient": 5,
+     "grids": 4132,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "N_only_noV"
+     ],
+     "winners": [
+      "Q",
+      "unmatched",
+      "unmatched"
+     ]
+    },
+    {
+     "patient": 6,
+     "grids": 4192,
+     "V_grids": 9,
+     "available_V": 9,
+     "V_fraction": 0.0005314123760037789,
+     "hit": true,
+     "V_items": 2,
+     "random_hit": 0.006428551929616333,
+     "best_V_rank": 1,
+     "cats": [
+      "V_supported",
+      "S_present_noV",
+      "V_supported"
+     ],
+     "winners": [
+      "V",
+      "S",
+      "V"
+     ]
+    },
+    {
+     "patient": 7,
+     "grids": 4192,
+     "V_grids": 591,
+     "available_V": 689,
+     "V_fraction": 0.04321645863388321,
+     "hit": true,
+     "V_items": 2,
+     "random_hit": 0.36619667821045176,
+     "best_V_rank": 2,
+     "cats": [
+      "Q_undetermined",
+      "V_supported",
+      "V_supported"
+     ],
+     "winners": [
+      "Q",
+      "V",
+      "V"
+     ]
+    },
+    {
+     "patient": 8,
+     "grids": 4192,
+     "V_grids": 1835,
+     "available_V": 2345,
+     "V_fraction": 0.10221873501591038,
+     "hit": true,
+     "V_items": 3,
+     "random_hit": 0.822346886864129,
+     "best_V_rank": 1,
+     "cats": [
+      "V_supported",
+      "V_supported",
+      "V_supported"
+     ],
+     "winners": [
+      "V",
+      "V",
+      "V"
+     ]
+    },
+    {
+     "patient": 9,
+     "grids": 4192,
+     "V_grids": 3,
+     "available_V": 4,
+     "V_fraction": 0.00023404130829091335,
+     "hit": true,
+     "V_items": 1,
+     "random_hit": 0.002145922095419639,
+     "best_V_rank": 2,
+     "cats": [
+      "Q_undetermined",
+      "V_supported",
+      "N_only_noV"
+     ],
+     "winners": [
+      "unmatched",
+      "V",
+      "N"
+     ]
+    },
+    {
+     "patient": 10,
+     "grids": 4189,
+     "V_grids": 253,
+     "available_V": 259,
+     "V_fraction": 0.017889211217018926,
+     "hit": true,
+     "V_items": 2,
+     "random_hit": 0.170504206908338,
+     "best_V_rank": 2,
+     "cats": [
+      "Q_undetermined",
+      "V_supported",
+      "V_supported"
+     ],
+     "winners": [
+      "Q",
+      "V",
+      "V"
+     ]
+    },
+    {
+     "patient": 11,
+     "grids": 4192,
+     "V_grids": 7,
+     "available_V": 7,
+     "V_fraction": 0.0003526270716840461,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.005002372980685843,
+     "best_V_rank": 356,
+     "cats": [
+      "N_only_noV",
+      "N_only_noV",
+      "N_only_noV"
+     ],
+     "winners": [
+      "N",
+      "N",
+      "N"
+     ]
+    },
+    {
+     "patient": 12,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "N_only_noV",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "unmatched",
+      "unmatched",
+      "unmatched"
+     ]
+    },
+    {
+     "patient": 13,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "S_present_noV",
+      "N_only_noV",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "S",
+      "N",
+      "Q"
+     ]
+    },
+    {
+     "patient": 14,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "N_only_noV",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "unmatched",
+      "Q",
+      "Q"
+     ]
+    },
+    {
+     "patient": 15,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "N_only_noV",
+      "N_only_noV",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "N",
+      "N",
+      "Q"
+     ]
+    },
+    {
+     "patient": 16,
+     "grids": 4192,
+     "V_grids": 1479,
+     "available_V": 1782,
+     "V_fraction": 0.11762376237623762,
+     "hit": true,
+     "V_items": 3,
+     "random_hit": 0.7290332273112445,
+     "best_V_rank": 1,
+     "cats": [
+      "V_supported",
+      "V_supported",
+      "V_supported"
+     ],
+     "winners": [
+      "V",
+      "V",
+      "V"
+     ]
+    },
+    {
+     "patient": 17,
+     "grids": 4185,
+     "V_grids": 1,
+     "available_V": 1,
+     "V_fraction": 5.340168749332479e-05,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0007168458781362519,
+     "best_V_rank": 311,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "Q",
+      "unmatched"
+     ]
+    },
+    {
+     "patient": 18,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "N_only_noV",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "N",
+      "Q"
+     ]
+    },
+    {
+     "patient": 19,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "N_only_noV"
+     ],
+     "winners": [
+      "Q",
+      "unmatched",
+      "unmatched"
+     ]
+    },
+    {
+     "patient": 20,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "no_reference_beat",
+      "no_reference_beat",
+      "no_reference_beat"
+     ],
+     "winners": [
+      "unmatched",
+      "unmatched",
+      "unmatched"
+     ]
+    },
+    {
+     "patient": 21,
+     "grids": 4183,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "unmatched",
+      "Q"
+     ]
+    },
+    {
+     "patient": 22,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "N_only_noV",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "N",
+      "Q"
+     ]
+    },
+    {
+     "patient": 23,
+     "grids": 4191,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "unmatched",
+      "unmatched"
+     ]
+    },
+    {
+     "patient": 24,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "unmatched",
+      "Q"
+     ]
+    },
+    {
+     "patient": 25,
+     "grids": 4181,
+     "V_grids": 2,
+     "available_V": 2,
+     "V_fraction": 0.00016972165648336727,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0014347200653674896,
+     "best_V_rank": 202,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "unmatched",
+      "Q",
+      "Q"
+     ]
+    },
+    {
+     "patient": 26,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "unmatched",
+      "unmatched",
+      "unmatched"
+     ]
+    },
+    {
+     "patient": 27,
+     "grids": 4192,
+     "V_grids": 1,
+     "available_V": 1,
+     "V_fraction": 8.842514811212309e-05,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0007156488549617812,
+     "best_V_rank": 245,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "unmatched",
+      "Q"
+     ]
+    },
+    {
+     "patient": 28,
+     "grids": 4192,
+     "V_grids": 55,
+     "available_V": 66,
+     "V_fraction": 0.003865979381443299,
+     "hit": true,
+     "V_items": 3,
+     "random_hit": 0.038855672643845374,
+     "best_V_rank": 1,
+     "cats": [
+      "V_supported",
+      "V_supported",
+      "V_supported"
+     ],
+     "winners": [
+      "V",
+      "V",
+      "V"
+     ]
+    },
+    {
+     "patient": 29,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "unmatched",
+      "unmatched",
+      "Q"
+     ]
+    },
+    {
+     "patient": 30,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "N_only_noV",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "N",
+      "Q"
+     ]
+    },
+    {
+     "patient": 31,
+     "grids": 4192,
+     "V_grids": 1685,
+     "available_V": 1995,
+     "V_fraction": 0.10638297872340426,
+     "hit": true,
+     "V_items": 3,
+     "random_hit": 0.7862086286479932,
+     "best_V_rank": 1,
+     "cats": [
+      "V_supported",
+      "V_supported",
+      "V_supported"
+     ],
+     "winners": [
+      "V",
+      "V",
+      "V"
+     ]
+    },
+    {
+     "patient": 32,
+     "grids": 4192,
+     "V_grids": 6,
+     "available_V": 10,
+     "V_fraction": 0.0005750431282346176,
+     "hit": true,
+     "V_items": 2,
+     "random_hit": 0.004288772005056396,
+     "best_V_rank": 1,
+     "cats": [
+      "V_supported",
+      "Q_undetermined",
+      "V_supported"
+     ],
+     "winners": [
+      "V",
+      "Q",
+      "V"
+     ]
+    },
+    {
+     "patient": 33,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "N_only_noV",
+      "Q_undetermined",
+      "N_only_noV"
+     ],
+     "winners": [
+      "N",
+      "unmatched",
+      "N"
+     ]
+    },
+    {
+     "patient": 34,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "unmatched",
+      "unmatched",
+      "Q"
+     ]
+    },
+    {
+     "patient": 35,
+     "grids": 4192,
+     "V_grids": 3,
+     "available_V": 3,
+     "V_fraction": 0.00014363688595231256,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.002145922095419639,
+     "best_V_rank": 9,
+     "cats": [
+      "N_only_noV",
+      "N_only_noV",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "N",
+      "N",
+      "unmatched"
+     ]
+    },
+    {
+     "patient": 36,
+     "grids": 4192,
+     "V_grids": 290,
+     "available_V": 339,
+     "V_fraction": 0.015838901088632434,
+     "hit": true,
+     "V_items": 1,
+     "random_hit": 0.19355479385982244,
+     "best_V_rank": 3,
+     "cats": [
+      "Q_undetermined",
+      "Q_undetermined",
+      "V_supported"
+     ],
+     "winners": [
+      "N",
+      "Q",
+      "N"
+     ]
+    },
+    {
+     "patient": 37,
+     "grids": 4192,
+     "V_grids": 0,
+     "available_V": 0,
+     "V_fraction": 0.0,
+     "hit": false,
+     "V_items": 0,
+     "random_hit": 0.0,
+     "best_V_rank": null,
+     "cats": [
+      "Q_undetermined",
+      "N_only_noV",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "unmatched",
+      "Q"
+     ]
+    },
+    {
+     "patient": 38,
+     "grids": 4192,
+     "V_grids": 49,
+     "available_V": 53,
+     "V_fraction": 0.0029133685136323658,
+     "hit": true,
+     "V_items": 1,
+     "random_hit": 0.034666671608202915,
+     "best_V_rank": 2,
+     "cats": [
+      "Q_undetermined",
+      "V_supported",
+      "Q_undetermined"
+     ],
+     "winners": [
+      "Q",
+      "V",
+      "Q"
+     ]
+    },
+    {
+     "patient": 39,
+     "grids": 4192,
+     "V_grids": 4,
+     "available_V": 4,
+     "V_fraction": 0.00041109969167523125,
+     "hit": true,
+     "V_items": 2,
+     "random_hit": 0.0028605466439309835,
+     "best_V_rank": 1,
+     "cats": [
+      "V_supported",
+      "Q_undetermined",
+      "V_supported"
+     ],
+     "winners": [
+      "V",
+      "Q",
+      "V"
+     ]
+    }
+   ]
+  }
+ }
+}

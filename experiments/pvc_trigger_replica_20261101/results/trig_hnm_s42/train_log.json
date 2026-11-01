@@ -1,0 +1,142 @@
+{
+ "args": {
+  "arm": "trig_hnm",
+  "epochs": 8,
+  "neg_per_epoch": 250000,
+  "seed": 42,
+  "threads": 2,
+  "out": "/tmp/pvcexp/runs"
+ },
+ "K": 2,
+ "ctx_cols": null,
+ "log": [
+  {
+   "epoch": 1,
+   "loss": 0.11442139164366431,
+   "seconds": 106.12826752662659,
+   "class_counts": [
+    250000,
+    5716
+   ]
+  },
+  {
+   "epoch": 2,
+   "loss": 0.07737592546876991,
+   "seconds": 152.26615023612976,
+   "class_counts": [
+    250000,
+    5716
+   ],
+   "mining_seconds": 53.4,
+   "hard_margin_min": -4.126378536224365,
+   "hard_label_counts": {
+    "0": 58802,
+    "1": 2717,
+    "3": 28382,
+    "4": 35099
+   }
+  },
+  {
+   "epoch": 3,
+   "loss": 0.062309731595870485,
+   "seconds": 145.30889892578125,
+   "class_counts": [
+    250000,
+    5716
+   ],
+   "mining_seconds": 49.7,
+   "hard_margin_min": -4.733768463134766,
+   "hard_label_counts": {
+    "0": 63727,
+    "1": 2912,
+    "3": 31318,
+    "4": 27043
+   }
+  },
+  {
+   "epoch": 4,
+   "loss": 0.050612402816447404,
+   "seconds": 147.3970046043396,
+   "class_counts": [
+    250000,
+    5716
+   ],
+   "mining_seconds": 49.5,
+   "hard_margin_min": -4.993474006652832,
+   "hard_label_counts": {
+    "0": 61807,
+    "1": 2707,
+    "3": 27467,
+    "4": 33019
+   }
+  },
+  {
+   "epoch": 5,
+   "loss": 0.04300394586841273,
+   "seconds": 152.02985858917236,
+   "class_counts": [
+    250000,
+    5716
+   ],
+   "mining_seconds": 51.9,
+   "hard_margin_min": -6.067294597625732,
+   "hard_label_counts": {
+    "0": 68432,
+    "1": 2414,
+    "3": 25514,
+    "4": 28640
+   }
+  },
+  {
+   "epoch": 6,
+   "loss": 0.03409050846001164,
+   "seconds": 144.1678228378296,
+   "class_counts": [
+    250000,
+    5716
+   ],
+   "mining_seconds": 49.9,
+   "hard_margin_min": -5.66434383392334,
+   "hard_label_counts": {
+    "0": 62487,
+    "1": 2455,
+    "3": 27293,
+    "4": 32765
+   }
+  },
+  {
+   "epoch": 7,
+   "loss": 0.029033152634553073,
+   "seconds": 146.23812913894653,
+   "class_counts": [
+    250000,
+    5716
+   ],
+   "mining_seconds": 51.9,
+   "hard_margin_min": -6.3483805656433105,
+   "hard_label_counts": {
+    "0": 63085,
+    "1": 2301,
+    "3": 27407,
+    "4": 32207
+   }
+  },
+  {
+   "epoch": 8,
+   "loss": 0.026732781710909845,
+   "seconds": 145.19882678985596,
+   "class_counts": [
+    250000,
+    5716
+   ],
+   "mining_seconds": 51.6,
+   "hard_margin_min": -6.667511940002441,
+   "hard_label_counts": {
+    "0": 65054,
+    "1": 2247,
+    "3": 26987,
+    "4": 30712
+   }
+  }
+ ]
+}

@@ -1,0 +1,10 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1793450360.234100   11099 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1793450361.320897   11099 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+offset N: n=630846 median=+7 p10=+1 p90=+8 mean=+6.40
+offset V: n=6960 median=+7 p10=+0 p90=+12 mean=+7.39
+ep3 d=+0 all: D3 16/21 rank 1.0 gap +2.17 | lt1: D3 10/15 rank 2.0 gap +1.43 | rare: D3 4/8 rank 3.0 gap +0.12 | Vitems 36 Qitems 63
+ep3 d=+7 all: D3 13/21 rank 2.0 gap +1.00 | lt1: D3 8/15 rank 3.0 gap +0.17 | rare: D3 3/8 rank 11.0 gap -1.25 | Vitems 29 Qitems 65
+ep8 d=+0 all: D3 15/21 rank 1.0 gap +2.38 | lt1: D3 9/15 rank 2.0 gap +1.67 | rare: D3 3/8 rank 5.0 gap -1.10 | Vitems 35 Qitems 59
+ep8 d=+7 all: D3 14/21 rank 2.0 gap +2.08 | lt1: D3 9/15 rank 3.0 gap +0.76 | rare: D3 4/8 rank 8.5 gap -1.11 | Vitems 30 Qitems 55

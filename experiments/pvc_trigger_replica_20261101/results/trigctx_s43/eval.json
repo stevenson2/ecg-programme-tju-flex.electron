@@ -1,0 +1,138 @@
+{
+ "arm": "trigctx",
+ "seed": 43,
+ "K": 2,
+ "ctx_cols": [
+  0,
+  1,
+  2,
+  3
+ ],
+ "aux4": false,
+ "dev": [
+  {
+   "epoch": 1,
+   "mean_log2_rank": 2.671,
+   "all": "D3 6/10 D10 8 D30 8 rank 1.0 gap +1.51 auc 0.8672",
+   "lt1": "D3 4/8 D10 6 D30 6 rank 4.5 gap +0.39 auc 0.8403",
+   "rare": "D3 1/3 D10 1 D30 1 rank 816.0 gap -6.01 auc 0.6698",
+   "Vitems": 14,
+   "Qitems": 36,
+   "Nitems": 10,
+   "winQU": 37,
+   "D10_all": 8
+  },
+  {
+   "epoch": 2,
+   "mean_log2_rank": 2.411,
+   "all": "D3 8/10 D10 8 D30 8 rank 1.5 gap +1.58 auc 0.8763",
+   "lt1": "D3 6/8 D10 6 D30 6 rank 2.0 gap +1.38 auc 0.8522",
+   "rare": "D3 1/3 D10 1 D30 1 rank 1048.0 gap -7.94 auc 0.6863",
+   "Vitems": 16,
+   "Qitems": 31,
+   "Nitems": 11,
+   "winQU": 35,
+   "D10_all": 8
+  },
+  {
+   "epoch": 3,
+   "mean_log2_rank": 2.598,
+   "all": "D3 7/10 D10 8 D30 8 rank 1.5 gap +1.32 auc 0.859",
+   "lt1": "D3 5/8 D10 6 D30 6 rank 2.5 gap +0.54 auc 0.8321",
+   "rare": "D3 1/3 D10 1 D30 1 rank 1433.0 gap -9.37 auc 0.6518",
+   "Vitems": 15,
+   "Qitems": 31,
+   "Nitems": 12,
+   "winQU": 35,
+   "D10_all": 8
+  },
+  {
+   "epoch": 4,
+   "mean_log2_rank": 2.259,
+   "all": "D3 8/10 D10 8 D30 8 rank 1.0 gap +2.08 auc 0.8764",
+   "lt1": "D3 6/8 D10 6 D30 6 rank 1.0 gap +2.08 auc 0.853",
+   "rare": "D3 1/3 D10 1 D30 1 rank 1136.0 gap -8.38 auc 0.7011",
+   "Vitems": 16,
+   "Qitems": 31,
+   "Nitems": 12,
+   "winQU": 33,
+   "D10_all": 8
+  },
+  {
+   "epoch": 5,
+   "mean_log2_rank": 2.81,
+   "all": "D3 7/10 D10 7 D30 8 rank 1.5 gap +1.78 auc 0.8623",
+   "lt1": "D3 5/8 D10 5 D30 6 rank 2.5 gap +1.48 auc 0.8355",
+   "rare": "D3 0/3 D10 0 D30 1 rank 1193.0 gap -8.33 auc 0.6384",
+   "Vitems": 17,
+   "Qitems": 25,
+   "Nitems": 14,
+   "winQU": 29,
+   "D10_all": 7
+  },
+  {
+   "epoch": 6,
+   "mean_log2_rank": 2.729,
+   "all": "D3 7/10 D10 8 D30 8 rank 1.5 gap +2.05 auc 0.8557",
+   "lt1": "D3 5/8 D10 6 D30 6 rank 2.5 gap +1.65 auc 0.827",
+   "rare": "D3 0/3 D10 1 D30 1 rank 1300.0 gap -9.70 auc 0.6129",
+   "Vitems": 17,
+   "Qitems": 26,
+   "Nitems": 15,
+   "winQU": 30,
+   "D10_all": 8
+  },
+  {
+   "epoch": 7,
+   "mean_log2_rank": 2.762,
+   "all": "D3 7/10 D10 8 D30 8 rank 1.5 gap +2.05 auc 0.8596",
+   "lt1": "D3 5/8 D10 6 D30 6 rank 2.5 gap +1.76 auc 0.832",
+   "rare": "D3 0/3 D10 1 D30 1 rank 1137.0 gap -9.21 auc 0.6257",
+   "Vitems": 17,
+   "Qitems": 28,
+   "Nitems": 14,
+   "winQU": 29,
+   "D10_all": 8
+  },
+  {
+   "epoch": 8,
+   "mean_log2_rank": 2.784,
+   "all": "D3 7/10 D10 7 D30 8 rank 1.5 gap +2.11 auc 0.8583",
+   "lt1": "D3 5/8 D10 5 D30 6 rank 2.5 gap +1.85 auc 0.8304",
+   "rare": "D3 0/3 D10 0 D30 1 rank 1179.0 gap -9.45 auc 0.6203",
+   "Vitems": 17,
+   "Qitems": 29,
+   "Nitems": 13,
+   "winQU": 29,
+   "D10_all": 7
+  }
+ ],
+ "selected_epoch": 4,
+ "final_epoch": 8,
+ "test": {
+  "4": {
+   "primary": {
+    "mean_log2_rank": 1.527,
+    "all": "D3 17/21 D10 18 D30 18 rank 1.0 gap +1.40 auc 0.9344",
+    "lt1": "D3 11/15 D10 12 D30 12 rank 2.0 gap +1.38 auc 0.9377",
+    "rare": "D3 4/8 D10 5 D30 5 rank 4.0 gap -0.23 auc 0.8963",
+    "Vitems": 35,
+    "Qitems": 54,
+    "Nitems": 22,
+    "winQU": 59
+   }
+  },
+  "8": {
+   "primary": {
+    "mean_log2_rank": 1.613,
+    "all": "D3 17/21 D10 17 D30 18 rank 1.0 gap +1.50 auc 0.9325",
+    "lt1": "D3 11/15 D10 11 D30 12 rank 2.0 gap +1.50 auc 0.9344",
+    "rare": "D3 4/8 D10 4 D30 5 rank 15.0 gap -1.24 auc 0.8966",
+    "Vitems": 31,
+    "Qitems": 54,
+    "Nitems": 25,
+    "winQU": 54
+   }
+  }
+ }
+}
