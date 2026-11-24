@@ -525,3 +525,24 @@ Host checks that ran on this machine:
 - `test/plotter_handshake_test.py` with a fake clock.
 
 Flutter and Dart are not installed here, so `ecg_app/test/csv_parse_test.dart` (REC_LIST rejection, reassembly, 16 ms vs 32 ms gap counts) was not executed. The VF worker was not run on hardware; it is FreeRTOS-only and has no host double. The live BLE column-10 path in `main.cc` was not edited.
+
+### SuperMini boot (2026-10-19)
+
+Flashing this branch on the 4MB SuperMini reset-looped: BLE came up, then `create wifi task failed` / `esp_wifi_init` `ESP_ERR_NO_MEM`, then `abort()`. The VF move had added about 10KB of internal BSS plus an 8KB internal task stack before `ecgWifiStart`. Wi-Fi is still enabled. The six VF windows and the worker stack now come from PSRAM. `sdkconfig.supermini` puts LWIP/Wi-Fi dynamic buffers in PSRAM and cuts the static RX pool (10→6) and dynamic buffers (32→16). Every `ESP_ERROR_CHECK` on the Wi-Fi start path is gone: failure logs and returns, and `app_main` keeps BLE and the sample loop. A later flash confirmed the soft-fail: BLE and ECG stayed up, and `esp_wifi_init` still returned `ESP_ERR_NO_MEM`. The 16KB largest-block skip did not fire, so the heap had a big enough hole and still not enough total internal RAM.
+
+### SuperMini Wi-Fi DRAM (follow-up)
+
+`esp_wifi_init` needs a contiguous internal block for the Wi-Fi task stack plus static RX DMA. Those cannot move to PSRAM. What did move:
+
+- NimBLE host allocation is `CONFIG_BT_NIMBLE_MEM_ALLOC_MODE_EXTERNAL` (host pools and the host task stack). The controller stays internal. `CONFIG_BT_CTRL_BLE_MASTER` stays on because connectable advertising needs it. Central, observer, GATT client, and controller scan (plus the scan-duplicate cache) are off. Activities are 3 (828 bytes each). Host pool counts are MSYS 8/8, ACL 6, HCI events 8, preferred MTU 185. The same symbols are set in the legacy `CONFIG_NIMBLE_*` tail.
+- Wi-Fi static RX is 4. Dynamic RX/TX are 8. Management short buffers are 6 (the minimum). RX management buffers are dynamic (`rx_mgmt_buf_type` 1, count 5) so they are not internal DMA at init. SoftAP beacon length stays 752, which is the Kconfig minimum. `ecgWifiStart` applies the same numbers after `WIFI_INIT_CONFIG_DEFAULT()` and logs internal free and largest before the call, after success, and after `ESP_ERR_NO_MEM`. The 16KB skip is gone. Failure still returns; it does not abort.
+- Boot no longer calls `ecgWifiStart` before the sample loop. The loop starts Wi-Fi once `bleHostIsReady()` is true, or after 5 seconds. `WIFI_ON` still calls `ecgWifiStart` directly.
+- The AI infer stack (8192) is a PSRAM static stack. The task only quantizes and calls `Invoke`. It does not call SPIFFS, NVS, or `esp_flash`. The model is read through the cache. `vf_worker` is the same: math only, stack in PSRAM.
+
+`sdkconfig.n16r8` is unchanged. The runtime Wi-Fi pool override applies to both boards. Rebuild with `SDKCONFIG=sdkconfig.supermini`.
+
+### SuperMini ECGR stack (cache disabled)
+
+A flash of the DRAM fix brought the AP up, then reset about 3 s later on auto-record stop: `assert failed: esp_task_stack_is_sane_cache_disabled()`. The ECGR worker stack was in PSRAM while `finalize` wrote SPIFFS, which disables the flash cache. PSRAM is not reachable in that window.
+
+`ecgr_worker` is an internal-RAM stack again (4096). `ecgRecorderEnsureWorker()` runs after the Wi-Fi boot attempt, so those 4KB are not taken before `esp_wifi_init`. If the task cannot be created, `ecgRecorderStop` writes the file on the caller (the main task, also an internal stack). Wi-Fi failure is still non-fatal. The AI infer stack stays in PSRAM. This was not flashed here.
