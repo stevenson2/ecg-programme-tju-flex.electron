@@ -993,9 +993,10 @@ extern "C" void app_main(void) {
            CONFIG_ESPTOOLPY_FLASHSIZE, (unsigned)ecgReplayMaxSegment());
 #else
     initBLE();
-    ecgWifiInit();          /* 只做 NVS/netif/事件循环, 不开射频 */
+    /* 只做 NVS/netif/事件循环, 不开射频。失败只记日志 (PR #1): BLE 与采样照常。 */
+    if (!ecgWifiInit()) printf("[main] Wi-Fi base init failed; BLE and ECG continue\n");
 #if ECG_WIFI_AUTOSTART_AT_BOOT
-    ecgWifiStart();         /* 旧行为: 开机常开 SoftAP */
+    if (!ecgWifiStart()) printf("[main] Wi-Fi unavailable; BLE and ECG continue\n");   /* 旧行为: 开机常开 SoftAP */
 #endif
     bleSetStreamActive(s_bleStream);
 

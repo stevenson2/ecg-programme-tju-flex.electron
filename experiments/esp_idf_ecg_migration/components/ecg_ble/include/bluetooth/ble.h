@@ -29,6 +29,9 @@ extern "C" {
  */
 void initBLE(void);
 
+/** @brief NimBLE on_sync 已跑完并开始广播。Wi-Fi 等这个再占内部 RAM。 */
+bool bleHostIsReady(void);
+
 /**
  * @brief 通过 BLE 发送文本。按当前 ATT_MTU-3 在 ';' 或换行处切块。
  *

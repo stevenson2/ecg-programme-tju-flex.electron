@@ -24,6 +24,8 @@
 #include "nvs_flash.h"
 #include "esp_log.h"
 #include "esp_timer.h"
+#include "esp_heap_caps.h"
+#include "sdkconfig.h"
 
 #define ECGR_BASE_PATH "/spiffs/ecgdata"
 
@@ -42,6 +44,72 @@ static int64_t s_onSinceUs = 0;        /* 本次开启时刻 */
 static volatile int64_t s_lastActUs = 0; /* 最近 HTTP 请求或有 STA 关联的时刻 */
 
 static inline void wifiTouch(void) { s_lastActUs = esp_timer_get_time(); }
+static bool s_netReady = false;
+
+/* PR #1 (SuperMini): Wi-Fi failures log and return false instead of
+ * ESP_ERROR_CHECK/abort, so a NO_MEM never takes BLE and sampling down. */
+static bool wifi_log_err(esp_err_t err, const char *what) {
+    if (err == ESP_OK) return true;
+    ESP_LOGE(TAG, "%s failed: %s; BLE/ECG keep running", what, esp_err_to_name(err));
+    return false;
+}
+
+static void wifi_log_internal(const char *when) {
+    size_t free_b = heap_caps_get_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+    size_t largest = heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+    ESP_LOGI(TAG, "%s: internal free=%u largest=%u", when, (unsigned)free_b, (unsigned)largest);
+}
+
+/* SuperMini (4MB flash / 2MB PSRAM) only: shrink the static DMA pools so the
+ * Wi-Fi task and static RX fit in internal DRAM; dynamic buffers and RX MGMT
+ * go to PSRAM (CONFIG_SPIRAM_TRY_ALLOCATE_WIFI_LWIP). beacon_max_len stays 752.
+ * Other boards keep the IDF defaults. */
+static void wifi_fit_board(wifi_init_config_t *cfg) {
+#if CONFIG_ESPTOOLPY_FLASHSIZE_4MB
+    cfg->static_rx_buf_num = 4;
+    cfg->dynamic_rx_buf_num = 8;
+    cfg->dynamic_tx_buf_num = 8;
+    cfg->rx_mgmt_buf_type = 1;
+    cfg->rx_mgmt_buf_num = 5;
+    cfg->mgmt_sbuf_num = 6;
+    cfg->rx_ba_win = 6;
+#else
+    (void)cfg;
+#endif
+}
+
+/* Create the AP netif without esp_netif_create_default_wifi_ap(), which
+ * asserts internally on failure. Released with esp_netif_destroy_default_wifi(). */
+static bool ensure_ap_netif(void) {
+    if (s_apNetif) return true;
+    esp_netif_config_t cfg = ESP_NETIF_DEFAULT_WIFI_AP();
+    s_apNetif = esp_netif_new(&cfg);
+    if (!s_apNetif) {
+        ESP_LOGE(TAG, "esp_netif_new failed; BLE/ECG keep running");
+        return false;
+    }
+    if (!wifi_log_err(esp_netif_attach_wifi_ap(s_apNetif), "esp_netif_attach_wifi_ap") ||
+        !wifi_log_err(esp_wifi_set_default_wifi_ap_handlers(), "esp_wifi_set_default_wifi_ap_handlers")) {
+        esp_netif_destroy_default_wifi(s_apNetif);
+        s_apNetif = NULL;
+        return false;
+    }
+    return true;
+}
+
+/* Undo a partial esp_wifi_init so the next ecgWifiStart starts clean. */
+static void wifi_drop_driver(void) {
+    esp_wifi_stop();
+    esp_err_t err = esp_wifi_deinit();
+    if (err != ESP_OK && err != ESP_ERR_WIFI_NOT_INIT) {
+        ESP_LOGE(TAG, "esp_wifi_deinit: %s", esp_err_to_name(err));
+    }
+    if (s_apNetif) {
+        esp_netif_destroy_default_wifi(s_apNetif);
+        s_apNetif = NULL;
+    }
+    s_wifiInited = false;
+}
 
 /* ======================== 内部辅助 ======================== */
 
@@ -247,27 +315,38 @@ static void register_uri_handlers(httpd_handle_t server) {
 /* ======================== 公开 API ======================== */
 
 bool ecgWifiInit(void) {
+    if (s_netReady) return true;
+    /* Preservative boot: NVS is never erased automatically. */
     esp_err_t err = nvs_flash_init();
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "nvs_flash_init failed: %s", esp_err_to_name(err));
         return false;
     }
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    err = esp_netif_init();
+    if (err != ESP_OK && err != ESP_ERR_INVALID_STATE) return wifi_log_err(err, "esp_netif_init");
+    err = esp_event_loop_create_default();
+    if (err != ESP_OK && err != ESP_ERR_INVALID_STATE) return wifi_log_err(err, "esp_event_loop_create_default");
+    s_netReady = true;
     return true;
 }
 
 bool ecgWifiStart(void) {
     if (g_wifi_on) return false;
 
+    if (!ecgWifiInit()) return false;
     if (!s_wifiInited) {
+        wifi_log_internal("before esp_wifi_init");
         wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+        wifi_fit_board(&cfg);
         esp_err_t ierr = esp_wifi_init(&cfg);
-        if (ierr != ESP_OK) {
-            ESP_LOGE(TAG, "esp_wifi_init failed: %s", esp_err_to_name(ierr));
+        if (!wifi_log_err(ierr, "esp_wifi_init")) {
+            wifi_log_internal("esp_wifi_init failed");
             return false;
         }
-        s_apNetif = esp_netif_create_default_wifi_ap();
+        if (!ensure_ap_netif()) {
+            wifi_drop_driver();
+            return false;
+        }
 
         uint8_t mac[6] = {0};
         esp_wifi_get_mac(WIFI_IF_AP, mac);
@@ -282,8 +361,11 @@ bool ecgWifiStart(void) {
         wc.ap.authmode = WIFI_AUTH_WPA2_PSK;
         wc.ap.max_connection = 4;
 
-        ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
-        ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wc));
+        if (!wifi_log_err(esp_wifi_set_mode(WIFI_MODE_AP), "esp_wifi_set_mode") ||
+            !wifi_log_err(esp_wifi_set_config(WIFI_IF_AP, &wc), "esp_wifi_set_config")) {
+            wifi_drop_driver();
+            return false;
+        }
         s_wifiInited = true;
     }
 
@@ -310,6 +392,7 @@ bool ecgWifiStart(void) {
     g_wifi_on = true;
     s_onSinceUs = esp_timer_get_time();
     s_lastActUs = s_onSinceUs;
+    wifi_log_internal("AP started");
     ESP_LOGI(TAG, "AP started (on-demand, idle timeout %ds)", ECG_WIFI_IDLE_TIMEOUT_S);
     return true;
 }
