@@ -5,6 +5,8 @@
 #include <new>
 #include "esp_heap_caps.h"
 #include "esp_timer.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
 #include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/micro/system_setup.h"
@@ -23,6 +25,18 @@ struct Slot {
 };
 
 Slot g_slot[2];
+/* One global inference mutex (v0.2.1). The async inference task and the UART
+ * XL_D1 diagnostic both call xl_model_infer(). Without a lock they could run
+ * concurrently and corrupt each other (observed: LoadStoreError panic inside
+ * reduce/Mean, and garbage D1 outputs). A per-model lock is not enough: the
+ * ESP-NN conv/depthwise kernels keep a process-wide scratch-buffer pointer
+ * (esp_nn_set_conv_scratch_buf), so no two Invoke() calls may overlap at all.
+ * Statically allocated, created once, never deleted. */
+StaticSemaphore_t g_lock_buf;
+SemaphoreHandle_t g_lock = nullptr;
+void ensure_locks() {
+    if (!g_lock) g_lock = xSemaphoreCreateMutexStatic(&g_lock_buf);
+}
 /* One shared resolver: op list = ptq_info.json "ops" (13 builtins), no Softmax (output is int8 logits). */
 tflite::MicroMutableOpResolver<13> *g_resolver = nullptr;
 
@@ -95,6 +109,7 @@ bool init_slot(int m, const unsigned char *data, bool use_psram) {
 }  // namespace
 
 bool xl_model_init(const unsigned char *const models[2], bool use_psram) {
+    ensure_locks();
     xl_model_deinit();
     tflite::InitializeTarget();
     if (!build_resolver()) { printf("[xl] resolver failed\n"); return false; }
@@ -105,24 +120,33 @@ bool xl_model_init(const unsigned char *const models[2], bool use_psram) {
 }
 
 void xl_model_deinit(void) {
-    for (auto &sl : g_slot) {
+    ensure_locks();
+    xSemaphoreTake(g_lock, portMAX_DELAY);
+    for (int m = 0; m < 2; m++) {
+        Slot &sl = g_slot[m];
         delete sl.interp;
         if (sl.arena) heap_caps_free(sl.arena);
         sl = Slot();
     }
+    xSemaphoreGive(g_lock);
 }
 
 int xl_model_infer(int m, const int8_t *win, const int8_t *feat, int8_t out[4]) {
-    if (m < 0 || m > 1) return -1;
+    if (m < 0 || m > 1 || !g_lock) return -1;
+    xSemaphoreTake(g_lock, portMAX_DELAY);
     Slot &sl = g_slot[m];
-    if (!sl.interp) return -1;
-    memcpy(sl.in_ecg->data.int8, win, 250);
-    memcpy(sl.in_feat->data.int8, feat, 4);
-    int64_t t0 = esp_timer_get_time();
-    if (sl.interp->Invoke() != kTfLiteOk) return -1;
-    int64_t dt = esp_timer_get_time() - t0;
-    memcpy(out, sl.out->data.int8, 4);
-    return (int)dt;
+    int rc = -1;
+    if (sl.interp) {
+        memcpy(sl.in_ecg->data.int8, win, 250);
+        memcpy(sl.in_feat->data.int8, feat, 4);
+        int64_t t0 = esp_timer_get_time();
+        if (sl.interp->Invoke() == kTfLiteOk) {
+            rc = (int)(esp_timer_get_time() - t0);
+            memcpy(out, sl.out->data.int8, 4);
+        }
+    }
+    xSemaphoreGive(g_lock);
+    return rc;
 }
 
 size_t xl_model_arena_used(int m) { return (m >= 0 && m < 2 && g_slot[m].interp) ? g_slot[m].interp->arena_used_bytes() : 0; }
