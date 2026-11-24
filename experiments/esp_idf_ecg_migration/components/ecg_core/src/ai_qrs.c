@@ -94,7 +94,15 @@ AIQRS_Result aiqrsProcess(float x) {
     if (thr < P.thr_floor_frac * SPK) thr = P.thr_floor_frac * SPK;
 
     /* 无拍超时: 大伪影把 SPK 抬高后逐步恢复 */
+#ifdef ECG_AI_MODEL_XLSMALL
+    /* PC research front-end (replay_repair/native/ai_qrs_fixed.c, FIXED_QRS): apply the existing decay
+     * before the first accepted R as well; the cold-start age begins after the learning period. */
+    uint32_t no_beat_age = haveR ? n - lastR : n - LEARN_SAMP;
+    if ((haveR && no_beat_age > NO_BEAT_DECAY_SAMP && (no_beat_age % 250u) == 0u) ||
+        (!haveR && no_beat_age >= NO_BEAT_DECAY_SAMP && (no_beat_age % 250u) == 0u)) {
+#else
     if (haveR && (n - lastR) > NO_BEAT_DECAY_SAMP && ((n - lastR) % 250u) == 0u) {
+#endif
         SPK *= 0.7f; if (SPK < NPK * 1.5f) SPK = NPK * 1.5f;
         for (int i = 0; i < PKH_N; i++) pkHist[i] *= 0.7f;
     }

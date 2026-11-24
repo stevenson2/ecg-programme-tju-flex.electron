@@ -3,7 +3,7 @@
 
 /**
  * @file ecg_ai.h
- * @brief ESP-IDF AI 推理组件（esp-tflite-micro + ESP-NN, exp7c INT8）
+ * @brief ESP-IDF AI 推理组件（esp-tflite-micro + ESP-NN）：XL_small 双模型 INT8（默认，v0.2.0 起）/ legacy v3-A INT8
  *
  * 迁移自 Arduino src/ai_inference/ai_inference.cpp，保留：
  *   - 2:1 输入抽取（500Hz -> 250Hz）
@@ -11,7 +11,7 @@
  *   - 250 点窗口（默认盲切 stride；可选 R 峰中心触发，与学生模型契约对齐）
  *   - Z-score（总体标准差，std<1e-6 置 1）
  *   - INT8 输入填充（round + zero_point + clip）
- *   - exp7c INT8 推理（esp-tflite-micro + ESP-NN）
+ *   - legacy 路径：v3-A INT8 推理（esp-tflite-micro + ESP-NN）；XL_small 路径见本文件末尾与 xl_pipeline.h
  *   - 输出反量化直接取 abnormal 概率（不二次 softmax）
  *   - 可配置阈值 / K-of-N / 1-of-N / 冷却合并 / 回调/队列
  *
@@ -114,6 +114,23 @@ uint32_t ecg_ai_async_dropped(void);
  * 250 input INT8 bytes and both output INT8 values for each successful Invoke.
  * Does not bypass preprocessing, the async queue or inference. */
 void ecg_ai_set_trace(bool enabled);
+
+
+#ifdef ECG_AI_MODEL_XLSMALL
+/* ---- XL_small path (2 int8 models, 4 scalars, m-point verdict; see CONTRACT.md) ---- */
+/* Resolve the pending beat (end of stream: no next trigger) and wait until every queued
+ * beat has been inferred.  Returns number of beats still queued (0 on success). */
+int  ecg_ai_xl_flush_and_drain(uint32_t timeout_ms);
+/* 0 off, 1 print one "XL,..." line per beat (default), 2 also "XLT,<idx>,<us>" fire-to-result latency. */
+void ecg_ai_xl_set_print(int mode);
+/* Counters since last reset. */
+uint32_t ecg_ai_xl_beats(void);
+uint32_t ecg_ai_xl_verdicts(int cls);     /* 0=N 1=S 2=V 3=X */
+size_t   ecg_ai_xl_arena_used(int model);
+/* End-to-end latency of the most recent beat: trigger sample to result, in ms of wall clock. */
+/* D1: run the baked test vectors through both models and print D1 lines + summary. */
+void ecg_ai_xl_d1(void);
+#endif
 
 #ifdef __cplusplus
 }

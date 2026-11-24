@@ -16,6 +16,11 @@
 #include "tensorflow/lite/micro/tflite_bridge/micro_error_reporter.h"
 #include "tensorflow/lite/micro/system_setup.h"
 #include "tensorflow/lite/schema/schema_generated.h"
+#ifdef ECG_AI_MODEL_XLSMALL
+#include "xl_pipeline.h"
+#include "xl_model.h"
+#include "model_xl.h"
+#endif
 
 namespace {
 
@@ -129,6 +134,7 @@ void zscore(float *buf, int n) {
 }
 
 bool fill_int8_and_invoke(const float *window, uint32_t sample_index);   /* 前置: 定义于下方 */
+void finish_result(ecg_ai_result_t &r, uint32_t sample_index, bool trace, const char *input_hex);
 
 /* Round-F 推理任务 (核 1): 出队即持有整窗按值拷贝 (无别名) → 量化/Invoke/发布。
  * 100ms 超时轮询 task_stop: reset 置停后最多一个在途 Invoke 完成本拍即退出,
@@ -182,7 +188,12 @@ bool fill_int8_and_invoke(const float *window, uint32_t sample_index) {
     r.raw_abnormal = (p1 > g_ai.cfg.threshold) ? 1 : 0;
     r.sample_index = sample_index;   /* 窗口生成时固定, 不随 Invoke 完成时刻漂移 */
     r.latency_us = dt;
+    finish_result(r, sample_index, trace, input_hex);
+    return true;
+}
 
+/* Confirmation / cool-down policy + counters + delivery; shared by the v3-A and XL_small paths. */
+void finish_result(ecg_ai_result_t &r, uint32_t sample_index, bool trace, const char *input_hex) {
     /* 确认策略 */
     g_ai.history[g_ai.history_idx] = (r.raw_abnormal != 0);
     g_ai.history_idx = (g_ai.history_idx + 1) % (uint32_t)g_ai.cfg.confirm_n;
@@ -214,7 +225,7 @@ bool fill_int8_and_invoke(const float *window, uint32_t sample_index) {
     g_ai.total_inferences++;
     if (r.confirmed) g_ai.total_confirmed++;
 
-    if (trace) {
+    if (trace && input_hex && g_ai.output) {
         printf("AI_TRACE,%lu,%s,%d,%d,%u,%u\n",
                (unsigned long)sample_index, input_hex,
                (int)g_ai.output->data.int8[0], (int)g_ai.output->data.int8[1],
@@ -225,8 +236,76 @@ bool fill_int8_and_invoke(const float *window, uint32_t sample_index) {
     if (g_ai.queue) {
         xQueueSend(g_ai.queue, &r, 0);
     }
-    return true;
 }
+
+#ifdef ECG_AI_MODEL_XLSMALL
+/* ===================== XL_small path (CONTRACT.md) ===================== */
+constexpr int kXlQueueDepth = 6;
+std::atomic<int> g_xl_print{1};            /* 0 off, 1 "XL," line, 2 additionally "XLT," latency line */
+std::atomic<int> g_xl_inflight{0};         /* beats queued or being inferred (async) */
+uint32_t g_xl_beats = 0;
+uint32_t g_xl_verdict[4] = {0, 0, 0, 0};
+struct FireStamp { uint32_t idx; int64_t us; };
+FireStamp g_fire_ring[16];
+int g_fire_pos = 0;
+
+void xl_consume(const XlBeat *b) {
+    XlResult res;
+    if (xl_run_beat(b, &res) != 0) {
+        printf("[xl] inference failed at %lu\n", (unsigned long)b->sample_index);
+        return;
+    }
+    int64_t t_done = esp_timer_get_time();
+    int print = g_xl_print.load();
+    if (print) {
+        char line[200];
+        xl_format_line(b, &res, line, sizeof(line));
+        printf("%s\n", line);
+        if (print >= 2) {
+            int64_t t_fire = 0;
+            for (auto &f : g_fire_ring) if (f.idx == b->sample_index && f.us) { t_fire = f.us; break; }
+            printf("XLT,%lu,%lld\n", (unsigned long)b->sample_index, (long long)(t_fire ? t_done - t_fire : -1));
+        }
+    }
+    g_xl_beats++;
+    g_xl_verdict[res.verdict & 3]++;
+    ecg_ai_result_t r{};
+    r.confidence = res.probs[2];                 /* pV; notification layer uses verdict == V (m-point) */
+    r.raw_abnormal = (res.verdict == 2) ? 1 : 0;
+    r.sample_index = b->sample_index;
+    r.latency_us = res.us[0] + res.us[1];
+    finish_result(r, b->sample_index, false, nullptr);
+}
+
+void xl_beat_ready(const XlBeat *b, void *) {
+    if (g_ai.cfg.async_infer && g_ai.handoff) {
+        g_xl_inflight.fetch_add(1);
+        if (xQueueSend(g_ai.handoff, b, 0) != pdTRUE) {
+            g_xl_inflight.fetch_sub(1);
+            g_ai.async_dropped = g_ai.async_dropped + 1;
+        }
+        return;
+    }
+    xl_consume(b);
+}
+
+int xl_infer_hook(int m, const int8_t *win, const int8_t *feat, int8_t out[4], void *) {
+    return xl_model_infer(m, win, feat, out);
+}
+
+void xl_infer_task(void *) {
+    XlBeat beat;
+    while (!g_ai.task_stop.load()) {
+        if (xQueueReceive(g_ai.handoff, &beat, pdMS_TO_TICKS(100)) == pdTRUE) {
+            if (g_ai.task_stop.load()) { g_xl_inflight.fetch_sub(1); break; }
+            xl_consume(&beat);
+            g_xl_inflight.fetch_sub(1);
+        }
+    }
+    g_ai.task_exited.store(true);
+    vTaskDelete(nullptr);
+}
+#endif
 
 bool build_current_window(float *out) {
     if (g_ai.sample_count < kDefaultWindow) return false;
@@ -278,6 +357,38 @@ bool ecg_ai_init(const uint8_t *model_data, size_t model_size,
     if (g_ai.cfg.stride <= 0) g_ai.cfg.stride = 250;
     if (g_ai.cfg.trigger_offset < 0) g_ai.cfg.trigger_offset = 0;
     if (g_ai.cfg.arena_size < 64 * 1024) g_ai.cfg.arena_size = 64 * 1024;
+#ifdef ECG_AI_MODEL_XLSMALL
+    /* PC research front-end sets this immediately at init (replay_repair native/ecg_ai.cpp); the
+     * original firmware only applied it on the next reset. */
+    g_ai.rpeak_min_rr = (g_ai.cfg.rpeak_min_rr > 0) ? (uint32_t)g_ai.cfg.rpeak_min_rr : 150u;
+    {
+        static const unsigned char *const kModels[2] = {models_xl_small_s42_int8_tflite, models_xl_small_s43_int8_tflite};
+        g_xl_print.store(1);
+        if (!xl_model_init(kModels, g_ai.cfg.use_psram)) { ecg_ai_reset(); return false; }
+        XlHooks hk{}; hk.beat_ready = xl_beat_ready; hk.infer = xl_infer_hook; hk.ctx = nullptr;
+        xl_set_hooks(&hk);
+        xl_pipeline_reset();
+        g_xl_beats = 0; for (auto &v : g_xl_verdict) v = 0;
+        g_xl_inflight.store(0);
+        memset(g_fire_ring, 0, sizeof(g_fire_ring)); g_fire_pos = 0;
+        if (g_ai.cfg.queue_length > 0) {
+            g_ai.queue = xQueueCreate(g_ai.cfg.queue_length, sizeof(ecg_ai_result_t));
+            if (!g_ai.queue) { printf("[ecg_ai] queue create failed\n"); ecg_ai_reset(); return false; }
+        }
+        if (g_ai.cfg.async_infer) {
+            g_ai.handoff = xQueueCreate(kXlQueueDepth, sizeof(XlBeat));
+            if (!g_ai.handoff) { printf("[ecg_ai] handoff queue create failed\n"); ecg_ai_reset(); return false; }
+            g_ai.task_stop = false; g_ai.task_exited = false;
+            if (xTaskCreatePinnedToCore(xl_infer_task, "ecg_xl_infer", 8192, nullptr, kAsyncTaskPrio,
+                                        &g_ai.task, kAsyncTaskCore) != pdPASS) {
+                printf("[ecg_ai] xl infer task create failed\n"); ecg_ai_reset(); return false;
+            }
+        }
+        g_ai.initialized = true;
+        printf("[ecg_ai] XL_small init OK (2 models, async=%d)\n", (int)g_ai.cfg.async_infer);
+        return true;
+    }
+#endif
 
     if (g_ai.cfg.use_psram) {
         g_ai.arena = (uint8_t *)heap_caps_malloc_prefer(
@@ -417,6 +528,10 @@ void ecg_ai_reset(void) {
         g_ai.arena = nullptr;
     }
     g_ai.async_dropped = 0;
+#ifdef ECG_AI_MODEL_XLSMALL
+    xl_model_deinit();
+    xl_pipeline_reset();
+#endif
     /* 注意：不能 memset 整个 AiState，因为 MicroMutableOpResolver 是带构造的
      * C++ 对象；这里只清理运行期字段，resolver 保留构造状态。 */
     g_ai.model = nullptr;
@@ -449,6 +564,16 @@ bool ecg_ai_is_initialized(void) {
 
 /* Build+zscore current ring and invoke (async or inline). */
 bool maybe_fire_window(void) {
+#ifdef ECG_AI_MODEL_XLSMALL
+    {
+        float w[kDefaultWindow];
+        if (!build_current_window(w)) return false;
+        g_fire_ring[g_fire_pos & 15] = {g_ai.sample_count, esp_timer_get_time()};
+        xl_push_window(w, g_ai.sample_count);          /* may resolve the previous beat via the hook */
+        g_fire_pos++;
+        return true;
+    }
+#endif
     /* send_msg 是生产者 scratch (feed_sample 单线程契约): 构窗+zscore 直接
      * 在 scratch 上完成, 异步分支由 xQueueSend 按值整窗拷入队列 (1004B),
      * 入队成功即所有权转移, 生产者后续覆写 scratch 不影响已入队窗口;
@@ -487,6 +612,9 @@ void ecg_ai_feed_sample(float sample_500hz) {
                g_ai.sample_count >= kDefaultWindow) {
         maybe_fire_window();
     }
+#ifdef ECG_AI_MODEL_XLSMALL
+    xl_tick(g_ai.sample_count);
+#endif
 }
 
 /* 直接推理测试 API 的编号语义: sample_index 上报当前流位置 g_ai.sample_count
@@ -578,3 +706,20 @@ void ecg_ai_on_rpeak_at(uint32_t lag_250) {
     if (g_ai.pend_n < AiState::kPendN) g_ai.pend[g_ai.pend_n++] = r_sc + half;
     else g_ai.pend_dropped++;
 }
+
+#ifdef ECG_AI_MODEL_XLSMALL
+int ecg_ai_xl_flush_and_drain(uint32_t timeout_ms) {
+    if (!g_ai.initialized) return 0;
+    xl_flush();
+    uint32_t waited = 0;
+    while (g_xl_inflight.load() > 0 && waited < timeout_ms) {
+        vTaskDelay(pdMS_TO_TICKS(5));
+        waited += 5;
+    }
+    return g_xl_inflight.load();
+}
+void ecg_ai_xl_set_print(int mode) { g_xl_print.store(mode); }
+uint32_t ecg_ai_xl_beats(void) { return g_xl_beats; }
+uint32_t ecg_ai_xl_verdicts(int cls) { return (cls >= 0 && cls < 4) ? g_xl_verdict[cls] : 0; }
+size_t ecg_ai_xl_arena_used(int model) { return xl_model_arena_used(model); }
+#endif

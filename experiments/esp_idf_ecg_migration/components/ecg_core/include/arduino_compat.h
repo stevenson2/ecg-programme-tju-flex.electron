@@ -13,8 +13,16 @@ typedef uint8_t byte;
 #define HIGH 1
 #define LOW 0
 
+#ifdef ECG_AI_MODEL_XLSMALL
+/* FEED FAST replays faster than real time: time-based logic must follow the sample clock
+ * (PC replay: parity_time_us). g_ecg_vclock_* are defined in main.cc. */
+extern "C" { extern volatile int64_t g_ecg_vclock_us; extern volatile int g_ecg_vclock_on; }
+static inline uint32_t millis(void) { return (uint32_t)((g_ecg_vclock_on ? g_ecg_vclock_us : esp_timer_get_time()) / 1000); }
+static inline uint32_t micros(void) { return (uint32_t)(g_ecg_vclock_on ? g_ecg_vclock_us : esp_timer_get_time()); }
+#else
 static inline uint32_t millis(void) { return (uint32_t)(esp_timer_get_time() / 1000); }
 static inline uint32_t micros(void) { return (uint32_t)esp_timer_get_time(); }
+#endif
 
 template<typename T>
 static inline T constrain(T x, T a, T b) { return x < a ? a : (x > b ? b : x); }

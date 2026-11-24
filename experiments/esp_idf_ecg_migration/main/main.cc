@@ -23,6 +23,16 @@
 #include "signal_generator/ecg_replay.h"
 #include "heartrate/heartrate.h"
 #include "ai_qrs/ai_qrs.h"
+#ifdef ECG_AI_MODEL_XLSMALL
+#include "esp_heap_caps.h"
+#include "xl_pipeline.h"
+#endif
+/* Model name reported by STATUS: the protocol header carries the legacy name (v3-A). */
+#ifdef ECG_AI_MODEL_XLSMALL
+#define ECG_RUNTIME_MODEL_NAME "XL_small"
+#else
+#define ECG_RUNTIME_MODEL_NAME ECG_MODEL_NAME
+#endif
 
 /* 2026-10-20: AI 通道独立宽松 QRS 触发 (不做早搏拒绝)。1=新 (默认), 0=恢复旧行为
  * (hr.beatDetected → ecg_ai_on_rpeak, 600 ms 防重触发)。心率仍由 hrProcess 严格检测器负责。 */
@@ -113,10 +123,14 @@ typedef enum {
     SOURCE_SIMULATOR = 0,
     SOURCE_REPLAY_NORMAL,
     SOURCE_REPLAY_ABNORMAL,
-    SOURCE_AFE_REAL
+    SOURCE_AFE_REAL,
+    SOURCE_FEED            /* ECG_AI_MODEL_XLSMALL: UART-fed 500 Hz samples (hardware-in-the-loop) */
 } InputSource;
 
 static int s_mode = SOURCE_SIMULATOR;
+#ifdef ECG_AI_MODEL_XLSMALL
+static bool s_feedFast = false;        /* true while FEED FAST: inline inference + virtual clock */
+#endif
 static bool s_verifyActive = false;
 static uint32_t s_verifyRemaining = 0;
 static constexpr uint32_t kVerifySamples = 20000; // 40s of fixed digital input
@@ -226,9 +240,19 @@ static void resetCombFilter(void) {
     s_combSum1 = s_combSum2 = 0.0f;
 }
 
+#ifdef ECG_AI_MODEL_XLSMALL
+/* Virtual clock used by heartrate.cpp millis() while a FAST feed is active (PC replay uses
+ * parity_time_us = 1e6 + 2000 us per sample; see CONTRACT.md section 1). */
+extern "C" {
+volatile int64_t g_ecg_vclock_us = 0;
+volatile int g_ecg_vclock_on = 0;
+}
+#endif
+
 static const char *modeName(int mode) {
     switch (mode) {
         case SOURCE_SIMULATOR: return "SIMULATOR";
+        case SOURCE_FEED: return "FEED";
         case SOURCE_REPLAY_NORMAL: return "REPLAY_NORMAL";
         case SOURCE_REPLAY_ABNORMAL: return "REPLAY_ABNORMAL";
         case SOURCE_AFE_REAL: return "AFE_REAL";
@@ -410,6 +434,81 @@ static void cmdReply(bool fromUart, const char *msg) {
     }
 }
 
+#ifdef ECG_AI_MODEL_XLSMALL
+/* ===================== FEED: hardware-in-the-loop (UART only) =====================
+ * Frame (little endian): A5 5A | type D or E | seq u16 | n u16 | n x float32 | crc32(zlib) over type..payload.
+ * D carries up to kFeedMaxN raw 500 Hz samples (PC float32, units/injection point = capture.cpp raw500),
+ * E ends the stream.  The board answers "ACK <seq>" once the block has been completely processed,
+ * "NAK <seq> <why>" on a bad frame.  FEED BEGIN FAST|RT starts, FEED_DONE ... is printed at the end. */
+static constexpr int kFeedMaxN = 500;
+static constexpr int kFeedSlots = 4;
+struct FeedSlot { float x[kFeedMaxN]; uint16_t n; uint16_t seq; };
+static FeedSlot s_feedSlot[kFeedSlots];
+static int s_feedHead = 0, s_feedCount = 0, s_feedPos = 0;   /* consumer side */
+static bool s_feedEndPending = false;
+static uint16_t s_feedExpectSeq = 0;
+static float s_feedFirst = 0.0f;
+static bool s_feedHaveFirst = false;
+static uint32_t s_feedSamples = 0, s_feedBlocks = 0, s_feedBad = 0, s_feedOvr = 0;
+static uint64_t s_feedBusyUs = 0, s_feedT0 = 0;
+static uint8_t s_feedRx[2 + 5 + 4 * kFeedMaxN + 4 + 8];
+static int s_feedRxLen = 0;
+static uint32_t s_feedLastRxMs = 0;
+
+static void feedReset(void) {
+    s_feedHead = s_feedCount = s_feedPos = 0;
+    s_feedEndPending = false;
+    s_feedExpectSeq = 0;
+    s_feedHaveFirst = false;
+    s_feedSamples = s_feedBlocks = s_feedBad = s_feedOvr = 0;
+    s_feedBusyUs = 0;
+    s_feedRxLen = 0;
+}
+
+static void feedAccept(const uint8_t *f, int len) {   /* f = type..payload, crc already checked */
+    char type = (char)f[0];
+    uint16_t seq = (uint16_t)(f[1] | (f[2] << 8));
+    uint16_t n = (uint16_t)(f[3] | (f[4] << 8));
+    if (seq != s_feedExpectSeq) { printf("NAK %u seq_expected_%u\n", seq, s_feedExpectSeq); s_feedBad++; return; }
+    if (type == 'E') {
+        s_feedExpectSeq++;
+        s_feedEndPending = true;
+        return;
+    }
+    if (type != 'D' || n == 0 || n > kFeedMaxN || len != 5 + 4 * n || s_feedCount >= kFeedSlots) {
+        printf("NAK %u bad_block\n", seq); s_feedBad++; return;
+    }
+    FeedSlot &sl = s_feedSlot[(s_feedHead + s_feedCount) % kFeedSlots];
+    memcpy(sl.x, f + 5, 4 * (size_t)n);
+    sl.n = n; sl.seq = seq;
+    s_feedCount++;
+    s_feedExpectSeq++;
+}
+
+static void feedRxBytes(const uint8_t *b, int n) {
+    for (int i = 0; i < n; i++) {
+        if (s_feedRxLen >= (int)sizeof(s_feedRx)) s_feedRxLen = 0;
+        s_feedRx[s_feedRxLen++] = b[i];
+        if (s_feedRxLen == 1 && s_feedRx[0] != 0xA5) { s_feedRxLen = 0; continue; }
+        if (s_feedRxLen == 2 && s_feedRx[1] != 0x5A) { s_feedRxLen = (s_feedRx[1] == 0xA5) ? 1 : 0; s_feedRx[0] = 0xA5; continue; }
+        if (s_feedRxLen >= 7) {
+            uint16_t cnt = (uint16_t)(s_feedRx[5] | (s_feedRx[6] << 8));
+            if (cnt > kFeedMaxN) { s_feedRxLen = 0; s_feedBad++; printf("NAK 0 n_too_big\n"); continue; }
+            int total = 2 + 5 + 4 * (int)cnt + 4;
+            if (s_feedRxLen == total) {
+                uint32_t want = (uint32_t)(s_feedRx[total - 4] | (s_feedRx[total - 3] << 8) |
+                                           (s_feedRx[total - 2] << 16) | ((uint32_t)s_feedRx[total - 1] << 24));
+                uint32_t got = xl_crc32(s_feedRx + 2, (size_t)(total - 6));
+                if (got == want) feedAccept(s_feedRx + 2, total - 6);
+                else { uint16_t sq = (uint16_t)(s_feedRx[3] | (s_feedRx[4] << 8)); printf("NAK %u crc\n", sq); s_feedBad++; }
+                s_feedRxLen = 0;
+                s_feedLastRxMs = (uint32_t)(esp_timer_get_time() / 1000);
+            }
+        }
+    }
+}
+#endif
+
 static bool initAi(void) {
     ecg_ai_config_t cfg;
     ecg_ai_config_default(&cfg);
@@ -418,6 +517,9 @@ static bool initAi(void) {
     cfg.confirm_n = 5;
     cfg.cooldown_beats = 5;
     cfg.async_infer = true;
+#ifdef ECG_AI_MODEL_XLSMALL
+    cfg.async_infer = !s_feedFast;   /* FAST feed: inference inline so that aidrop is trivially 0 */
+#endif
     cfg.trigger_mode = ECG_AI_TRIGGER_RPEAK;
     cfg.rpeak_half_win = 125;
 #if ECG_AI_PERMISSIVE_QRS
@@ -466,6 +568,55 @@ static void processCommand(const char *cmd, bool fromUart) {
         cmdReply(true, reply);
         return;
     }
+#ifdef ECG_AI_MODEL_XLSMALL
+    if (strStartsWithIgnoreCase(cmd, "FEED ")) {
+        if (!fromUart) { cmdReply(false, "FEED fail UART_only"); return; }
+        bool fast = strEqualsIgnoreCase(cmd, "FEED BEGIN FAST");
+        bool rt = strEqualsIgnoreCase(cmd, "FEED BEGIN RT");
+        if (!(fast || rt) || s_verifyActive || s_mode == SOURCE_FEED ||
+            ecgRecorderIsRecording() || ecgRecorderAutoRecordEnabled()) {
+            cmdReply(true, "FEED fail usage_FEED_BEGIN_FAST|RT_recording_must_be_off");
+            return;
+        }
+        s_feedFast = fast;
+        ecg_ai_reset();
+        if (!initAi()) { cmdReply(true, "FEED fail init"); return; }
+        /* identical reset order to work/trigger_stream_20261031/capture.cpp replay_candidates() */
+        resetCombFilter();
+        filterInit();
+        aiChainFilterReset();
+        aiFilterInit();
+        hrInit();
+        hrFullReset();
+        aiqrsInit(NULL);
+        alarmReset(); rsReset(); afReset(); vfReset();
+        feedReset();
+        g_ecg_vclock_us = 1000000;
+        g_ecg_vclock_on = fast ? 1 : 0;
+        s_feedLastRxMs = (uint32_t)(esp_timer_get_time() / 1000);
+        s_feedT0 = (uint64_t)esp_timer_get_time();
+        s_mode = SOURCE_FEED;
+        ecg_ai_xl_set_print(rt ? 2 : 1);
+        snprintf(reply, sizeof(reply), "FEED ready mode=%s slots=%d maxn=%d", fast ? "FAST" : "RT", kFeedSlots, kFeedMaxN);
+        cmdReply(true, reply);
+        return;
+    }
+    if (strEqualsIgnoreCase(cmd, "XL_D1")) {
+        if (!fromUart) { cmdReply(false, "XL_D1 fail UART_only"); return; }
+        if (s_mode == SOURCE_FEED) { cmdReply(true, "XL_D1 fail feed_active"); return; }
+        ecg_ai_xl_d1();
+        return;
+    }
+    if (strEqualsIgnoreCase(cmd, "XL_STAT")) {
+        snprintf(reply, sizeof(reply), "XL_STAT beats=%lu N=%lu S=%lu V=%lu X=%lu aidrop=%lu arena=%u,%u free_int=%u free_psram=%u",
+                 (unsigned long)ecg_ai_xl_beats(), (unsigned long)ecg_ai_xl_verdicts(0), (unsigned long)ecg_ai_xl_verdicts(1),
+                 (unsigned long)ecg_ai_xl_verdicts(2), (unsigned long)ecg_ai_xl_verdicts(3), (unsigned long)ecg_ai_async_dropped(),
+                 (unsigned)ecg_ai_xl_arena_used(0), (unsigned)ecg_ai_xl_arena_used(1),
+                 (unsigned)heap_caps_get_free_size(MALLOC_CAP_INTERNAL), (unsigned)heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
+        cmdReply(fromUart, reply);
+        return;
+    }
+#endif
     if (s_verifyActive && !(strEqualsIgnoreCase(cmd, "PING") ||
                             strEqualsIgnoreCase(cmd, "STATUS") ||
                             strEqualsIgnoreCase(cmd, "AFE_STATUS") ||
@@ -494,6 +645,18 @@ static void processCommand(const char *cmd, bool fromUart) {
         cmdReply(fromUart, reply);
         return;
     }
+#ifdef ECG_AI_MODEL_XLSMALL
+    if (strEqualsIgnoreCase(cmd, "XLSTAT")) {
+        /* v0.2.0: XL_small per-beat verdict counters since the last AI reset (0=N 1=S 2=V 3=X). */
+        snprintf(reply, sizeof(reply), "XLSTAT beats=%lu N=%lu S=%lu V=%lu X=%lu aidrop=%lu",
+                 (unsigned long)ecg_ai_xl_beats(),
+                 (unsigned long)ecg_ai_xl_verdicts(0), (unsigned long)ecg_ai_xl_verdicts(1),
+                 (unsigned long)ecg_ai_xl_verdicts(2), (unsigned long)ecg_ai_xl_verdicts(3),
+                 (unsigned long)ecg_ai_async_dropped());
+        cmdReply(fromUart, reply);
+        return;
+    }
+#endif
     if (strEqualsIgnoreCase(cmd, "STATUS")) {
         /* P0-4: firmware_version / model 由设备单一真值提供, App 不再硬编码。 */
         snprintf(reply, sizeof(reply),
@@ -502,7 +665,7 @@ static void processCommand(const char *cmd, bool fromUart) {
                  s_alarmLatched ? 1u : 0u, s_alarmSrc,
                  ecgRecorderIsRecording() ? 1 : 0,
                  (unsigned long)ecg_ai_total_confirmed(),
-                 ECG_PROTO_FW_VER, ECG_MODEL_NAME);
+                 ECG_PROTO_FW_VER, ECG_RUNTIME_MODEL_NAME);
         cmdReply(fromUart, reply);
         return;
     }
@@ -721,21 +884,38 @@ static void feedCommandChar(char c, char *line, int *len, int cap) {
 }
 
 static void uartCommandInit(void) {
+#ifdef ECG_AI_MODEL_XLSMALL
+    uart_driver_install(UART_NUM_0, 4096, 0, 0, NULL, 0);   /* FEED blocks are up to 2 KB */
+#else
     uart_driver_install(UART_NUM_0, 512, 0, 0, NULL, 0);
+#endif
 #ifdef CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG_ENABLED
     usb_serial_jtag_driver_config_t usjCfg = USB_SERIAL_JTAG_DRIVER_CONFIG_DEFAULT();
+#ifdef ECG_AI_MODEL_XLSMALL
+    usjCfg.rx_buffer_size = 4096;
+#endif
     usb_serial_jtag_driver_install(&usjCfg);
 #endif
 }
 
 static void uartCommandPoll(void) {
-    uint8_t buf[64];
+    uint8_t buf[256];
     int n = uart_read_bytes(UART_NUM_0, buf, sizeof(buf), 0);
+#ifdef ECG_AI_MODEL_XLSMALL
+    if (s_mode == SOURCE_FEED) {
+        if (n > 0) feedRxBytes(buf, n);
+    } else
+#endif
     for (int i = 0; i < n; i++) {
         feedCommandChar((char)buf[i], s_uartLine, &s_uartLineLen, (int)sizeof(s_uartLine));
     }
 #ifdef CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG_ENABLED
     n = usb_serial_jtag_read_bytes(buf, sizeof(buf), 0);
+#ifdef ECG_AI_MODEL_XLSMALL
+    if (s_mode == SOURCE_FEED) {
+        if (n > 0) feedRxBytes(buf, n);
+    } else
+#endif
     for (int i = 0; i < n; i++) {
         feedCommandChar((char)buf[i], s_usjLine, &s_usjLineLen, (int)sizeof(s_usjLine));
     }
@@ -842,6 +1022,55 @@ extern "C" void app_main(void) {
             continue;
         }
 
+#ifdef ECG_AI_MODEL_XLSMALL
+        float feedValue = 0.0f;
+        if (s_mode == SOURCE_FEED) {
+            if (s_feedCount == 0) {
+                if (s_feedEndPending) {
+                    int left = ecg_ai_xl_flush_and_drain(5000);
+                    uint64_t wall = (uint64_t)esp_timer_get_time() - s_feedT0;
+                    printf("FEED_DONE samples=%lu blocks=%lu beats=%lu N=%lu S=%lu V=%lu X=%lu aidrop=%lu undrained=%d bad=%lu "
+                           "ovr=%lu busy=%u%% wall_ms=%lu\n",
+                           (unsigned long)s_feedSamples, (unsigned long)s_feedBlocks, (unsigned long)ecg_ai_xl_beats(),
+                           (unsigned long)ecg_ai_xl_verdicts(0), (unsigned long)ecg_ai_xl_verdicts(1),
+                           (unsigned long)ecg_ai_xl_verdicts(2), (unsigned long)ecg_ai_xl_verdicts(3),
+                           (unsigned long)ecg_ai_async_dropped(), left, (unsigned long)s_feedBad,
+                           (unsigned long)s_feedOvr, (unsigned)(wall ? (s_feedBusyUs * 100) / wall : 0),
+                           (unsigned long)(wall / 1000));
+                    s_feedEndPending = false;
+                    g_ecg_vclock_on = 0;
+                    s_feedFast = false;
+                    ecg_ai_reset();
+                    initAi();
+                    ecg_ai_xl_set_print(1);
+                    switchMode(SOURCE_SIMULATOR);
+                } else if (s_feedBlocks > 0 && ((uint32_t)(esp_timer_get_time() / 1000) - s_feedLastRxMs) > 30000) {
+                    printf("FEED_ABORT timeout\n");
+                    g_ecg_vclock_on = 0;
+                    s_feedFast = false;
+                    ecg_ai_reset();
+                    initAi();
+                    switchMode(SOURCE_SIMULATOR);
+                }
+                vTaskDelay(1);
+                continue;   /* nothing to process; keep polling the UART */
+            }
+            FeedSlot &sl = s_feedSlot[s_feedHead];
+            float raw = sl.x[s_feedPos++];
+            if (!s_feedHaveFirst) { s_feedFirst = raw; s_feedHaveFirst = true; }
+            feedValue = raw - s_feedFirst;       /* capture.cpp: centered - first (input_kind 0, bias 0) */
+            s_feedSamples++;
+            if (s_feedPos >= sl.n) {             /* block fully consumed -> ACK and free the slot */
+                printf("ACK %u\n", sl.seq);
+                s_feedHead = (s_feedHead + 1) % kFeedSlots;
+                s_feedCount--;
+                s_feedPos = 0;
+                s_feedBlocks++;
+                if (s_feedFast) vTaskDelay(1);   /* let IDLE/WDT run once per block */
+            }
+            if (s_feedFast) g_ecg_vclock_us += 2000;   /* parity_time_us += 2000 before processing */
+        }
+#endif
         float noisySample, cleanSample;
         if (s_mode == SOURCE_SIMULATOR) {
             noisySample = generateECGSample();
@@ -849,6 +1078,11 @@ extern "C" void app_main(void) {
         } else if (s_mode == SOURCE_REPLAY_NORMAL || s_mode == SOURCE_REPLAY_ABNORMAL) {
             noisySample = ecgReplayNextSample();
             cleanSample = noisySample;
+#ifdef ECG_AI_MODEL_XLSMALL
+        } else if (s_mode == SOURCE_FEED) {
+            noisySample = feedValue + DC_OFFSET_REMOVE;   /* only used by non-AI consumers; noisyNoDC below is exact */
+            cleanSample = feedValue;
+#endif
         } else {
             if (afeHalReadSampleChecked(&noisySample) != ESP_OK) {
                 // No fabricated zero/NAN may enter DSP, AI, recording or WAVE.
@@ -861,6 +1095,9 @@ extern "C" void app_main(void) {
         }
 
         float noisyNoDC = noisySample - DC_OFFSET_REMOVE;
+#ifdef ECG_AI_MODEL_XLSMALL
+        if (s_mode == SOURCE_FEED) noisyNoDC = feedValue;   /* exact: comb input == raw500[i] - raw500[0] */
+#endif
         float combOut = applyCombFilter(noisyNoDC);
         /* 显示滤波只喂 BLE 波形与 TICK: 未连接时跳过 (省 ~2 个双精度 biquad/样本),
          * TICK 的 disp 列降级为梳状输出; 重连时清一次状态消瞬态。 */
@@ -1145,7 +1382,16 @@ extern "C" void app_main(void) {
             uint64_t dtWorkUs = (uint64_t)esp_timer_get_time() - tWork0;
             s_busyAccumUs += dtWorkUs;
             if (dtWorkUs > 2000) s_loopOverruns++;
+#ifdef ECG_AI_MODEL_XLSMALL
+            if (s_mode == SOURCE_FEED) {
+                s_feedBusyUs += dtWorkUs;
+                if (dtWorkUs > 2000) s_feedOvr++;
+            }
+#endif
         }
+#ifdef ECG_AI_MODEL_XLSMALL
+        if (s_mode == SOURCE_FEED && s_feedFast) continue;   /* FAST: no 2 ms pacing */
+#endif
         /* Round-F: 绝对期限节拍 (vTaskDelayUntil) 消除逐帧舍入漂移。
          * 注意: xTaskDelayUntil 在 prev 处于未来时视为 tick 回绕, 永不延迟
          * 且 prev 照加 (自由跑) —— 所以重锚只能设 prev = nowTick (不得超前)。
