@@ -1,6 +1,6 @@
 # ESP32-ECG — Portable ECG Acquisition & On-device AI Anomaly Detection (Research Prototype)
 
-> **ESP32-S3 · ESP-IDF · TFLite Micro + ESP-NN · v3-A INT8 · BLE NUS · Flutter**  
+> **ESP32-S3 · ESP-IDF · TFLite Micro + ESP-NN · XL_small INT8 (default) / v3-A · BLE NUS · Flutter**  
 > English | [中文](README.md)
 
 **Portable single-lead (chest modified lead I) ECG acquisition research prototype with on-device deep-learning beat-level anomaly detection.** 500 Hz sampling; filtering, heart-rate detection and anomaly inference run on the chip; alarms are pushed to a Flutter app over BLE, and recordings are stored on-board in the ECGR format with WiFi download support. This is a research device — **not a certified medical device and not for clinical diagnosis**.
@@ -10,7 +10,7 @@
 
 > **v0.2.0 (2026-11-23)**: the firmware's default on-device model is now **XL_small** (two-seed int8 ensemble, per-beat N/S/V/X; X = reject). Legacy v3-A remains available with `-D ECG_AI_MODEL_XLSMALL=OFF`. **In this release XL_small verdicts are reported over serial only (`XL,...` lines, `XLSTAT`); they are not yet wired into the BLE frame, the app, the AI alarm source or recorder bookmarks.** In XL_small builds the former v3-A AI density alarm no longer fires; rule-based alarms (asystole, brady/tachy, VF, lead-off) are unchanged. Public-database AUROCs, board measurements and known limitations are listed in [CHANGELOG.md](CHANGELOG.md) and the Chinese README §1.1. Research prototype, not for clinical use.
 
-## 1. Current Product State (2026-10-25)
+## 1. Product State (v0.1.0 baseline, 2026-10-25; v0.2.0 changes are summarized above and in CHANGELOG.md)
 
 - **What it is**: a single-lead ECG acquisition + on-board AI anomaly-detection research prototype. The product model is **v3-A ResNet-L INT8, 167,376 bytes** (SHA256 `7a650a3c…`). It was trained with **mixed abnormality labels** (multi-database abnormal classes merged) — it is **not a dedicated PVC or VF detector**, and the medical meaning of output 1 is not yet bound.
 - **Verified board**: SuperMini ESP32-S3FH4R2 (**4MB Quad Flash / 2MB Quad PSRAM**, `sdkconfig.supermini` + `partitions_ecg_supermini.csv`). The 2026-10-23 release build is 1,622,960 B with ~43.7% headroom in the factory slot (2816 KiB). The N16R8 (16MB/8MB) configs remain in the repo, but the 2026-10-23 verification round ran entirely on SuperMini.
@@ -43,10 +43,11 @@ idf.py -B build_supermini monitor       # serial 460800
 - **Common serial/BLE commands**: `MODE sim|afe|replay_normal|replay_abnormal` (AFE failures return the concrete error), `AFE_STATUS`, `REC_START`/`REC_STOP`/`REC_AUTO 1|0`, `AI_VERIFY 0|1|STOP` (per-window parity, see the firmware README), `STATUS`, `WAVE 1|0`.
 - **PC tools / app**: `python pc_tools/ecg_plotter.py`; `cd ecg_app && flutter run`. AI model training requires a GPU (WSL2).
 
-## 3. Verified Scope (as of 2026-10-23, all on the SuperMini 4MB board)
+## 3. Verified Scope
 
 | Item | Result | Boundary |
 |---|---|---|
+| **v0.2.0 XL_small on board (2026-11-07 / 11-23, N16R8)** | 512-window model check: 1,024 output lines byte-identical to 11-07; full-segment HIL replay 4,379/4,379 beats identical; ~73 ms per inference | Digital replay and public data only; no real-wear accuracy |
 | 4MB release build & deploy | 1,622,960 B, 43.7% headroom; normal operation after deploy | That artifact only; N16R8 not re-verified |
 | Per-window PC/board parity | Two 40s replay segments: **92 windows / 23,000 INT8 input bytes, inputs and both outputs byte-identical** (PC TensorFlow 2.21 BUILTIN_REF vs on-board TFLM/ESP-NN), 0 raw/confirmed mismatches, 0 drops | Fixed digital replay only; does not prove real-ADC fidelity, power, full alarm timing, or diagnostic performance |
 | Preservative boot | SPIFFS 983,040 B digest unchanged, 11 records retained; bootloader/partition table/PHY partition unchanged | NVS key `phy/cal_data` updated by PHY calibration — **full-chip byte-invariance is NOT claimed** |
@@ -86,7 +87,7 @@ Archived round conclusions, kept for traceability (current state is §1–§4 ab
 | Acquisition | 500 Hz, 3-channel (clean / noisy / filtered); sources: simulator, real AFE, MIT-BIH replay |
 | Filtering | Two-stage comb (50/100 Hz nulling, -119.2 dB) → HP → LP 40 Hz |
 | Heart rate | Energy-envelope QRS detector v6 (LUDB: F1 0.868, Se 96.4%, BPM MAE 4.16) |
-| AI | v3-A ResNet-L INT8 (167,376 B, mixed abnormality labels); TFLite Micro + ESP-NN; beat-level anomaly detection |
+| AI | **XL_small** (default; two int8 CNNs, per-beat N/S/V/X); legacy v3-A ResNet-L INT8 (167,376 B, mixed-abnormal binary) available as a build option; TFLite Micro + ESP-NN |
 | Rhythm | Asystole / bradycardia / tachycardia (rules), AF (CV+entropy), VF/VT (DSP features + LR) — research goals, not verified product capabilities |
 | Alarm | Physiological sources latch ≥12s (BLE alarm bit + source bitmap) |
 | Recording | ECGR format (32 B header + int16 stream + abnormal bitmap); **auto-record defaults off**, explicitly enableable; WiFi REST download |
@@ -106,7 +107,7 @@ flowchart LR
     E --> G[2:1 decimate<br/>250 Hz]
     G --> H[250-pt window<br/>by-value hand-off queue]
     H --> I1[Core-1 infer task<br/>Z-score + INT8]
-    I1 --> J[TFLite Micro + ESP-NN<br/>v3-A INT8]
+    I1 --> J[TFLite Micro + ESP-NN<br/>XL_small (default) / v3-A]
     J --> K[Anomaly prob + sample_index]
     K --> L[Alarm latch >=12s]
     E --> M[ECGR record + bitmap]
@@ -141,7 +142,7 @@ Internal docs (tuning history, final results, collaboration rules) and the liter
 
 ---
 
-## AI Model & Metrics (development-era numbers, not blind-test)
+## AI Model & Metrics (v3-A development-era numbers, not blind-test; XL_small numbers are in CHANGELOG.md)
 
 **On-board model**: v3-A clean baseline (ResNet-L, ~80K params), INT8 **167,376 B**, on-device since 2026-09 (replaces exp7c). **Mixed-abnormality-label** binary classifier. Paper operating point: beat θ≈0.35 / patient θ≈0.5; **firmware runs θ=0.50 + 1-of-5 + cooldown 5** (`main.cc` is authoritative).
 
@@ -167,6 +168,23 @@ Internal docs (tuning history, final results, collaboration rules) and the liter
 ## Docs
 
 User-facing details are in the per-module `README.md` files (`pc_tools/ecg_dl/`, `ecg_app/`, `web/`, `experiments/esp_idf_ecg_migration/`). Firmware build commands, preservative boot, and per-window diagnostics: `experiments/esp_idf_ecg_migration/README.md`; dual-board configuration: `experiments/esp_idf_ecg_migration/FLASH_DUAL_BOARD.md`.
+
+---
+
+## Lessons for the next students
+
+Almost a year of work, and we overturned many of our own conclusions. Each point below comes from a real mistake:
+
+1. **Get evaluation right before comparing models.** Our early record-level split leaked: 66% of test beats came from patients also in training. Split by patient.
+2. **Match data to the device.** Models trained on mixed leads fell to AUROC 0.54–0.76 on the device's lead I. Matching the placement and feeding training the exact firmware windows raised PVC alarm PPV from 34% to 71%.
+3. **More patients beat bigger models.** Widening the network did nothing; going from 150 to 1,150 training patients met the preset PVC improvement bar on four independent databases.
+4. **High AUROC is not usability.** PAC AUROC is ~0.93, yet the firmware threshold catches only about a third of PACs. Report operating-point sensitivity, PPV and false alarms per hour.
+5. **Beware of one patient deciding your result.** One patient held 59% of a test set's PACs; removing them shrank an "improvement" by 91%. Report per patient.
+6. **Many problems sit before the model:** front-end clipping, electrode polarity, unwired lead-off detection, too-low serial sampling rate. Measure the front end first.
+7. **Don't be a hero with hardware; safety first.** Prefer modules to hand-soldered QFN parts (we shorted a supply rail). Battery power only when wearing it; ethics approval before testing others.
+8. **Search the literature before calling something novel.** Tuning and stacking are not innovation; several of our "new ideas" were already published.
+9. **AI assistants help, but every number must be traceable.** They can also dress up negative results as findings.
+10. **Write down negative results honestly.** If it wasn't measured, say so.
 
 ---
 
