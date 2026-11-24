@@ -1,3 +1,9 @@
+> **v0.2.0（2026-11-23）**：默认构建为 **XL_small**（`ECG_AI_MODEL_XLSMALL` 默认 ON，两种子 int8，N/S/V/X）；
+> `-D ECG_AI_MODEL_XLSMALL=OFF` 恢复 v3-A。XL_small 判决经串口 `XL,<idx>,...` 行与 `XLSTAT` 输出，
+> 尚未接入 BLE/App/AI 报警源/书签。UART 专用 `FEED BEGIN FAST|RT` 做硬件在环回放（帧格式见 `main.cc`）。
+> N16R8：`idf.py -B build_n16r8 -D SDKCONFIG=sdkconfig.n16r8 build`，保留记录时只用 `app-flash`。
+> 2026-11-07 N16R8 板测与本版回归结果见仓库根 `CHANGELOG.md` 与 GitHub Release v0.2.0。
+
 # ESP-IDF ECG Core Migration（实验工程）
 
 > **验证状态（2026-10-23，SuperMini 4MB 板）**：4MB 正式版构建+部署通过

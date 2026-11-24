@@ -3,9 +3,12 @@
 > **ESP32-S3 · ESP-IDF · TFLite Micro + ESP-NN · v3-A INT8 · BLE NUS · Flutter**  
 > English | [中文](README.md)
 
-**Portable single-lead (Lead II) ECG acquisition research prototype with on-device deep-learning beat-level anomaly detection.** 500 Hz sampling; filtering, heart-rate detection and anomaly inference run on the chip; alarms are pushed to a Flutter app over BLE, and recordings are stored on-board in the ECGR format with WiFi download support. This is a research device — **not a certified medical device and not for clinical diagnosis**.
+**Portable single-lead (chest modified lead I) ECG acquisition research prototype with on-device deep-learning beat-level anomaly detection.** 500 Hz sampling; filtering, heart-rate detection and anomaly inference run on the chip; alarms are pushed to a Flutter app over BLE, and recordings are stored on-board in the ECGR format with WiFi download support. This is a research device — **not a certified medical device and not for clinical diagnosis**.
 
 > **Firmware status (2026-10-25)**: the official firmware is the **ESP-IDF project** `experiments/esp_idf_ecg_migration/` (ESP-IDF v6.0.1). The legacy **Arduino + PlatformIO** line is archived under `legacy_arduino/` for reference only. On-board model: **v3-A** INT8 (167,376 B, `models_ecg_model_v3a_int8_tflite`); firmware runs θ=0.50 + 1-of-5 confirmation + 5-beat cooldown (`main.cc` is authoritative).
+
+
+> **v0.2.0 (2026-11-23)**: the firmware's default on-device model is now **XL_small** (two-seed int8 ensemble, per-beat N/S/V/X; X = reject). Legacy v3-A remains available with `-D ECG_AI_MODEL_XLSMALL=OFF`. **In this release XL_small verdicts are reported over serial only (`XL,...` lines, `XLSTAT`); they are not yet wired into the BLE frame, the app, the AI alarm source or recorder bookmarks.** In XL_small builds the former v3-A AI density alarm no longer fires; rule-based alarms (asystole, brady/tachy, VF, lead-off) are unchanged. Public-database AUROCs, board measurements and known limitations are listed in [CHANGELOG.md](CHANGELOG.md) and the Chinese README §1.1. Research prototype, not for clinical use.
 
 ## 1. Current Product State (2026-10-25)
 
@@ -95,7 +98,7 @@ Archived round conclusions, kept for traceability (current state is §1–§4 ab
 
 ```mermaid
 flowchart LR
-    A[Electrodes RA/LA/RL<br/>Lead II] --> B[AFE<br/>AD8232 / custom]
+    A[Electrodes RA/LA/RL<br/>chest modified Lead I] --> B[AFE<br/>AD8232 / custom]
     B --> C[ADC<br/>500 Hz]
     C --> D[Comb 50/100 Hz<br/>-119.2 dB]
     D --> E[HP + LP 40 Hz]

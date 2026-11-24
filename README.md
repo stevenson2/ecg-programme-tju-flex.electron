@@ -1,11 +1,13 @@
 # ESP32-ECG 心电采集与 AI 异常检测系统（研究原型）
 
-> **ESP32-S3 · ESP-IDF · TFLite Micro + ESP-NN · v3-A INT8 · BLE NUS · Flutter**  
+> **ESP32-S3 · ESP-IDF · TFLite Micro + ESP-NN · XL_small INT8（v0.2.0 起默认；v3-A 可回退）· BLE NUS · Flutter**  
 > [English](README.en.md) | 中文
 
-**便携式单导联（Lead II）心电采集研究原型 + 板载深度学习逐拍异常检测。** 500 Hz 采样，片上完成滤波、心率检测与异常推理，异常经 BLE 推送手机 App，数据以 ECGR 格式板载录制并支持 WiFi 下载。本项目为研究性质装置，**未经过医疗器械认证，不用于临床诊断**。
+**便携式单导联（胸前改良 I 导联）心电采集研究原型 + 板载深度学习逐拍异常检测。** 500 Hz 采样，片上完成滤波、心率检测与异常推理，异常经 BLE 推送手机 App，数据以 ECGR 格式板载录制并支持 WiFi 下载。本项目为研究性质装置，**未经过医疗器械认证，不用于临床诊断**。
 
-> **固件线状态（2026-10-25）**：官方固件为 **ESP-IDF 工程** `experiments/esp_idf_ecg_migration/`（ESP-IDF v6.0.1）。旧 **Arduino + PlatformIO** 线已归档至 `legacy_arduino/`，仅历史参考，不再构建/烧录。板上模型 **v3-A** INT8（167,376 B，`models_ecg_model_v3a_int8_tflite`），固件运行 θ=0.50 + 1-of-5 确认 + 冷却 5 拍（以 `main.cc` 为准）。
+> **v0.2.0（2026-11-23）**：固件默认 AI 模型由 v3-A 改为 **XL_small**（两种子 INT8 集成，逐拍输出 N/S/V/X 四类），v3-A 以编译开关 `-D ECG_AI_MODEL_XLSMALL=OFF` 保留为回退。**本版 XL_small 的逐拍判决只经串口输出（`XL,...` 行与 `XLSTAT` 命令），尚未接入 BLE 帧、App、AI 报警源与记录器书签**；在 XL_small 构建中，原 v3-A 的 AI 密度报警源不再产生报警，规则报警（停搏、过缓/过速、VF、电极脱落）不受影响。验证范围与已知限制见第 3 节和 [CHANGELOG.md](CHANGELOG.md)。
+
+> **固件线状态（2026-10-25，v0.1.0）**：官方固件为 **ESP-IDF 工程** `experiments/esp_idf_ecg_migration/`（ESP-IDF v6.0.1）。旧 **Arduino + PlatformIO** 线已归档至 `legacy_arduino/`，仅历史参考，不再构建/烧录。板上模型 **v3-A** INT8（167,376 B，`models_ecg_model_v3a_int8_tflite`），固件运行 θ=0.50 + 1-of-5 确认 + 冷却 5 拍（以 `main.cc` 为准）。
 
 ## 1. 当前产品状态（2026-10-25）
 
@@ -16,12 +18,35 @@
 - **保留式启动（2026-10-23）**：SPIFFS 挂载失败**不自动格式化**；启动不清理记录、不重建索引、不执行保留删除；**自动录制默认关闭**（`REC_START` / `REC_AUTO 1` 显式开启）；NVS 初始化失败不自动擦除。不能说成"启动绝对零写入"：正常无线 PHY 校准可能更新其校准键。
 - **逐窗诊断默认关闭**：`AI_VERIFY 0/1` + `AI_TRACE` 仅显式串口请求触发，不旁路前处理/异步队列/量化/真实推理。
 
+## 1.1 v0.2.0 的 AI 模型：XL_small
+
+- **模型**：两个 int8 小网络（种子 42、43，各 64,068 参数、166,944 B），输入为以触发为中心的 1 s 波形（250 Hz）加 4 个 RR 标量；两模型 softmax 平均后按开发集拟合的先验偏移（m 点）判为 N / S / V / X（X = 拒判）。训练数据为 Icentia11k 的 2,150 名患者（胸贴单导联，与本设备贴法同类）。
+- **公开库指标（研究侧，匹配拍 AUROC，按患者划分，非本设备数据）**：
+
+  | 库 | V AUROC | S AUROC |
+  |---|---:|---:|
+  | Icentia 独立 40 人 | 0.988 | 0.931 |
+  | INCART（I 导联） | 0.901 | 0.949 |
+  | MIT-BIH DS2 | 0.996 | 0.905 |
+  | EDB（MLI） | 1.000 | 0.991 |
+  | CPSC2020 | 0.941 | 0.927 |
+
+  AUROC 只在被正确触发的心拍上计算。**工作点上的房早（S）检出偏弱**：m 点 S 敏感度在开发集约 26%、独立集约 33%；I 导联加电极运动噪声时，真实室早（V）常被判为 X。旧 v3-A 在同类 I 导联条件下的 AUROC 为 0.535–0.761（口径为混合异常二分类，与上表不同口径，仅作量级参考）。
+- **板上实测（2026-11-07，ESP32-S3R8 N16R8 板，160 MHz，ESP-NN 优化版）**：单模型推理中位 73.6 ms（p95 74.5 ms），每拍两模型约 147 ms；arena 约 51 KB/模型；dev40 6 段约 7 小时硬件在环回放（29,882 拍）判决与 PC 一致 99.61%–99.98%；10 分钟实时节拍 0 丢拍，R 峰到判决延迟中位 2.1 s（需等待下一拍）。512 窗模型级对照类别一致 511/512，但集成概率最大差 0.137，未达 0.03 的逐值门限（差异来自 TFLM 与 TFLite 参考算子的算术差，非 SIMD）；长时间运行时前端单精度浮点可累积出 1 个采样点的触发偏移。
+- **不是**：医学诊断器；PVC/PAC 报警器；在本设备真实佩戴数据上验证过准确率的模型（仅有约 18.5 分钟无标注自录，S/V 报警 0 次）。
+
 ## 2. 构建与使用
 
 把环境、MIT-BIH、一次训练、INT8 导出和 SuperMini 烧录串起来，见 [GETTING_STARTED.md](GETTING_STARTED.md)（[English](GETTING_STARTED.en.md)）。
 
 ```bash
-# —— SuperMini（4MB Flash / 2MB PSRAM，2026-10-23 已验证）——
+# v0.2.0 起 ECG_AI_MODEL_XLSMALL 默认 ON（XL_small）；需要旧 v3-A 时加 -D ECG_AI_MODEL_XLSMALL=OFF
+# —— N16R8（16MB Flash / 8MB PSRAM，XL_small 已在此板验证）——
+cd experiments/esp_idf_ecg_migration   # 先加载 ESP-IDF v6 环境
+idf.py -B build_n16r8 -D SDKCONFIG=sdkconfig.n16r8 build
+idf.py -B build_n16r8 -p <PORT> app-flash   # 只写应用分区，保留板上记录
+
+# —— SuperMini（4MB Flash / 2MB PSRAM；v3-A 于 2026-10-23 验证，XL_small 仅编译验证）——
 cd experiments/esp_idf_ecg_migration   # 先加载 ESP-IDF v6 环境
 idf.py -B build_supermini -D SDKCONFIG=sdkconfig.supermini \
       -D SDKCONFIG_DEFAULTS=sdkconfig.defaults.supermini build
@@ -36,7 +61,7 @@ idf.py -B build_supermini monitor       # 串口 460800
 
 - **数据保留边界**：`idf.py flash` 只写应用分区；**通用全量刷写（如 `erase_flash` + 整片重刷）不是保留既有记录的方法**。需要保留板上记录时，只写应用分区、不擦数据分区，并先核实目标板分区表与 `partitions_ecg_supermini.csv` 一致。
 - **固定输入板测构建**（可选，默认 OFF）：`-D ECG_FIXED_INPUT_BOARD_TEST=ON`——只跑数字回放与产品分析链，拒绝 AFE、跳过 SPIFFS/录制与无线初始化；不验证无线与存储。
-- **常用串口/BLE 命令**：`MODE sim|afe|replay_normal|replay_abnormal`（AFE 失败时返回具体错误）、`AFE_STATUS`（ADC 就绪/有效/计数）、`REC_START`/`REC_STOP`/`REC_AUTO 1|0`、`AI_VERIFY 0|1|STOP`（逐窗核对，详见固件 README）、`STATUS`、`WAVE 1|0`。
+- **常用串口/BLE 命令**：`MODE sim|afe|replay_normal|replay_abnormal`（AFE 失败时返回具体错误）、`AFE_STATUS`（ADC 就绪/有效/计数）、`REC_START`/`REC_STOP`/`REC_AUTO 1|0`、`AI_VERIFY 0|1|STOP`（逐窗核对，详见固件 README）、`STATUS`、`WAVE 1|0`；XL_small 构建另有 `XLSTAT`（N/S/V/X 计数）与 UART 专用的 `FEED BEGIN FAST|RT`（硬件在环回放）。
 - **PC 工具 / App**：`python pc_tools/ecg_plotter.py`；`cd ecg_app && flutter run`。AI 模型训练需 GPU（WSL2）。
 
 ## 3. 已验证范围（截至 2026-10-23，均在 SuperMini 4MB 板上）
@@ -94,7 +119,7 @@ idf.py -B build_supermini monitor       # 串口 460800
 
 ```mermaid
 flowchart LR
-    A[电极 RA/LA/RL<br/>Lead II] --> B[AFE<br/>AD8232 / 自制]
+    A[电极 RA/LA/RL<br/>胸前改良 I 导联] --> B[AFE<br/>AD8232 / 自制]
     B --> C[ADC<br/>500 Hz]
     C --> D[梳状 50/100 Hz<br/>-119.2 dB]
     D --> E[HP + LP 40 Hz]
